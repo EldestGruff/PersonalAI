@@ -1,0 +1,32 @@
+# Xcode
+build/
+*.pbxuser
+*.xcworkspace/xcuserdata/
+xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# iOS
+*.ipa
+DerivedData/
+
+# Swift
+.swiftpm/
+
+# Build
+**/Frameworks/
+*.framework
+
+# Test
+.xcoverage
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Dependencies (CocoaPods if used)
+Pods/
+Podfile.lock
