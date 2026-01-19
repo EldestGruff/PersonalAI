@@ -3,208 +3,145 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		/* App Entry Point */
-		A1000001201E8B6800000001 /* PersonalAIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000001 /* PersonalAIApp.swift */; };
-
-		/* Models */
-		A1000001201E8B6800000010 /* ModelError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000010 /* ModelError.swift */; };
-		A1000001201E8B6800000011 /* Thought.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000011 /* Thought.swift */; };
-		A1000001201E8B6800000012 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000012 /* Task.swift */; };
-		A1000001201E8B6800000013 /* Classification.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000013 /* Classification.swift */; };
-		A1000001201E8B6800000014 /* FineTuningData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000014 /* FineTuningData.swift */; };
-		A1000001201E8B6800000015 /* SyncQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000015 /* SyncQueue.swift */; };
-		A1000001201E8B6800000016 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000016 /* Enums.swift */; };
-		A1000001201E8B6800000017 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000017 /* Context.swift */; };
-
-		/* Models/Conversions */
-		A1000001201E8B6800000020 /* Thought+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000020 /* Thought+CoreData.swift */; };
-		A1000001201E8B6800000021 /* Task+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000021 /* Task+CoreData.swift */; };
-		A1000001201E8B6800000022 /* Classification+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000022 /* Classification+CoreData.swift */; };
-		A1000001201E8B6800000023 /* FineTuningData+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000023 /* FineTuningData+CoreData.swift */; };
-		A1000001201E8B6800000024 /* SyncQueue+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000024 /* SyncQueue+CoreData.swift */; };
-
-		/* Persistence/Entities */
-		A1000001201E8B6800000030 /* ThoughtEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000030 /* ThoughtEntity.swift */; };
-		A1000001201E8B6800000031 /* ClassificationEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000031 /* ClassificationEntity.swift */; };
-		A1000001201E8B6800000032 /* TaskEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000032 /* TaskEntity.swift */; };
-		A1000001201E8B6800000033 /* FineTuningDataEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000033 /* FineTuningDataEntity.swift */; };
-		A1000001201E8B6800000034 /* SyncQueueEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000034 /* SyncQueueEntity.swift */; };
-
-		/* Persistence/Repositories */
-		A1000001201E8B6800000040 /* SyncRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000040 /* SyncRepository.swift */; };
-		A1000001201E8B6800000041 /* FineTuningRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000041 /* FineTuningRepository.swift */; };
-		A1000001201E8B6800000042 /* ThoughtRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000042 /* ThoughtRepository.swift */; };
-		A1000001201E8B6800000043 /* TaskRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000043 /* TaskRepository.swift */; };
-
-		/* Persistence/CoreDataStack */
-		A1000001201E8B6800000050 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000050 /* PersistenceController.swift */; };
-		A1000001201E8B6800000051 /* PersonalAI.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000051 /* PersonalAI.xcdatamodeld */; };
-
-		/* Services/Core */
-		A1000001201E8B6800000060 /* PermissionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000060 /* PermissionCoordinator.swift */; };
-		A1000001201E8B6800000061 /* ServiceContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000061 /* ServiceContainer.swift */; };
-		A1000001201E8B6800000062 /* ServiceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000062 /* ServiceConfiguration.swift */; };
-		A1000001201E8B6800000063 /* ServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000063 /* ServiceError.swift */; };
-		A1000001201E8B6800000064 /* ServiceProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000064 /* ServiceProtocols.swift */; };
-
-		/* Services/Framework */
-		A1000001201E8B6800000070 /* EventKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000070 /* EventKitService.swift */; };
-		A1000001201E8B6800000071 /* SpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000071 /* SpeechService.swift */; };
-		A1000001201E8B6800000072 /* MotionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000072 /* MotionService.swift */; };
-		A1000001201E8B6800000073 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000073 /* NetworkMonitor.swift */; };
-		A1000001201E8B6800000074 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000074 /* LocationService.swift */; };
-		A1000001201E8B6800000075 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000075 /* HealthKitService.swift */; };
-		A1000001201E8B6800000076 /* ContactsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000076 /* ContactsService.swift */; };
-
-		/* Services/Intelligence */
-		A1000001201E8B6800000080 /* NLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000080 /* NLPService.swift */; };
-		A1000001201E8B6800000081 /* ClassificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000081 /* ClassificationService.swift */; };
-
-		/* Services/Orchestration */
-		A1000001201E8B6800000090 /* SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000090 /* SyncService.swift */; };
-		A1000001201E8B6800000091 /* ContextService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000091 /* ContextService.swift */; };
-		A1000001201E8B6800000092 /* FineTuningService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000092 /* FineTuningService.swift */; };
-
-		/* Services/Domain */
-		A1000001201E8B68000000A0 /* TaskService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000A0 /* TaskService.swift */; };
-		A1000001201E8B68000000A1 /* ThoughtService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000A1 /* ThoughtService.swift */; };
-
-		/* UI */
-		A1000001201E8B68000000B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000B0 /* ContentView.swift */; };
-		A1000001201E8B68000000B1 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000B1 /* AppError.swift */; };
-
-		/* UI/Components */
-		A1000001201E8B68000000C0 /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000C0 /* FlowLayout.swift */; };
-		A1000001201E8B68000000C1 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000C1 /* ErrorView.swift */; };
-		A1000001201E8B68000000C2 /* ClassificationBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000C2 /* ClassificationBadge.swift */; };
-		A1000001201E8B68000000C3 /* ContextDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000C3 /* ContextDisplayView.swift */; };
-		A1000001201E8B68000000C4 /* ThoughtRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000C4 /* ThoughtRowView.swift */; };
-		A1000001201E8B68000000C5 /* TagInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000C5 /* TagInputView.swift */; };
-
-		/* UI/ViewModels */
-		A1000001201E8B68000000D0 /* DetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000D0 /* DetailViewModel.swift */; };
-		A1000001201E8B68000000D1 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000D1 /* SettingsViewModel.swift */; };
-		A1000001201E8B68000000D2 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000D2 /* SearchViewModel.swift */; };
-		A1000001201E8B68000000D3 /* CaptureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000D3 /* CaptureViewModel.swift */; };
-		A1000001201E8B68000000D4 /* BrowseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000D4 /* BrowseViewModel.swift */; };
-
-		/* UI/Screens */
-		A1000001201E8B68000000E0 /* DetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000E0 /* DetailScreen.swift */; };
-		A1000001201E8B68000000E1 /* CaptureScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000E1 /* CaptureScreen.swift */; };
-		A1000001201E8B68000000E2 /* BrowseScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000E2 /* BrowseScreen.swift */; };
-		A1000001201E8B68000000E3 /* SearchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000E3 /* SearchScreen.swift */; };
-		A1000001201E8B68000000E4 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000E4 /* SettingsScreen.swift */; };
-
-		/* Resources */
-		A1000001201E8B68000000F0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000F0 /* Assets.xcassets */; };
+		A0000001000000000000001 /* PersonalAIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000002 /* PersonalAIApp.swift */; };
+		A0000001000000000000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000004 /* Assets.xcassets */; };
+		A0000001000000000000005 /* PersonalAI.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000006 /* PersonalAI.xcdatamodeld */; };
+		A0000001000000000000011 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000012 /* ContentView.swift */; };
+		A0000001000000000000021 /* Thought.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000022 /* Thought.swift */; };
+		A0000001000000000000023 /* Classification.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000024 /* Classification.swift */; };
+		A0000001000000000000025 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000026 /* Context.swift */; };
+		A0000001000000000000027 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000028 /* Task.swift */; };
+		A0000001000000000000029 /* FineTuningData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000030 /* FineTuningData.swift */; };
+		A0000001000000000000031 /* SyncQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000032 /* SyncQueue.swift */; };
+		A0000001000000000000033 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000034 /* Enums.swift */; };
+		A0000001000000000000035 /* ModelError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000036 /* ModelError.swift */; };
+		A0000001000000000000041 /* Thought+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000042 /* Thought+CoreData.swift */; };
+		A0000001000000000000043 /* Classification+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000044 /* Classification+CoreData.swift */; };
+		A0000001000000000000045 /* Task+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000046 /* Task+CoreData.swift */; };
+		A0000001000000000000047 /* FineTuningData+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000048 /* FineTuningData+CoreData.swift */; };
+		A0000001000000000000049 /* SyncQueue+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000050 /* SyncQueue+CoreData.swift */; };
+		A0000001000000000000061 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000062 /* PersistenceController.swift */; };
+		A0000001000000000000071 /* ThoughtEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000072 /* ThoughtEntity.swift */; };
+		A0000001000000000000073 /* ClassificationEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000074 /* ClassificationEntity.swift */; };
+		A0000001000000000000075 /* TaskEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000076 /* TaskEntity.swift */; };
+		A0000001000000000000077 /* FineTuningDataEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000078 /* FineTuningDataEntity.swift */; };
+		A0000001000000000000079 /* SyncQueueEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000080 /* SyncQueueEntity.swift */; };
+		A0000001000000000000091 /* ThoughtRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000092 /* ThoughtRepository.swift */; };
+		A0000001000000000000093 /* TaskRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000094 /* TaskRepository.swift */; };
+		A0000001000000000000095 /* FineTuningRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000096 /* FineTuningRepository.swift */; };
+		A0000001000000000000097 /* SyncRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000098 /* SyncRepository.swift */; };
+		A0000001000000000000111 /* ServiceProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000112 /* ServiceProtocols.swift */; };
+		A0000001000000000000113 /* ServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000114 /* ServiceError.swift */; };
+		A0000001000000000000115 /* ServiceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000116 /* ServiceConfiguration.swift */; };
+		A0000001000000000000117 /* ServiceContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000118 /* ServiceContainer.swift */; };
+		A0000001000000000000119 /* PermissionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000120 /* PermissionCoordinator.swift */; };
+		A0000001000000000000131 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000132 /* LocationService.swift */; };
+		A0000001000000000000133 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000134 /* HealthKitService.swift */; };
+		A0000001000000000000135 /* MotionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000136 /* MotionService.swift */; };
+		A0000001000000000000137 /* EventKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000138 /* EventKitService.swift */; };
+		A0000001000000000000139 /* ContactsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000140 /* ContactsService.swift */; };
+		A0000001000000000000141 /* SpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000142 /* SpeechService.swift */; };
+		A0000001000000000000143 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000144 /* NetworkMonitor.swift */; };
+		A0000001000000000000151 /* NLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000152 /* NLPService.swift */; };
+		A0000001000000000000153 /* ClassificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000154 /* ClassificationService.swift */; };
+		A0000001000000000000161 /* ThoughtService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000162 /* ThoughtService.swift */; };
+		A0000001000000000000163 /* TaskService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000164 /* TaskService.swift */; };
+		A0000001000000000000171 /* ContextService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000172 /* ContextService.swift */; };
+		A0000001000000000000173 /* SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000174 /* SyncService.swift */; };
+		A0000001000000000000175 /* FineTuningService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000176 /* FineTuningService.swift */; };
+		A0000001000000000000201 /* BrowseScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000202 /* BrowseScreen.swift */; };
+		A0000001000000000000203 /* CaptureScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000204 /* CaptureScreen.swift */; };
+		A0000001000000000000205 /* DetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000206 /* DetailScreen.swift */; };
+		A0000001000000000000207 /* SearchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000208 /* SearchScreen.swift */; };
+		A0000001000000000000209 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000210 /* SettingsScreen.swift */; };
+		A0000001000000000000221 /* ThoughtRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000222 /* ThoughtRowView.swift */; };
+		A0000001000000000000223 /* ClassificationBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000224 /* ClassificationBadge.swift */; };
+		A0000001000000000000225 /* ContextDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000226 /* ContextDisplayView.swift */; };
+		A0000001000000000000227 /* TagInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000228 /* TagInputView.swift */; };
+		A0000001000000000000229 /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000230 /* FlowLayout.swift */; };
+		A0000001000000000000231 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000232 /* ErrorView.swift */; };
+		A0000001000000000000241 /* BrowseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000242 /* BrowseViewModel.swift */; };
+		A0000001000000000000243 /* CaptureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000244 /* CaptureViewModel.swift */; };
+		A0000001000000000000245 /* DetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000246 /* DetailViewModel.swift */; };
+		A0000001000000000000247 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000248 /* SearchViewModel.swift */; };
+		A0000001000000000000249 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000250 /* SettingsViewModel.swift */; };
+		A0000001000000000000251 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000252 /* AppError.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		/* Product */
-		A1000000201E8B6800000000 /* PersonalAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PersonalAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
-
-		/* App Entry Point */
-		A1000000201E8B6800000001 /* PersonalAIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalAIApp.swift; sourceTree = "<group>"; };
-
-		/* Models */
-		A1000000201E8B6800000010 /* ModelError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelError.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000011 /* Thought.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Thought.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000012 /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000013 /* Classification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Classification.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000014 /* FineTuningData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningData.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000015 /* SyncQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncQueue.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000016 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000017 /* Context.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
-
-		/* Models/Conversions */
-		A1000000201E8B6800000020 /* Thought+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Thought+CoreData.swift"; sourceTree = "<group>"; };
-		A1000000201E8B6800000021 /* Task+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Task+CoreData.swift"; sourceTree = "<group>"; };
-		A1000000201E8B6800000022 /* Classification+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Classification+CoreData.swift"; sourceTree = "<group>"; };
-		A1000000201E8B6800000023 /* FineTuningData+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FineTuningData+CoreData.swift"; sourceTree = "<group>"; };
-		A1000000201E8B6800000024 /* SyncQueue+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SyncQueue+CoreData.swift"; sourceTree = "<group>"; };
-
-		/* Persistence/Entities */
-		A1000000201E8B6800000030 /* ThoughtEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtEntity.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000031 /* ClassificationEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationEntity.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000032 /* TaskEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskEntity.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000033 /* FineTuningDataEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningDataEntity.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000034 /* SyncQueueEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncQueueEntity.swift; sourceTree = "<group>"; };
-
-		/* Persistence/Repositories */
-		A1000000201E8B6800000040 /* SyncRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncRepository.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000041 /* FineTuningRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningRepository.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000042 /* ThoughtRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtRepository.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000043 /* TaskRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskRepository.swift; sourceTree = "<group>"; };
-
-		/* Persistence/CoreDataStack */
-		A1000000201E8B6800000050 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000051 /* PersonalAI.xcdatamodeld */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodeld; path = PersonalAI.xcdatamodeld; sourceTree = "<group>"; };
-
-		/* Services/Core */
-		A1000000201E8B6800000060 /* PermissionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionCoordinator.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000061 /* ServiceContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceContainer.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000062 /* ServiceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceConfiguration.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000063 /* ServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceError.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000064 /* ServiceProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProtocols.swift; sourceTree = "<group>"; };
-
-		/* Services/Framework */
-		A1000000201E8B6800000070 /* EventKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventKitService.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000071 /* SpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechService.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000072 /* MotionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionService.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000073 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000074 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000075 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000076 /* ContactsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsService.swift; sourceTree = "<group>"; };
-
-		/* Services/Intelligence */
-		A1000000201E8B6800000080 /* NLPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NLPService.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000081 /* ClassificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationService.swift; sourceTree = "<group>"; };
-
-		/* Services/Orchestration */
-		A1000000201E8B6800000090 /* SyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncService.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000091 /* ContextService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextService.swift; sourceTree = "<group>"; };
-		A1000000201E8B6800000092 /* FineTuningService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningService.swift; sourceTree = "<group>"; };
-
-		/* Services/Domain */
-		A1000000201E8B68000000A0 /* TaskService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskService.swift; sourceTree = "<group>"; };
-		A1000000201E8B68000000A1 /* ThoughtService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtService.swift; sourceTree = "<group>"; };
-
-		/* UI */
-		A1000000201E8B68000000B0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		A1000000201E8B68000000B1 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
-
-		/* UI/Components */
-		A1000000201E8B68000000C0 /* FlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowLayout.swift; sourceTree = "<group>"; };
-		A1000000201E8B68000000C1 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
-		A1000000201E8B68000000C2 /* ClassificationBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationBadge.swift; sourceTree = "<group>"; };
-		A1000000201E8B68000000C3 /* ContextDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextDisplayView.swift; sourceTree = "<group>"; };
-		A1000000201E8B68000000C4 /* ThoughtRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtRowView.swift; sourceTree = "<group>"; };
-		A1000000201E8B68000000C5 /* TagInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagInputView.swift; sourceTree = "<group>"; };
-
-		/* UI/ViewModels */
-		A1000000201E8B68000000D0 /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
-		A1000000201E8B68000000D1 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
-		A1000000201E8B68000000D2 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
-		A1000000201E8B68000000D3 /* CaptureViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureViewModel.swift; sourceTree = "<group>"; };
-		A1000000201E8B68000000D4 /* BrowseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseViewModel.swift; sourceTree = "<group>"; };
-
-		/* UI/Screens */
-		A1000000201E8B68000000E0 /* DetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailScreen.swift; sourceTree = "<group>"; };
-		A1000000201E8B68000000E1 /* CaptureScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureScreen.swift; sourceTree = "<group>"; };
-		A1000000201E8B68000000E2 /* BrowseScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseScreen.swift; sourceTree = "<group>"; };
-		A1000000201E8B68000000E3 /* SearchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScreen.swift; sourceTree = "<group>"; };
-		A1000000201E8B68000000E4 /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
-
-		/* Resources */
-		A1000000201E8B68000000F0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A0000001000000000000002 /* PersonalAIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalAIApp.swift; sourceTree = "<group>"; };
+		A0000001000000000000004 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A0000001000000000000006 /* PersonalAI.xcdatamodeld */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodeld; path = PersonalAI.xcdatamodeld; sourceTree = "<group>"; };
+		A0000001000000000000007 /* PersonalAI.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PersonalAI.xcdatamodel; sourceTree = "<group>"; };
+		A0000001000000000000012 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A0000001000000000000022 /* Thought.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Thought.swift; sourceTree = "<group>"; };
+		A0000001000000000000024 /* Classification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Classification.swift; sourceTree = "<group>"; };
+		A0000001000000000000026 /* Context.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
+		A0000001000000000000028 /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
+		A0000001000000000000030 /* FineTuningData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningData.swift; sourceTree = "<group>"; };
+		A0000001000000000000032 /* SyncQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncQueue.swift; sourceTree = "<group>"; };
+		A0000001000000000000034 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
+		A0000001000000000000036 /* ModelError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelError.swift; sourceTree = "<group>"; };
+		A0000001000000000000042 /* Thought+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Thought+CoreData.swift"; sourceTree = "<group>"; };
+		A0000001000000000000044 /* Classification+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Classification+CoreData.swift"; sourceTree = "<group>"; };
+		A0000001000000000000046 /* Task+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Task+CoreData.swift"; sourceTree = "<group>"; };
+		A0000001000000000000048 /* FineTuningData+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FineTuningData+CoreData.swift"; sourceTree = "<group>"; };
+		A0000001000000000000050 /* SyncQueue+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SyncQueue+CoreData.swift"; sourceTree = "<group>"; };
+		A0000001000000000000062 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		A0000001000000000000072 /* ThoughtEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtEntity.swift; sourceTree = "<group>"; };
+		A0000001000000000000074 /* ClassificationEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationEntity.swift; sourceTree = "<group>"; };
+		A0000001000000000000076 /* TaskEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskEntity.swift; sourceTree = "<group>"; };
+		A0000001000000000000078 /* FineTuningDataEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningDataEntity.swift; sourceTree = "<group>"; };
+		A0000001000000000000080 /* SyncQueueEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncQueueEntity.swift; sourceTree = "<group>"; };
+		A0000001000000000000092 /* ThoughtRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtRepository.swift; sourceTree = "<group>"; };
+		A0000001000000000000094 /* TaskRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskRepository.swift; sourceTree = "<group>"; };
+		A0000001000000000000096 /* FineTuningRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningRepository.swift; sourceTree = "<group>"; };
+		A0000001000000000000098 /* SyncRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncRepository.swift; sourceTree = "<group>"; };
+		A0000001000000000000112 /* ServiceProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProtocols.swift; sourceTree = "<group>"; };
+		A0000001000000000000114 /* ServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceError.swift; sourceTree = "<group>"; };
+		A0000001000000000000116 /* ServiceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceConfiguration.swift; sourceTree = "<group>"; };
+		A0000001000000000000118 /* ServiceContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceContainer.swift; sourceTree = "<group>"; };
+		A0000001000000000000120 /* PermissionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionCoordinator.swift; sourceTree = "<group>"; };
+		A0000001000000000000132 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		A0000001000000000000134 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
+		A0000001000000000000136 /* MotionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionService.swift; sourceTree = "<group>"; };
+		A0000001000000000000138 /* EventKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventKitService.swift; sourceTree = "<group>"; };
+		A0000001000000000000140 /* ContactsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsService.swift; sourceTree = "<group>"; };
+		A0000001000000000000142 /* SpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechService.swift; sourceTree = "<group>"; };
+		A0000001000000000000144 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		A0000001000000000000152 /* NLPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NLPService.swift; sourceTree = "<group>"; };
+		A0000001000000000000154 /* ClassificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationService.swift; sourceTree = "<group>"; };
+		A0000001000000000000162 /* ThoughtService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtService.swift; sourceTree = "<group>"; };
+		A0000001000000000000164 /* TaskService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskService.swift; sourceTree = "<group>"; };
+		A0000001000000000000172 /* ContextService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextService.swift; sourceTree = "<group>"; };
+		A0000001000000000000174 /* SyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncService.swift; sourceTree = "<group>"; };
+		A0000001000000000000176 /* FineTuningService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningService.swift; sourceTree = "<group>"; };
+		A0000001000000000000202 /* BrowseScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseScreen.swift; sourceTree = "<group>"; };
+		A0000001000000000000204 /* CaptureScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureScreen.swift; sourceTree = "<group>"; };
+		A0000001000000000000206 /* DetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailScreen.swift; sourceTree = "<group>"; };
+		A0000001000000000000208 /* SearchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScreen.swift; sourceTree = "<group>"; };
+		A0000001000000000000210 /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
+		A0000001000000000000222 /* ThoughtRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtRowView.swift; sourceTree = "<group>"; };
+		A0000001000000000000224 /* ClassificationBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationBadge.swift; sourceTree = "<group>"; };
+		A0000001000000000000226 /* ContextDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextDisplayView.swift; sourceTree = "<group>"; };
+		A0000001000000000000228 /* TagInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagInputView.swift; sourceTree = "<group>"; };
+		A0000001000000000000230 /* FlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowLayout.swift; sourceTree = "<group>"; };
+		A0000001000000000000232 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
+		A0000001000000000000242 /* BrowseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseViewModel.swift; sourceTree = "<group>"; };
+		A0000001000000000000244 /* CaptureViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureViewModel.swift; sourceTree = "<group>"; };
+		A0000001000000000000246 /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
+		A0000001000000000000248 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		A0000001000000000000250 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		A0000001000000000000252 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
+		A1000000000000000000001 /* PersonalAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PersonalAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		A10000FF201E8B6800000001 /* Frameworks */ = {
+		A0900000000000000000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -214,224 +151,224 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A10000FE201E8B6800000000 = {
+		A0800000000000000000001 = {
 			isa = PBXGroup;
 			children = (
-				A1000002201E8B6800000001 /* Sources */,
-				A1000002201E8B6800000002 /* Products */,
+				A0800000000000000000002 /* Sources */,
+				A0800000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		A1000002201E8B6800000002 /* Products */ = {
+		A0800000000000000000002 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				A1000000201E8B6800000000 /* PersonalAI.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		A1000002201E8B6800000001 /* Sources */ = {
-			isa = PBXGroup;
-			children = (
-				A1000000201E8B6800000001 /* PersonalAIApp.swift */,
-				A1000002201E8B6800000010 /* Models */,
-				A1000002201E8B6800000030 /* Persistence */,
-				A1000002201E8B6800000060 /* Services */,
-				A1000002201E8B68000000B0 /* UI */,
-				A1000002201E8B68000000F0 /* Resources */,
+				A0000001000000000000002 /* PersonalAIApp.swift */,
+				A0800000000000000000010 /* Models */,
+				A0800000000000000000020 /* Persistence */,
+				A0800000000000000000030 /* Services */,
+				A0800000000000000000040 /* UI */,
+				A0800000000000000000050 /* Resources */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
 		};
-		A1000002201E8B6800000010 /* Models */ = {
+		A0800000000000000000003 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A1000000201E8B6800000010 /* ModelError.swift */,
-				A1000000201E8B6800000011 /* Thought.swift */,
-				A1000000201E8B6800000012 /* Task.swift */,
-				A1000000201E8B6800000013 /* Classification.swift */,
-				A1000000201E8B6800000014 /* FineTuningData.swift */,
-				A1000000201E8B6800000015 /* SyncQueue.swift */,
-				A1000000201E8B6800000016 /* Enums.swift */,
-				A1000000201E8B6800000017 /* Context.swift */,
-				A1000002201E8B6800000020 /* Conversions */,
+				A1000000000000000000001 /* PersonalAI.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A0800000000000000000010 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A0000001000000000000022 /* Thought.swift */,
+				A0000001000000000000024 /* Classification.swift */,
+				A0000001000000000000026 /* Context.swift */,
+				A0000001000000000000028 /* Task.swift */,
+				A0000001000000000000030 /* FineTuningData.swift */,
+				A0000001000000000000032 /* SyncQueue.swift */,
+				A0000001000000000000034 /* Enums.swift */,
+				A0000001000000000000036 /* ModelError.swift */,
+				A0800000000000000000011 /* Conversions */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-		A1000002201E8B6800000020 /* Conversions */ = {
+		A0800000000000000000011 /* Conversions */ = {
 			isa = PBXGroup;
 			children = (
-				A1000000201E8B6800000020 /* Thought+CoreData.swift */,
-				A1000000201E8B6800000021 /* Task+CoreData.swift */,
-				A1000000201E8B6800000022 /* Classification+CoreData.swift */,
-				A1000000201E8B6800000023 /* FineTuningData+CoreData.swift */,
-				A1000000201E8B6800000024 /* SyncQueue+CoreData.swift */,
+				A0000001000000000000042 /* Thought+CoreData.swift */,
+				A0000001000000000000044 /* Classification+CoreData.swift */,
+				A0000001000000000000046 /* Task+CoreData.swift */,
+				A0000001000000000000048 /* FineTuningData+CoreData.swift */,
+				A0000001000000000000050 /* SyncQueue+CoreData.swift */,
 			);
 			path = Conversions;
 			sourceTree = "<group>";
 		};
-		A1000002201E8B6800000030 /* Persistence */ = {
+		A0800000000000000000020 /* Persistence */ = {
 			isa = PBXGroup;
 			children = (
-				A1000002201E8B6800000031 /* Entities */,
-				A1000002201E8B6800000040 /* Repositories */,
-				A1000002201E8B6800000050 /* CoreDataStack */,
+				A0800000000000000000021 /* CoreDataStack */,
+				A0800000000000000000022 /* Entities */,
+				A0800000000000000000023 /* Repositories */,
 			);
 			path = Persistence;
 			sourceTree = "<group>";
 		};
-		A1000002201E8B6800000031 /* Entities */ = {
+		A0800000000000000000021 /* CoreDataStack */ = {
 			isa = PBXGroup;
 			children = (
-				A1000000201E8B6800000030 /* ThoughtEntity.swift */,
-				A1000000201E8B6800000031 /* ClassificationEntity.swift */,
-				A1000000201E8B6800000032 /* TaskEntity.swift */,
-				A1000000201E8B6800000033 /* FineTuningDataEntity.swift */,
-				A1000000201E8B6800000034 /* SyncQueueEntity.swift */,
-			);
-			path = Entities;
-			sourceTree = "<group>";
-		};
-		A1000002201E8B6800000040 /* Repositories */ = {
-			isa = PBXGroup;
-			children = (
-				A1000000201E8B6800000040 /* SyncRepository.swift */,
-				A1000000201E8B6800000041 /* FineTuningRepository.swift */,
-				A1000000201E8B6800000042 /* ThoughtRepository.swift */,
-				A1000000201E8B6800000043 /* TaskRepository.swift */,
-			);
-			path = Repositories;
-			sourceTree = "<group>";
-		};
-		A1000002201E8B6800000050 /* CoreDataStack */ = {
-			isa = PBXGroup;
-			children = (
-				A1000000201E8B6800000050 /* PersistenceController.swift */,
-				A1000000201E8B6800000051 /* PersonalAI.xcdatamodeld */,
+				A0000001000000000000062 /* PersistenceController.swift */,
+				A0000001000000000000006 /* PersonalAI.xcdatamodeld */,
 			);
 			path = CoreDataStack;
 			sourceTree = "<group>";
 		};
-		A1000002201E8B6800000060 /* Services */ = {
+		A0800000000000000000022 /* Entities */ = {
 			isa = PBXGroup;
 			children = (
-				A1000002201E8B6800000061 /* Core */,
-				A1000002201E8B6800000070 /* Framework */,
-				A1000002201E8B6800000080 /* Intelligence */,
-				A1000002201E8B6800000090 /* Orchestration */,
-				A1000002201E8B68000000A0 /* Domain */,
+				A0000001000000000000072 /* ThoughtEntity.swift */,
+				A0000001000000000000074 /* ClassificationEntity.swift */,
+				A0000001000000000000076 /* TaskEntity.swift */,
+				A0000001000000000000078 /* FineTuningDataEntity.swift */,
+				A0000001000000000000080 /* SyncQueueEntity.swift */,
+			);
+			path = Entities;
+			sourceTree = "<group>";
+		};
+		A0800000000000000000023 /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+				A0000001000000000000092 /* ThoughtRepository.swift */,
+				A0000001000000000000094 /* TaskRepository.swift */,
+				A0000001000000000000096 /* FineTuningRepository.swift */,
+				A0000001000000000000098 /* SyncRepository.swift */,
+			);
+			path = Repositories;
+			sourceTree = "<group>";
+		};
+		A0800000000000000000030 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A0800000000000000000031 /* Core */,
+				A0800000000000000000032 /* Framework */,
+				A0800000000000000000033 /* Intelligence */,
+				A0800000000000000000034 /* Domain */,
+				A0800000000000000000035 /* Orchestration */,
 			);
 			path = Services;
 			sourceTree = "<group>";
 		};
-		A1000002201E8B6800000061 /* Core */ = {
+		A0800000000000000000031 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				A1000000201E8B6800000060 /* PermissionCoordinator.swift */,
-				A1000000201E8B6800000061 /* ServiceContainer.swift */,
-				A1000000201E8B6800000062 /* ServiceConfiguration.swift */,
-				A1000000201E8B6800000063 /* ServiceError.swift */,
-				A1000000201E8B6800000064 /* ServiceProtocols.swift */,
+				A0000001000000000000112 /* ServiceProtocols.swift */,
+				A0000001000000000000114 /* ServiceError.swift */,
+				A0000001000000000000116 /* ServiceConfiguration.swift */,
+				A0000001000000000000118 /* ServiceContainer.swift */,
+				A0000001000000000000120 /* PermissionCoordinator.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
 		};
-		A1000002201E8B6800000070 /* Framework */ = {
+		A0800000000000000000032 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
-				A1000000201E8B6800000070 /* EventKitService.swift */,
-				A1000000201E8B6800000071 /* SpeechService.swift */,
-				A1000000201E8B6800000072 /* MotionService.swift */,
-				A1000000201E8B6800000073 /* NetworkMonitor.swift */,
-				A1000000201E8B6800000074 /* LocationService.swift */,
-				A1000000201E8B6800000075 /* HealthKitService.swift */,
-				A1000000201E8B6800000076 /* ContactsService.swift */,
+				A0000001000000000000132 /* LocationService.swift */,
+				A0000001000000000000134 /* HealthKitService.swift */,
+				A0000001000000000000136 /* MotionService.swift */,
+				A0000001000000000000138 /* EventKitService.swift */,
+				A0000001000000000000140 /* ContactsService.swift */,
+				A0000001000000000000142 /* SpeechService.swift */,
+				A0000001000000000000144 /* NetworkMonitor.swift */,
 			);
 			path = Framework;
 			sourceTree = "<group>";
 		};
-		A1000002201E8B6800000080 /* Intelligence */ = {
+		A0800000000000000000033 /* Intelligence */ = {
 			isa = PBXGroup;
 			children = (
-				A1000000201E8B6800000080 /* NLPService.swift */,
-				A1000000201E8B6800000081 /* ClassificationService.swift */,
+				A0000001000000000000152 /* NLPService.swift */,
+				A0000001000000000000154 /* ClassificationService.swift */,
 			);
 			path = Intelligence;
 			sourceTree = "<group>";
 		};
-		A1000002201E8B6800000090 /* Orchestration */ = {
+		A0800000000000000000034 /* Domain */ = {
 			isa = PBXGroup;
 			children = (
-				A1000000201E8B6800000090 /* SyncService.swift */,
-				A1000000201E8B6800000091 /* ContextService.swift */,
-				A1000000201E8B6800000092 /* FineTuningService.swift */,
-			);
-			path = Orchestration;
-			sourceTree = "<group>";
-		};
-		A1000002201E8B68000000A0 /* Domain */ = {
-			isa = PBXGroup;
-			children = (
-				A1000000201E8B68000000A0 /* TaskService.swift */,
-				A1000000201E8B68000000A1 /* ThoughtService.swift */,
+				A0000001000000000000162 /* ThoughtService.swift */,
+				A0000001000000000000164 /* TaskService.swift */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
 		};
-		A1000002201E8B68000000B0 /* UI */ = {
+		A0800000000000000000035 /* Orchestration */ = {
 			isa = PBXGroup;
 			children = (
-				A1000000201E8B68000000B0 /* ContentView.swift */,
-				A1000000201E8B68000000B1 /* AppError.swift */,
-				A1000002201E8B68000000C0 /* Components */,
-				A1000002201E8B68000000D0 /* ViewModels */,
-				A1000002201E8B68000000E0 /* Screens */,
+				A0000001000000000000172 /* ContextService.swift */,
+				A0000001000000000000174 /* SyncService.swift */,
+				A0000001000000000000176 /* FineTuningService.swift */,
+			);
+			path = Orchestration;
+			sourceTree = "<group>";
+		};
+		A0800000000000000000040 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				A0000001000000000000012 /* ContentView.swift */,
+				A0000001000000000000252 /* AppError.swift */,
+				A0800000000000000000041 /* Screens */,
+				A0800000000000000000042 /* Components */,
+				A0800000000000000000043 /* ViewModels */,
 			);
 			path = UI;
 			sourceTree = "<group>";
 		};
-		A1000002201E8B68000000C0 /* Components */ = {
+		A0800000000000000000041 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
-				A1000000201E8B68000000C0 /* FlowLayout.swift */,
-				A1000000201E8B68000000C1 /* ErrorView.swift */,
-				A1000000201E8B68000000C2 /* ClassificationBadge.swift */,
-				A1000000201E8B68000000C3 /* ContextDisplayView.swift */,
-				A1000000201E8B68000000C4 /* ThoughtRowView.swift */,
-				A1000000201E8B68000000C5 /* TagInputView.swift */,
-			);
-			path = Components;
-			sourceTree = "<group>";
-		};
-		A1000002201E8B68000000D0 /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				A1000000201E8B68000000D0 /* DetailViewModel.swift */,
-				A1000000201E8B68000000D1 /* SettingsViewModel.swift */,
-				A1000000201E8B68000000D2 /* SearchViewModel.swift */,
-				A1000000201E8B68000000D3 /* CaptureViewModel.swift */,
-				A1000000201E8B68000000D4 /* BrowseViewModel.swift */,
-			);
-			path = ViewModels;
-			sourceTree = "<group>";
-		};
-		A1000002201E8B68000000E0 /* Screens */ = {
-			isa = PBXGroup;
-			children = (
-				A1000000201E8B68000000E0 /* DetailScreen.swift */,
-				A1000000201E8B68000000E1 /* CaptureScreen.swift */,
-				A1000000201E8B68000000E2 /* BrowseScreen.swift */,
-				A1000000201E8B68000000E3 /* SearchScreen.swift */,
-				A1000000201E8B68000000E4 /* SettingsScreen.swift */,
+				A0000001000000000000202 /* BrowseScreen.swift */,
+				A0000001000000000000204 /* CaptureScreen.swift */,
+				A0000001000000000000206 /* DetailScreen.swift */,
+				A0000001000000000000208 /* SearchScreen.swift */,
+				A0000001000000000000210 /* SettingsScreen.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
 		};
-		A1000002201E8B68000000F0 /* Resources */ = {
+		A0800000000000000000042 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				A1000000201E8B68000000F0 /* Assets.xcassets */,
+				A0000001000000000000222 /* ThoughtRowView.swift */,
+				A0000001000000000000224 /* ClassificationBadge.swift */,
+				A0000001000000000000226 /* ContextDisplayView.swift */,
+				A0000001000000000000228 /* TagInputView.swift */,
+				A0000001000000000000230 /* FlowLayout.swift */,
+				A0000001000000000000232 /* ErrorView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		A0800000000000000000043 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				A0000001000000000000242 /* BrowseViewModel.swift */,
+				A0000001000000000000244 /* CaptureViewModel.swift */,
+				A0000001000000000000246 /* DetailViewModel.swift */,
+				A0000001000000000000248 /* SearchViewModel.swift */,
+				A0000001000000000000250 /* SettingsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		A0800000000000000000050 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A0000001000000000000004 /* Assets.xcassets */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -439,170 +376,144 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A1000003201E8B6800000001 /* PersonalAI */ = {
+		A0700000000000000000001 /* PersonalAI */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A1000004201E8B6800000001 /* Build configuration list for PBXNativeTarget "PersonalAI" */;
+			buildConfigurationList = A0700000000000000000002 /* Build configuration list for PBXNativeTarget "PersonalAI" */;
 			buildPhases = (
-				A10000FD201E8B6800000001 /* Sources */,
-				A10000FF201E8B6800000001 /* Frameworks */,
-				A1000100201E8B6800000001 /* Resources */,
+				A0600000000000000000001 /* Sources */,
+				A0900000000000000000001 /* Frameworks */,
+				A0500000000000000000001 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = PersonalAI;
+			packageProductDependencies = (
+			);
 			productName = PersonalAI;
-			productReference = A1000000201E8B6800000000 /* PersonalAI.app */;
+			productReference = A1000000000000000000001 /* PersonalAI.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		A10000FC201E8B6800000000 /* Project object */ = {
+		A0800000000000000000000 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
-					A1000003201E8B6800000001 = {
+					A0700000000000000000001 = {
 						CreatedOnToolsVersion = 16.0;
 					};
 				};
 			};
-			buildConfigurationList = A1000005201E8B6800000001 /* Build configuration list for PBXProject "PersonalAI" */;
-			compatibilityVersion = "Xcode 14.0";
+			buildConfigurationList = A0300000000000000000001 /* Build configuration list for PBXProject "PersonalAI" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = A10000FE201E8B6800000000;
-			productRefGroup = A1000002201E8B6800000002 /* Products */;
+			mainGroup = A0800000000000000000001;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = A0800000000000000000003 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A1000003201E8B6800000001 /* PersonalAI */,
+				A0700000000000000000001 /* PersonalAI */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		A1000100201E8B6800000001 /* Resources */ = {
+		A0500000000000000000001 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1000001201E8B68000000F0 /* Assets.xcassets in Resources */,
+				A0000001000000000000003 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A10000FD201E8B6800000001 /* Sources */ = {
+		A0600000000000000000001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				/* App Entry Point */
-				A1000001201E8B6800000001 /* PersonalAIApp.swift in Sources */,
-
-				/* Models */
-				A1000001201E8B6800000010 /* ModelError.swift in Sources */,
-				A1000001201E8B6800000011 /* Thought.swift in Sources */,
-				A1000001201E8B6800000012 /* Task.swift in Sources */,
-				A1000001201E8B6800000013 /* Classification.swift in Sources */,
-				A1000001201E8B6800000014 /* FineTuningData.swift in Sources */,
-				A1000001201E8B6800000015 /* SyncQueue.swift in Sources */,
-				A1000001201E8B6800000016 /* Enums.swift in Sources */,
-				A1000001201E8B6800000017 /* Context.swift in Sources */,
-
-				/* Models/Conversions */
-				A1000001201E8B6800000020 /* Thought+CoreData.swift in Sources */,
-				A1000001201E8B6800000021 /* Task+CoreData.swift in Sources */,
-				A1000001201E8B6800000022 /* Classification+CoreData.swift in Sources */,
-				A1000001201E8B6800000023 /* FineTuningData+CoreData.swift in Sources */,
-				A1000001201E8B6800000024 /* SyncQueue+CoreData.swift in Sources */,
-
-				/* Persistence/Entities */
-				A1000001201E8B6800000030 /* ThoughtEntity.swift in Sources */,
-				A1000001201E8B6800000031 /* ClassificationEntity.swift in Sources */,
-				A1000001201E8B6800000032 /* TaskEntity.swift in Sources */,
-				A1000001201E8B6800000033 /* FineTuningDataEntity.swift in Sources */,
-				A1000001201E8B6800000034 /* SyncQueueEntity.swift in Sources */,
-
-				/* Persistence/Repositories */
-				A1000001201E8B6800000040 /* SyncRepository.swift in Sources */,
-				A1000001201E8B6800000041 /* FineTuningRepository.swift in Sources */,
-				A1000001201E8B6800000042 /* ThoughtRepository.swift in Sources */,
-				A1000001201E8B6800000043 /* TaskRepository.swift in Sources */,
-
-				/* Persistence/CoreDataStack */
-				A1000001201E8B6800000050 /* PersistenceController.swift in Sources */,
-				A1000001201E8B6800000051 /* PersonalAI.xcdatamodeld in Sources */,
-
-				/* Services/Core */
-				A1000001201E8B6800000060 /* PermissionCoordinator.swift in Sources */,
-				A1000001201E8B6800000061 /* ServiceContainer.swift in Sources */,
-				A1000001201E8B6800000062 /* ServiceConfiguration.swift in Sources */,
-				A1000001201E8B6800000063 /* ServiceError.swift in Sources */,
-				A1000001201E8B6800000064 /* ServiceProtocols.swift in Sources */,
-
-				/* Services/Framework */
-				A1000001201E8B6800000070 /* EventKitService.swift in Sources */,
-				A1000001201E8B6800000071 /* SpeechService.swift in Sources */,
-				A1000001201E8B6800000072 /* MotionService.swift in Sources */,
-				A1000001201E8B6800000073 /* NetworkMonitor.swift in Sources */,
-				A1000001201E8B6800000074 /* LocationService.swift in Sources */,
-				A1000001201E8B6800000075 /* HealthKitService.swift in Sources */,
-				A1000001201E8B6800000076 /* ContactsService.swift in Sources */,
-
-				/* Services/Intelligence */
-				A1000001201E8B6800000080 /* NLPService.swift in Sources */,
-				A1000001201E8B6800000081 /* ClassificationService.swift in Sources */,
-
-				/* Services/Orchestration */
-				A1000001201E8B6800000090 /* SyncService.swift in Sources */,
-				A1000001201E8B6800000091 /* ContextService.swift in Sources */,
-				A1000001201E8B6800000092 /* FineTuningService.swift in Sources */,
-
-				/* Services/Domain */
-				A1000001201E8B68000000A0 /* TaskService.swift in Sources */,
-				A1000001201E8B68000000A1 /* ThoughtService.swift in Sources */,
-
-				/* UI */
-				A1000001201E8B68000000B0 /* ContentView.swift in Sources */,
-				A1000001201E8B68000000B1 /* AppError.swift in Sources */,
-
-				/* UI/Components */
-				A1000001201E8B68000000C0 /* FlowLayout.swift in Sources */,
-				A1000001201E8B68000000C1 /* ErrorView.swift in Sources */,
-				A1000001201E8B68000000C2 /* ClassificationBadge.swift in Sources */,
-				A1000001201E8B68000000C3 /* ContextDisplayView.swift in Sources */,
-				A1000001201E8B68000000C4 /* ThoughtRowView.swift in Sources */,
-				A1000001201E8B68000000C5 /* TagInputView.swift in Sources */,
-
-				/* UI/ViewModels */
-				A1000001201E8B68000000D0 /* DetailViewModel.swift in Sources */,
-				A1000001201E8B68000000D1 /* SettingsViewModel.swift in Sources */,
-				A1000001201E8B68000000D2 /* SearchViewModel.swift in Sources */,
-				A1000001201E8B68000000D3 /* CaptureViewModel.swift in Sources */,
-				A1000001201E8B68000000D4 /* BrowseViewModel.swift in Sources */,
-
-				/* UI/Screens */
-				A1000001201E8B68000000E0 /* DetailScreen.swift in Sources */,
-				A1000001201E8B68000000E1 /* CaptureScreen.swift in Sources */,
-				A1000001201E8B68000000E2 /* BrowseScreen.swift in Sources */,
-				A1000001201E8B68000000E3 /* SearchScreen.swift in Sources */,
-				A1000001201E8B68000000E4 /* SettingsScreen.swift in Sources */,
+				A0000001000000000000001 /* PersonalAIApp.swift in Sources */,
+				A0000001000000000000005 /* PersonalAI.xcdatamodeld in Sources */,
+				A0000001000000000000011 /* ContentView.swift in Sources */,
+				A0000001000000000000021 /* Thought.swift in Sources */,
+				A0000001000000000000023 /* Classification.swift in Sources */,
+				A0000001000000000000025 /* Context.swift in Sources */,
+				A0000001000000000000027 /* Task.swift in Sources */,
+				A0000001000000000000029 /* FineTuningData.swift in Sources */,
+				A0000001000000000000031 /* SyncQueue.swift in Sources */,
+				A0000001000000000000033 /* Enums.swift in Sources */,
+				A0000001000000000000035 /* ModelError.swift in Sources */,
+				A0000001000000000000041 /* Thought+CoreData.swift in Sources */,
+				A0000001000000000000043 /* Classification+CoreData.swift in Sources */,
+				A0000001000000000000045 /* Task+CoreData.swift in Sources */,
+				A0000001000000000000047 /* FineTuningData+CoreData.swift in Sources */,
+				A0000001000000000000049 /* SyncQueue+CoreData.swift in Sources */,
+				A0000001000000000000061 /* PersistenceController.swift in Sources */,
+				A0000001000000000000071 /* ThoughtEntity.swift in Sources */,
+				A0000001000000000000073 /* ClassificationEntity.swift in Sources */,
+				A0000001000000000000075 /* TaskEntity.swift in Sources */,
+				A0000001000000000000077 /* FineTuningDataEntity.swift in Sources */,
+				A0000001000000000000079 /* SyncQueueEntity.swift in Sources */,
+				A0000001000000000000091 /* ThoughtRepository.swift in Sources */,
+				A0000001000000000000093 /* TaskRepository.swift in Sources */,
+				A0000001000000000000095 /* FineTuningRepository.swift in Sources */,
+				A0000001000000000000097 /* SyncRepository.swift in Sources */,
+				A0000001000000000000111 /* ServiceProtocols.swift in Sources */,
+				A0000001000000000000113 /* ServiceError.swift in Sources */,
+				A0000001000000000000115 /* ServiceConfiguration.swift in Sources */,
+				A0000001000000000000117 /* ServiceContainer.swift in Sources */,
+				A0000001000000000000119 /* PermissionCoordinator.swift in Sources */,
+				A0000001000000000000131 /* LocationService.swift in Sources */,
+				A0000001000000000000133 /* HealthKitService.swift in Sources */,
+				A0000001000000000000135 /* MotionService.swift in Sources */,
+				A0000001000000000000137 /* EventKitService.swift in Sources */,
+				A0000001000000000000139 /* ContactsService.swift in Sources */,
+				A0000001000000000000141 /* SpeechService.swift in Sources */,
+				A0000001000000000000143 /* NetworkMonitor.swift in Sources */,
+				A0000001000000000000151 /* NLPService.swift in Sources */,
+				A0000001000000000000153 /* ClassificationService.swift in Sources */,
+				A0000001000000000000161 /* ThoughtService.swift in Sources */,
+				A0000001000000000000163 /* TaskService.swift in Sources */,
+				A0000001000000000000171 /* ContextService.swift in Sources */,
+				A0000001000000000000173 /* SyncService.swift in Sources */,
+				A0000001000000000000175 /* FineTuningService.swift in Sources */,
+				A0000001000000000000201 /* BrowseScreen.swift in Sources */,
+				A0000001000000000000203 /* CaptureScreen.swift in Sources */,
+				A0000001000000000000205 /* DetailScreen.swift in Sources */,
+				A0000001000000000000207 /* SearchScreen.swift in Sources */,
+				A0000001000000000000209 /* SettingsScreen.swift in Sources */,
+				A0000001000000000000221 /* ThoughtRowView.swift in Sources */,
+				A0000001000000000000223 /* ClassificationBadge.swift in Sources */,
+				A0000001000000000000225 /* ContextDisplayView.swift in Sources */,
+				A0000001000000000000227 /* TagInputView.swift in Sources */,
+				A0000001000000000000229 /* FlowLayout.swift in Sources */,
+				A0000001000000000000231 /* ErrorView.swift in Sources */,
+				A0000001000000000000241 /* BrowseViewModel.swift in Sources */,
+				A0000001000000000000243 /* CaptureViewModel.swift in Sources */,
+				A0000001000000000000245 /* DetailViewModel.swift in Sources */,
+				A0000001000000000000247 /* SearchViewModel.swift in Sources */,
+				A0000001000000000000249 /* SettingsViewModel.swift in Sources */,
+				A0000001000000000000251 /* AppError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		A1000006201E8B6800000001 /* Debug */ = {
+		A0300000000000000000002 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -666,7 +577,7 @@
 			};
 			name = Debug;
 		};
-		A1000007201E8B6800000001 /* Release */ = {
+		A0300000000000000000003 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -723,7 +634,7 @@
 			};
 			name = Release;
 		};
-		A1000008201E8B6800000001 /* Debug */ = {
+		A0700000000000000000003 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -733,39 +644,38 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Personal AI";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "Personal AI needs access to your calendar to help you manage events and provide contextual reminders.";
-				INFOPLIST_KEY_NSContactsUsageDescription = "Personal AI needs access to your contacts to help you reference people in your thoughts and tasks.";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Personal AI uses your health data to provide personalized insights and correlate your thoughts with wellness patterns.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Personal AI can update health data to track wellness-related goals you set.";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Personal AI uses your location to provide context for your thoughts and remind you of location-based tasks.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Personal AI uses your location to add context to your captured thoughts.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Personal AI needs microphone access to capture voice notes and transcribe your thoughts.";
-				INFOPLIST_KEY_NSMotionUsageDescription = "Personal AI uses motion data to understand your activity context when capturing thoughts.";
-				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Personal AI uses speech recognition to transcribe your voice notes into text.";
+				INFOPLIST_KEY_NSContactsUsageDescription = "PersonalAI needs access to contacts to provide context-aware features.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PersonalAI needs access to location to capture contextual information.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "PersonalAI needs access to calendar events to provide context-aware features.";
+				INFOPLIST_KEY_NSRemindersUsageDescription = "PersonalAI needs access to reminders to help manage tasks.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "PersonalAI needs access to health data to provide health-related insights.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "PersonalAI needs access to motion data to detect activity.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "PersonalAI needs access to speech recognition to capture voice input.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "PersonalAI needs access to microphone to capture voice input.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.personalai.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.personalai.PersonalAI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		A1000009201E8B6800000001 /* Release */ = {
+		A0700000000000000000004 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -775,33 +685,32 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Personal AI";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "Personal AI needs access to your calendar to help you manage events and provide contextual reminders.";
-				INFOPLIST_KEY_NSContactsUsageDescription = "Personal AI needs access to your contacts to help you reference people in your thoughts and tasks.";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Personal AI uses your health data to provide personalized insights and correlate your thoughts with wellness patterns.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Personal AI can update health data to track wellness-related goals you set.";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Personal AI uses your location to provide context for your thoughts and remind you of location-based tasks.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Personal AI uses your location to add context to your captured thoughts.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Personal AI needs microphone access to capture voice notes and transcribe your thoughts.";
-				INFOPLIST_KEY_NSMotionUsageDescription = "Personal AI uses motion data to understand your activity context when capturing thoughts.";
-				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Personal AI uses speech recognition to transcribe your voice notes into text.";
+				INFOPLIST_KEY_NSContactsUsageDescription = "PersonalAI needs access to contacts to provide context-aware features.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PersonalAI needs access to location to capture contextual information.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "PersonalAI needs access to calendar events to provide context-aware features.";
+				INFOPLIST_KEY_NSRemindersUsageDescription = "PersonalAI needs access to reminders to help manage tasks.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "PersonalAI needs access to health data to provide health-related insights.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "PersonalAI needs access to motion data to detect activity.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "PersonalAI needs access to speech recognition to capture voice input.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "PersonalAI needs access to microphone to capture voice input.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.personalai.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.personalai.PersonalAI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -810,20 +719,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A1000005201E8B6800000001 /* Build configuration list for PBXProject "PersonalAI" */ = {
+		A0300000000000000000001 /* Build configuration list for PBXProject "PersonalAI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A1000006201E8B6800000001 /* Debug */,
-				A1000007201E8B6800000001 /* Release */,
+				A0300000000000000000002 /* Debug */,
+				A0300000000000000000003 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1000004201E8B6800000001 /* Build configuration list for PBXNativeTarget "PersonalAI" */ = {
+		A0700000000000000000002 /* Build configuration list for PBXNativeTarget "PersonalAI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A1000008201E8B6800000001 /* Debug */,
-				A1000009201E8B6800000001 /* Release */,
+				A0700000000000000000003 /* Debug */,
+				A0700000000000000000004 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -831,24 +740,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		A1000000201E8B6800000051 /* PersonalAI.xcdatamodeld */ = {
+		A0000001000000000000006 /* PersonalAI.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				A1000000201E8B6800000052 /* PersonalAI.xcdatamodel */,
+				A0000001000000000000007 /* PersonalAI.xcdatamodel */,
 			);
-			currentVersion = A1000000201E8B6800000052 /* PersonalAI.xcdatamodel */;
+			currentVersion = A0000001000000000000007 /* PersonalAI.xcdatamodel */;
 			path = PersonalAI.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
-		A1000000201E8B6800000052 /* PersonalAI.xcdatamodel */ = {
-			isa = PBXFileReference;
-			lastKnownFileType = wrapper.xcdatamodel;
-			path = PersonalAI.xcdatamodel;
-			sourceTree = "<group>";
-		};
 /* End XCVersionGroup section */
-
 	};
-	rootObject = A10000FC201E8B6800000000 /* Project object */;
+	rootObject = A0800000000000000000000 /* Project object */;
 }
