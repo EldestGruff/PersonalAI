@@ -67,6 +67,9 @@ protocol FineTuningServiceProtocol: OrchestrationServiceProtocol {
     /// Tracks thought edit
     func trackEdited(_ thoughtId: UUID) async throws
 
+    /// Tracks user feedback on classification
+    func trackUserFeedback(thoughtId: UUID, isPositive: Bool, correction: String?) async throws
+
     /// Calculates reward signal for a fine-tuning data point
     func calculateReward(_ data: FineTuningData) -> Double
 
@@ -426,6 +429,48 @@ actor FineTuningService: FineTuningServiceProtocol {
         try await repository.update(updated)
     }
 
+    /// Tracks user feedback on classification.
+    func trackUserFeedback(thoughtId: UUID, isPositive: Bool, correction: String?) async throws {
+        guard configuration.features.enableFineTuningTracking else { return }
+
+        guard let data = try await repository.fetch(thoughtId: thoughtId) else {
+            return
+        }
+
+        let feedbackType: UserFeedback.FeedbackType = isPositive ? .helpful : .not_helpful
+        let feedback = UserFeedback(
+            type: feedbackType,
+            comment: correction,
+            timestamp: Date()
+        )
+
+        let updated = FineTuningData(
+            id: data.id,
+            thoughtId: data.thoughtId,
+            classificationId: data.classificationId,
+            createdReminder: data.createdReminder,
+            reminderCompleted: data.reminderCompleted,
+            createdEvent: data.createdEvent,
+            eventCompleted: data.eventCompleted,
+            archived: data.archived,
+            deleted: data.deleted,
+            timeToFirstAction: data.timeToFirstAction,
+            timeToCompletion: data.timeToCompletion,
+            views: data.views,
+            shares: data.shares,
+            edits: data.edits,
+            userFeedback: feedback,
+            createdAt: data.createdAt,
+            lastUpdatedAt: Date()
+        )
+
+        try await repository.update(updated)
+
+        if configuration.features.enableSync, let syncService {
+            try? await syncService.enqueue(.fineTuningData, data.id, action: .update, payload: nil)
+        }
+    }
+
     // MARK: - Reward Calculation
 
     /// Calculates reward signal for a fine-tuning data point.
@@ -571,6 +616,7 @@ actor MockFineTuningService: FineTuningServiceProtocol {
     func trackDeleted(_ thoughtId: UUID) async throws {}
     func trackViewed(_ thoughtId: UUID) async throws {}
     func trackEdited(_ thoughtId: UUID) async throws {}
+    func trackUserFeedback(thoughtId: UUID, isPositive: Bool, correction: String?) async throws {}
 
     func calculateReward(_ data: FineTuningData) -> Double {
         0.75

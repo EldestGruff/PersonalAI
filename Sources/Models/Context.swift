@@ -35,7 +35,7 @@ struct Context: Codable, Equatable, Sendable {
     let energy: EnergyLevel
 
     /// User's current focus state
-    let focusState: FocusState
+    let focusState: UserFocusState
 
     /// Calendar context (upcoming events, free time)
     let calendar: CalendarContext?
@@ -45,6 +45,22 @@ struct Context: Codable, Equatable, Sendable {
 
     /// Weather conditions (if available)
     let weather: WeatherContext?
+
+    /// Creates an empty/default context with current timestamp.
+    ///
+    /// Used when context gathering is unavailable or fails.
+    static func empty() -> Context {
+        Context(
+            timestamp: Date(),
+            location: nil,
+            timeOfDay: TimeOfDay.from(date: Date()),
+            energy: .medium,
+            focusState: .scattered,
+            calendar: nil,
+            activity: nil,
+            weather: nil
+        )
+    }
 }
 
 /// Geographic location information.
@@ -130,7 +146,7 @@ enum EnergyLevel: String, Codable, CaseIterable, Sendable {
 /// - `interrupted`: Frequent context switches, many notifications
 /// - `scattered`: Unfocused, browsing mode
 /// - `flow_state`: Peak focus, highly productive
-enum FocusState: String, Codable, CaseIterable, Sendable {
+enum UserFocusState: String, Codable, CaseIterable, Sendable {
     case deep_work
     case interrupted
     case scattered
