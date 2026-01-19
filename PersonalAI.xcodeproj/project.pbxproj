@@ -1,0 +1,854 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		/* App Entry Point */
+		A1000001201E8B6800000001 /* PersonalAIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000001 /* PersonalAIApp.swift */; };
+
+		/* Models */
+		A1000001201E8B6800000010 /* ModelError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000010 /* ModelError.swift */; };
+		A1000001201E8B6800000011 /* Thought.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000011 /* Thought.swift */; };
+		A1000001201E8B6800000012 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000012 /* Task.swift */; };
+		A1000001201E8B6800000013 /* Classification.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000013 /* Classification.swift */; };
+		A1000001201E8B6800000014 /* FineTuningData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000014 /* FineTuningData.swift */; };
+		A1000001201E8B6800000015 /* SyncQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000015 /* SyncQueue.swift */; };
+		A1000001201E8B6800000016 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000016 /* Enums.swift */; };
+		A1000001201E8B6800000017 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000017 /* Context.swift */; };
+
+		/* Models/Conversions */
+		A1000001201E8B6800000020 /* Thought+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000020 /* Thought+CoreData.swift */; };
+		A1000001201E8B6800000021 /* Task+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000021 /* Task+CoreData.swift */; };
+		A1000001201E8B6800000022 /* Classification+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000022 /* Classification+CoreData.swift */; };
+		A1000001201E8B6800000023 /* FineTuningData+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000023 /* FineTuningData+CoreData.swift */; };
+		A1000001201E8B6800000024 /* SyncQueue+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000024 /* SyncQueue+CoreData.swift */; };
+
+		/* Persistence/Entities */
+		A1000001201E8B6800000030 /* ThoughtEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000030 /* ThoughtEntity.swift */; };
+		A1000001201E8B6800000031 /* ClassificationEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000031 /* ClassificationEntity.swift */; };
+		A1000001201E8B6800000032 /* TaskEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000032 /* TaskEntity.swift */; };
+		A1000001201E8B6800000033 /* FineTuningDataEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000033 /* FineTuningDataEntity.swift */; };
+		A1000001201E8B6800000034 /* SyncQueueEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000034 /* SyncQueueEntity.swift */; };
+
+		/* Persistence/Repositories */
+		A1000001201E8B6800000040 /* SyncRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000040 /* SyncRepository.swift */; };
+		A1000001201E8B6800000041 /* FineTuningRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000041 /* FineTuningRepository.swift */; };
+		A1000001201E8B6800000042 /* ThoughtRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000042 /* ThoughtRepository.swift */; };
+		A1000001201E8B6800000043 /* TaskRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000043 /* TaskRepository.swift */; };
+
+		/* Persistence/CoreDataStack */
+		A1000001201E8B6800000050 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000050 /* PersistenceController.swift */; };
+		A1000001201E8B6800000051 /* PersonalAI.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000051 /* PersonalAI.xcdatamodeld */; };
+
+		/* Services/Core */
+		A1000001201E8B6800000060 /* PermissionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000060 /* PermissionCoordinator.swift */; };
+		A1000001201E8B6800000061 /* ServiceContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000061 /* ServiceContainer.swift */; };
+		A1000001201E8B6800000062 /* ServiceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000062 /* ServiceConfiguration.swift */; };
+		A1000001201E8B6800000063 /* ServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000063 /* ServiceError.swift */; };
+		A1000001201E8B6800000064 /* ServiceProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000064 /* ServiceProtocols.swift */; };
+
+		/* Services/Framework */
+		A1000001201E8B6800000070 /* EventKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000070 /* EventKitService.swift */; };
+		A1000001201E8B6800000071 /* SpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000071 /* SpeechService.swift */; };
+		A1000001201E8B6800000072 /* MotionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000072 /* MotionService.swift */; };
+		A1000001201E8B6800000073 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000073 /* NetworkMonitor.swift */; };
+		A1000001201E8B6800000074 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000074 /* LocationService.swift */; };
+		A1000001201E8B6800000075 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000075 /* HealthKitService.swift */; };
+		A1000001201E8B6800000076 /* ContactsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000076 /* ContactsService.swift */; };
+
+		/* Services/Intelligence */
+		A1000001201E8B6800000080 /* NLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000080 /* NLPService.swift */; };
+		A1000001201E8B6800000081 /* ClassificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000081 /* ClassificationService.swift */; };
+
+		/* Services/Orchestration */
+		A1000001201E8B6800000090 /* SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000090 /* SyncService.swift */; };
+		A1000001201E8B6800000091 /* ContextService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000091 /* ContextService.swift */; };
+		A1000001201E8B6800000092 /* FineTuningService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B6800000092 /* FineTuningService.swift */; };
+
+		/* Services/Domain */
+		A1000001201E8B68000000A0 /* TaskService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000A0 /* TaskService.swift */; };
+		A1000001201E8B68000000A1 /* ThoughtService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000A1 /* ThoughtService.swift */; };
+
+		/* UI */
+		A1000001201E8B68000000B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000B0 /* ContentView.swift */; };
+		A1000001201E8B68000000B1 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000B1 /* AppError.swift */; };
+
+		/* UI/Components */
+		A1000001201E8B68000000C0 /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000C0 /* FlowLayout.swift */; };
+		A1000001201E8B68000000C1 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000C1 /* ErrorView.swift */; };
+		A1000001201E8B68000000C2 /* ClassificationBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000C2 /* ClassificationBadge.swift */; };
+		A1000001201E8B68000000C3 /* ContextDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000C3 /* ContextDisplayView.swift */; };
+		A1000001201E8B68000000C4 /* ThoughtRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000C4 /* ThoughtRowView.swift */; };
+		A1000001201E8B68000000C5 /* TagInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000C5 /* TagInputView.swift */; };
+
+		/* UI/ViewModels */
+		A1000001201E8B68000000D0 /* DetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000D0 /* DetailViewModel.swift */; };
+		A1000001201E8B68000000D1 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000D1 /* SettingsViewModel.swift */; };
+		A1000001201E8B68000000D2 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000D2 /* SearchViewModel.swift */; };
+		A1000001201E8B68000000D3 /* CaptureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000D3 /* CaptureViewModel.swift */; };
+		A1000001201E8B68000000D4 /* BrowseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000D4 /* BrowseViewModel.swift */; };
+
+		/* UI/Screens */
+		A1000001201E8B68000000E0 /* DetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000E0 /* DetailScreen.swift */; };
+		A1000001201E8B68000000E1 /* CaptureScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000E1 /* CaptureScreen.swift */; };
+		A1000001201E8B68000000E2 /* BrowseScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000E2 /* BrowseScreen.swift */; };
+		A1000001201E8B68000000E3 /* SearchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000E3 /* SearchScreen.swift */; };
+		A1000001201E8B68000000E4 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000E4 /* SettingsScreen.swift */; };
+
+		/* Resources */
+		A1000001201E8B68000000F0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000201E8B68000000F0 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		/* Product */
+		A1000000201E8B6800000000 /* PersonalAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PersonalAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+
+		/* App Entry Point */
+		A1000000201E8B6800000001 /* PersonalAIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalAIApp.swift; sourceTree = "<group>"; };
+
+		/* Models */
+		A1000000201E8B6800000010 /* ModelError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelError.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000011 /* Thought.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Thought.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000012 /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000013 /* Classification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Classification.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000014 /* FineTuningData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningData.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000015 /* SyncQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncQueue.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000016 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000017 /* Context.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
+
+		/* Models/Conversions */
+		A1000000201E8B6800000020 /* Thought+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Thought+CoreData.swift"; sourceTree = "<group>"; };
+		A1000000201E8B6800000021 /* Task+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Task+CoreData.swift"; sourceTree = "<group>"; };
+		A1000000201E8B6800000022 /* Classification+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Classification+CoreData.swift"; sourceTree = "<group>"; };
+		A1000000201E8B6800000023 /* FineTuningData+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FineTuningData+CoreData.swift"; sourceTree = "<group>"; };
+		A1000000201E8B6800000024 /* SyncQueue+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SyncQueue+CoreData.swift"; sourceTree = "<group>"; };
+
+		/* Persistence/Entities */
+		A1000000201E8B6800000030 /* ThoughtEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtEntity.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000031 /* ClassificationEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationEntity.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000032 /* TaskEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskEntity.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000033 /* FineTuningDataEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningDataEntity.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000034 /* SyncQueueEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncQueueEntity.swift; sourceTree = "<group>"; };
+
+		/* Persistence/Repositories */
+		A1000000201E8B6800000040 /* SyncRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncRepository.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000041 /* FineTuningRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningRepository.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000042 /* ThoughtRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtRepository.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000043 /* TaskRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskRepository.swift; sourceTree = "<group>"; };
+
+		/* Persistence/CoreDataStack */
+		A1000000201E8B6800000050 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000051 /* PersonalAI.xcdatamodeld */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodeld; path = PersonalAI.xcdatamodeld; sourceTree = "<group>"; };
+
+		/* Services/Core */
+		A1000000201E8B6800000060 /* PermissionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionCoordinator.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000061 /* ServiceContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceContainer.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000062 /* ServiceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceConfiguration.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000063 /* ServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceError.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000064 /* ServiceProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProtocols.swift; sourceTree = "<group>"; };
+
+		/* Services/Framework */
+		A1000000201E8B6800000070 /* EventKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventKitService.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000071 /* SpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechService.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000072 /* MotionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionService.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000073 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000074 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000075 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000076 /* ContactsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsService.swift; sourceTree = "<group>"; };
+
+		/* Services/Intelligence */
+		A1000000201E8B6800000080 /* NLPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NLPService.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000081 /* ClassificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationService.swift; sourceTree = "<group>"; };
+
+		/* Services/Orchestration */
+		A1000000201E8B6800000090 /* SyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncService.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000091 /* ContextService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextService.swift; sourceTree = "<group>"; };
+		A1000000201E8B6800000092 /* FineTuningService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningService.swift; sourceTree = "<group>"; };
+
+		/* Services/Domain */
+		A1000000201E8B68000000A0 /* TaskService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskService.swift; sourceTree = "<group>"; };
+		A1000000201E8B68000000A1 /* ThoughtService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtService.swift; sourceTree = "<group>"; };
+
+		/* UI */
+		A1000000201E8B68000000B0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A1000000201E8B68000000B1 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
+
+		/* UI/Components */
+		A1000000201E8B68000000C0 /* FlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowLayout.swift; sourceTree = "<group>"; };
+		A1000000201E8B68000000C1 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
+		A1000000201E8B68000000C2 /* ClassificationBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationBadge.swift; sourceTree = "<group>"; };
+		A1000000201E8B68000000C3 /* ContextDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextDisplayView.swift; sourceTree = "<group>"; };
+		A1000000201E8B68000000C4 /* ThoughtRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtRowView.swift; sourceTree = "<group>"; };
+		A1000000201E8B68000000C5 /* TagInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagInputView.swift; sourceTree = "<group>"; };
+
+		/* UI/ViewModels */
+		A1000000201E8B68000000D0 /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
+		A1000000201E8B68000000D1 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		A1000000201E8B68000000D2 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		A1000000201E8B68000000D3 /* CaptureViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureViewModel.swift; sourceTree = "<group>"; };
+		A1000000201E8B68000000D4 /* BrowseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseViewModel.swift; sourceTree = "<group>"; };
+
+		/* UI/Screens */
+		A1000000201E8B68000000E0 /* DetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailScreen.swift; sourceTree = "<group>"; };
+		A1000000201E8B68000000E1 /* CaptureScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureScreen.swift; sourceTree = "<group>"; };
+		A1000000201E8B68000000E2 /* BrowseScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseScreen.swift; sourceTree = "<group>"; };
+		A1000000201E8B68000000E3 /* SearchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScreen.swift; sourceTree = "<group>"; };
+		A1000000201E8B68000000E4 /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
+
+		/* Resources */
+		A1000000201E8B68000000F0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A10000FF201E8B6800000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A10000FE201E8B6800000000 = {
+			isa = PBXGroup;
+			children = (
+				A1000002201E8B6800000001 /* Sources */,
+				A1000002201E8B6800000002 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A1000002201E8B6800000002 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B6800000000 /* PersonalAI.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B6800000001 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B6800000001 /* PersonalAIApp.swift */,
+				A1000002201E8B6800000010 /* Models */,
+				A1000002201E8B6800000030 /* Persistence */,
+				A1000002201E8B6800000060 /* Services */,
+				A1000002201E8B68000000B0 /* UI */,
+				A1000002201E8B68000000F0 /* Resources */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B6800000010 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B6800000010 /* ModelError.swift */,
+				A1000000201E8B6800000011 /* Thought.swift */,
+				A1000000201E8B6800000012 /* Task.swift */,
+				A1000000201E8B6800000013 /* Classification.swift */,
+				A1000000201E8B6800000014 /* FineTuningData.swift */,
+				A1000000201E8B6800000015 /* SyncQueue.swift */,
+				A1000000201E8B6800000016 /* Enums.swift */,
+				A1000000201E8B6800000017 /* Context.swift */,
+				A1000002201E8B6800000020 /* Conversions */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B6800000020 /* Conversions */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B6800000020 /* Thought+CoreData.swift */,
+				A1000000201E8B6800000021 /* Task+CoreData.swift */,
+				A1000000201E8B6800000022 /* Classification+CoreData.swift */,
+				A1000000201E8B6800000023 /* FineTuningData+CoreData.swift */,
+				A1000000201E8B6800000024 /* SyncQueue+CoreData.swift */,
+			);
+			path = Conversions;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B6800000030 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				A1000002201E8B6800000031 /* Entities */,
+				A1000002201E8B6800000040 /* Repositories */,
+				A1000002201E8B6800000050 /* CoreDataStack */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B6800000031 /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B6800000030 /* ThoughtEntity.swift */,
+				A1000000201E8B6800000031 /* ClassificationEntity.swift */,
+				A1000000201E8B6800000032 /* TaskEntity.swift */,
+				A1000000201E8B6800000033 /* FineTuningDataEntity.swift */,
+				A1000000201E8B6800000034 /* SyncQueueEntity.swift */,
+			);
+			path = Entities;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B6800000040 /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B6800000040 /* SyncRepository.swift */,
+				A1000000201E8B6800000041 /* FineTuningRepository.swift */,
+				A1000000201E8B6800000042 /* ThoughtRepository.swift */,
+				A1000000201E8B6800000043 /* TaskRepository.swift */,
+			);
+			path = Repositories;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B6800000050 /* CoreDataStack */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B6800000050 /* PersistenceController.swift */,
+				A1000000201E8B6800000051 /* PersonalAI.xcdatamodeld */,
+			);
+			path = CoreDataStack;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B6800000060 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A1000002201E8B6800000061 /* Core */,
+				A1000002201E8B6800000070 /* Framework */,
+				A1000002201E8B6800000080 /* Intelligence */,
+				A1000002201E8B6800000090 /* Orchestration */,
+				A1000002201E8B68000000A0 /* Domain */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B6800000061 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B6800000060 /* PermissionCoordinator.swift */,
+				A1000000201E8B6800000061 /* ServiceContainer.swift */,
+				A1000000201E8B6800000062 /* ServiceConfiguration.swift */,
+				A1000000201E8B6800000063 /* ServiceError.swift */,
+				A1000000201E8B6800000064 /* ServiceProtocols.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B6800000070 /* Framework */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B6800000070 /* EventKitService.swift */,
+				A1000000201E8B6800000071 /* SpeechService.swift */,
+				A1000000201E8B6800000072 /* MotionService.swift */,
+				A1000000201E8B6800000073 /* NetworkMonitor.swift */,
+				A1000000201E8B6800000074 /* LocationService.swift */,
+				A1000000201E8B6800000075 /* HealthKitService.swift */,
+				A1000000201E8B6800000076 /* ContactsService.swift */,
+			);
+			path = Framework;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B6800000080 /* Intelligence */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B6800000080 /* NLPService.swift */,
+				A1000000201E8B6800000081 /* ClassificationService.swift */,
+			);
+			path = Intelligence;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B6800000090 /* Orchestration */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B6800000090 /* SyncService.swift */,
+				A1000000201E8B6800000091 /* ContextService.swift */,
+				A1000000201E8B6800000092 /* FineTuningService.swift */,
+			);
+			path = Orchestration;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B68000000A0 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B68000000A0 /* TaskService.swift */,
+				A1000000201E8B68000000A1 /* ThoughtService.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B68000000B0 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B68000000B0 /* ContentView.swift */,
+				A1000000201E8B68000000B1 /* AppError.swift */,
+				A1000002201E8B68000000C0 /* Components */,
+				A1000002201E8B68000000D0 /* ViewModels */,
+				A1000002201E8B68000000E0 /* Screens */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B68000000C0 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B68000000C0 /* FlowLayout.swift */,
+				A1000000201E8B68000000C1 /* ErrorView.swift */,
+				A1000000201E8B68000000C2 /* ClassificationBadge.swift */,
+				A1000000201E8B68000000C3 /* ContextDisplayView.swift */,
+				A1000000201E8B68000000C4 /* ThoughtRowView.swift */,
+				A1000000201E8B68000000C5 /* TagInputView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B68000000D0 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B68000000D0 /* DetailViewModel.swift */,
+				A1000000201E8B68000000D1 /* SettingsViewModel.swift */,
+				A1000000201E8B68000000D2 /* SearchViewModel.swift */,
+				A1000000201E8B68000000D3 /* CaptureViewModel.swift */,
+				A1000000201E8B68000000D4 /* BrowseViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B68000000E0 /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B68000000E0 /* DetailScreen.swift */,
+				A1000000201E8B68000000E1 /* CaptureScreen.swift */,
+				A1000000201E8B68000000E2 /* BrowseScreen.swift */,
+				A1000000201E8B68000000E3 /* SearchScreen.swift */,
+				A1000000201E8B68000000E4 /* SettingsScreen.swift */,
+			);
+			path = Screens;
+			sourceTree = "<group>";
+		};
+		A1000002201E8B68000000F0 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000201E8B68000000F0 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A1000003201E8B6800000001 /* PersonalAI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1000004201E8B6800000001 /* Build configuration list for PBXNativeTarget "PersonalAI" */;
+			buildPhases = (
+				A10000FD201E8B6800000001 /* Sources */,
+				A10000FF201E8B6800000001 /* Frameworks */,
+				A1000100201E8B6800000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PersonalAI;
+			productName = PersonalAI;
+			productReference = A1000000201E8B6800000000 /* PersonalAI.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A10000FC201E8B6800000000 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					A1000003201E8B6800000001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = A1000005201E8B6800000001 /* Build configuration list for PBXProject "PersonalAI" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A10000FE201E8B6800000000;
+			productRefGroup = A1000002201E8B6800000002 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A1000003201E8B6800000001 /* PersonalAI */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A1000100201E8B6800000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000001201E8B68000000F0 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A10000FD201E8B6800000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				/* App Entry Point */
+				A1000001201E8B6800000001 /* PersonalAIApp.swift in Sources */,
+
+				/* Models */
+				A1000001201E8B6800000010 /* ModelError.swift in Sources */,
+				A1000001201E8B6800000011 /* Thought.swift in Sources */,
+				A1000001201E8B6800000012 /* Task.swift in Sources */,
+				A1000001201E8B6800000013 /* Classification.swift in Sources */,
+				A1000001201E8B6800000014 /* FineTuningData.swift in Sources */,
+				A1000001201E8B6800000015 /* SyncQueue.swift in Sources */,
+				A1000001201E8B6800000016 /* Enums.swift in Sources */,
+				A1000001201E8B6800000017 /* Context.swift in Sources */,
+
+				/* Models/Conversions */
+				A1000001201E8B6800000020 /* Thought+CoreData.swift in Sources */,
+				A1000001201E8B6800000021 /* Task+CoreData.swift in Sources */,
+				A1000001201E8B6800000022 /* Classification+CoreData.swift in Sources */,
+				A1000001201E8B6800000023 /* FineTuningData+CoreData.swift in Sources */,
+				A1000001201E8B6800000024 /* SyncQueue+CoreData.swift in Sources */,
+
+				/* Persistence/Entities */
+				A1000001201E8B6800000030 /* ThoughtEntity.swift in Sources */,
+				A1000001201E8B6800000031 /* ClassificationEntity.swift in Sources */,
+				A1000001201E8B6800000032 /* TaskEntity.swift in Sources */,
+				A1000001201E8B6800000033 /* FineTuningDataEntity.swift in Sources */,
+				A1000001201E8B6800000034 /* SyncQueueEntity.swift in Sources */,
+
+				/* Persistence/Repositories */
+				A1000001201E8B6800000040 /* SyncRepository.swift in Sources */,
+				A1000001201E8B6800000041 /* FineTuningRepository.swift in Sources */,
+				A1000001201E8B6800000042 /* ThoughtRepository.swift in Sources */,
+				A1000001201E8B6800000043 /* TaskRepository.swift in Sources */,
+
+				/* Persistence/CoreDataStack */
+				A1000001201E8B6800000050 /* PersistenceController.swift in Sources */,
+				A1000001201E8B6800000051 /* PersonalAI.xcdatamodeld in Sources */,
+
+				/* Services/Core */
+				A1000001201E8B6800000060 /* PermissionCoordinator.swift in Sources */,
+				A1000001201E8B6800000061 /* ServiceContainer.swift in Sources */,
+				A1000001201E8B6800000062 /* ServiceConfiguration.swift in Sources */,
+				A1000001201E8B6800000063 /* ServiceError.swift in Sources */,
+				A1000001201E8B6800000064 /* ServiceProtocols.swift in Sources */,
+
+				/* Services/Framework */
+				A1000001201E8B6800000070 /* EventKitService.swift in Sources */,
+				A1000001201E8B6800000071 /* SpeechService.swift in Sources */,
+				A1000001201E8B6800000072 /* MotionService.swift in Sources */,
+				A1000001201E8B6800000073 /* NetworkMonitor.swift in Sources */,
+				A1000001201E8B6800000074 /* LocationService.swift in Sources */,
+				A1000001201E8B6800000075 /* HealthKitService.swift in Sources */,
+				A1000001201E8B6800000076 /* ContactsService.swift in Sources */,
+
+				/* Services/Intelligence */
+				A1000001201E8B6800000080 /* NLPService.swift in Sources */,
+				A1000001201E8B6800000081 /* ClassificationService.swift in Sources */,
+
+				/* Services/Orchestration */
+				A1000001201E8B6800000090 /* SyncService.swift in Sources */,
+				A1000001201E8B6800000091 /* ContextService.swift in Sources */,
+				A1000001201E8B6800000092 /* FineTuningService.swift in Sources */,
+
+				/* Services/Domain */
+				A1000001201E8B68000000A0 /* TaskService.swift in Sources */,
+				A1000001201E8B68000000A1 /* ThoughtService.swift in Sources */,
+
+				/* UI */
+				A1000001201E8B68000000B0 /* ContentView.swift in Sources */,
+				A1000001201E8B68000000B1 /* AppError.swift in Sources */,
+
+				/* UI/Components */
+				A1000001201E8B68000000C0 /* FlowLayout.swift in Sources */,
+				A1000001201E8B68000000C1 /* ErrorView.swift in Sources */,
+				A1000001201E8B68000000C2 /* ClassificationBadge.swift in Sources */,
+				A1000001201E8B68000000C3 /* ContextDisplayView.swift in Sources */,
+				A1000001201E8B68000000C4 /* ThoughtRowView.swift in Sources */,
+				A1000001201E8B68000000C5 /* TagInputView.swift in Sources */,
+
+				/* UI/ViewModels */
+				A1000001201E8B68000000D0 /* DetailViewModel.swift in Sources */,
+				A1000001201E8B68000000D1 /* SettingsViewModel.swift in Sources */,
+				A1000001201E8B68000000D2 /* SearchViewModel.swift in Sources */,
+				A1000001201E8B68000000D3 /* CaptureViewModel.swift in Sources */,
+				A1000001201E8B68000000D4 /* BrowseViewModel.swift in Sources */,
+
+				/* UI/Screens */
+				A1000001201E8B68000000E0 /* DetailScreen.swift in Sources */,
+				A1000001201E8B68000000E1 /* CaptureScreen.swift in Sources */,
+				A1000001201E8B68000000E2 /* BrowseScreen.swift in Sources */,
+				A1000001201E8B68000000E3 /* SearchScreen.swift in Sources */,
+				A1000001201E8B68000000E4 /* SettingsScreen.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A1000006201E8B6800000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		A1000007201E8B6800000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 6.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A1000008201E8B6800000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Personal AI";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Personal AI needs access to your calendar to help you manage events and provide contextual reminders.";
+				INFOPLIST_KEY_NSContactsUsageDescription = "Personal AI needs access to your contacts to help you reference people in your thoughts and tasks.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Personal AI uses your health data to provide personalized insights and correlate your thoughts with wellness patterns.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Personal AI can update health data to track wellness-related goals you set.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Personal AI uses your location to provide context for your thoughts and remind you of location-based tasks.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Personal AI uses your location to add context to your captured thoughts.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Personal AI needs microphone access to capture voice notes and transcribe your thoughts.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "Personal AI uses motion data to understand your activity context when capturing thoughts.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Personal AI uses speech recognition to transcribe your voice notes into text.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.personalai.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A1000009201E8B6800000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Personal AI";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Personal AI needs access to your calendar to help you manage events and provide contextual reminders.";
+				INFOPLIST_KEY_NSContactsUsageDescription = "Personal AI needs access to your contacts to help you reference people in your thoughts and tasks.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Personal AI uses your health data to provide personalized insights and correlate your thoughts with wellness patterns.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Personal AI can update health data to track wellness-related goals you set.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Personal AI uses your location to provide context for your thoughts and remind you of location-based tasks.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Personal AI uses your location to add context to your captured thoughts.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Personal AI needs microphone access to capture voice notes and transcribe your thoughts.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "Personal AI uses motion data to understand your activity context when capturing thoughts.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Personal AI uses speech recognition to transcribe your voice notes into text.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.personalai.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A1000005201E8B6800000001 /* Build configuration list for PBXProject "PersonalAI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1000006201E8B6800000001 /* Debug */,
+				A1000007201E8B6800000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1000004201E8B6800000001 /* Build configuration list for PBXNativeTarget "PersonalAI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1000008201E8B6800000001 /* Debug */,
+				A1000009201E8B6800000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		A1000000201E8B6800000051 /* PersonalAI.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				A1000000201E8B6800000052 /* PersonalAI.xcdatamodel */,
+			);
+			currentVersion = A1000000201E8B6800000052 /* PersonalAI.xcdatamodel */;
+			path = PersonalAI.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+		A1000000201E8B6800000052 /* PersonalAI.xcdatamodel */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.xcdatamodel;
+			path = PersonalAI.xcdatamodel;
+			sourceTree = "<group>";
+		};
+/* End XCVersionGroup section */
+
+	};
+	rootObject = A10000FC201E8B6800000000 /* Project object */;
+}

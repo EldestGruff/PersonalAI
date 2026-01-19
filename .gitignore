@@ -15,6 +15,7 @@ DerivedData/
 # Build
 **/Frameworks/
 *.framework
+.build/
 
 # Test
 .xcoverage

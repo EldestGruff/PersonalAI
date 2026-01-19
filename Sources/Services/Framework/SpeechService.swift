@@ -218,29 +218,24 @@ actor SpeechService: SpeechServiceProtocol {
 
         self.recognitionRequest = request
 
+        // Install audio tap BEFORE creating stream to avoid actor isolation issues
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
+            request.append(buffer)
+        }
+
+        // Start audio engine BEFORE creating stream
+        audioEngine.prepare()
+        try audioEngine.start()
+
+        // Capture recognizer for use in closure (avoid actor isolation in closure)
+        let capturedRecognizer = recognizer
+
         // Create the async stream
         let stream = AsyncThrowingStream<String, Error> { continuation in
             self.liveTranscriptionContinuation = continuation
 
-            // Install audio tap
-            inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
-                request.append(buffer)
-            }
-
-            // Start audio engine
-            audioEngine.prepare()
-            do {
-                try audioEngine.start()
-            } catch {
-                continuation.finish(throwing: ServiceError.frameworkUnavailable(
-                    framework: .speech,
-                    reason: "Could not start audio engine: \(error.localizedDescription)"
-                ))
-                return
-            }
-
             // Start recognition
-            self.recognitionTask = recognizer.recognitionTask(with: request) { result, error in
+            self.recognitionTask = capturedRecognizer.recognitionTask(with: request) { result, error in
                 if let error = error {
                     continuation.finish(throwing: error)
                     return
