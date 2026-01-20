@@ -80,6 +80,8 @@ final class CaptureViewModel {
     private let contextService: ContextService
     private let classificationService: ClassificationService
     private let fineTuningService: FineTuningService
+    private let taskService: TaskService
+    private let settingsViewModel: SettingsViewModel?
 
     // MARK: - Constants
 
@@ -92,12 +94,16 @@ final class CaptureViewModel {
         thoughtService: ThoughtService,
         contextService: ContextService,
         classificationService: ClassificationService,
-        fineTuningService: FineTuningService
+        fineTuningService: FineTuningService,
+        taskService: TaskService,
+        settingsViewModel: SettingsViewModel? = nil
     ) {
         self.thoughtService = thoughtService
         self.contextService = contextService
         self.classificationService = classificationService
         self.fineTuningService = fineTuningService
+        self.taskService = taskService
+        self.settingsViewModel = settingsViewModel
     }
 
     // MARK: - Computed Properties
@@ -225,6 +231,13 @@ final class CaptureViewModel {
                     }
                 }
 
+                // Auto-create reminder/event if enabled
+                if let settings = settingsViewModel,
+                   settings.autoCreateReminders,
+                   let classification = classification {
+                    await self.autoCreateTask(for: saved, classification: classification)
+                }
+
                 // Success - reset form
                 self.resetForm()
                 self.captureSucceeded = true
@@ -255,5 +268,50 @@ final class CaptureViewModel {
         thoughtContent = text
         voiceInputMode = false
         classifyThought()
+    }
+
+    // MARK: - Auto-Creation
+
+    /// Automatically creates a reminder or event if applicable
+    private func autoCreateTask(for thought: Thought, classification: Classification) async {
+        do {
+            if classification.type == .reminder || classification.type == .event {
+                // Create Task model
+                let task = Task(
+                    id: UUID(),
+                    userId: thought.userId,
+                    sourceThoughtId: thought.id,
+                    title: thought.content,
+                    description: nil,
+                    priority: .medium,
+                    status: .pending,
+                    dueDate: nil,
+                    estimatedEffortMinutes: 0,
+                    createdAt: Date(),
+                    updatedAt: Date(),
+                    completedAt: nil,
+                    reminderId: nil,
+                    eventId: nil
+                )
+
+                let created = try await taskService.create(task)
+
+                // Create system reminder or calendar event
+                if classification.type == .reminder {
+                    _ = try await taskService.createSystemReminder(for: created)
+                    try await fineTuningService.trackReminderCreated(thought.id)
+                } else if classification.type == .event {
+                    _ = try await taskService.createCalendarEvent(
+                        for: created,
+                        startDate: Date().addingTimeInterval(3600), // 1 hour from now
+                        endDate: Date().addingTimeInterval(7200) // 2 hours from now
+                    )
+                    try await fineTuningService.trackEventCreated(thought.id)
+                }
+            }
+        } catch {
+            // Silently fail - auto-creation is best-effort
+            // The thought was saved successfully, so we don't want to show an error
+        }
     }
 }

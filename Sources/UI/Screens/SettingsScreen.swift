@@ -154,6 +154,15 @@ struct SettingsScreen: View {
                         .foregroundColor(.secondary)
                 }
             }
+
+            Toggle(isOn: $viewModel.autoCreateReminders) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Auto-Create Reminders")
+                    Text("Automatically create reminders/events from classified thoughts")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
         }
     }
 

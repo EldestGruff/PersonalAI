@@ -87,6 +87,14 @@ final class DetailViewModel {
     /// Whether changes are being saved
     var isSaving: Bool = false
 
+    // MARK: - Task Creation State
+
+    /// Whether a task is being created
+    var isCreatingTask: Bool = false
+
+    /// Whether a task was created successfully
+    var taskCreated: Bool = false
+
     // MARK: - Error State
 
     /// Current error to display
@@ -96,17 +104,20 @@ final class DetailViewModel {
 
     private let thoughtService: ThoughtService
     private let fineTuningService: FineTuningService
+    private let taskService: TaskService
 
     // MARK: - Initialization
 
     init(
         thought: Thought,
         thoughtService: ThoughtService,
-        fineTuningService: FineTuningService
+        fineTuningService: FineTuningService,
+        taskService: TaskService
     ) {
         self.thought = thought
         self.thoughtService = thoughtService
         self.fineTuningService = fineTuningService
+        self.taskService = taskService
 
         // Initialize context display
         self.contextDisplay = ContextDisplay(from: thought.context)
@@ -211,6 +222,62 @@ final class DetailViewModel {
     /// Removes a tag during editing
     func removeEditTag(_ tag: String) {
         editedTags.removeAll { $0 == tag }
+    }
+
+    // MARK: - Task Creation Actions
+
+    /// Creates a reminder or event from the thought
+    func createReminderOrEvent() {
+        guard let classification = thought.classification else { return }
+        guard !isCreatingTask else { return }
+
+        isCreatingTask = true
+        taskCreated = false
+        error = nil
+
+        _Concurrency.Task {
+            do {
+                // Create Task model
+                let task = Task(
+                    id: UUID(),
+                    userId: thought.userId,
+                    sourceThoughtId: thought.id,
+                    title: thought.content,
+                    description: nil,
+                    priority: .medium,
+                    status: .pending,
+                    dueDate: nil,
+                    estimatedEffortMinutes: 0,
+                    createdAt: Date(),
+                    updatedAt: Date(),
+                    completedAt: nil,
+                    reminderId: nil,
+                    eventId: nil
+                )
+
+                let created = try await taskService.create(task)
+
+                // Create system reminder or calendar event
+                if classification.type == .reminder {
+                    _ = try await taskService.createSystemReminder(for: created)
+                    try await fineTuningService.trackReminderCreated(thought.id)
+                } else if classification.type == .event {
+                    _ = try await taskService.createCalendarEvent(
+                        for: created,
+                        startDate: Date().addingTimeInterval(3600), // 1 hour from now
+                        endDate: Date().addingTimeInterval(7200) // 2 hours from now
+                    )
+                    try await fineTuningService.trackEventCreated(thought.id)
+                }
+
+                taskCreated = true
+
+            } catch {
+                self.error = AppError.from(error)
+            }
+
+            isCreatingTask = false
+        }
     }
 
     // MARK: - Computed Properties

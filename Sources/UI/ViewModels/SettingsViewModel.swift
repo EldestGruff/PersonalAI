@@ -48,6 +48,9 @@ final class SettingsViewModel {
     /// Whether auto-tagging from classification is enabled
     var enableAutoTags: Bool = true
 
+    /// Whether to automatically create reminders/events from classified thoughts
+    var autoCreateReminders: Bool = false
+
     /// Whether auto-sync is enabled
     var autoSyncEnabled: Bool = true
 

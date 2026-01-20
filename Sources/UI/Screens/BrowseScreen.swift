@@ -58,7 +58,8 @@ struct BrowseScreen: View {
                         thoughtService: viewModel.thoughtService,
                         contextService: ContextService.shared,
                         classificationService: ClassificationService.shared,
-                        fineTuningService: viewModel.fineTuningService
+                        fineTuningService: viewModel.fineTuningService,
+                        taskService: TaskService.shared
                     )
                 )
             }
@@ -71,7 +72,8 @@ struct BrowseScreen: View {
                         viewModel: DetailViewModel(
                             thought: thought,
                             thoughtService: viewModel.thoughtService,
-                            fineTuningService: viewModel.fineTuningService
+                            fineTuningService: viewModel.fineTuningService,
+                            taskService: TaskService.shared
                         )
                     )
                 }

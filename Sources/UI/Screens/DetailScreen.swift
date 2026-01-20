@@ -140,6 +140,37 @@ struct DetailScreen: View {
 
             if let classification = viewModel.thought.classification {
                 ClassificationBadge(classification: classification)
+
+                // Action button for reminder or event types
+                if classification.type == .reminder || classification.type == .event {
+                    Button {
+                        viewModel.createReminderOrEvent()
+                    } label: {
+                        HStack {
+                            Image(systemName: classification.type == .reminder ? "bell.badge.fill" : "calendar.badge.plus")
+                            Text(classification.type == .reminder ? "Create Reminder" : "Add to Calendar")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(viewModel.isCreatingTask)
+                    .overlay {
+                        if viewModel.isCreatingTask {
+                            ProgressView()
+                        }
+                    }
+
+                    if viewModel.taskCreated {
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                            Text(classification.type == .reminder ? "Reminder created!" : "Event added!")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
             }
         }
     }
@@ -338,7 +369,8 @@ struct FeedbackButton: View {
                     taskId: nil
                 ),
                 thoughtService: ThoughtService.shared,
-                fineTuningService: FineTuningService.shared
+                fineTuningService: FineTuningService.shared,
+                taskService: TaskService.shared
             )
         )
     }

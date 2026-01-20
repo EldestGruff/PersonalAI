@@ -243,7 +243,8 @@ struct VoiceInputPlaceholder: View {
             thoughtService: ThoughtService.shared,
             contextService: ContextService.shared,
             classificationService: ClassificationService.shared,
-            fineTuningService: FineTuningService.shared
+            fineTuningService: FineTuningService.shared,
+            taskService: TaskService.shared
         )
     )
 }

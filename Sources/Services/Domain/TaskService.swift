@@ -61,6 +61,11 @@ protocol TaskServiceProtocol: DomainServiceProtocol {
 /// - in_progress -> cancelled (cancel)
 /// - done/cancelled are terminal states
 actor TaskService: TaskServiceProtocol {
+    // MARK: - Shared Instance
+
+    /// Shared service instance for production use
+    static let shared = TaskService()
+
     // MARK: - Dependencies
 
     private let repository: TaskRepository

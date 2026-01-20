@@ -172,7 +172,8 @@ struct SearchScreen: View {
                             viewModel: DetailViewModel(
                                 thought: thought,
                                 thoughtService: ThoughtService.shared,
-                                fineTuningService: FineTuningService.shared
+                                fineTuningService: FineTuningService.shared,
+                                taskService: TaskService.shared
                             )
                         )
                     } label: {
