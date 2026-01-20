@@ -20,6 +20,9 @@ protocol HealthKitServiceProtocol: FrameworkServiceProtocol {
 
     /// Gets activity context for the current day
     func getActivityContext() async -> ActivityContext
+
+    /// Gets energy level with detailed breakdown (for debugging)
+    func getEnergyBreakdown() async -> EnergyBreakdown
 }
 
 // MARK: - HealthKit Service
@@ -139,23 +142,82 @@ actor HealthKitService: HealthKitServiceProtocol {
         }
     }
 
+    /// Gets energy level with detailed breakdown for debugging.
+    ///
+    /// Returns the individual components (sleep, activity, time) that
+    /// contribute to the final energy level calculation.
+    func getEnergyBreakdown() async -> EnergyBreakdown {
+        guard isAvailable, permissionStatus.allowsAccess else {
+            return EnergyBreakdown(
+                sleepScore: 0.5,
+                activityScore: 0.5,
+                hrvScore: 0.5,
+                timeBonus: timeOfDayEnergyBonus(),
+                totalScore: 0.5,
+                level: .medium,
+                hrvValueMs: nil,
+                sleepHours: nil,
+                stepCount: nil
+            )
+        }
+
+        let timeout = configuration.timeouts.frameworkOperation
+        let defaultBreakdown = EnergyBreakdown(
+            sleepScore: 0.5,
+            activityScore: 0.5,
+            hrvScore: 0.5,
+            timeBonus: timeOfDayEnergyBonus(),
+            totalScore: 0.5,
+            level: .medium,
+            hrvValueMs: nil,
+            sleepHours: nil,
+            stepCount: nil
+        )
+
+        return await withTimeout(timeout, default: defaultBreakdown) {
+            await self.calculateEnergyBreakdown()
+        }
+    }
+
     private func calculateEnergyLevel() async -> EnergyLevel {
-        async let sleepQuality = getSleepQuality()
-        async let activityLevel = getActivityLevel()
+        let breakdown = await calculateEnergyBreakdown()
+        return breakdown.level
+    }
 
-        let sleep = await sleepQuality
-        let activity = await activityLevel
+    private func calculateEnergyBreakdown() async -> EnergyBreakdown {
+        async let sleepData = getSleepQualityWithHours()
+        async let activityData = getActivityLevelWithSteps()
+        async let hrvData = getHRVScoreWithValue()
 
-        // Weighted score: sleep (50%), activity (30%), time bonus (20%)
+        let (sleepScore, sleepHours) = await sleepData
+        let (activityScore, stepCount) = await activityData
+        let (hrvScore, hrvValue) = await hrvData
+
+        // Weighted score: sleep (40%), activity (25%), HRV (20%), time bonus (15%)
         let timeBonus = timeOfDayEnergyBonus()
-        let score = (sleep * 0.5) + (activity * 0.3) + (timeBonus * 0.2)
+        let score = (sleepScore * 0.4) + (activityScore * 0.25) + (hrvScore * 0.2) + (timeBonus * 0.15)
 
-        return EnergyLevel.from(score: score)
+        return EnergyBreakdown(
+            sleepScore: sleepScore,
+            activityScore: activityScore,
+            hrvScore: hrvScore,
+            timeBonus: timeBonus,
+            totalScore: score,
+            level: EnergyLevel.from(score: score),
+            hrvValueMs: hrvValue,
+            sleepHours: sleepHours,
+            stepCount: stepCount
+        )
     }
 
     private func getSleepQuality() async -> Double {
+        let (score, _) = await getSleepQualityWithHours()
+        return score
+    }
+
+    private func getSleepQualityWithHours() async -> (score: Double, hours: Double?) {
         guard let sleepType = HKCategoryType.categoryType(forIdentifier: .sleepAnalysis) else {
-            return 0.5
+            return (0.5, nil)
         }
 
         let calendar = Calendar.current
@@ -174,20 +236,27 @@ actor HealthKitService: HealthKitServiceProtocol {
             let sleepHours = calculateSleepHours(from: samples)
 
             // Score based on hours: <6 = 0.3, 6-7 = 0.6, 7-9 = 1.0, >9 = 0.8
+            let score: Double
             switch sleepHours {
-            case ..<6: return 0.3
-            case 6..<7: return 0.6
-            case 7..<9: return 1.0
-            default: return 0.8
+            case ..<6: score = 0.3
+            case 6..<7: score = 0.6
+            case 7..<9: score = 1.0
+            default: score = 0.8
             }
+            return (score, sleepHours)
         } catch {
-            return 0.5
+            return (0.5, nil)
         }
     }
 
     private func getActivityLevel() async -> Double {
+        let (score, _) = await getActivityLevelWithSteps()
+        return score
+    }
+
+    private func getActivityLevelWithSteps() async -> (score: Double, steps: Int?) {
         guard let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount) else {
-            return 0.5
+            return (0.5, nil)
         }
 
         let calendar = Calendar.current
@@ -201,12 +270,68 @@ actor HealthKitService: HealthKitServiceProtocol {
 
         do {
             let steps = try await fetchStatistics(type: stepType, predicate: predicate)
+            let stepCount = Int(steps)
 
             // Normalize: 0 steps = 0.0, 10000+ steps = 1.0
             let normalized = min(steps / 10000.0, 1.0)
-            return normalized
+            return (normalized, stepCount)
         } catch {
-            return 0.5
+            return (0.5, nil)
+        }
+    }
+
+    private func getHRVScore() async -> Double {
+        let (score, _) = await getHRVScoreWithValue()
+        return score
+    }
+
+    private func getHRVScoreWithValue() async -> (score: Double, hrvMs: Double?) {
+        guard let hrvType = HKQuantityType.quantityType(forIdentifier: .heartRateVariabilitySDNN) else {
+            return (0.5, nil)
+        }
+
+        let calendar = Calendar.current
+        let now = Date()
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: now)!
+        let startOfYesterday = calendar.startOfDay(for: yesterday)
+
+        let predicate = HKQuery.predicateForSamples(
+            withStart: startOfYesterday,
+            end: now,
+            options: .strictStartDate
+        )
+
+        do {
+            let samples = try await fetchSamples(type: hrvType, predicate: predicate)
+            guard !samples.isEmpty else { return (0.5, nil) }
+
+            // Calculate average HRV from recent samples
+            let hrvValues = samples.compactMap { sample -> Double? in
+                guard let quantitySample = sample as? HKQuantitySample else { return nil }
+                return quantitySample.quantity.doubleValue(for: HKUnit.secondUnit(with: .milli))
+            }
+
+            guard !hrvValues.isEmpty else { return (0.5, nil) }
+            let avgHRV = hrvValues.reduce(0, +) / Double(hrvValues.count)
+
+            // Score based on HRV (ms):
+            // Higher HRV = better recovery and energy
+            // <20ms = 0.2 (very poor recovery)
+            // 20-40ms = 0.5 (below average)
+            // 40-60ms = 0.7 (average)
+            // 60-80ms = 0.9 (good)
+            // >80ms = 1.0 (excellent)
+            let score: Double
+            switch avgHRV {
+            case ..<20: score = 0.2
+            case 20..<40: score = 0.5
+            case 40..<60: score = 0.7
+            case 60..<80: score = 0.9
+            default: score = 1.0
+            }
+            return (score, avgHRV)
+        } catch {
+            return (0.5, nil)
         }
     }
 
@@ -444,5 +569,19 @@ actor MockHealthKitService: HealthKitServiceProtocol {
 
     func getActivityContext() async -> ActivityContext {
         mockActivityContext
+    }
+
+    func getEnergyBreakdown() async -> EnergyBreakdown {
+        EnergyBreakdown(
+            sleepScore: 0.8,
+            activityScore: 0.6,
+            hrvScore: 0.75,
+            timeBonus: 0.9,
+            totalScore: 0.74,
+            level: mockEnergyLevel,
+            hrvValueMs: 58.3,
+            sleepHours: 7.5,
+            stepCount: 6000
+        )
     }
 }

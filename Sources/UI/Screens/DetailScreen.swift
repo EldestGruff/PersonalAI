@@ -22,6 +22,10 @@ struct DetailScreen: View {
     @State var viewModel: DetailViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var showDeleteConfirmation = false
+    @State private var showEnergyDebug = false
+    @State private var energyBreakdown: EnergyBreakdown?
+    @State private var isRefreshingLocation = false
+    @State private var refreshedLocation: Location?
 
     var body: some View {
         ScrollView {
@@ -207,10 +211,87 @@ struct DetailScreen: View {
 
     private var contextSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Context")
-                .font(.headline)
+            HStack {
+                Text("Context")
+                    .font(.headline)
 
-            ContextDisplayView(context: viewModel.thought.context)
+                Spacer()
+
+                // Refresh location button
+                Button {
+                    refreshLocation()
+                } label: {
+                    if isRefreshingLocation {
+                        ProgressView()
+                            .scaleEffect(0.7)
+                    } else {
+                        Image(systemName: "location.circle")
+                            .foregroundColor(.teal)
+                            .font(.caption)
+                    }
+                }
+                .disabled(isRefreshingLocation)
+
+                // Debug button for energy breakdown
+                Button {
+                    showEnergyDebug.toggle()
+                    if showEnergyDebug && energyBreakdown == nil {
+                        loadEnergyBreakdown()
+                    }
+                } label: {
+                    Image(systemName: showEnergyDebug ? "chevron.up.circle.fill" : "info.circle")
+                        .foregroundColor(.teal)
+                        .font(.caption)
+                }
+            }
+
+            ContextDisplayView(context: updatedContext)
+
+            // Energy breakdown debug view
+            if showEnergyDebug {
+                if let breakdown = energyBreakdown {
+                    EnergyBreakdownView(breakdown: breakdown)
+                        .transition(.opacity)
+                } else {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                }
+            }
+        }
+    }
+
+    private var updatedContext: Context {
+        if let refreshedLocation = refreshedLocation {
+            return Context(
+                timestamp: viewModel.thought.context.timestamp,
+                location: refreshedLocation,
+                timeOfDay: viewModel.thought.context.timeOfDay,
+                energy: viewModel.thought.context.energy,
+                focusState: viewModel.thought.context.focusState,
+                calendar: viewModel.thought.context.calendar,
+                activity: viewModel.thought.context.activity,
+                weather: viewModel.thought.context.weather
+            )
+        }
+        return viewModel.thought.context
+    }
+
+    private func loadEnergyBreakdown() {
+        _Concurrency.Task {
+            let healthKitService = HealthKitService()
+            energyBreakdown = await healthKitService.getEnergyBreakdown()
+        }
+    }
+
+    private func refreshLocation() {
+        guard !isRefreshingLocation else { return }
+
+        _Concurrency.Task {
+            isRefreshingLocation = true
+            let locationService = LocationService()
+            refreshedLocation = await locationService.getCurrentLocation()
+            isRefreshingLocation = false
         }
     }
 
@@ -341,6 +422,156 @@ struct FeedbackButton: View {
             .cornerRadius(10)
         }
         .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Energy Breakdown View
+
+/// Debug view showing how energy level is calculated.
+struct EnergyBreakdownView: View {
+    let breakdown: EnergyBreakdown
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Energy Calculation")
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundColor(.teal)
+
+            VStack(spacing: 8) {
+                // Sleep component (40% weight)
+                BreakdownRow(
+                    label: "Sleep Quality",
+                    score: breakdown.sleepScore,
+                    weight: 0.4,
+                    contribution: breakdown.sleepScore * 0.4,
+                    rawValue: breakdown.sleepHours.map { String(format: "%.1f hrs", $0) }
+                )
+
+                // Activity component (25% weight)
+                BreakdownRow(
+                    label: "Activity Level",
+                    score: breakdown.activityScore,
+                    weight: 0.25,
+                    contribution: breakdown.activityScore * 0.25,
+                    rawValue: breakdown.stepCount.map { "\($0) steps" }
+                )
+
+                // HRV component (20% weight)
+                BreakdownRow(
+                    label: "HRV/Recovery",
+                    score: breakdown.hrvScore,
+                    weight: 0.2,
+                    contribution: breakdown.hrvScore * 0.2,
+                    rawValue: breakdown.hrvValueMs.map { String(format: "%.1f ms", $0) }
+                )
+
+                // Time of day component (15% weight)
+                BreakdownRow(
+                    label: "Time of Day",
+                    score: breakdown.timeBonus,
+                    weight: 0.15,
+                    contribution: breakdown.timeBonus * 0.15,
+                    rawValue: nil
+                )
+
+                Divider()
+
+                // Total
+                HStack {
+                    Text("Total Score")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                    Spacer()
+                    Text(String(format: "%.2f", breakdown.totalScore))
+                        .font(.caption)
+                        .fontWeight(.bold)
+                }
+
+                HStack {
+                    Text("Energy Level")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                    Spacer()
+                    Text(breakdown.level.rawValue.capitalized)
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .foregroundColor(breakdown.level.color)
+                }
+            }
+        }
+        .padding(12)
+        .background(Color.teal.opacity(0.1))
+        .cornerRadius(10)
+    }
+}
+
+/// A single row in the energy breakdown display.
+struct BreakdownRow: View {
+    let label: String
+    let score: Double
+    let weight: Double
+    let contribution: Double
+    let rawValue: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(label)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    if let rawValue = rawValue {
+                        Text(rawValue)
+                            .font(.caption2)
+                            .foregroundColor(.teal)
+                    }
+                }
+                Spacer()
+                Text(String(format: "%.0f%%", weight * 100))
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+
+            HStack(spacing: 8) {
+                // Score bar
+                GeometryReader { geometry in
+                    ZStack(alignment: .leading) {
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.2))
+                            .frame(height: 6)
+                            .cornerRadius(3)
+
+                        Rectangle()
+                            .fill(colorForScore(score))
+                            .frame(width: geometry.size.width * score, height: 6)
+                            .cornerRadius(3)
+                    }
+                }
+                .frame(height: 6)
+
+                // Score value
+                Text(String(format: "%.2f", score))
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .frame(width: 35, alignment: .trailing)
+
+                // Contribution value
+                Text(String(format: "= %.2f", contribution))
+                    .font(.caption2)
+                    .foregroundColor(.teal)
+                    .frame(width: 45, alignment: .trailing)
+            }
+        }
+    }
+
+    private func colorForScore(_ score: Double) -> Color {
+        switch score {
+        case 0..<0.33: return .red
+        case 0.33..<0.66: return .orange
+        case 0.66..<0.85: return .green
+        default: return .mint
+        }
     }
 }
 

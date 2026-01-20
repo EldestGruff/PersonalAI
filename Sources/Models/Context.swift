@@ -137,6 +137,38 @@ enum EnergyLevel: String, Codable, CaseIterable, Sendable {
     case peak
 }
 
+/// Debug information about how energy level was calculated.
+///
+/// Used for testing and diagnostics to understand energy calculation.
+struct EnergyBreakdown: Codable, Equatable, Sendable {
+    /// Sleep quality score (0.0-1.0)
+    let sleepScore: Double
+
+    /// Activity level score (0.0-1.0)
+    let activityScore: Double
+
+    /// HRV/Recovery score (0.0-1.0)
+    let hrvScore: Double
+
+    /// Time of day bonus (0.0-1.0)
+    let timeBonus: Double
+
+    /// Combined weighted score
+    let totalScore: Double
+
+    /// Final energy level
+    let level: EnergyLevel
+
+    /// Raw HRV value in milliseconds (optional, for debugging)
+    let hrvValueMs: Double?
+
+    /// Sleep hours (optional, for debugging)
+    let sleepHours: Double?
+
+    /// Step count (optional, for debugging)
+    let stepCount: Int?
+}
+
 /// User's focus state.
 ///
 /// Indicates the user's mental state and ability to concentrate.

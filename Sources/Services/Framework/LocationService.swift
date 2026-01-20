@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreLocation
+import MapKit
 
 // MARK: - Location Service Protocol
 
@@ -108,6 +109,7 @@ actor LocationService: LocationServiceProtocol {
     }
 
     private func fetchCurrentLocation() async -> Location? {
+        NSLog("📍 LocationService - Starting location fetch")
         let clLocation = await withCheckedContinuation { continuation in
             let delegate = LocationUpdateDelegate { location in
                 continuation.resume(returning: location)
@@ -115,19 +117,24 @@ actor LocationService: LocationServiceProtocol {
 
             self.delegate = delegate
             self.locationManager.delegate = delegate
-            self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+            self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
             self.locationManager.requestLocation()
         }
 
         guard let clLocation = clLocation else {
+            NSLog("📍 LocationService - No location returned from CLLocationManager")
             return nil
         }
+
+        NSLog("📍 LocationService - Got coordinates: lat=%.4f, lon=%.4f", clLocation.coordinate.latitude, clLocation.coordinate.longitude)
 
         // Get location name via reverse geocoding
         let name = await getLocationName(
             latitude: clLocation.coordinate.latitude,
             longitude: clLocation.coordinate.longitude
         )
+
+        NSLog("📍 LocationService - Location name: %@", name ?? "nil")
 
         return Location(
             latitude: clLocation.coordinate.latitude,
@@ -149,13 +156,31 @@ actor LocationService: LocationServiceProtocol {
     }
 
     private func performGeocode(latitude: Double, longitude: Double) async -> String? {
-        let location = CLLocation(latitude: latitude, longitude: longitude)
+        NSLog("📍 LocationService - Starting geocode for lat=%.4f, lon=%.4f", latitude, longitude)
+
+        // iOS 26: Use CLGeocoder for reverse geocoding (still available in iOS 26)
         let geocoder = CLGeocoder()
+        let location = CLLocation(latitude: latitude, longitude: longitude)
 
         do {
+            NSLog("📍 LocationService - Executing CLGeocoder reverseGeocodeLocation")
             let placemarks = try await geocoder.reverseGeocodeLocation(location)
-            return placemarks.first?.name ?? placemarks.first?.locality
+            NSLog("📍 LocationService - Got %d placemarks", placemarks.count)
+
+            if let placemark = placemarks.first {
+                // Try different name components in order of specificity
+                let name = placemark.name
+                    ?? placemark.locality
+                    ?? placemark.subLocality
+                    ?? placemark.thoroughfare
+                    ?? placemark.administrativeArea
+                NSLog("📍 LocationService - Geocode result: %@", name ?? "nil")
+                return name
+            }
+            NSLog("📍 LocationService - No placemarks returned")
+            return nil
         } catch {
+            NSLog("📍 LocationService - Geocode error: %@", error.localizedDescription)
             return nil
         }
     }
