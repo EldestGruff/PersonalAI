@@ -48,7 +48,21 @@ actor EventKitService: EventKitServiceProtocol {
     nonisolated var isAvailable: Bool { true }
 
     var permissionStatus: PermissionLevel {
-        mapAuthorizationStatus(EKEventStore.authorizationStatus(for: .event))
+        // Check both event and reminder permissions
+        let eventStatus = EKEventStore.authorizationStatus(for: .event)
+        let reminderStatus = EKEventStore.authorizationStatus(for: .reminder)
+
+        // Return the most permissive status (if either is authorized, we can use that one)
+        let eventLevel = mapAuthorizationStatus(eventStatus)
+        let reminderLevel = mapAuthorizationStatus(reminderStatus)
+
+        // If either is authorized, return authorized
+        if eventLevel.allowsAccess || reminderLevel.allowsAccess {
+            return .authorized
+        }
+
+        // Otherwise return the event status (primary)
+        return eventLevel
     }
 
     // MARK: - Dependencies
@@ -71,14 +85,21 @@ actor EventKitService: EventKitServiceProtocol {
     func requestPermission() async -> PermissionLevel {
         do {
             // Request write-only access for events
-            let granted = try await eventStore.requestWriteOnlyAccessToEvents()
+            let eventGranted = try await eventStore.requestWriteOnlyAccessToEvents()
 
-            // Also request reminder access
-            _ = try? await eventStore.requestFullAccessToReminders()
+            // Request reminder access
+            let reminderGranted = try await eventStore.requestFullAccessToReminders()
 
-            return granted ? .authorized : .denied
+            // If either permission is granted, return authorized
+            return (eventGranted || reminderGranted) ? .authorized : .denied
         } catch {
-            return .denied
+            // If events fail, try reminders only
+            do {
+                let reminderGranted = try await eventStore.requestFullAccessToReminders()
+                return reminderGranted ? .authorized : .denied
+            } catch {
+                return .denied
+            }
         }
     }
 
@@ -93,10 +114,15 @@ actor EventKitService: EventKitServiceProtocol {
     /// - Returns: The reminder identifier
     /// - Throws: `ServiceError` if creation fails
     func createReminder(title: String, description: String?, dueDate: Date?) async throws -> String {
+        // Check reminder-specific permission
+        let reminderStatus = mapAuthorizationStatus(EKEventStore.authorizationStatus(for: .reminder))
+
         // Request permission if not already granted
-        var currentStatus = permissionStatus
+        var currentStatus = reminderStatus
         if !currentStatus.allowsAccess {
             currentStatus = await requestPermission()
+            // Re-check reminder permission after request
+            currentStatus = mapAuthorizationStatus(EKEventStore.authorizationStatus(for: .reminder))
         }
 
         guard currentStatus.allowsAccess else {
@@ -153,10 +179,15 @@ actor EventKitService: EventKitServiceProtocol {
     /// - Returns: The event identifier
     /// - Throws: `ServiceError` if creation fails
     func createEvent(title: String, description: String?, startDate: Date, endDate: Date) async throws -> String {
+        // Check event-specific permission
+        let eventStatus = mapAuthorizationStatus(EKEventStore.authorizationStatus(for: .event))
+
         // Request permission if not already granted
-        var currentStatus = permissionStatus
+        var currentStatus = eventStatus
         if !currentStatus.allowsAccess {
             currentStatus = await requestPermission()
+            // Re-check event permission after request
+            currentStatus = mapAuthorizationStatus(EKEventStore.authorizationStatus(for: .event))
         }
 
         guard currentStatus.allowsAccess else {
