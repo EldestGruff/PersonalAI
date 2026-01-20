@@ -93,10 +93,16 @@ actor EventKitService: EventKitServiceProtocol {
     /// - Returns: The reminder identifier
     /// - Throws: `ServiceError` if creation fails
     func createReminder(title: String, description: String?, dueDate: Date?) async throws -> String {
-        guard permissionStatus.allowsAccess else {
+        // Request permission if not already granted
+        var currentStatus = permissionStatus
+        if !currentStatus.allowsAccess {
+            currentStatus = await requestPermission()
+        }
+
+        guard currentStatus.allowsAccess else {
             throw ServiceError.permissionDenied(
                 framework: .eventKit,
-                currentLevel: permissionStatus
+                currentLevel: currentStatus
             )
         }
 
@@ -147,10 +153,16 @@ actor EventKitService: EventKitServiceProtocol {
     /// - Returns: The event identifier
     /// - Throws: `ServiceError` if creation fails
     func createEvent(title: String, description: String?, startDate: Date, endDate: Date) async throws -> String {
-        guard permissionStatus.allowsAccess else {
+        // Request permission if not already granted
+        var currentStatus = permissionStatus
+        if !currentStatus.allowsAccess {
+            currentStatus = await requestPermission()
+        }
+
+        guard currentStatus.allowsAccess else {
             throw ServiceError.permissionDenied(
                 framework: .eventKit,
-                currentLevel: permissionStatus
+                currentLevel: currentStatus
             )
         }
 
