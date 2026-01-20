@@ -64,7 +64,11 @@ actor TaskService: TaskServiceProtocol {
     // MARK: - Shared Instance
 
     /// Shared service instance for production use
-    static let shared = TaskService()
+    static let shared = TaskService(
+        eventKitService: EventKitService(),
+        syncService: SyncService.shared,
+        fineTuningService: FineTuningService.shared
+    )
 
     // MARK: - Dependencies
 

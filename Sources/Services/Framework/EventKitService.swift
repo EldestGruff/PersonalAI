@@ -114,36 +114,25 @@ actor EventKitService: EventKitServiceProtocol {
     /// - Returns: The reminder identifier
     /// - Throws: `ServiceError` if creation fails
     func createReminder(title: String, description: String?, dueDate: Date?) async throws -> String {
-        // Check and request reminder-specific permission
-        let rawInitialStatus = EKEventStore.authorizationStatus(for: .reminder)
-        let initialStatus = mapAuthorizationStatus(rawInitialStatus)
+        // Always request permission - let iOS handle if already granted
+        NSLog("🔔 EventKit createReminder - Requesting permission...")
+        do {
+            let granted = try await eventStore.requestFullAccessToReminders()
+            NSLog("🔔 EventKit createReminder - Permission granted: %@", granted ? "true" : "false")
 
-        print("🔔 EventKit createReminder - Initial status: \(rawInitialStatus.rawValue) -> \(initialStatus)")
-
-        if !initialStatus.allowsAccess {
-            // Request reminder permission specifically
-            print("🔔 EventKit createReminder - Requesting permission...")
-            do {
-                let granted = try await eventStore.requestFullAccessToReminders()
-                print("🔔 EventKit createReminder - Permission request returned: \(granted)")
-            } catch {
-                print("🔔 EventKit createReminder - Permission request failed: \(error)")
+            if !granted {
                 throw ServiceError.permissionDenied(
                     framework: .eventKit,
-                    currentLevel: initialStatus
+                    currentLevel: .denied
                 )
             }
-        }
-
-        // Verify we have permission after request
-        let rawFinalStatus = EKEventStore.authorizationStatus(for: .reminder)
-        let finalStatus = mapAuthorizationStatus(rawFinalStatus)
-        print("🔔 EventKit createReminder - Final status: \(rawFinalStatus.rawValue) -> \(finalStatus)")
-
-        guard finalStatus.allowsAccess else {
+        } catch let error as ServiceError {
+            throw error
+        } catch {
+            NSLog("🔔 EventKit createReminder - Permission request error: %@", error.localizedDescription)
             throw ServiceError.permissionDenied(
                 framework: .eventKit,
-                currentLevel: finalStatus
+                currentLevel: .denied
             )
         }
 
