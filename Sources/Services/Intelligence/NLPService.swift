@@ -216,15 +216,18 @@ actor NLPService: NLPServiceProtocol, DomainServiceProtocol {
 
 extension Sentiment {
     /// Creates a Sentiment from a score (-1.0 to 1.0)
+    ///
+    /// Thresholds adjusted for Apple's NLTagger which tends to skew negative
+    /// for neutral content. Most neutral text scores between -0.5 and 0.3.
     static func from(score: Double) -> Sentiment {
         switch score {
-        case ..<(-0.6):
+        case ..<(-0.75):
             return .very_negative
-        case -0.6..<(-0.2):
+        case -0.75..<(-0.5):
             return .negative
-        case -0.2..<0.2:
+        case -0.5..<0.3:
             return .neutral
-        case 0.2..<0.6:
+        case 0.3..<0.7:
             return .positive
         default:
             return .very_positive

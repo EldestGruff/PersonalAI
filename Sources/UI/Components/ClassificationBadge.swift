@@ -49,10 +49,14 @@ struct ClassificationBadge: View {
 
                 // Sentiment
                 HStack(spacing: 4) {
+                    Text("Sentiment:")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
                     Image(systemName: classification.sentiment.icon)
+                        .font(.caption)
                     Text(classification.sentiment.displayName)
+                        .font(.caption)
                 }
-                .font(.caption)
                 .foregroundColor(classification.sentiment.color)
             }
 
