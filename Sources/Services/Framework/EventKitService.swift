@@ -114,21 +114,27 @@ actor EventKitService: EventKitServiceProtocol {
     /// - Returns: The reminder identifier
     /// - Throws: `ServiceError` if creation fails
     func createReminder(title: String, description: String?, dueDate: Date?) async throws -> String {
-        // Check reminder-specific permission
-        let reminderStatus = mapAuthorizationStatus(EKEventStore.authorizationStatus(for: .reminder))
+        // Check and request reminder-specific permission
+        let initialStatus = mapAuthorizationStatus(EKEventStore.authorizationStatus(for: .reminder))
 
-        // Request permission if not already granted
-        var currentStatus = reminderStatus
-        if !currentStatus.allowsAccess {
-            currentStatus = await requestPermission()
-            // Re-check reminder permission after request
-            currentStatus = mapAuthorizationStatus(EKEventStore.authorizationStatus(for: .reminder))
+        if !initialStatus.allowsAccess {
+            // Request reminder permission specifically
+            do {
+                _ = try await eventStore.requestFullAccessToReminders()
+            } catch {
+                throw ServiceError.permissionDenied(
+                    framework: .eventKit,
+                    currentLevel: initialStatus
+                )
+            }
         }
 
-        guard currentStatus.allowsAccess else {
+        // Verify we have permission after request
+        let finalStatus = mapAuthorizationStatus(EKEventStore.authorizationStatus(for: .reminder))
+        guard finalStatus.allowsAccess else {
             throw ServiceError.permissionDenied(
                 framework: .eventKit,
-                currentLevel: currentStatus
+                currentLevel: finalStatus
             )
         }
 
@@ -179,21 +185,36 @@ actor EventKitService: EventKitServiceProtocol {
     /// - Returns: The event identifier
     /// - Throws: `ServiceError` if creation fails
     func createEvent(title: String, description: String?, startDate: Date, endDate: Date) async throws -> String {
-        // Check event-specific permission
-        let eventStatus = mapAuthorizationStatus(EKEventStore.authorizationStatus(for: .event))
+        // Check and request event-specific permission
+        let rawInitialStatus = EKEventStore.authorizationStatus(for: .event)
+        let initialStatus = mapAuthorizationStatus(rawInitialStatus)
 
-        // Request permission if not already granted
-        var currentStatus = eventStatus
-        if !currentStatus.allowsAccess {
-            currentStatus = await requestPermission()
-            // Re-check event permission after request
-            currentStatus = mapAuthorizationStatus(EKEventStore.authorizationStatus(for: .event))
+        print("📅 EventKit createEvent - Initial status: \(rawInitialStatus.rawValue) -> \(initialStatus)")
+
+        if !initialStatus.allowsAccess {
+            // Request event permission specifically
+            print("📅 EventKit createEvent - Requesting permission...")
+            do {
+                let granted = try await eventStore.requestWriteOnlyAccessToEvents()
+                print("📅 EventKit createEvent - Permission request returned: \(granted)")
+            } catch {
+                print("📅 EventKit createEvent - Permission request failed: \(error)")
+                throw ServiceError.permissionDenied(
+                    framework: .eventKit,
+                    currentLevel: initialStatus
+                )
+            }
         }
 
-        guard currentStatus.allowsAccess else {
+        // Verify we have permission after request
+        let rawFinalStatus = EKEventStore.authorizationStatus(for: .event)
+        let finalStatus = mapAuthorizationStatus(rawFinalStatus)
+        print("📅 EventKit createEvent - Final status: \(rawFinalStatus.rawValue) -> \(finalStatus)")
+
+        guard finalStatus.allowsAccess else {
             throw ServiceError.permissionDenied(
                 framework: .eventKit,
-                currentLevel: currentStatus
+                currentLevel: finalStatus
             )
         }
 
