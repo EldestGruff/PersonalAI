@@ -21,6 +21,7 @@ import SwiftUI
 struct DetailScreen: View {
     @State var viewModel: DetailViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var showDeleteConfirmation = false
 
     var body: some View {
         ScrollView {
@@ -88,6 +89,33 @@ struct DetailScreen: View {
                     }
                 }
             }
+
+            ToolbarItem(placement: .destructiveAction) {
+                Button(role: .destructive) {
+                    showDeleteConfirmation = true
+                } label: {
+                    Image(systemName: "trash")
+                }
+            }
+        }
+        .confirmationDialog(
+            "Delete this thought?",
+            isPresented: $showDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                _Concurrency.Task {
+                    do {
+                        try await viewModel.deleteThought()
+                        dismiss()
+                    } catch {
+                        viewModel.error = AppError.from(error)
+                    }
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This action cannot be undone.")
         }
     }
 

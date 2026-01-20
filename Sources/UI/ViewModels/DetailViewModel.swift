@@ -283,6 +283,13 @@ final class DetailViewModel {
         }
     }
 
+    // MARK: - Delete Action
+
+    /// Deletes the current thought
+    func deleteThought() async throws {
+        try await thoughtService.delete(thought.id)
+    }
+
     // MARK: - Computed Properties
 
     /// Whether the thought has classification
