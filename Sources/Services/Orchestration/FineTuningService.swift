@@ -163,7 +163,7 @@ actor FineTuningService: FineTuningServiceProtocol {
     func trackReminderCreated(_ thoughtId: UUID) async throws {
         guard configuration.features.enableFineTuningTracking else { return }
 
-        guard var data = try await repository.fetch(thoughtId: thoughtId) else {
+        guard let data = try await repository.fetch(thoughtId: thoughtId) else {
             return // No fine-tuning data for this thought
         }
 
@@ -200,7 +200,7 @@ actor FineTuningService: FineTuningServiceProtocol {
     func trackReminderCompleted(_ thoughtId: UUID) async throws {
         guard configuration.features.enableFineTuningTracking else { return }
 
-        guard var data = try await repository.fetch(thoughtId: thoughtId) else {
+        guard let data = try await repository.fetch(thoughtId: thoughtId) else {
             return
         }
 
@@ -237,7 +237,7 @@ actor FineTuningService: FineTuningServiceProtocol {
     func trackEventCreated(_ thoughtId: UUID) async throws {
         guard configuration.features.enableFineTuningTracking else { return }
 
-        guard var data = try await repository.fetch(thoughtId: thoughtId) else {
+        guard let data = try await repository.fetch(thoughtId: thoughtId) else {
             return
         }
 
@@ -270,7 +270,7 @@ actor FineTuningService: FineTuningServiceProtocol {
     func trackEventCompleted(_ thoughtId: UUID) async throws {
         guard configuration.features.enableFineTuningTracking else { return }
 
-        guard var data = try await repository.fetch(thoughtId: thoughtId) else {
+        guard let data = try await repository.fetch(thoughtId: thoughtId) else {
             return
         }
 
@@ -303,7 +303,7 @@ actor FineTuningService: FineTuningServiceProtocol {
     func trackArchived(_ thoughtId: UUID) async throws {
         guard configuration.features.enableFineTuningTracking else { return }
 
-        guard var data = try await repository.fetch(thoughtId: thoughtId) else {
+        guard let data = try await repository.fetch(thoughtId: thoughtId) else {
             return
         }
 
@@ -336,7 +336,7 @@ actor FineTuningService: FineTuningServiceProtocol {
     func trackDeleted(_ thoughtId: UUID) async throws {
         guard configuration.features.enableFineTuningTracking else { return }
 
-        guard var data = try await repository.fetch(thoughtId: thoughtId) else {
+        guard let data = try await repository.fetch(thoughtId: thoughtId) else {
             return
         }
 
@@ -369,7 +369,7 @@ actor FineTuningService: FineTuningServiceProtocol {
     func trackViewed(_ thoughtId: UUID) async throws {
         guard configuration.features.enableFineTuningTracking else { return }
 
-        guard var data = try await repository.fetch(thoughtId: thoughtId) else {
+        guard let data = try await repository.fetch(thoughtId: thoughtId) else {
             return
         }
 
@@ -402,7 +402,7 @@ actor FineTuningService: FineTuningServiceProtocol {
     func trackEdited(_ thoughtId: UUID) async throws {
         guard configuration.features.enableFineTuningTracking else { return }
 
-        guard var data = try await repository.fetch(thoughtId: thoughtId) else {
+        guard let data = try await repository.fetch(thoughtId: thoughtId) else {
             return
         }
 

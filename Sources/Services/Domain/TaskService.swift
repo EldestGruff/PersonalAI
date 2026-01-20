@@ -557,7 +557,6 @@ actor MockTaskService: TaskServiceProtocol {
     }
 
     func createSystemReminder(for task: Task) async throws -> Task {
-        var updated = task
         let updatedTask = Task(
             id: task.id, userId: task.userId, sourceThoughtId: task.sourceThoughtId,
             title: task.title, description: task.description, priority: task.priority,

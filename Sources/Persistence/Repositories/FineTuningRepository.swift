@@ -11,7 +11,7 @@ import CoreData
 
 /// Thread-safe repository for FineTuningData persistence operations
 actor FineTuningRepository {
-    nonisolated(unsafe) static let shared = FineTuningRepository()
+    static let shared = FineTuningRepository()
 
     private let container: NSPersistentContainer
 

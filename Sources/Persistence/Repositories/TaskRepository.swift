@@ -11,7 +11,7 @@ import CoreData
 
 /// Thread-safe repository for Task persistence operations
 actor TaskRepository {
-    nonisolated(unsafe) static let shared = TaskRepository()
+    static let shared = TaskRepository()
 
     private let container: NSPersistentContainer
 

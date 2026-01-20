@@ -136,7 +136,7 @@ actor ContextService: ContextServiceProtocol {
         var motionDuration: Int?
         var eventKitDuration: Int?
         var timeouts = 0
-        var failures = 0
+        let failures = 0
 
         // Default values
         var location: Location? = nil

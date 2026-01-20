@@ -11,7 +11,7 @@ import CoreData
 
 /// Thread-safe repository for Thought persistence operations
 actor ThoughtRepository {
-    nonisolated(unsafe) static let shared = ThoughtRepository()
+    static let shared = ThoughtRepository()
 
     private let container: NSPersistentContainer
 

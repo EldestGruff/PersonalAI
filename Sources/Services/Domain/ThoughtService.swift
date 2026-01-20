@@ -326,7 +326,7 @@ actor ThoughtService: ThoughtServiceProtocol {
     /// - Parameter ids: IDs of thoughts to archive
     func archive(_ ids: [UUID]) async throws {
         for id in ids {
-            if var thought = try await fetch(id) {
+            if let thought = try await fetch(id) {
                 let archived = Thought(
                     id: thought.id,
                     userId: thought.userId,
@@ -355,7 +355,7 @@ actor ThoughtService: ThoughtServiceProtocol {
     /// - Parameter ids: IDs of thoughts to unarchive
     func unarchive(_ ids: [UUID]) async throws {
         for id in ids {
-            if var thought = try await fetch(id) {
+            if let thought = try await fetch(id) {
                 let unarchived = Thought(
                     id: thought.id,
                     userId: thought.userId,
@@ -488,7 +488,7 @@ actor MockThoughtService: ThoughtServiceProtocol {
 
     func archive(_ ids: [UUID]) async throws {
         for id in ids {
-            if var thought = thoughts[id] {
+            if let thought = thoughts[id] {
                 thoughts[id] = Thought(
                     id: thought.id,
                     userId: thought.userId,
@@ -508,7 +508,7 @@ actor MockThoughtService: ThoughtServiceProtocol {
 
     func unarchive(_ ids: [UUID]) async throws {
         for id in ids {
-            if var thought = thoughts[id] {
+            if let thought = thoughts[id] {
                 thoughts[id] = Thought(
                     id: thought.id,
                     userId: thought.userId,

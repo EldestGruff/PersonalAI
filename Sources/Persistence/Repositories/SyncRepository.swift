@@ -11,7 +11,7 @@ import CoreData
 
 /// Thread-safe repository for SyncQueueItem persistence operations
 actor SyncRepository {
-    nonisolated(unsafe) static let shared = SyncRepository()
+    static let shared = SyncRepository()
 
     private let container: NSPersistentContainer
 
