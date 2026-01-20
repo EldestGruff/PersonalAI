@@ -19,6 +19,7 @@ import SwiftUI
 /// - User statistics
 struct SettingsScreen: View {
     @State var viewModel: SettingsViewModel
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack {
@@ -41,6 +42,13 @@ struct SettingsScreen: View {
             .navigationTitle("Settings")
             .onAppear {
                 viewModel.onAppear()
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                if newPhase == .active {
+                    _Concurrency.Task {
+                        await viewModel.updatePermissionStatus()
+                    }
+                }
             }
         }
     }
