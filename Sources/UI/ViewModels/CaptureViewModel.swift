@@ -286,7 +286,7 @@ final class CaptureViewModel {
                     priority: .medium,
                     status: .pending,
                     dueDate: nil,
-                    estimatedEffortMinutes: 0,
+                    estimatedEffortMinutes: 30,
                     createdAt: Date(),
                     updatedAt: Date(),
                     completedAt: nil,
