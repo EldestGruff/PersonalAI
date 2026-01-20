@@ -273,7 +273,10 @@ final class DetailViewModel {
                 taskCreated = true
 
             } catch {
+                print("❌ DetailViewModel - Error creating reminder/event: \(error)")
+                print("❌ Error type: \(type(of: error))")
                 self.error = AppError.from(error)
+                print("❌ Converted to AppError: \(self.error?.localizedDescription ?? "nil")")
             }
 
             isCreatingTask = false

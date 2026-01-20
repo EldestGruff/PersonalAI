@@ -115,13 +115,19 @@ actor EventKitService: EventKitServiceProtocol {
     /// - Throws: `ServiceError` if creation fails
     func createReminder(title: String, description: String?, dueDate: Date?) async throws -> String {
         // Check and request reminder-specific permission
-        let initialStatus = mapAuthorizationStatus(EKEventStore.authorizationStatus(for: .reminder))
+        let rawInitialStatus = EKEventStore.authorizationStatus(for: .reminder)
+        let initialStatus = mapAuthorizationStatus(rawInitialStatus)
+
+        print("🔔 EventKit createReminder - Initial status: \(rawInitialStatus.rawValue) -> \(initialStatus)")
 
         if !initialStatus.allowsAccess {
             // Request reminder permission specifically
+            print("🔔 EventKit createReminder - Requesting permission...")
             do {
-                _ = try await eventStore.requestFullAccessToReminders()
+                let granted = try await eventStore.requestFullAccessToReminders()
+                print("🔔 EventKit createReminder - Permission request returned: \(granted)")
             } catch {
+                print("🔔 EventKit createReminder - Permission request failed: \(error)")
                 throw ServiceError.permissionDenied(
                     framework: .eventKit,
                     currentLevel: initialStatus
@@ -130,7 +136,10 @@ actor EventKitService: EventKitServiceProtocol {
         }
 
         // Verify we have permission after request
-        let finalStatus = mapAuthorizationStatus(EKEventStore.authorizationStatus(for: .reminder))
+        let rawFinalStatus = EKEventStore.authorizationStatus(for: .reminder)
+        let finalStatus = mapAuthorizationStatus(rawFinalStatus)
+        print("🔔 EventKit createReminder - Final status: \(rawFinalStatus.rawValue) -> \(finalStatus)")
+
         guard finalStatus.allowsAccess else {
             throw ServiceError.permissionDenied(
                 framework: .eventKit,
