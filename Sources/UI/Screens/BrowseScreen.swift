@@ -76,6 +76,13 @@ struct BrowseScreen: View {
                             taskService: TaskService.shared
                         )
                     )
+                    .onDisappear {
+                        // Refresh list when returning from detail view
+                        // in case thought was deleted or modified
+                        _Concurrency.Task {
+                            await viewModel.loadThoughts()
+                        }
+                    }
                 }
             }
             .refreshable {
