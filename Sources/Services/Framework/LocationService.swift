@@ -108,18 +108,9 @@ actor LocationService: LocationServiceProtocol {
     }
 
     private func fetchCurrentLocation() async -> Location? {
-        await withCheckedContinuation { continuation in
+        let clLocation = await withCheckedContinuation { continuation in
             let delegate = LocationUpdateDelegate { location in
-                if let location = location {
-                    continuation.resume(returning: Location(
-                        latitude: location.coordinate.latitude,
-                        longitude: location.coordinate.longitude,
-                        name: nil,
-                        geofenceId: nil
-                    ))
-                } else {
-                    continuation.resume(returning: nil)
-                }
+                continuation.resume(returning: location)
             }
 
             self.delegate = delegate
@@ -127,6 +118,23 @@ actor LocationService: LocationServiceProtocol {
             self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
             self.locationManager.requestLocation()
         }
+
+        guard let clLocation = clLocation else {
+            return nil
+        }
+
+        // Get location name via reverse geocoding
+        let name = await getLocationName(
+            latitude: clLocation.coordinate.latitude,
+            longitude: clLocation.coordinate.longitude
+        )
+
+        return Location(
+            latitude: clLocation.coordinate.latitude,
+            longitude: clLocation.coordinate.longitude,
+            name: name,
+            geofenceId: nil
+        )
     }
 
     /// Reverse geocodes coordinates to a location name.
