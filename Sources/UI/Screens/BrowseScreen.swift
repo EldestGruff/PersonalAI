@@ -22,6 +22,7 @@ struct BrowseScreen: View {
     @State var viewModel: BrowseViewModel
     @State private var showCaptureSheet = false
     @State private var showFilterSheet = false
+    @State private var thoughtToDelete: Thought?
 
     var body: some View {
         NavigationStack {
@@ -91,6 +92,26 @@ struct BrowseScreen: View {
             .task {
                 await viewModel.loadThoughts()
             }
+            .confirmationDialog(
+                "Delete this thought?",
+                isPresented: Binding(
+                    get: { thoughtToDelete != nil },
+                    set: { if !$0 { thoughtToDelete = nil } }
+                ),
+                titleVisibility: .visible
+            ) {
+                Button("Delete", role: .destructive) {
+                    if let thought = thoughtToDelete {
+                        viewModel.deleteThought(thought)
+                        thoughtToDelete = nil
+                    }
+                }
+                Button("Cancel", role: .cancel) {
+                    thoughtToDelete = nil
+                }
+            } message: {
+                Text("This action cannot be undone.")
+            }
         }
     }
 
@@ -150,9 +171,9 @@ struct BrowseScreen: View {
                         .onTapGesture {
                             viewModel.selectThought(thought)
                         }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) {
-                                viewModel.deleteThought(thought)
+                                thoughtToDelete = thought
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
