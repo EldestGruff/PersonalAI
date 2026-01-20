@@ -57,7 +57,7 @@ actor SpeechService: SpeechServiceProtocol {
         SFSpeechRecognizer.authorizationStatus() != .restricted
     }
 
-    var permissionStatus: PermissionLevel {
+    nonisolated var permissionStatus: PermissionLevel {
         mapAuthorizationStatus(SFSpeechRecognizer.authorizationStatus())
     }
 
