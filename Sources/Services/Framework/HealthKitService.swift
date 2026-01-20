@@ -89,6 +89,11 @@ actor HealthKitService: HealthKitServiceProtocol {
     init(configuration: ServiceConfiguration = .shared) {
         self.configuration = configuration
         self.healthStore = HKHealthStore()
+
+        // Check if we've previously requested HealthKit permission
+        if UserDefaults.standard.bool(forKey: "healthKitPermissionRequested") {
+            _permissionStatus = .authorized
+        }
     }
 
     // MARK: - Permissions
@@ -101,7 +106,14 @@ actor HealthKitService: HealthKitServiceProtocol {
 
         do {
             try await healthStore.requestAuthorization(toShare: [], read: readTypes)
+            // For HealthKit read permissions, we can't determine if user actually granted access
+            // (privacy protection). We assume permission was requested successfully and treat
+            // it as authorized. The actual data queries will fail silently if denied.
             _permissionStatus = .authorized
+
+            // Persist that we've requested permission
+            UserDefaults.standard.set(true, forKey: "healthKitPermissionRequested")
+
             return .authorized
         } catch {
             _permissionStatus = .denied
