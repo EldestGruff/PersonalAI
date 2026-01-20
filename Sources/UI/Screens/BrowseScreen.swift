@@ -50,7 +50,9 @@ struct BrowseScreen: View {
                     filterButton
                 }
             }
-            .sheet(isPresented: $showCaptureSheet) {
+            .sheet(isPresented: $showCaptureSheet, onDismiss: {
+                viewModel.refresh()
+            }) {
                 CaptureScreen(
                     viewModel: CaptureViewModel(
                         thoughtService: viewModel.thoughtService,
