@@ -1,0 +1,102 @@
+name: Bug Report
+description: Report a bug or issue with the app
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this bug! This helps make PersonalAI better for everyone.
+
+  - type: input
+    id: ios-version
+    attributes:
+      label: iOS Version
+      description: What version of iOS are you running?
+      placeholder: "e.g., iOS 18.1"
+    validations:
+      required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: App Version
+      description: What version of PersonalAI? (Found in Settings → About, or if testing, just say "development")
+      placeholder: "e.g., 1.0.0 (123) or 'development'"
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      description: What device are you using?
+      placeholder: "e.g., iPhone 15 Pro"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug clearly and concisely
+      placeholder: "When I try to capture a thought with voice input, the app crashes immediately."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this issue?
+      placeholder: |
+        1. Open app
+        2. Tap microphone button on capture screen
+        3. Speak for a few seconds
+        4. App crashes and returns to home screen
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: "The thought should be transcribed and saved to my thought list."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: "App crashed immediately when I tapped the microphone button."
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other information that might help (screenshots, logs, specific conditions, etc.)
+      placeholder: "This only happens when Bluetooth headphones are connected. Works fine with no headphones."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: permissions
+    attributes:
+      label: Relevant Permissions Granted?
+      description: Have you granted the relevant permissions for this feature?
+      multiple: true
+      options:
+        - Location
+        - HealthKit
+        - Calendar/Reminders
+        - Microphone
+        - Speech Recognition
+        - Not sure
+        - Not applicable
+    validations:
+      required: false

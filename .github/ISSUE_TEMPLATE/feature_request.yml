@@ -1,0 +1,81 @@
+name: Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Your ideas help shape the future of PersonalAI.
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description: What feature would you like to see?
+      placeholder: "I'd like to be able to search thoughts by date range instead of scrolling through everything."
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: Why do you need this feature? How would you use it?
+      placeholder: |
+        I capture a lot of thoughts every day, and sometimes I want to review what I was thinking
+        during a specific week or month (like "what was I thinking about during that stressful project?").
+
+        Currently I have to scroll through hundreds of thoughts to find the right time period,
+        which is tedious and makes the app less useful for long-term reflection.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution (Optional)
+      description: How do you envision this working? Any UI ideas?
+      placeholder: |
+        Maybe add a filter button at the top of the thought list with options like:
+        - Last 7 days
+        - Last 30 days
+        - Custom date range (with date pickers)
+
+        Or a search bar that lets you filter by dates like "January 2026" or "last week"
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you tried other ways to solve this problem? Why didn't they work?
+      placeholder: "I tried using tags to mark time periods, but it's too manual to remember to tag everything by date."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: How important is this to you?
+      description: This helps prioritize features
+      options:
+        - Nice to have - would be cool but not essential
+        - Would improve my workflow - I'd use this regularly
+        - Critical - I can't use the app effectively without this
+      default: 0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: workaround
+    attributes:
+      label: Do you have a workaround?
+      description: Can you achieve your goal another way currently?
+      options:
+        - "Yes, I have a workaround (but it's tedious)"
+        - "No, there's no way to do this currently"
+      default: 0
+    validations:
+      required: false

@@ -1,0 +1,38 @@
+name: Support Question
+description: Ask a question about using the app
+title: "[Question]: "
+labels: ["question", "support"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question about using PersonalAI? I'm here to help!
+
+        **Note:** For bug reports, please use the "Bug Report" template instead.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know?
+      placeholder: "How do I change which calendar my events are added to? I have multiple calendars and want work events to go to my work calendar."
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: What Have You Tried?
+      description: Any steps you've already taken to find the answer?
+      placeholder: "I looked in Settings but couldn't find a calendar option. I tried tapping on the event after it was created but there's no way to change the calendar."
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other details that might help answer your question
+      placeholder: "I'm using iOS 18 on an iPhone 15. I have 3 calendars: Personal, Work, and Family."
+    validations:
+      required: false
