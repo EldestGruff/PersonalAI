@@ -8,8 +8,28 @@ This directory contains practical guides for the operational side of shipping an
 
 ## 📚 Documentation
 
+### ⚡ [PROCEDURES_QUICK_REFERENCE.md](./PROCEDURES_QUICK_REFERENCE.md) ← **START HERE FOR DAILY USE!**
+**All business procedures in one place - Your daily/weekly playbook**
+
+Contains:
+- Morning routine (15 min) - What to check every day
+- Support email triage (10 min) - How to handle support efficiently
+- Weekly planning and review - Monday and Friday rituals
+- Development workflows - Starting issues, committing code, completing work
+- Release workflows - Bug fixes, features, TestFlight, App Store submission
+- Support workflows - Templates and procedures for common scenarios
+- Emergency procedures - What to do when things go wrong
+- Quick decision trees - Visual guides for common decisions
+- Time-saving tips and keyboard shortcuts
+
+**Use this when:** You need to DO something and want step-by-step instructions without reading full docs
+
+**Bookmark this page** - You'll reference it daily!
+
+---
+
 ### 🎯 [OPERATIONS_OVERVIEW.md](./OPERATIONS_OVERVIEW.md)
-**Start here - Big picture of running a software company**
+**Big picture of running a software company (one-time read)**
 
 Covers:
 - The gap between "working app" and "shipped product"
