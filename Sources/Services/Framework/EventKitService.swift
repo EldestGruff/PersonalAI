@@ -9,6 +9,37 @@
 import Foundation
 import EventKit
 
+// MARK: - Calendar Info
+
+/// Sendable representation of a calendar for cross-actor use.
+struct CalendarInfo: Sendable, Identifiable {
+    let id: String
+    let title: String
+    let colorComponents: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat)?
+
+    init(calendar: EKCalendar) {
+        self.id = calendar.calendarIdentifier
+        self.title = calendar.title
+        if let cgColor = calendar.cgColor {
+            self.colorComponents = (
+                red: cgColor.components?[safe: 0] ?? 0,
+                green: cgColor.components?[safe: 1] ?? 0,
+                blue: cgColor.components?[safe: 2] ?? 0,
+                alpha: cgColor.components?[safe: 3] ?? 1
+            )
+        } else {
+            self.colorComponents = nil
+        }
+    }
+}
+
+// Helper extension for safe array subscripting
+private extension Array {
+    subscript(safe index: Index) -> Element? {
+        indices.contains(index) ? self[index] : nil
+    }
+}
+
 // MARK: - EventKit Service Protocol
 
 /// Protocol for EventKit services.
@@ -16,13 +47,19 @@ import EventKit
 /// Enables mocking in tests.
 protocol EventKitServiceProtocol: FrameworkServiceProtocol {
     /// Creates a system reminder
-    func createReminder(title: String, description: String?, dueDate: Date?) async throws -> String
+    func createReminder(title: String, description: String?, dueDate: Date?, calendarIdentifier: String?) async throws -> String
 
     /// Creates a calendar event
-    func createEvent(title: String, description: String?, startDate: Date, endDate: Date) async throws -> String
+    func createEvent(title: String, description: String?, startDate: Date, endDate: Date, calendarIdentifier: String?) async throws -> String
 
     /// Gets calendar availability context
     func getAvailability() async -> CalendarContext
+
+    /// Gets available calendars for events
+    func getAvailableCalendars() async -> [CalendarInfo]
+
+    /// Gets available reminder lists
+    func getAvailableReminderLists() async -> [CalendarInfo]
 }
 
 // MARK: - EventKit Service
@@ -111,9 +148,10 @@ actor EventKitService: EventKitServiceProtocol {
     ///   - title: The reminder title
     ///   - description: Optional notes
     ///   - dueDate: Optional due date
+    ///   - calendarIdentifier: Optional identifier for the reminder list to use (defaults to default list)
     /// - Returns: The reminder identifier
     /// - Throws: `ServiceError` if creation fails
-    func createReminder(title: String, description: String?, dueDate: Date?) async throws -> String {
+    func createReminder(title: String, description: String?, dueDate: Date?, calendarIdentifier: String?) async throws -> String {
         // Always request permission - let iOS handle if already granted
         NSLog("🔔 EventKit createReminder - Requesting permission...")
         do {
@@ -136,17 +174,24 @@ actor EventKitService: EventKitServiceProtocol {
             )
         }
 
-        guard let defaultCalendar = eventStore.defaultCalendarForNewReminders() else {
+        // Select calendar - use specified or default
+        let selectedCalendar: EKCalendar
+        if let identifier = calendarIdentifier,
+           let calendar = eventStore.calendar(withIdentifier: identifier) {
+            selectedCalendar = calendar
+        } else if let defaultCalendar = eventStore.defaultCalendarForNewReminders() {
+            selectedCalendar = defaultCalendar
+        } else {
             throw ServiceError.frameworkUnavailable(
                 framework: .eventKit,
-                reason: "No default reminder calendar found"
+                reason: "No reminder calendar found"
             )
         }
 
         let reminder = EKReminder(eventStore: eventStore)
         reminder.title = title
         reminder.notes = description
-        reminder.calendar = defaultCalendar
+        reminder.calendar = selectedCalendar
 
         if let dueDate = dueDate {
             let calendar = Calendar.current
@@ -180,9 +225,10 @@ actor EventKitService: EventKitServiceProtocol {
     ///   - description: Optional notes
     ///   - startDate: Event start time
     ///   - endDate: Event end time
+    ///   - calendarIdentifier: Optional identifier for the calendar to use (defaults to default calendar)
     /// - Returns: The event identifier
     /// - Throws: `ServiceError` if creation fails
-    func createEvent(title: String, description: String?, startDate: Date, endDate: Date) async throws -> String {
+    func createEvent(title: String, description: String?, startDate: Date, endDate: Date, calendarIdentifier: String?) async throws -> String {
         // Check and request event-specific permission
         let rawInitialStatus = EKEventStore.authorizationStatus(for: .event)
         let initialStatus = mapAuthorizationStatus(rawInitialStatus)
@@ -216,10 +262,17 @@ actor EventKitService: EventKitServiceProtocol {
             )
         }
 
-        guard let defaultCalendar = eventStore.defaultCalendarForNewEvents else {
+        // Select calendar - use specified or default
+        let selectedCalendar: EKCalendar
+        if let identifier = calendarIdentifier,
+           let calendar = eventStore.calendar(withIdentifier: identifier) {
+            selectedCalendar = calendar
+        } else if let defaultCalendar = eventStore.defaultCalendarForNewEvents {
+            selectedCalendar = defaultCalendar
+        } else {
             throw ServiceError.frameworkUnavailable(
                 framework: .eventKit,
-                reason: "No default calendar found"
+                reason: "No calendar found"
             )
         }
 
@@ -228,7 +281,7 @@ actor EventKitService: EventKitServiceProtocol {
         event.notes = description
         event.startDate = startDate
         event.endDate = endDate
-        event.calendar = defaultCalendar
+        event.calendar = selectedCalendar
 
         // Add default alert 15 minutes before
         let alarm = EKAlarm(relativeOffset: -900)
@@ -243,6 +296,32 @@ actor EventKitService: EventKitServiceProtocol {
                 underlying: error
             )
         }
+    }
+
+    // MARK: - Get Calendars and Lists
+
+    /// Gets available calendars for events.
+    ///
+    /// - Returns: Array of calendar info that can be used for creating events
+    func getAvailableCalendars() async -> [CalendarInfo] {
+        guard permissionStatus.allowsAccess else {
+            return []
+        }
+
+        let calendars = eventStore.calendars(for: .event)
+        return calendars.map { CalendarInfo(calendar: $0) }
+    }
+
+    /// Gets available reminder lists.
+    ///
+    /// - Returns: Array of calendar info that can be used for creating reminders
+    func getAvailableReminderLists() async -> [CalendarInfo] {
+        guard permissionStatus.allowsAccess else {
+            return []
+        }
+
+        let calendars = eventStore.calendars(for: .reminder)
+        return calendars.map { CalendarInfo(calendar: $0) }
     }
 
     // MARK: - Get Availability
@@ -375,7 +454,7 @@ actor MockEventKitService: EventKitServiceProtocol {
         return .authorized
     }
 
-    func createReminder(title: String, description: String?, dueDate: Date?) async throws -> String {
+    func createReminder(title: String, description: String?, dueDate: Date?, calendarIdentifier: String?) async throws -> String {
         guard permissionStatus.allowsAccess else {
             throw ServiceError.permissionDenied(framework: .eventKit, currentLevel: permissionStatus)
         }
@@ -383,12 +462,20 @@ actor MockEventKitService: EventKitServiceProtocol {
         return UUID().uuidString
     }
 
-    func createEvent(title: String, description: String?, startDate: Date, endDate: Date) async throws -> String {
+    func createEvent(title: String, description: String?, startDate: Date, endDate: Date, calendarIdentifier: String?) async throws -> String {
         guard permissionStatus.allowsAccess else {
             throw ServiceError.permissionDenied(framework: .eventKit, currentLevel: permissionStatus)
         }
         createdEvents.append((title, description, startDate, endDate))
         return UUID().uuidString
+    }
+
+    func getAvailableCalendars() async -> [CalendarInfo] {
+        []
+    }
+
+    func getAvailableReminderLists() async -> [CalendarInfo] {
+        []
     }
 
     func getAvailability() async -> CalendarContext {

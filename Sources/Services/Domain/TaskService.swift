@@ -355,10 +355,14 @@ actor TaskService: TaskServiceProtocol {
             )
         }
 
+        // Get selected reminder list from settings
+        let selectedListId = UserDefaults.standard.string(forKey: "selectedReminderListId")
+
         let reminderId = try await eventKitService.createReminder(
             title: task.title,
             description: task.description,
-            dueDate: task.dueDate
+            dueDate: task.dueDate,
+            calendarIdentifier: selectedListId
         )
 
         let updated = Task(
@@ -406,11 +410,15 @@ actor TaskService: TaskServiceProtocol {
             )
         }
 
+        // Get selected calendar from settings
+        let selectedCalendarId = UserDefaults.standard.string(forKey: "selectedCalendarId")
+
         let eventId = try await eventKitService.createEvent(
             title: task.title,
             description: task.description,
             startDate: startDate,
-            endDate: endDate
+            endDate: endDate,
+            calendarIdentifier: selectedCalendarId
         )
 
         let updated = Task(

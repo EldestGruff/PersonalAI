@@ -57,6 +57,26 @@ final class SettingsViewModel {
     /// Sync interval in seconds (default 15 minutes)
     var syncInterval: TimeInterval = 900
 
+    // MARK: - Calendar Settings
+
+    /// Selected calendar identifier for events (nil = use default)
+    var selectedCalendarId: String? {
+        get { UserDefaults.standard.string(forKey: "selectedCalendarId") }
+        set { UserDefaults.standard.set(newValue, forKey: "selectedCalendarId") }
+    }
+
+    /// Selected reminder list identifier (nil = use default)
+    var selectedReminderListId: String? {
+        get { UserDefaults.standard.string(forKey: "selectedReminderListId") }
+        set { UserDefaults.standard.set(newValue, forKey: "selectedReminderListId") }
+    }
+
+    /// Available calendars for events
+    var availableCalendars: [CalendarInfo] = []
+
+    /// Available reminder lists
+    var availableReminderLists: [CalendarInfo] = []
+
     // MARK: - User Stats
 
     /// Total number of thoughts
@@ -113,6 +133,7 @@ final class SettingsViewModel {
         _Concurrency.Task {
             await updatePermissionStatus()
             await loadStats()
+            await loadCalendars()
         }
     }
 
@@ -236,5 +257,18 @@ final class SettingsViewModel {
     var syncIntervalFormatted: String {
         let minutes = Int(syncInterval / 60)
         return "\(minutes) min"
+    }
+
+    // MARK: - Calendar Loading
+
+    /// Loads available calendars and reminder lists
+    func loadCalendars() async {
+        guard eventKitAuthorized else { return }
+
+        // Load calendars for events
+        availableCalendars = await eventKitService.getAvailableCalendars()
+
+        // Load reminder lists
+        availableReminderLists = await eventKitService.getAvailableReminderLists()
     }
 }

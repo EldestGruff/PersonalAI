@@ -30,6 +30,9 @@ struct SettingsScreen: View {
                 // Features section
                 featuresSection
 
+                // Calendar settings section
+                calendarSettingsSection
+
                 // Sync section
                 syncSection
 
@@ -163,6 +166,70 @@ struct SettingsScreen: View {
                         .foregroundColor(.secondary)
                 }
             }
+        }
+    }
+
+    // MARK: - Calendar Settings Section
+
+    private var calendarSettingsSection: some View {
+        Section {
+            if !viewModel.eventKitAuthorized {
+                Text("Enable Calendar & Reminders permission to select calendars")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } else {
+                // Calendar picker for events
+                Picker("Default Calendar", selection: Binding(
+                    get: { viewModel.selectedCalendarId ?? "" },
+                    set: { viewModel.selectedCalendarId = $0.isEmpty ? nil : $0 }
+                )) {
+                    Text("Default").tag("")
+                    ForEach(viewModel.availableCalendars) { calendar in
+                        HStack {
+                            if let components = calendar.colorComponents {
+                                Circle()
+                                    .fill(Color(
+                                        red: components.red,
+                                        green: components.green,
+                                        blue: components.blue,
+                                        opacity: components.alpha
+                                    ))
+                                    .frame(width: 10, height: 10)
+                            }
+                            Text(calendar.title)
+                        }
+                        .tag(calendar.id)
+                    }
+                }
+
+                // Reminder list picker
+                Picker("Default Reminder List", selection: Binding(
+                    get: { viewModel.selectedReminderListId ?? "" },
+                    set: { viewModel.selectedReminderListId = $0.isEmpty ? nil : $0 }
+                )) {
+                    Text("Default").tag("")
+                    ForEach(viewModel.availableReminderLists) { calendar in
+                        HStack {
+                            if let components = calendar.colorComponents {
+                                Circle()
+                                    .fill(Color(
+                                        red: components.red,
+                                        green: components.green,
+                                        blue: components.blue,
+                                        opacity: components.alpha
+                                    ))
+                                    .frame(width: 10, height: 10)
+                            }
+                            Text(calendar.title)
+                        }
+                        .tag(calendar.id)
+                    }
+                }
+            }
+        } header: {
+            Text("Calendar & Reminders")
+        } footer: {
+            Text("Choose which calendar and reminder list to use when creating events and reminders from tasks.")
         }
     }
 
