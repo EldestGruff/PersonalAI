@@ -61,15 +61,29 @@ final class SettingsViewModel {
 
     /// Selected calendar identifier for events (nil = use default)
     var selectedCalendarId: String? {
-        get { UserDefaults.standard.string(forKey: "selectedCalendarId") }
-        set { UserDefaults.standard.set(newValue, forKey: "selectedCalendarId") }
+        get {
+            _selectedCalendarIdCache
+        }
+        set {
+            _selectedCalendarIdCache = newValue
+            UserDefaults.standard.set(newValue, forKey: "selectedCalendarId")
+        }
     }
+
+    private var _selectedCalendarIdCache: String?
 
     /// Selected reminder list identifier (nil = use default)
     var selectedReminderListId: String? {
-        get { UserDefaults.standard.string(forKey: "selectedReminderListId") }
-        set { UserDefaults.standard.set(newValue, forKey: "selectedReminderListId") }
+        get {
+            _selectedReminderListIdCache
+        }
+        set {
+            _selectedReminderListIdCache = newValue
+            UserDefaults.standard.set(newValue, forKey: "selectedReminderListId")
+        }
     }
+
+    private var _selectedReminderListIdCache: String?
 
     /// Available calendars for events
     var availableCalendars: [CalendarInfo] = []
@@ -130,6 +144,10 @@ final class SettingsViewModel {
 
     /// Loads initial data
     func onAppear() {
+        // Load cached settings from UserDefaults
+        _selectedCalendarIdCache = UserDefaults.standard.string(forKey: "selectedCalendarId")
+        _selectedReminderListIdCache = UserDefaults.standard.string(forKey: "selectedReminderListId")
+
         _Concurrency.Task {
             await updatePermissionStatus()
             await loadStats()
