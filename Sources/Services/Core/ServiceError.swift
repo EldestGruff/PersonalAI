@@ -21,6 +21,7 @@ enum FrameworkType: String, Sendable, CaseIterable {
     case contacts = "Contacts"
     case speech = "Speech"
     case network = "Network"
+    case foundationModels = "Foundation Models"
 
     /// Human-readable name for UI display
     var displayName: String { rawValue }
