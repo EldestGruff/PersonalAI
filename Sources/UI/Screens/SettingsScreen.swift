@@ -79,7 +79,7 @@ struct SettingsScreen: View {
             PermissionRow(
                 icon: "calendar",
                 label: "Calendar & Reminders",
-                description: "Schedule context and task creation",
+                description: "Both event and reminder access needed",
                 authorized: viewModel.eventKitAuthorized,
                 action: viewModel.requestEventKitPermission
             )
@@ -340,6 +340,14 @@ struct PermissionRow: View {
             if authorized {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(.green)
+                // Still allow re-requesting even when authorized
+                // (some frameworks like EventKit have multiple sub-permissions)
+                Button("Re-request") {
+                    action()
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.mini)
+                .foregroundColor(.secondary)
             } else {
                 Button("Enable") {
                     action()

@@ -281,12 +281,32 @@ final class SettingsViewModel {
 
     /// Loads available calendars and reminder lists
     func loadCalendars() async {
-        guard eventKitAuthorized else { return }
+        NSLog("📅 SettingsViewModel - loadCalendars called, eventKitAuthorized: \(eventKitAuthorized)")
+        guard eventKitAuthorized else {
+            NSLog("📅 SettingsViewModel - EventKit not authorized, skipping calendar load")
+            return
+        }
 
         // Load calendars for events
         availableCalendars = await eventKitService.getAvailableCalendars()
+        NSLog("📅 SettingsViewModel - Loaded \(availableCalendars.count) calendars")
 
         // Load reminder lists
         availableReminderLists = await eventKitService.getAvailableReminderLists()
+        NSLog("📅 SettingsViewModel - Loaded \(availableReminderLists.count) reminder lists")
+
+        // Validate selected calendar - clear if it's not in the available list
+        if let selectedId = selectedCalendarId,
+           !availableCalendars.contains(where: { $0.id == selectedId }) {
+            NSLog("📅 SettingsViewModel - Selected calendar '\(selectedId)' not found, clearing selection")
+            selectedCalendarId = nil
+        }
+
+        // Validate selected reminder list - clear if it's not in the available list
+        if let selectedId = selectedReminderListId,
+           !availableReminderLists.contains(where: { $0.id == selectedId }) {
+            NSLog("📅 SettingsViewModel - Selected reminder list '\(selectedId)' not found, clearing selection")
+            selectedReminderListId = nil
+        }
     }
 }
