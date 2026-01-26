@@ -66,6 +66,35 @@ struct Classification: Identifiable, Codable, Equatable, Sendable {
 
     /// When this classification was created
     let createdAt: Date
+
+    /// Parsed date/time from the thought content (Phase 4)
+    ///
+    /// Extracted using natural language parsing for reminders and events.
+    /// Nil if no date/time could be parsed from the content.
+    let parsedDateTime: ParsedDateTime?
+}
+
+// MARK: - Parsed Date/Time
+
+/// Parsed date and time information from thought content.
+///
+/// Used to pre-populate date/time fields when creating reminders and events.
+struct ParsedDateTime: Codable, Equatable, Sendable {
+    /// The parsed date (nil if no date found)
+    let date: Date?
+
+    /// The parsed time as seconds since midnight (0-86399)
+    /// Nil if no specific time was mentioned
+    let timeOfDay: Int?
+
+    /// Whether this is an all-day event (no specific time)
+    let isAllDay: Bool
+
+    /// The original text that was matched
+    let matchedText: String?
+
+    /// Confidence in the parse (0.0 to 1.0)
+    let confidence: Double
 }
 
 /// Type of thought classified by the model.
@@ -126,6 +155,19 @@ extension Classification {
                 .union(CharacterSet(charactersIn: "-"))
             guard tag.unicodeScalars.allSatisfy({ validCharacters.contains($0) }) else {
                 throw ValidationError.invalidTagCharacters(tag)
+            }
+        }
+
+        // Validate parsed date/time if present
+        if let parsedDateTime = parsedDateTime {
+            guard parsedDateTime.confidence >= 0.0 && parsedDateTime.confidence <= 1.0 else {
+                throw ValidationError.invalidConfidence(parsedDateTime.confidence)
+            }
+
+            if let timeOfDay = parsedDateTime.timeOfDay {
+                guard timeOfDay >= 0 && timeOfDay < 86400 else {
+                    throw ValidationError.invalidTimeOfDay(timeOfDay)
+                }
             }
         }
     }

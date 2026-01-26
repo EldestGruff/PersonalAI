@@ -45,6 +45,9 @@ public final class ClassificationEntity: NSManagedObject {
     /// Creation timestamp
     @NSManaged public var createdAt: Date
 
+    /// Parsed date/time information stored as JSON (Phase 4)
+    @NSManaged public var parsedDateTimeJSON: Data?
+
     // MARK: - Relationships
 
     /// One-to-one inverse relationship to thought

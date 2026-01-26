@@ -40,6 +40,17 @@ extension Classification {
             throw ConversionError.invalidJSONData("suggestedTags")
         }
 
+        // Encode parsed date/time as JSON (if present)
+        if let parsedDateTime = self.parsedDateTime {
+            do {
+                entity.parsedDateTimeJSON = try JSONEncoder().encode(parsedDateTime)
+            } catch {
+                throw ConversionError.invalidJSONData("parsedDateTime")
+            }
+        } else {
+            entity.parsedDateTimeJSON = nil
+        }
+
         return entity
     }
 
@@ -73,6 +84,18 @@ extension Classification {
             throw ConversionError.typeMismatch("Invalid Sentiment: \(entity.sentiment)")
         }
 
+        // Decode parsed date/time from JSON (if present)
+        let parsedDateTime: ParsedDateTime?
+        if let parsedDateTimeJSON = entity.parsedDateTimeJSON {
+            do {
+                parsedDateTime = try JSONDecoder().decode(ParsedDateTime.self, from: parsedDateTimeJSON)
+            } catch {
+                throw ConversionError.invalidJSONData("parsedDateTime")
+            }
+        } else {
+            parsedDateTime = nil
+        }
+
         return Classification(
             id: entity.id,
             type: type,
@@ -83,7 +106,8 @@ extension Classification {
             language: entity.language,
             processingTime: entity.processingTime,
             model: entity.model,
-            createdAt: entity.createdAt
+            createdAt: entity.createdAt,
+            parsedDateTime: parsedDateTime
         )
     }
 }

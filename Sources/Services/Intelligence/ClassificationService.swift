@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import FoundationModels
 
 // MARK: - Classification Service Protocol
 
@@ -54,7 +55,9 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     // MARK: - Dependencies
 
     private let nlpService: NLPServiceProtocol
+    private let dateTimeParser: DateTimeParsingServiceProtocol
     private let configuration: ServiceConfiguration
+    private var foundationModelsClassifier: FoundationModelsClassifier?
 
     // MARK: - Cache
 
@@ -65,15 +68,18 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
 
     init(
         nlpService: NLPServiceProtocol,
+        dateTimeParser: DateTimeParsingServiceProtocol,
         configuration: ServiceConfiguration = .shared
     ) {
         self.nlpService = nlpService
+        self.dateTimeParser = dateTimeParser
         self.configuration = configuration
     }
 
-    /// Convenience initializer that creates its own NLP service
+    /// Convenience initializer that creates its own services
     init(configuration: ServiceConfiguration = .shared) {
         self.nlpService = NLPService(configuration: configuration)
+        self.dateTimeParser = DateTimeParsingService(configuration: configuration)
         self.configuration = configuration
     }
 
@@ -119,22 +125,74 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     private func performClassification(_ content: String) async -> Classification {
         let startTime = Date()
 
-        // Run NLP analysis in parallel
-        async let typeResult = classifyType(content)
-        async let sentimentResult = nlpService.analyzeSentiment(content)
-        async let entitiesResult = nlpService.extractEntities(content)
+        // PRIMARY (iOS 26): Use Foundation Models for intelligent classification
+        // This replaces hardcoded keyword patterns with AI that understands intent
+        if foundationModelsClassifier == nil {
+            foundationModelsClassifier = FoundationModelsClassifier()
+        }
+
+        var type: ClassificationType
+        var sentiment: Sentiment
+        var tags: [String]
+        var confidence: Double
+        var model: String
+
+        if let classifier = foundationModelsClassifier {
+            do {
+                let result = try await classifier.classify(content)
+                type = result.type
+                sentiment = result.sentiment
+                tags = result.tags
+                confidence = result.confidence
+                model = "foundation-models-v1"
+
+                NSLog("✅ Foundation Models classification: type=\(type), sentiment=\(sentiment), confidence=\(confidence)")
+            } catch {
+                // Fallback to keyword-based classification
+                NSLog("❌ Foundation Models classification failed, using keyword fallback: \(error)")
+                async let typeResult = classifyType(content)
+                async let sentimentResult = nlpService.analyzeSentiment(content)
+                async let entitiesResult = nlpService.extractEntities(content)
+
+                type = await typeResult
+                sentiment = await sentimentResult
+                let entities = await entitiesResult
+                tags = await generateTags(content: content, entities: entities)
+                confidence = calculateConfidence(type: type, content: content)
+                model = "nlp-heuristic-v1"
+            }
+        } else {
+            // No Foundation Models available, use keyword-based fallback
+            async let typeResult = classifyType(content)
+            async let sentimentResult = nlpService.analyzeSentiment(content)
+            async let entitiesResult = nlpService.extractEntities(content)
+
+            type = await typeResult
+            sentiment = await sentimentResult
+            let entities = await entitiesResult
+            tags = await generateTags(content: content, entities: entities)
+            confidence = calculateConfidence(type: type, content: content)
+            model = "nlp-heuristic-v1"
+        }
+
+        // Run language detection and date/time parsing in parallel (still needed)
         async let languageResult = nlpService.detectLanguage(content)
+        async let dateTimeResult = dateTimeParser.parseDateTime(content, referenceDate: Date())
 
-        let type = await typeResult
-        let sentiment = await sentimentResult
-        let entities = await entitiesResult
         let language = await languageResult
+        let parsedDateTime = await dateTimeResult
 
-        // Generate tags from entities and keywords
-        let tags = await generateTags(content: content, entities: entities)
+        // Extract entities if not already done (for metadata)
+        let entities = await nlpService.extractEntities(content)
 
-        // Calculate confidence based on keyword match strength
-        let confidence = calculateConfidence(type: type, content: content)
+        // Only include parsed date/time if it has reasonable confidence
+        // Convert from internal detailed version to model version
+        let finalParsedDateTime: ParsedDateTime?
+        if parsedDateTime.confidence >= 0.7 {
+            finalParsedDateTime = parsedDateTime.toModel()
+        } else {
+            finalParsedDateTime = nil
+        }
 
         let processingTime = Date().timeIntervalSince(startTime)
 
@@ -147,8 +205,9 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
             sentiment: sentiment,
             language: language,
             processingTime: processingTime,
-            model: "nlp-heuristic-v1",
-            createdAt: Date()
+            model: model,
+            createdAt: Date(),
+            parsedDateTime: finalParsedDateTime
         )
     }
 
@@ -470,7 +529,8 @@ actor MockClassificationService: ClassificationServiceProtocol {
             language: "en",
             processingTime: 0.05,
             model: "mock-v1",
-            createdAt: Date()
+            createdAt: Date(),
+            parsedDateTime: nil
         )
     }
 
