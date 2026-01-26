@@ -187,7 +187,8 @@ struct ThoughtCardView: View {
                     language: "en",
                     processingTime: 120,
                     model: "foundation-model-v1",
-                    createdAt: Date()
+                    createdAt: Date(),
+                    parsedDateTime: nil
                 ),
                 relatedThoughtIds: [],
                 taskId: nil
@@ -217,7 +218,8 @@ struct ThoughtCardView: View {
                 language: "en",
                 processingTime: 150,
                 model: "foundation-model-v1",
-                createdAt: Date()
+                createdAt: Date(),
+                parsedDateTime: nil
             ),
             relatedThoughtIds: [],
             taskId: nil

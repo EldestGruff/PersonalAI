@@ -277,15 +277,24 @@ final class CaptureViewModel {
         do {
             if classification.type == .reminder || classification.type == .event {
                 // Create Task model
+                // Calculate due date from parsed date/time (if available)
+                let dueDate = calculateDueDate(from: classification.parsedDateTime)
+
+                // Extract a clean title by removing the matched date/time portion
+                let cleanTitle = extractCleanTitle(
+                    from: thought.content,
+                    parsedDateTime: classification.parsedDateTime
+                )
+
                 let task = Task(
                     id: UUID(),
                     userId: thought.userId,
                     sourceThoughtId: thought.id,
-                    title: thought.content,
+                    title: cleanTitle,
                     description: nil,
                     priority: .medium,
                     status: .pending,
-                    dueDate: nil,
+                    dueDate: dueDate,
                     estimatedEffortMinutes: 30,
                     createdAt: Date(),
                     updatedAt: Date(),
@@ -301,10 +310,13 @@ final class CaptureViewModel {
                     _ = try await taskService.createSystemReminder(for: created)
                     try await fineTuningService.trackReminderCreated(thought.id)
                 } else if classification.type == .event {
+                    // Calculate event start/end times from parsed date/time
+                    let (startDate, endDate) = calculateEventTimes(from: classification.parsedDateTime)
+
                     _ = try await taskService.createCalendarEvent(
                         for: created,
-                        startDate: Date().addingTimeInterval(3600), // 1 hour from now
-                        endDate: Date().addingTimeInterval(7200) // 2 hours from now
+                        startDate: startDate,
+                        endDate: endDate
                     )
                     try await fineTuningService.trackEventCreated(thought.id)
                 }
@@ -313,5 +325,125 @@ final class CaptureViewModel {
             // Silently fail - auto-creation is best-effort
             // The thought was saved successfully, so we don't want to show an error
         }
+    }
+
+    // MARK: - Date/Time Helpers
+
+    /// Calculate due date from parsed date/time information.
+    ///
+    /// Combines the parsed date and time of day into a single Date.
+    /// Returns nil if no date was parsed.
+    private func calculateDueDate(from parsedDateTime: ParsedDateTime?) -> Date? {
+        guard let parsedDateTime = parsedDateTime,
+              let baseDate = parsedDateTime.date else {
+            return nil
+        }
+
+        // If we have a specific time of day, apply it
+        if let timeOfDay = parsedDateTime.timeOfDay {
+            let calendar = Calendar.current
+            let dateComponents = calendar.dateComponents([.year, .month, .day], from: baseDate)
+            let hours = timeOfDay / 3600
+            let minutes = (timeOfDay % 3600) / 60
+
+            var components = dateComponents
+            components.hour = hours
+            components.minute = minutes
+            components.second = 0
+
+            return calendar.date(from: components)
+        }
+
+        // If it's an all-day item, use the base date
+        return baseDate
+    }
+
+    /// Calculate event start and end times from parsed date/time.
+    ///
+    /// Returns a tuple of (startDate, endDate) for calendar events.
+    /// Falls back to sensible defaults if no date/time was parsed.
+    private func calculateEventTimes(from parsedDateTime: ParsedDateTime?) -> (Date, Date) {
+        guard let parsedDateTime = parsedDateTime,
+              let baseDate = parsedDateTime.date else {
+            // Fallback: 1 hour from now, duration 1 hour
+            let now = Date()
+            return (now.addingTimeInterval(3600), now.addingTimeInterval(7200))
+        }
+
+        let calendar = Calendar.current
+
+        // If we have a specific time of day, use it
+        if let timeOfDay = parsedDateTime.timeOfDay {
+            let dateComponents = calendar.dateComponents([.year, .month, .day], from: baseDate)
+            let hours = timeOfDay / 3600
+            let minutes = (timeOfDay % 3600) / 60
+
+            var components = dateComponents
+            components.hour = hours
+            components.minute = minutes
+            components.second = 0
+
+            if let startDate = calendar.date(from: components) {
+                // Default event duration: 1 hour
+                let endDate = startDate.addingTimeInterval(3600)
+                return (startDate, endDate)
+            }
+        }
+
+        // All-day event: use 9am to 10am on that date
+        var components = calendar.dateComponents([.year, .month, .day], from: baseDate)
+        components.hour = 9
+        components.minute = 0
+        components.second = 0
+
+        if let startDate = calendar.date(from: components) {
+            let endDate = startDate.addingTimeInterval(3600)
+            return (startDate, endDate)
+        }
+
+        // Final fallback
+        return (baseDate, baseDate.addingTimeInterval(3600))
+    }
+
+    /// Extract a clean title by removing the date/time portion from the content.
+    ///
+    /// Uses the matchedText from parsed date/time to remove the temporal reference.
+    /// Falls back to using the full content if no match is found.
+    private func extractCleanTitle(from content: String, parsedDateTime: ParsedDateTime?) -> String {
+        guard let parsedDateTime = parsedDateTime,
+              let matchedText = parsedDateTime.matchedText,
+              !matchedText.isEmpty else {
+            return content
+        }
+
+        // Remove the matched date/time text
+        var cleanedContent = content
+
+        // Try case-insensitive replacement
+        if let range = cleanedContent.range(of: matchedText, options: [.caseInsensitive]) {
+            cleanedContent.removeSubrange(range)
+        }
+
+        // Clean up extra whitespace and punctuation
+        cleanedContent = cleanedContent
+            .replacingOccurrences(of: "  ", with: " ")  // Double spaces
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Remove leading/trailing punctuation that might be left over
+        let punctuationSet = CharacterSet(charactersIn: ",-:;")
+        cleanedContent = cleanedContent.trimmingCharacters(in: punctuationSet)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // If we removed too much and the title is now too short, use original
+        if cleanedContent.count < 3 {
+            return content
+        }
+
+        // Capitalize first letter if needed
+        if let firstChar = cleanedContent.first, firstChar.isLowercase {
+            cleanedContent = cleanedContent.prefix(1).uppercased() + cleanedContent.dropFirst()
+        }
+
+        return cleanedContent
     }
 }

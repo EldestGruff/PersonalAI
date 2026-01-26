@@ -622,7 +622,8 @@ struct BreakdownRow: View {
                         language: "en",
                         processingTime: 180,
                         model: "foundation-model-v1",
-                        createdAt: Date()
+                        createdAt: Date(),
+                        parsedDateTime: nil
                     ),
                     relatedThoughtIds: [],
                     taskId: nil
