@@ -75,10 +75,10 @@ struct SearchThoughtsIntent: AppIntent {
     // MARK: - Intent Execution
 
     @MainActor
-    func perform() async throws -> some IntentResult & ReturnsValue<[ThoughtEntity]> {
+    func perform() async throws -> some IntentResult & ReturnsValue<[ThoughtAppEntity]> {
         // Get repository
-        let container = await ServiceContainer.shared
-        guard let repository = await container.resolveOptional(ThoughtRepositoryProtocol.self) else {
+        let container = ServiceContainer.shared
+        guard let repository = await container.resolveOptional(any ThoughtRepositoryProtocol.Type) as? any ThoughtRepositoryProtocol else {
             throw IntentError.serviceUnavailable
         }
 
@@ -91,7 +91,7 @@ struct SearchThoughtsIntent: AppIntent {
         // Convert to entities
         let entities = thoughts
             .prefix(maxResults)
-            .map { ThoughtEntity(from: $0) }
+            .map { ThoughtAppEntity(from: $0) }
 
         // Return results
         let count = entities.count
@@ -116,13 +116,13 @@ struct SearchThoughtsIntent: AppIntent {
             let searchLower = query.lowercased()
             filtered = filtered.filter { thought in
                 thought.content.lowercased().contains(searchLower) ||
-                thought.classification.tags.contains { $0.lowercased().contains(searchLower) }
+                thought.tags.contains { $0.lowercased().contains(searchLower) }
             }
         }
 
         // Filter by type
         if let typeFilter = typeFilter {
-            filtered = filtered.filter { $0.classification.type == typeFilter.toModel() }
+            filtered = filtered.filter { $0.classification?.type == typeFilter.toModel() }
         }
 
         // Filter by date range

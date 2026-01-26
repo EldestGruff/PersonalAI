@@ -67,8 +67,8 @@ struct ReviewIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog & OpensIntent {
         // Get repository for count
-        let container = await ServiceContainer.shared
-        guard let repository = await container.resolveOptional(ThoughtRepositoryProtocol.self) else {
+        let container = ServiceContainer.shared
+        guard let repository = await container.resolveOptional(any ThoughtRepositoryProtocol.Type) as? any ThoughtRepositoryProtocol else {
             throw IntentError.serviceUnavailable
         }
 
@@ -95,12 +95,13 @@ struct ReviewIntent: AppIntent {
 
         // Filter by completion status
         if !showCompleted {
-            filtered = filtered.filter { !$0.isCompleted }
+            // Filter out completed thoughts based on status
+            filtered = filtered.filter { $0.status != .completed }
         }
 
         // Filter by type
         if let typeFilter = typeFilter {
-            filtered = filtered.filter { $0.classification.type == typeFilter.toModel() }
+            filtered = filtered.filter { $0.classification?.type == typeFilter.toModel() }
         }
 
         // Filter by date range

@@ -71,56 +71,79 @@ struct CaptureThoughtIntent: AppIntent {
 
     // MARK: - Intent Execution
 
+    @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
         // Get required services
-        let container = await ServiceContainer.shared
-        guard let repository = await container.resolveOptional(ThoughtRepositoryProtocol.self),
-              let classificationService = await container.resolveOptional(ClassificationServiceProtocol.self) else {
+        let container = ServiceContainer.shared
+        guard let repository = await container.resolveOptional(any ThoughtRepositoryProtocol.Type) as? any ThoughtRepositoryProtocol else {
             throw IntentError.serviceUnavailable
         }
 
+        // Get classification service for auto-classification
+        let classificationService = await container.resolveOptional(any ClassificationServiceProtocol.Type) as? any ClassificationServiceProtocol
+
         // Create classification
-        let classification: Classification
+        let classification: Classification?
         if let explicitType = type {
             // User specified type - use it directly
             classification = Classification(
+                id: UUID(),
                 type: explicitType.toModel(),
                 sentiment: .neutral,
-                tags: [],
+                entities: [],
+                suggestedTags: [],
+                language: "en",
+                processingTime: 0.0,
+                model: "manual",
                 confidence: 1.0,
-                dateTime: nil
+                createdAt: Date(),
+                parsedDateTime: nil
             )
-        } else if autoClassify {
+        } else if autoClassify, let service = classificationService {
             // Auto-classify using AI
-            classification = try await classificationService.classify(content)
+            classification = try await service.classify(content)
         } else {
-            // No type, no auto-classify - default to note
-            classification = Classification(
-                type: .note,
-                sentiment: .neutral,
-                tags: [],
-                confidence: 1.0,
-                dateTime: nil
-            )
+            // No classification
+            classification = nil
         }
 
+        // Get current user ID (single user in Phase 3A)
+        let userId = UUID() // TODO: Get from user session
+
         // Create and save thought
+        let now = Date()
         let thought = Thought(
+            id: UUID(),
+            userId: userId,
             content: content,
+            tags: classification?.suggestedTags ?? [],
+            status: .active,
+            context: Context(
+                timestamp: now,
+                location: nil,
+                timeOfDay: .unknown,
+                energy: nil,
+                focusState: nil,
+                calendar: nil,
+                activity: nil,
+                weather: nil
+            ),
+            createdAt: now,
+            updatedAt: now,
             classification: classification,
-            context: nil, // Context gathering can be added later
-            audioURL: nil,
-            createdAt: Date(),
-            modifiedAt: Date()
+            relatedThoughtIds: [],
+            taskId: nil
         )
 
         try await repository.save(thought)
 
         // Donate interaction for Siri suggestions
-        donateInteraction(content: content, type: classification.type)
+        if let classification = classification {
+            donateInteraction(content: content, type: classification.type)
+        }
 
         // Return success with dialog
-        let typeString = classification.type.displayName
+        let typeString = classification?.type.displayName ?? "thought"
         return .result(
             dialog: "Captured as \(typeString): \"\(content)\""
         )
