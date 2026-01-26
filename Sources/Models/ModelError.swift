@@ -26,6 +26,7 @@ enum ValidationError: LocalizedError, Equatable {
     case invalidCompletedAt
     case tagTooLong(String, Int)
     case invalidTagCharacters(String)
+    case invalidTimeOfDay(Int)
 
     var errorDescription: String? {
         switch self {
@@ -55,6 +56,8 @@ enum ValidationError: LocalizedError, Equatable {
             return "Tag '\(tag)' is too long (\(length) characters, maximum 50)"
         case .invalidTagCharacters(let tag):
             return "Tag '\(tag)' contains invalid characters (only lowercase alphanumeric and hyphens allowed)"
+        case .invalidTimeOfDay(let seconds):
+            return "Time of day must be between 0 and 86399 seconds (got \(seconds))"
         }
     }
 }

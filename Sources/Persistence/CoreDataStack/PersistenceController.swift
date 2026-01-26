@@ -63,6 +63,13 @@ struct PersistenceController: Sendable {
 
         if inMemory {
             container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
+        } else {
+            // Enable automatic lightweight migration for schema changes
+            // This allows Core Data to automatically migrate when we add new fields
+            if let description = container.persistentStoreDescriptions.first {
+                description.shouldMigrateStoreAutomatically = true
+                description.shouldInferMappingModelAutomatically = true
+            }
         }
 
         container.loadPersistentStores { storeDescription, error in

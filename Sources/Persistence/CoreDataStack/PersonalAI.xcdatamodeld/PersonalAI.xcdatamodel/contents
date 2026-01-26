@@ -33,6 +33,7 @@
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="language" optional="YES" attributeType="String"/>
         <attribute name="model" attributeType="String"/>
+        <attribute name="parsedDateTimeJSON" optional="YES" attributeType="Binary"/>
         <attribute name="processingTime" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="sentiment" attributeType="String"/>
         <attribute name="suggestedTagsJSON" attributeType="Binary"/>
