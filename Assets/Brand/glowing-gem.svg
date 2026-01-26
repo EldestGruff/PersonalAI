@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Cyan gradient for gem -->
+    <linearGradient id="gemGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00F5FF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#00D9FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00B8D4;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Glow effect -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Stronger glow for outer aura -->
+    <radialGradient id="auraGradient">
+      <stop offset="0%" style="stop-color:#00F5FF;stop-opacity:0.4" />
+      <stop offset="50%" style="stop-color:#00D9FF;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#00D9FF;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Outer glow aura -->
+  <circle cx="100" cy="100" r="80" fill="url(#auraGradient)"/>
+
+  <!-- Faceted gem shape (diamond with facets) -->
+  <g filter="url(#glow)">
+    <!-- Top facet -->
+    <polygon points="100,40 130,80 100,70 70,80"
+             fill="#00F5FF" opacity="0.9"/>
+
+    <!-- Left facet -->
+    <polygon points="70,80 100,70 100,120 60,100"
+             fill="url(#gemGradient)" opacity="0.85"/>
+
+    <!-- Right facet -->
+    <polygon points="130,80 100,70 100,120 140,100"
+             fill="url(#gemGradient)" opacity="0.95"/>
+
+    <!-- Bottom left facet -->
+    <polygon points="60,100 100,120 100,160"
+             fill="#00B8D4" opacity="0.8"/>
+
+    <!-- Bottom right facet -->
+    <polygon points="140,100 100,120 100,160"
+             fill="#00D9FF" opacity="0.9"/>
+
+    <!-- Highlight sparkles -->
+    <circle cx="95" cy="65" r="3" fill="#FFFFFF" opacity="0.9"/>
+    <circle cx="115" cy="85" r="2" fill="#FFFFFF" opacity="0.7"/>
+    <circle cx="105" cy="110" r="2.5" fill="#FFFFFF" opacity="0.8"/>
+  </g>
+</svg>

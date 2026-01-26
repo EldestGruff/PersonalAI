@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Squirrel gradient -->
+    <linearGradient id="squirrelGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF8C5A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF6B35;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Gem gradient -->
+    <linearGradient id="gemGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00F5FF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#00D9FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00B8D4;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Glow effect for gem -->
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Aura around gem -->
+    <radialGradient id="auraGradient">
+      <stop offset="0%" style="stop-color:#00F5FF;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#00D9FF;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background (dark grey) -->
+  <rect width="400" height="400" fill="#2D2D2D"/>
+
+  <!-- Gem glow aura (positioned where squirrel reaches) -->
+  <circle cx="280" cy="180" r="50" fill="url(#auraGradient)"/>
+
+  <!-- Squirrel (offset left, reaching right) -->
+  <g transform="translate(80, 120)">
+    <!-- Tail (curved, positioned behind) -->
+    <path d="M 30 140 Q 10 100, 40 60 Q 50 40, 60 50 Q 40 80, 50 120 Z"
+          fill="url(#squirrelGradient)" opacity="0.9"/>
+
+    <!-- Body -->
+    <rect x="60" y="100" width="60" height="70" rx="25" ry="25"
+          fill="url(#squirrelGradient)"/>
+
+    <!-- Head -->
+    <circle cx="100" cy="80" r="35" fill="url(#squirrelGradient)"/>
+
+    <!-- Ears -->
+    <circle cx="85" cy="55" r="12" fill="#FF6B35"/>
+    <circle cx="115" cy="55" r="12" fill="#FF6B35"/>
+
+    <!-- Eye (looking toward gem) -->
+    <circle cx="110" cy="75" r="5" fill="#2D2D2D"/>
+
+    <!-- Reaching arm (extended toward gem) -->
+    <ellipse cx="130" cy="120" rx="35" ry="10"
+             fill="#FF8C5A"
+             transform="rotate(-20 130 120)"/>
+
+    <!-- Paw reaching for gem -->
+    <circle cx="160" cy="105" r="8" fill="#FF8C5A"/>
+
+    <!-- Back paws -->
+    <ellipse cx="75" cy="150" rx="8" ry="12" fill="#FF8C5A"/>
+    <ellipse cx="95" cy="155" rx="8" ry="12" fill="#FF8C5A"/>
+
+    <!-- Belly accent -->
+    <ellipse cx="90" cy="130" rx="20" ry="25" fill="#FFB399" opacity="0.6"/>
+  </g>
+
+  <!-- Glowing Gem (positioned where squirrel reaches) -->
+  <g transform="translate(280, 180)" filter="url(#glow)">
+    <!-- Top facet -->
+    <polygon points="0,-25 20,-5 0,-10 -20,-5"
+             fill="#00F5FF" opacity="0.9"/>
+
+    <!-- Left facet -->
+    <polygon points="-20,-5 0,-10 0,15 -25,5"
+             fill="url(#gemGradient)" opacity="0.85"/>
+
+    <!-- Right facet -->
+    <polygon points="20,-5 0,-10 0,15 25,5"
+             fill="url(#gemGradient)" opacity="0.95"/>
+
+    <!-- Bottom left -->
+    <polygon points="-25,5 0,15 0,35"
+             fill="#00B8D4" opacity="0.8"/>
+
+    <!-- Bottom right -->
+    <polygon points="25,5 0,15 0,35"
+             fill="#00D9FF" opacity="0.9"/>
+
+    <!-- Sparkles -->
+    <circle cx="-3" cy="-15" r="2" fill="#FFFFFF" opacity="0.9"/>
+    <circle cx="8" cy="-5" r="1.5" fill="#FFFFFF" opacity="0.7"/>
+    <circle cx="3" cy="8" r="2" fill="#FFFFFF" opacity="0.8"/>
+  </g>
+
+  <!-- Optional: STASH text below (commented out for icon-only version) -->
+  <!-- <text x="200" y="350" font-family="Arial, sans-serif" font-size="48"
+        font-weight="bold" fill="#FF6B35" text-anchor="middle">STASH</text> -->
+</svg>
