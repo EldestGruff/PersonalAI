@@ -243,7 +243,9 @@ struct ClassificationModelTests {
             language: "en",
             processingTime: 125.5,
             model: "foundation-model-v1",
-            createdAt: Date()
+                parsedDateTime: nil
+            createdAt: Date(),
+            parsedDateTime: nil
         )
     }
 }

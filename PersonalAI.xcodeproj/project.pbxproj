@@ -70,6 +70,9 @@
 		A0000001000000000000247 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000248 /* SearchViewModel.swift */; };
 		A0000001000000000000249 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000250 /* SettingsViewModel.swift */; };
 		A0000001000000000000251 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000252 /* AppError.swift */; };
+		A1803D482F25BDFD0071D950 /* DateTimeParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803D472F25BDFD0071D950 /* DateTimeParsingService.swift */; };
+		A1803D492F25BDFD0071D951 /* DateTimeParsingService_FoundationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803D4A2F25BDFD0071D952 /* DateTimeParsingService_FoundationModels.swift */; };
+		A1803D4B2F25BDFD0071D953 /* ClassificationService_FoundationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803D4C2F25BDFD0071D954 /* ClassificationService_FoundationModels.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -137,6 +140,9 @@
 		A0000001000000000000250 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		A0000001000000000000252 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
 		A1000000000000000000001 /* PersonalAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PersonalAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1803D472F25BDFD0071D950 /* DateTimeParsingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeParsingService.swift; sourceTree = "<group>"; };
+		A1803D4A2F25BDFD0071D952 /* DateTimeParsingService_FoundationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeParsingService_FoundationModels.swift; sourceTree = "<group>"; };
+		A1803D4C2F25BDFD0071D954 /* ClassificationService_FoundationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationService_FoundationModels.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -292,6 +298,9 @@
 			children = (
 				A0000001000000000000152 /* NLPService.swift */,
 				A0000001000000000000154 /* ClassificationService.swift */,
+				A1803D472F25BDFD0071D950 /* DateTimeParsingService.swift */,
+				A1803D4A2F25BDFD0071D952 /* DateTimeParsingService_FoundationModels.swift */,
+				A1803D4C2F25BDFD0071D954 /* ClassificationService_FoundationModels.swift */,
 			);
 			path = Intelligence;
 			sourceTree = "<group>";
@@ -477,6 +486,8 @@
 				A0000001000000000000119 /* PermissionCoordinator.swift in Sources */,
 				A0000001000000000000131 /* LocationService.swift in Sources */,
 				A0000001000000000000133 /* HealthKitService.swift in Sources */,
+				A1803D482F25BDFD0071D950 /* DateTimeParsingService.swift in Sources */,
+				A1803D492F25BDFD0071D951 /* DateTimeParsingService_FoundationModels.swift in Sources */,
 				A0000001000000000000135 /* MotionService.swift in Sources */,
 				A0000001000000000000137 /* EventKitService.swift in Sources */,
 				A0000001000000000000139 /* ContactsService.swift in Sources */,
@@ -484,6 +495,7 @@
 				A0000001000000000000143 /* NetworkMonitor.swift in Sources */,
 				A0000001000000000000151 /* NLPService.swift in Sources */,
 				A0000001000000000000153 /* ClassificationService.swift in Sources */,
+				A1803D4B2F25BDFD0071D953 /* ClassificationService_FoundationModels.swift in Sources */,
 				A0000001000000000000161 /* ThoughtService.swift in Sources */,
 				A0000001000000000000163 /* TaskService.swift in Sources */,
 				A0000001000000000000171 /* ContextService.swift in Sources */,

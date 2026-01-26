@@ -298,6 +298,7 @@ struct ThoughtModelTests {
             language: "en",
             processingTime: 100,
             model: "test-model",
+            parsedDateTime: nil
             createdAt: Date()
         )
 

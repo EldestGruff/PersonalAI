@@ -92,6 +92,7 @@ struct PermissionSummary: Sendable, Equatable {
         case .contacts: return contacts
         case .speech: return speech
         case .network: return .authorized // Network doesn't need permission
+        case .foundationModels: return .authorized // Foundation Models is on-device, no permission needed
         }
     }
 
@@ -233,6 +234,7 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
         case .contacts: service = contactsService
         case .speech: service = speechService
         case .network: return .authorized // Network doesn't need permission
+        case .foundationModels: return .authorized // Foundation Models is on-device, no permission needed
         }
 
         let result = await service.requestPermission()
