@@ -319,7 +319,7 @@ actor DateTimeParsingService: DateTimeParsingServiceProtocol, DomainServiceProto
     /// Instead, we search for common date/time patterns in the original text.
     private func findOriginalMatch(in originalText: String, preprocessedMatch: String) -> String {
         let lowercased = originalText.lowercased()
-        let preprocessedLower = preprocessedMatch.lowercased()
+        _ = preprocessedMatch.lowercased() // For future pattern matching
 
         // Pattern: "tomorrow at three", "next friday at eleven", etc.
         // Search for common date+time patterns using regex

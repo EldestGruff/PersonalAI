@@ -265,7 +265,7 @@ extension ServiceContainer {
     ///
     /// - Returns: Array of framework services
     func resolveFrameworkServices() -> [any FrameworkServiceProtocol] {
-        var services: [any FrameworkServiceProtocol] = []
+        let services: [any FrameworkServiceProtocol] = []
 
         // Try to resolve each known framework service type
         // This is a workaround since we can't enumerate registrations by protocol conformance

@@ -145,6 +145,14 @@
 		A1803D4C2F25BDFD0071D954 /* ClassificationService_FoundationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationService_FoundationModels.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		A1803D4E2F270E6C0071D950 /* Assets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Assets;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		A0900000000000000000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -161,6 +169,7 @@
 			children = (
 				A0800000000000000000002 /* Sources */,
 				A0800000000000000000003 /* Products */,
+				A1803D4E2F270E6C0071D950 /* Assets */,
 			);
 			sourceTree = "<group>";
 		};
@@ -395,6 +404,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A1803D4E2F270E6C0071D950 /* Assets */,
 			);
 			name = PersonalAI;
 			packageProductDependencies = (
@@ -687,6 +699,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -728,6 +741,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

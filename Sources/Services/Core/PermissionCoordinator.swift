@@ -251,7 +251,7 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
     /// Returns the final summary after all requests are complete.
     func requestAllPermissions() async -> PermissionSummary {
         // Get current status first
-        var summary = await refreshStatus()
+        let summary = await refreshStatus()
 
         // Request each pending permission in sequence
         // Order: Location first (most visible benefit), then others

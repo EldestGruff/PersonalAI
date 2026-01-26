@@ -526,7 +526,7 @@ actor MockTaskService: TaskServiceProtocol {
     }
 
     func start(_ id: UUID) async throws -> Task {
-        guard var task = tasks[id] else {
+        guard let task = tasks[id] else {
             throw ServiceError.notFound(entity: "Task", id: id)
         }
         let started = Task(
@@ -542,7 +542,7 @@ actor MockTaskService: TaskServiceProtocol {
     }
 
     func complete(_ id: UUID) async throws -> Task {
-        guard var task = tasks[id] else {
+        guard let task = tasks[id] else {
             throw ServiceError.notFound(entity: "Task", id: id)
         }
         let completed = Task(
@@ -558,7 +558,7 @@ actor MockTaskService: TaskServiceProtocol {
     }
 
     func cancel(_ id: UUID) async throws -> Task {
-        guard var task = tasks[id] else {
+        guard let task = tasks[id] else {
             throw ServiceError.notFound(entity: "Task", id: id)
         }
         let cancelled = Task(
