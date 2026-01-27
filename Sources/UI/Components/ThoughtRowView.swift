@@ -59,6 +59,7 @@ struct ThoughtRowView: View {
                 HStack(spacing: 4) {
                     Image(systemName: "clock")
                         .font(.caption2)
+                        .accessibilityHidden(true)
                     Text(thought.createdAt.formatted(.relative(presentation: .named)))
                         .font(.caption)
                 }
@@ -69,6 +70,7 @@ struct ThoughtRowView: View {
                     HStack(spacing: 4) {
                         Image(systemName: "location.fill")
                             .font(.caption2)
+                            .accessibilityHidden(true)
                         Text(name)
                             .font(.caption)
                             .lineLimit(1)
@@ -83,6 +85,7 @@ struct ThoughtRowView: View {
                     Image(systemName: "archivebox.fill")
                         .font(.caption)
                         .foregroundColor(.orange)
+                        .accessibilityLabel("Archived")
                 }
             }
         }
@@ -111,6 +114,7 @@ struct ThoughtCardView: View {
                 HStack {
                     Image(systemName: classification.type.icon)
                         .foregroundColor(classification.type.color)
+                        .accessibilityHidden(true)
                     Text(classification.type.displayName)
                         .font(.caption)
                         .foregroundColor(.secondary)

@@ -79,10 +79,12 @@ struct DetailScreen: View {
                         viewModel.saveChanges()
                     }
                     .disabled(viewModel.isSaving)
+                    .accessibilityIdentifier("doneEditingButton")
                 } else {
                     Button("Edit") {
                         viewModel.startEditing()
                     }
+                    .accessibilityIdentifier("editThoughtButton")
                 }
             }
 
@@ -91,6 +93,7 @@ struct DetailScreen: View {
                     Button("Cancel") {
                         viewModel.cancelEditing()
                     }
+                    .accessibilityIdentifier("cancelEditingButton")
                 }
             }
 
@@ -100,6 +103,9 @@ struct DetailScreen: View {
                 } label: {
                     Image(systemName: "trash")
                 }
+                .accessibilityLabel("Delete thought")
+                .accessibilityHint("Double tap to confirm deletion. This action cannot be undone.")
+                .accessibilityIdentifier("deleteThoughtButton")
             }
         }
         .confirmationDialog(
@@ -180,6 +186,7 @@ struct DetailScreen: View {
                     } label: {
                         HStack {
                             Image(systemName: classification.type == .reminder ? "bell.badge.fill" : "calendar.badge.plus")
+                                .accessibilityHidden(true)
                             Text(classification.type == .reminder ? "Create Reminder" : "Add to Calendar")
                         }
                         .frame(maxWidth: .infinity)
@@ -187,6 +194,7 @@ struct DetailScreen: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .disabled(viewModel.isCreatingTask)
+                    .accessibilityIdentifier(classification.type == .reminder ? "createReminderButton" : "addToCalendarButton")
                     .overlay {
                         if viewModel.isCreatingTask {
                             ProgressView()
@@ -231,6 +239,8 @@ struct DetailScreen: View {
                     }
                 }
                 .disabled(isRefreshingLocation)
+                .accessibilityLabel("Refresh location")
+                .accessibilityIdentifier("refreshLocationButton")
 
                 // Debug button for energy breakdown
                 Button {
@@ -243,6 +253,8 @@ struct DetailScreen: View {
                         .foregroundColor(.teal)
                         .font(.caption)
                 }
+                .accessibilityLabel(showEnergyDebug ? "Hide energy details" : "Show energy details")
+                .accessibilityIdentifier("energyDebugButton")
             }
 
             ContextDisplayView(context: updatedContext)
@@ -307,7 +319,8 @@ struct DetailScreen: View {
                     icon: "hand.thumbsup.fill",
                     label: "Helpful",
                     color: .green,
-                    isSelected: viewModel.userFeedback?.type == .helpful
+                    isSelected: viewModel.userFeedback?.type == .helpful,
+                    identifier: "helpfulFeedbackButton"
                 ) {
                     viewModel.provideFeedback(.helpful)
                 }
@@ -316,7 +329,8 @@ struct DetailScreen: View {
                     icon: "hand.raised.fill",
                     label: "Okay",
                     color: .orange,
-                    isSelected: viewModel.userFeedback?.type == .partially_helpful
+                    isSelected: viewModel.userFeedback?.type == .partially_helpful,
+                    identifier: "partiallyHelpfulFeedbackButton"
                 ) {
                     viewModel.provideFeedback(.partially_helpful)
                 }
@@ -325,7 +339,8 @@ struct DetailScreen: View {
                     icon: "hand.thumbsdown.fill",
                     label: "Not Helpful",
                     color: .red,
-                    isSelected: viewModel.userFeedback?.type == .not_helpful
+                    isSelected: viewModel.userFeedback?.type == .not_helpful,
+                    identifier: "notHelpfulFeedbackButton"
                 ) {
                     viewModel.provideFeedback(.not_helpful)
                 }
@@ -405,6 +420,7 @@ struct FeedbackButton: View {
     let label: String
     let color: Color
     let isSelected: Bool
+    let identifier: String
     let action: () -> Void
 
     var body: some View {
@@ -422,6 +438,11 @@ struct FeedbackButton: View {
             .cornerRadius(10)
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Feedback: \(label)")
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+        .accessibilityAddTraits(.isButton)
+        .accessibilityIdentifier(identifier)
     }
 }
 

@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import AppIntents
 
 @main
 struct PersonalAIApp: App {
@@ -18,6 +19,13 @@ struct PersonalAIApp: App {
 
     // Services are lazily initialized as static properties on their types
     // See BrowseScreen.swift for shared instance definitions
+
+    // MARK: - Initialization
+
+    init() {
+        // Register App Shortcuts for Siri integration
+        ThoughtAppShortcuts.updateAppShortcutParameters()
+    }
 
     // MARK: - Body
 

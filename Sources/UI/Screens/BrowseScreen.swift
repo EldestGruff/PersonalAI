@@ -235,6 +235,8 @@ struct BrowseScreen: View {
         }
         .padding()
         .accessibilityLabel("Add new thought")
+        .accessibilityHint("Double tap to open capture screen")
+        .accessibilityIdentifier("addThoughtButton")
     }
 
     // MARK: - Filter Button
@@ -245,6 +247,9 @@ struct BrowseScreen: View {
         } label: {
             Image(systemName: viewModel.hasActiveFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
         }
+        .accessibilityLabel(viewModel.hasActiveFilters ? "Filter thoughts (active filters)" : "Filter thoughts")
+        .accessibilityHint("Double tap to open filter and sort options")
+        .accessibilityIdentifier("filterButton")
     }
 
     // MARK: - Filter Sheet
@@ -268,12 +273,16 @@ struct BrowseScreen: View {
                                 if viewModel.filterStatus == status {
                                     Image(systemName: "checkmark")
                                         .foregroundColor(.blue)
+                                        .accessibilityHidden(true)
                                 }
                             }
                         }
                         .foregroundColor(.primary)
+                        .accessibilityValue(viewModel.filterStatus == status ? "Selected" : "Not selected")
+                        .accessibilityHint("Double tap to \(viewModel.filterStatus == status ? "deselect" : "select") \(status.rawValue) status")
                     }
                 }
+                .accessibilitySortPriority(4)
 
                 // Tag filter
                 if !viewModel.availableTags.isEmpty {
@@ -288,12 +297,16 @@ struct BrowseScreen: View {
                                     if viewModel.selectedFilterTags.contains(tag) {
                                         Image(systemName: "checkmark")
                                             .foregroundColor(.blue)
+                                            .accessibilityHidden(true)
                                     }
                                 }
                             }
                             .foregroundColor(.primary)
+                            .accessibilityValue(viewModel.selectedFilterTags.contains(tag) ? "Selected" : "Not selected")
+                            .accessibilityHint("Double tap to \(viewModel.selectedFilterTags.contains(tag) ? "deselect" : "select") tag")
                         }
                     }
+                    .accessibilitySortPriority(3)
                 }
 
                 // Sort options
@@ -308,12 +321,16 @@ struct BrowseScreen: View {
                                 if viewModel.sortBy == field {
                                     Image(systemName: "checkmark")
                                         .foregroundColor(.blue)
+                                        .accessibilityHidden(true)
                                 }
                             }
                         }
                         .foregroundColor(.primary)
+                        .accessibilityValue(viewModel.sortBy == field ? "Selected" : "Not selected")
+                        .accessibilityHint("Double tap to sort by \(field.rawValue)")
                     }
                 }
+                .accessibilitySortPriority(2)
 
                 Section("Sort Order") {
                     ForEach(SortOrder.allCases, id: \.self) { order in
@@ -324,17 +341,22 @@ struct BrowseScreen: View {
                         } label: {
                             HStack {
                                 Image(systemName: order.symbol)
+                                    .accessibilityHidden(true)
                                 Text(order.rawValue)
                                 Spacer()
                                 if viewModel.sortOrder == order {
                                     Image(systemName: "checkmark")
                                         .foregroundColor(.blue)
+                                        .accessibilityHidden(true)
                                 }
                             }
                         }
                         .foregroundColor(.primary)
+                        .accessibilityValue(viewModel.sortOrder == order ? "Selected" : "Not selected")
+                        .accessibilityHint("Double tap to sort in \(order.rawValue) order")
                     }
                 }
+                .accessibilitySortPriority(1)
             }
             .navigationTitle("Filter & Sort")
             #if os(iOS)

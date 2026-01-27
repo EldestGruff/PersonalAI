@@ -151,6 +151,11 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
+		A1803D832F27C6A00071D950 /* AppIntents */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AppIntents;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -182,6 +187,7 @@
 				A0800000000000000000030 /* Services */,
 				A0800000000000000000040 /* UI */,
 				A0800000000000000000050 /* Resources */,
+				A1803D832F27C6A00071D950 /* AppIntents */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -407,6 +413,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				A1803D4E2F270E6C0071D950 /* Assets */,
+				A1803D832F27C6A00071D950 /* AppIntents */,
 			);
 			name = PersonalAI;
 			packageProductDependencies = (
@@ -671,6 +678,7 @@
 				CODE_SIGN_ENTITLEMENTS = PersonalAI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B4J94SF44Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "PersonalAI needs access to calendar events to provide context-aware features.";
@@ -713,6 +721,7 @@
 				CODE_SIGN_ENTITLEMENTS = PersonalAI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B4J94SF44Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "PersonalAI needs access to calendar events to provide context-aware features.";

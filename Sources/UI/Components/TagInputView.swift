@@ -68,6 +68,7 @@ struct TagInputView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "tag")
                         .foregroundColor(.secondary)
+                        .accessibilityHidden(true)
 
                     TextField("Add tag...", text: $newTagText)
                         .focused($isInputFocused)
@@ -75,6 +76,7 @@ struct TagInputView: View {
                         .textInputAutocapitalization(.never)
                         #endif
                         .autocorrectionDisabled()
+                        .accessibilityIdentifier("addTagTextField")
                         .onSubmit {
                             addTag()
                         }
@@ -85,6 +87,8 @@ struct TagInputView: View {
                                 .foregroundColor(.blue)
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel("Add tag")
+                        .accessibilityIdentifier("addTagButton")
                     }
                 }
                 .padding(10)
@@ -126,6 +130,7 @@ struct TagChip: View {
                         .font(.caption)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Remove tag \(tag)")
             }
         }
         .padding(.horizontal, 10)

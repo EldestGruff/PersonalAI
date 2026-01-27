@@ -113,6 +113,7 @@ struct SettingsScreen: View {
                     }
                 }
                 .disabled(viewModel.isRequestingPermission)
+                .accessibilityIdentifier("enableAllPermissionsButton")
             }
         } header: {
             HStack {
@@ -139,6 +140,7 @@ struct SettingsScreen: View {
                         .foregroundColor(.secondary)
                 }
             }
+            .accessibilityIdentifier("autoClassificationToggle")
 
             Toggle(isOn: $viewModel.enableContextEnrichment) {
                 VStack(alignment: .leading, spacing: 2) {
@@ -148,6 +150,7 @@ struct SettingsScreen: View {
                         .foregroundColor(.secondary)
                 }
             }
+            .accessibilityIdentifier("contextEnrichmentToggle")
 
             Toggle(isOn: $viewModel.enableAutoTags) {
                 VStack(alignment: .leading, spacing: 2) {
@@ -157,6 +160,7 @@ struct SettingsScreen: View {
                         .foregroundColor(.secondary)
                 }
             }
+            .accessibilityIdentifier("autoTaggingToggle")
 
             Toggle(isOn: $viewModel.autoCreateReminders) {
                 VStack(alignment: .leading, spacing: 2) {
@@ -166,6 +170,7 @@ struct SettingsScreen: View {
                         .foregroundColor(.secondary)
                 }
             }
+            .accessibilityIdentifier("autoCreateRemindersToggle")
         }
     }
 
@@ -245,6 +250,7 @@ struct SettingsScreen: View {
                         .foregroundColor(.secondary)
                 }
             }
+            .accessibilityIdentifier("autoSyncToggle")
 
             if viewModel.autoSyncEnabled {
                 HStack {
@@ -327,6 +333,7 @@ struct PermissionRow: View {
                 .font(.title3)
                 .foregroundColor(authorized ? .green : .secondary)
                 .frame(width: 32)
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(label)
@@ -334,12 +341,15 @@ struct PermissionRow: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(label). \(description)")
 
             Spacer()
 
             if authorized {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(.green)
+                    .accessibilityLabel("Authorized")
                 // Still allow re-requesting even when authorized
                 // (some frameworks like EventKit have multiple sub-permissions)
                 Button("Re-request") {
@@ -348,14 +358,23 @@ struct PermissionRow: View {
                 .buttonStyle(.bordered)
                 .controlSize(.mini)
                 .foregroundColor(.secondary)
+                .accessibilityIdentifier("\(permissionIdentifier)RerequestButton")
             } else {
                 Button("Enable") {
                     action()
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
+                .accessibilityIdentifier("\(permissionIdentifier)EnableButton")
             }
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("\(label) permission")
+        .accessibilityValue(authorized ? "Authorized" : "Not authorized")
+    }
+
+    private var permissionIdentifier: String {
+        label.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "&", with: "")
     }
 }
 

@@ -23,6 +23,7 @@ struct ContextDisplayView: View {
             HStack {
                 Image(systemName: "brain.head.profile")
                     .foregroundColor(.teal)
+                    .accessibilityHidden(true)
 
                 Text("Context")
                     .font(.caption)
@@ -109,6 +110,7 @@ struct ContextItem: View {
                 .font(.caption)
                 .foregroundColor(.teal)
                 .frame(width: 16)
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(label)
@@ -122,6 +124,8 @@ struct ContextItem: View {
 
             Spacer()
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(label): \(value)")
     }
 }
 

@@ -77,6 +77,7 @@ struct CaptureScreen: View {
                     }
                     .disabled(!viewModel.isValid || viewModel.isCapturing)
                     .fontWeight(.semibold)
+                    .accessibilityIdentifier("captureThoughtButton")
                 }
             }
             .onAppear {
@@ -109,6 +110,9 @@ struct CaptureScreen: View {
                 }
                 .buttonStyle(.bordered)
                 .disabled(viewModel.isCapturing)
+                .accessibilityLabel(viewModel.voiceInputMode ? "Switch to keyboard input" : "Switch to voice input")
+                .accessibilityHint("Double tap to toggle input mode")
+                .accessibilityIdentifier("voiceInputToggleButton")
             }
 
             if viewModel.voiceInputMode {
@@ -124,6 +128,8 @@ struct CaptureScreen: View {
                     .padding(8)
                     .background(Color.gray.opacity(0.1))
                     .cornerRadius(10)
+                    .accessibilityIdentifier("captureThoughtTextField")
+                    .accessibilityHint("Enter your thought content. AI will automatically classify and tag it.")
                     .onChange(of: viewModel.thoughtContent) { _, newValue in
                         // Trigger classification after user stops typing
                         if newValue.count > 10 {
@@ -217,6 +223,7 @@ struct VoiceInputPlaceholder: View {
             Image(systemName: "mic.fill")
                 .font(.system(size: 48))
                 .foregroundColor(.blue)
+                .accessibilityHidden(true)
 
             Text("Voice input will be available in a future update")
                 .font(.subheadline)

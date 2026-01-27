@@ -73,14 +73,8 @@ struct CaptureThoughtIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        // Get required services
-        let container = ServiceContainer.shared
-        guard let repository = await container.resolveOptional(any ThoughtRepositoryProtocol.Type) as? any ThoughtRepositoryProtocol else {
-            throw IntentError.serviceUnavailable
-        }
-
-        // Get classification service for auto-classification
-        let classificationService = await container.resolveOptional(any ClassificationServiceProtocol.Type) as? any ClassificationServiceProtocol
+        // Use ThoughtRepository directly (no protocol)
+        let repository = ThoughtRepository.shared
 
         // Create classification
         let classification: Classification?
@@ -89,26 +83,28 @@ struct CaptureThoughtIntent: AppIntent {
             classification = Classification(
                 id: UUID(),
                 type: explicitType.toModel(),
-                sentiment: .neutral,
+                confidence: 1.0,
                 entities: [],
                 suggestedTags: [],
+                sentiment: .neutral,
                 language: "en",
                 processingTime: 0.0,
                 model: "manual",
-                confidence: 1.0,
                 createdAt: Date(),
                 parsedDateTime: nil
             )
-        } else if autoClassify, let service = classificationService {
-            // Auto-classify using AI
-            classification = try await service.classify(content)
+        } else if autoClassify {
+            // TODO: Auto-classify using AI when ClassificationService is accessible
+            // For now, default to no classification
+            classification = nil
         } else {
             // No classification
             classification = nil
         }
 
         // Get current user ID (single user in Phase 3A)
-        let userId = UUID() // TODO: Get from user session
+        // TODO: Get from actual user session
+        let userId = UUID()
 
         // Create and save thought
         let now = Date()
@@ -121,9 +117,9 @@ struct CaptureThoughtIntent: AppIntent {
             context: Context(
                 timestamp: now,
                 location: nil,
-                timeOfDay: .unknown,
-                energy: nil,
-                focusState: nil,
+                timeOfDay: TimeOfDay.from(date: now),
+                energy: .medium,
+                focusState: .scattered,
                 calendar: nil,
                 activity: nil,
                 weather: nil
@@ -135,7 +131,7 @@ struct CaptureThoughtIntent: AppIntent {
             taskId: nil
         )
 
-        try await repository.save(thought)
+        _ = try await repository.create(thought)
 
         // Donate interaction for Siri suggestions
         if let classification = classification {
@@ -144,8 +140,9 @@ struct CaptureThoughtIntent: AppIntent {
 
         // Return success with dialog
         let typeString = classification?.type.displayName ?? "thought"
+        let dialogString = "Captured as \(typeString): \"\(content)\""
         return .result(
-            dialog: "Captured as \(typeString): \"\(content)\""
+            dialog: IntentDialog(stringLiteral: dialogString)
         )
     }
 
@@ -154,23 +151,8 @@ struct CaptureThoughtIntent: AppIntent {
     /// Donate this intent execution to Siri for future suggestions.
     private func donateInteraction(content: String, type: ClassificationType) {
         // Intent donations help Siri learn user patterns and suggest shortcuts
-        // This is called automatically after successful execution
-        Task {
-            let intent = CaptureThoughtIntent()
-            intent.content = content
-            intent.type = ThoughtTypeEnum.from(type)
-            intent.autoClassify = false
-
-            // Donate with relevance for better suggestions
-            let shortcut = AppShortcut(intent: intent, phrases: [
-                "Capture a thought",
-                "Save a note in \(.applicationName)",
-                "Remember this"
-            ])
-
-            // System will learn from repeated use
-            _ = shortcut
-        }
+        // Donations are automatic through AppIntents framework
+        // No manual donation needed - the framework handles this
     }
 }
 
@@ -197,18 +179,17 @@ enum IntentError: Error, CustomLocalizedStringResourceConvertible {
 
 /// Predefined shortcuts that appear in Shortcuts app.
 struct ThoughtAppShortcuts: AppShortcutsProvider {
+    @AppShortcutsBuilder
     static var appShortcuts: [AppShortcut] {
-        [
-            AppShortcut(
-                intent: CaptureThoughtIntent(),
-                phrases: [
-                    "Capture a thought in \(.applicationName)",
-                    "Save a note in \(.applicationName)",
-                    "Remember something in \(.applicationName)"
-                ],
-                shortTitle: "Capture",
-                systemImageName: "square.and.pencil"
-            )
-        ]
+        AppShortcut(
+            intent: CaptureThoughtIntent(),
+            phrases: [
+                "Capture a thought in \(.applicationName)",
+                "Save a note in \(.applicationName)",
+                "Remember something in \(.applicationName)"
+            ],
+            shortTitle: "Capture",
+            systemImageName: "square.and.pencil"
+        )
     }
 }

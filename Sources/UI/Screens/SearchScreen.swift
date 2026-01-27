@@ -53,6 +53,7 @@ struct SearchScreen: View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.secondary)
+                .accessibilityHidden(true)
 
             TextField("Search thoughts...", text: $viewModel.searchQuery)
                 .focused($isSearchFocused)
@@ -61,6 +62,8 @@ struct SearchScreen: View {
                 .submitLabel(.search)
                 #endif
                 .autocorrectionDisabled()
+                .accessibilityIdentifier("searchTextField")
+                .accessibilityHint("Search by content, tags, or context")
                 .onSubmit {
                     _Concurrency.Task {
                         await viewModel.search()
@@ -74,6 +77,9 @@ struct SearchScreen: View {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundColor(.secondary)
                 }
+                .accessibilityLabel("Clear search")
+                .accessibilityHint("Double tap to clear search query")
+                .accessibilityIdentifier("clearSearchButton")
             }
 
             if viewModel.isSearching {
@@ -96,6 +102,7 @@ struct SearchScreen: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 48))
                 .foregroundColor(.secondary)
+                .accessibilityHidden(true)
 
             Text("Search Your Thoughts")
                 .font(.headline)
@@ -121,6 +128,7 @@ struct SearchScreen: View {
             Image(systemName: "doc.text.magnifyingglass")
                 .font(.system(size: 48))
                 .foregroundColor(.secondary)
+                .accessibilityHidden(true)
 
             Text("No Results")
                 .font(.headline)

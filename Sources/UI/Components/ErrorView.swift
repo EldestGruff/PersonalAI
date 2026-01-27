@@ -24,6 +24,7 @@ struct ErrorBanner: View {
         HStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundColor(.white)
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(error.errorDescription ?? "An error occurred")
@@ -34,7 +35,7 @@ struct ErrorBanner: View {
                 if let recovery = error.recoverySuggestion {
                     Text(recovery)
                         .font(.caption)
-                        .foregroundColor(.white.opacity(0.9))
+                        .foregroundColor(.white)
                 }
             }
 
@@ -43,8 +44,9 @@ struct ErrorBanner: View {
             if let onDismiss = onDismiss {
                 Button(action: onDismiss) {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.white.opacity(0.8))
+                        .foregroundColor(.white)
                 }
+                .accessibilityLabel("Dismiss error")
             }
         }
         .padding()
@@ -71,6 +73,7 @@ struct ErrorCard: View {
             Image(systemName: "exclamationmark.circle")
                 .font(.largeTitle)
                 .foregroundColor(.red)
+                .accessibilityHidden(true)
 
             Text(error.errorDescription ?? "An error occurred")
                 .font(.headline)
@@ -124,6 +127,7 @@ struct EmptyStateView: View {
             Image(systemName: icon)
                 .font(.system(size: 48))
                 .foregroundColor(.secondary)
+                .accessibilityHidden(true)
 
             Text(title)
                 .font(.headline)

@@ -67,13 +67,10 @@ struct ReviewIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog & OpensIntent {
         // Get repository for count
-        let container = ServiceContainer.shared
-        guard let repository = await container.resolveOptional(any ThoughtRepositoryProtocol.Type) as? any ThoughtRepositoryProtocol else {
-            throw IntentError.serviceUnavailable
-        }
+        let repository = ThoughtRepository.shared
 
         // Get count for dialog
-        var thoughts = try await repository.fetchAll()
+        var thoughts = try await repository.list()
 
         // Apply filters (same logic as SearchIntent)
         thoughts = applyFilters(to: thoughts)
@@ -81,11 +78,11 @@ struct ReviewIntent: AppIntent {
         let count = thoughts.count
         let typeString = typeFilter?.rawValue.capitalized ?? "thoughts"
         let dateString = dateRange?.rawValue ?? "all time"
-        let dialog = "Showing \(count) \(typeString) from \(dateString)"
+        let dialogString = "Showing \(count) \(typeString) from \(dateString)"
 
         // Return result that opens app
         // App will use URL scheme or notification to show filtered view
-        return .result(dialog: dialog)
+        return .result(dialog: IntentDialog(stringLiteral: dialogString))
     }
 
     // MARK: - Filtering Logic

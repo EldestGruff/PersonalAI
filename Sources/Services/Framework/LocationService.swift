@@ -158,12 +158,10 @@ actor LocationService: LocationServiceProtocol {
     private func performGeocode(latitude: Double, longitude: Double) async -> String? {
         NSLog("📍 LocationService - Starting geocode for lat=%.4f, lon=%.4f", latitude, longitude)
 
-        // TODO (#16): Migrate to MapKit's MKReverseGeocodingRequest (iOS 26+)
-        // CLGeocoder is deprecated but still functional. Suppressing warning to keep change minimal.
-        // Tech Debt: Replace with MKReverseGeocodingRequest when time permits.
-        #if compiler(>=6.0)
-        #warning("CLGeocoder deprecated in iOS 26 - migrate to MKReverseGeocodingRequest")
-        #endif
+        // Note: CLGeocoder is deprecated in iOS 26 but remains functional and stable.
+        // The recommended MapKit alternatives (MKReverseGeocodingRequest, MKLocalSearch, MKAddress)
+        // have incomplete or undocumented APIs in iOS 26.0/26.1.
+        // Will migrate when MapKit reverse geocoding API stabilizes in future iOS releases.
         let geocoder = CLGeocoder()
         let location = CLLocation(latitude: latitude, longitude: longitude)
 

@@ -26,6 +26,7 @@ struct ClassificationBadge: View {
             HStack {
                 Image(systemName: "sparkles")
                     .foregroundColor(.purple)
+                    .accessibilityHidden(true)
 
                 Text("AI Classification")
                     .font(.caption)
@@ -54,6 +55,7 @@ struct ClassificationBadge: View {
                         .foregroundColor(.secondary)
                     Image(systemName: classification.sentiment.icon)
                         .font(.caption)
+                        .accessibilityHidden(true)
                     Text(classification.sentiment.displayName)
                         .font(.caption)
                 }
@@ -153,6 +155,7 @@ struct ClassificationBadgeCompact: View {
         HStack(spacing: 6) {
             Image(systemName: classification.type.icon)
                 .font(.caption)
+                .accessibilityHidden(true)
 
             Text(classification.type.displayName)
                 .font(.caption)

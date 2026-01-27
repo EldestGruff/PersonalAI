@@ -25,12 +25,12 @@ struct ThoughtAppEntity: AppEntity, Identifiable, Sendable {
         TypeDisplayRepresentation(name: "Thought")
     }
 
-    static var defaultQuery = ThoughtQuery()
+    static let defaultQuery = ThoughtQuery()
 
     var displayRepresentation: DisplayRepresentation {
         DisplayRepresentation(
-            title: "\(content)",
-            subtitle: subtitle,
+            title: LocalizedStringResource(stringLiteral: content),
+            subtitle: LocalizedStringResource(stringLiteral: subtitle),
             image: image
         )
     }
@@ -93,12 +93,9 @@ struct ThoughtQuery: EntityQuery {
     @MainActor
     func entities(for identifiers: [UUID]) async throws -> [ThoughtAppEntity] {
         // Get thoughts from repository
-        let container = ServiceContainer.shared
-        guard let repository = await container.resolveOptional(any ThoughtRepositoryProtocol.Type) as? any ThoughtRepositoryProtocol else {
-            return []
-        }
+        let repository = ThoughtRepository.shared
+        let thoughts = try await repository.list()
 
-        let thoughts = try await repository.fetchAll()
         return thoughts
             .filter { identifiers.contains($0.id) }
             .map { ThoughtAppEntity(from: $0) }
@@ -107,12 +104,9 @@ struct ThoughtQuery: EntityQuery {
     @MainActor
     func suggestedEntities() async throws -> [ThoughtAppEntity] {
         // Return recent thoughts for suggestions
-        let container = ServiceContainer.shared
-        guard let repository = await container.resolveOptional(any ThoughtRepositoryProtocol.Type) as? any ThoughtRepositoryProtocol else {
-            return []
-        }
+        let repository = ThoughtRepository.shared
+        let thoughts = try await repository.list()
 
-        let thoughts = try await repository.fetchAll()
         return thoughts
             .sorted { $0.createdAt > $1.createdAt }
             .prefix(10)
@@ -126,19 +120,10 @@ extension ThoughtQuery: EntityStringQuery {
     @MainActor
     func entities(matching string: String) async throws -> [ThoughtAppEntity] {
         // Search thoughts by content
-        let container = ServiceContainer.shared
-        guard let repository = await container.resolveOptional(any ThoughtRepositoryProtocol.Type) as? any ThoughtRepositoryProtocol else {
-            return []
-        }
-
-        let thoughts = try await repository.fetchAll()
-        let searchLower = string.lowercased()
+        let repository = ThoughtRepository.shared
+        let thoughts = try await repository.search(string)
 
         return thoughts
-            .filter { thought in
-                thought.content.lowercased().contains(searchLower) ||
-                thought.tags.contains { $0.lowercased().contains(searchLower) }
-            }
             .sorted { $0.createdAt > $1.createdAt }
             .map { ThoughtAppEntity(from: $0) }
     }

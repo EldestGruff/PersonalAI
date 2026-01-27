@@ -77,13 +77,10 @@ struct SearchThoughtsIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ReturnsValue<[ThoughtAppEntity]> {
         // Get repository
-        let container = ServiceContainer.shared
-        guard let repository = await container.resolveOptional(any ThoughtRepositoryProtocol.Type) as? any ThoughtRepositoryProtocol else {
-            throw IntentError.serviceUnavailable
-        }
+        let repository = ThoughtRepository.shared
 
         // Fetch all thoughts
-        var thoughts = try await repository.fetchAll()
+        var thoughts = try await repository.list()
 
         // Apply filters
         thoughts = applyFilters(to: thoughts)
@@ -96,13 +93,13 @@ struct SearchThoughtsIntent: AppIntent {
         // Return results
         let count = entities.count
         let typeString = typeFilter?.rawValue.capitalized ?? "any type"
-        let dialog = count == 0
+        let dialogString = count == 0
             ? "No thoughts found matching your criteria"
             : "Found \(count) thought\(count == 1 ? "" : "s") of type \(typeString)"
 
         return .result(
             value: Array(entities),
-            dialog: dialog
+            dialog: IntentDialog(stringLiteral: dialogString)
         )
     }
 
