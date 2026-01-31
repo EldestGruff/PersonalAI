@@ -48,6 +48,7 @@
 		A0000001000000000000143 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000144 /* NetworkMonitor.swift */; };
 		A0000001000000000000151 /* NLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000152 /* NLPService.swift */; };
 		A0000001000000000000153 /* ClassificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000154 /* ClassificationService.swift */; };
+		ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */; };
 		A0000001000000000000161 /* ThoughtService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000162 /* ThoughtService.swift */; };
 		A0000001000000000000163 /* TaskService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000164 /* TaskService.swift */; };
 		A0000001000000000000171 /* ContextService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000172 /* ContextService.swift */; };
@@ -119,6 +120,7 @@
 		A0000001000000000000144 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		A0000001000000000000152 /* NLPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NLPService.swift; sourceTree = "<group>"; };
 		A0000001000000000000154 /* ClassificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationService.swift; sourceTree = "<group>"; };
+		A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsAnalyzer.swift; sourceTree = "<group>"; };
 		A0000001000000000000162 /* ThoughtService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtService.swift; sourceTree = "<group>"; };
 		A0000001000000000000164 /* TaskService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskService.swift; sourceTree = "<group>"; };
 		A0000001000000000000172 /* ContextService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextService.swift; sourceTree = "<group>"; };
@@ -317,6 +319,7 @@
 			children = (
 				A0000001000000000000152 /* NLPService.swift */,
 				A0000001000000000000154 /* ClassificationService.swift */,
+				A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */,
 				A1803D472F25BDFD0071D950 /* DateTimeParsingService.swift */,
 				A1803D4A2F25BDFD0071D952 /* DateTimeParsingService_FoundationModels.swift */,
 				A1803D4C2F25BDFD0071D954 /* ClassificationService_FoundationModels.swift */,
@@ -520,6 +523,7 @@
 				A0000001000000000000143 /* NetworkMonitor.swift in Sources */,
 				A0000001000000000000151 /* NLPService.swift in Sources */,
 				A0000001000000000000153 /* ClassificationService.swift in Sources */,
+				ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */,
 				A1803D4B2F25BDFD0071D953 /* ClassificationService_FoundationModels.swift in Sources */,
 				A0000001000000000000161 /* ThoughtService.swift in Sources */,
 				A0000001000000000000163 /* TaskService.swift in Sources */,

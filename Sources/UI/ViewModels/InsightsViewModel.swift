@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import FoundationModels
 
 /// Data point for thought count over time chart
 struct ThoughtCountDataPoint: Identifiable {
@@ -77,6 +78,10 @@ class InsightsViewModel {
     var typeDistributionData: [TypeDistributionDataPoint] = []
     var energyCorrelationData: [EnergyCorrelationDataPoint] = []
 
+    // AI Insights
+    var aiInsights: AIInsightsResponse?
+    var isLoadingInsights = false
+
     // Date range for filtering
     var dateRange: DateRange = .last30Days
 
@@ -134,10 +139,33 @@ class InsightsViewModel {
 
             isLoading = false
 
+            // Generate AI insights in parallel
+            if #available(iOS 26.0, *), filteredThoughts.count >= 5 {
+                await loadAIInsights(thoughts: filteredThoughts)
+            }
+
         } catch {
             self.error = error
             isLoading = false
         }
+    }
+
+    @available(iOS 26.0, *)
+    private func loadAIInsights(thoughts: [Thought]) async {
+        isLoadingInsights = true
+
+        do {
+            let analyzer = InsightsAnalyzer()
+            aiInsights = try await analyzer.generateInsights(
+                thoughts: thoughts,
+                dateRange: dateRange.rawValue
+            )
+        } catch {
+            NSLog("⚠️ Failed to generate AI insights: \(error)")
+            aiInsights = nil
+        }
+
+        isLoadingInsights = false
     }
 
     // MARK: - Data Aggregation
@@ -243,6 +271,20 @@ class InsightsViewModel {
 class MockInsightsViewModel: InsightsViewModel {
     init() {
         super.init(thoughtService: MockThoughtService())
+
+        // Mock AI insights
+        if #available(iOS 26.0, *) {
+            aiInsights = AIInsightsResponse(
+                insights: [
+                    "You're most productive in the morning, capturing 65% of your thoughts before noon",
+                    "Your mood improves by 0.3 points on days when you exercise or move more",
+                    "You tend to have more creative ideas when your energy is high",
+                    "Your emotional state is most positive when you have free time between events"
+                ],
+                overallPattern: "productive",
+                confidence: 0.87
+            )
+        }
 
         // Pre-populate with mock data
         let calendar = Calendar.current

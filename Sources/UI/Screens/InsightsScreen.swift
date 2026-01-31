@@ -61,10 +61,101 @@ struct InsightsScreen: View {
 
     private var chartsContent: some View {
         VStack(spacing: 32) {
+            // AI Insights card at the top
+            if #available(iOS 26.0, *) {
+                aiInsightsCard
+            }
+
             thoughtCountChart
             sentimentTrendChart
             typeDistributionChart
             energyCorrelationChart
+        }
+    }
+
+    // MARK: - AI Insights Card
+
+    @available(iOS 26.0, *)
+    private var aiInsightsCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "sparkles")
+                    .foregroundStyle(.purple)
+                Text("AI Insights")
+                    .font(.headline)
+
+                Spacer()
+
+                if viewModel.isLoadingInsights {
+                    ProgressView()
+                        .controlSize(.small)
+                }
+            }
+
+            if let insights = viewModel.aiInsights {
+                VStack(alignment: .leading, spacing: 8) {
+                    // Overall pattern badge
+                    HStack {
+                        Text(insights.overallPattern.capitalized)
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(patternColor(for: insights.overallPattern).opacity(0.2))
+                            .foregroundStyle(patternColor(for: insights.overallPattern))
+                            .cornerRadius(4)
+
+                        Text("Confidence: \(Int(insights.confidence * 100))%")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Divider()
+
+                    // Insights list
+                    ForEach(Array(insights.insights.enumerated()), id: \.offset) { index, insight in
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "\(index + 1).circle.fill")
+                                .foregroundStyle(.purple)
+                                .font(.caption)
+
+                            Text(insight)
+                                .font(.subheadline)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .padding(.vertical, 2)
+                    }
+                }
+            } else if !viewModel.isLoadingInsights {
+                Text("Capture at least 5 thoughts to unlock AI-powered insights")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .italic()
+            }
+        }
+        .padding()
+        .background(
+            LinearGradient(
+                colors: [Color.purple.opacity(0.05), Color.blue.opacity(0.05)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.purple.opacity(0.2), lineWidth: 1)
+        )
+    }
+
+    private func patternColor(for pattern: String) -> Color {
+        switch pattern.lowercased() {
+        case "productive": return .green
+        case "balanced": return .blue
+        case "stressed": return .orange
+        case "creative": return .purple
+        case "scattered": return .yellow
+        default: return .gray
         }
     }
 
