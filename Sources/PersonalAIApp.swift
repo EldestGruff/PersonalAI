@@ -32,14 +32,8 @@ struct PersonalAIApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Group {
-                if SystemLanguageModel.availability == .available {
-                    MainTabView()
-                        .environment(\.managedObjectContext, persistenceController.container.viewContext)
-                } else {
-                    AppleIntelligenceRequiredView()
-                }
-            }
+            MainTabView()
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
 }
@@ -53,6 +47,7 @@ struct MainTabView: View {
     enum Tab: String {
         case browse
         case search
+        case insights
         case settings
     }
 
@@ -80,6 +75,17 @@ struct MainTabView: View {
                 Label("Search", systemImage: "magnifyingglass")
             }
             .tag(Tab.search)
+
+            // Insights tab
+            InsightsScreen(
+                viewModel: InsightsViewModel(
+                    thoughtService: ThoughtService.shared
+                )
+            )
+            .tabItem {
+                Label("Insights", systemImage: "chart.xyaxis.line")
+            }
+            .tag(Tab.insights)
 
             // Settings tab
             SettingsScreen(

@@ -122,7 +122,8 @@ struct CaptureThoughtIntent: AppIntent {
                 focusState: .scattered,
                 calendar: nil,
                 activity: nil,
-                weather: nil
+                weather: nil,
+                stateOfMind: nil
             ),
             createdAt: now,
             updatedAt: now,

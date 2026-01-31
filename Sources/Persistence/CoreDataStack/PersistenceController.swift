@@ -34,7 +34,8 @@ struct PersistenceController: Sendable {
                     focusState: .deep_work,
                     calendar: nil,
                     activity: nil,
-                    weather: nil
+                    weather: nil,
+                    stateOfMind: nil
                 ),
                 createdAt: Date(),
                 updatedAt: Date(),

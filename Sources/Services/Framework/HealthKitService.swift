@@ -429,10 +429,50 @@ actor HealthKitService: HealthKitServiceProtocol {
             )
 
             // Extract labels (convert from HKStateOfMind.Label to String)
-            let labels = stateOfMind.labels.map { $0.rawValue }
+            let labels = stateOfMind.labels.map { label in
+                // HKStateOfMind.Label is an enum with descriptive string values
+                switch label {
+                case .anxious: return "anxious"
+                case .calm: return "calm"
+                case .content: return "content"
+                case .disappointed: return "disappointed"
+                case .excited: return "excited"
+                case .frustrated: return "frustrated"
+                case .grateful: return "grateful"
+                case .happy: return "happy"
+                case .irritated: return "irritated"
+                case .sad: return "sad"
+                case .scared: return "scared"
+                case .stressed: return "stressed"
+                case .worried: return "worried"
+                @unknown default: return "unknown"
+                }
+            }
 
             // Extract associations (convert from HKStateOfMind.Association to String)
-            let associations = stateOfMind.associations.map { $0.rawValue }
+            let associations = stateOfMind.associations.map { association in
+                switch association {
+                case .community: return "community"
+                case .currentEvents: return "currentEvents"
+                case .dating: return "dating"
+                case .education: return "education"
+                case .family: return "family"
+                case .fitness: return "fitness"
+                case .friends: return "friends"
+                case .health: return "health"
+                case .hobbies: return "hobbies"
+                case .identity: return "identity"
+                case .money: return "money"
+                case .partner: return "partner"
+                case .selfCare: return "selfCare"
+                case .spirituality: return "spirituality"
+                case .tasks: return "tasks"
+                case .travel: return "travel"
+                case .weather: return "weather"
+                case .work: return "work"
+                @unknown default: return "unknown"
+                }
+            }
 
             return StateOfMindSnapshot(
                 valence: stateOfMind.valence,
@@ -501,7 +541,7 @@ actor HealthKitService: HealthKitServiceProtocol {
 
     // MARK: - Query Helpers
 
-    private func fetchSamples(type: HKSampleType, predicate: NSPredicate) async throws -> [HKSample] {
+    private nonisolated func fetchSamples(type: HKSampleType, predicate: NSPredicate) async throws -> [HKSample] {
         try await fetchSamples(
             type: type,
             predicate: predicate,
@@ -510,7 +550,7 @@ actor HealthKitService: HealthKitServiceProtocol {
         )
     }
 
-    private func fetchSamples(
+    private nonisolated func fetchSamples(
         type: HKSampleType,
         predicate: NSPredicate,
         limit: Int,

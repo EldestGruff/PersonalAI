@@ -334,7 +334,13 @@ actor MockContextService: ContextServiceProtocol {
             focusState: .deep_work,
             calendar: CalendarContext(nextEventMinutes: 60, isFreetime: true, eventCount: 3),
             activity: ActivityContext(stepCount: 5000, caloriesBurned: 200, activeMinutes: 30),
-            weather: nil
+            weather: nil,
+            stateOfMind: StateOfMindSnapshot(
+                valence: 0.6,
+                classification: .slightlyPleasant,
+                labels: ["calm", "focused"],
+                associations: ["work"]
+            )
         )
     }
 

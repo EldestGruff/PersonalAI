@@ -243,7 +243,8 @@ extension UserFocusState {
                 caloriesBurned: 250.0,
                 activeMinutes: 45
             ),
-            weather: nil
+            weather: nil,
+            stateOfMind: nil
         )
     )
     .padding()
@@ -264,7 +265,8 @@ extension UserFocusState {
             focusState: .scattered,
             calendar: nil,
             activity: nil,
-            weather: nil
+            weather: nil,
+            stateOfMind: nil
         )
     )
     .padding()

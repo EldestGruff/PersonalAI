@@ -58,6 +58,7 @@
 		A0000001000000000000205 /* DetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000206 /* DetailScreen.swift */; };
 		A0000001000000000000207 /* SearchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000208 /* SearchScreen.swift */; };
 		A0000001000000000000209 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000210 /* SettingsScreen.swift */; };
+		A00000010000000000000254 /* InsightsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000253 /* InsightsScreen.swift */; };
 		A0000001000000000000221 /* ThoughtRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000222 /* ThoughtRowView.swift */; };
 		A0000001000000000000223 /* ClassificationBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000224 /* ClassificationBadge.swift */; };
 		A0000001000000000000225 /* ContextDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000226 /* ContextDisplayView.swift */; };
@@ -69,6 +70,7 @@
 		A0000001000000000000245 /* DetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000246 /* DetailViewModel.swift */; };
 		A0000001000000000000247 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000248 /* SearchViewModel.swift */; };
 		A0000001000000000000249 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000250 /* SettingsViewModel.swift */; };
+		A00000010000000000000256 /* InsightsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000255 /* InsightsViewModel.swift */; };
 		A0000001000000000000251 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000252 /* AppError.swift */; };
 		A1803D482F25BDFD0071D950 /* DateTimeParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803D472F25BDFD0071D950 /* DateTimeParsingService.swift */; };
 		A1803D492F25BDFD0071D951 /* DateTimeParsingService_FoundationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803D4A2F25BDFD0071D952 /* DateTimeParsingService_FoundationModels.swift */; };
@@ -127,6 +129,7 @@
 		A0000001000000000000206 /* DetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailScreen.swift; sourceTree = "<group>"; };
 		A0000001000000000000208 /* SearchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScreen.swift; sourceTree = "<group>"; };
 		A0000001000000000000210 /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
+		A00000010000000000000253 /* InsightsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsScreen.swift; sourceTree = "<group>"; };
 		A0000001000000000000222 /* ThoughtRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtRowView.swift; sourceTree = "<group>"; };
 		A0000001000000000000224 /* ClassificationBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationBadge.swift; sourceTree = "<group>"; };
 		A0000001000000000000226 /* ContextDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextDisplayView.swift; sourceTree = "<group>"; };
@@ -138,6 +141,7 @@
 		A0000001000000000000246 /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
 		A0000001000000000000248 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		A0000001000000000000250 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		A00000010000000000000255 /* InsightsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsViewModel.swift; sourceTree = "<group>"; };
 		A0000001000000000000252 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
 		A1000000000000000000001 /* PersonalAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PersonalAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1803D472F25BDFD0071D950 /* DateTimeParsingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeParsingService.swift; sourceTree = "<group>"; };
@@ -359,6 +363,7 @@
 				A0000001000000000000206 /* DetailScreen.swift */,
 				A0000001000000000000208 /* SearchScreen.swift */,
 				A0000001000000000000210 /* SettingsScreen.swift */,
+				A00000010000000000000253 /* InsightsScreen.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -384,6 +389,7 @@
 				A0000001000000000000246 /* DetailViewModel.swift */,
 				A0000001000000000000248 /* SearchViewModel.swift */,
 				A0000001000000000000250 /* SettingsViewModel.swift */,
+				A00000010000000000000255 /* InsightsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -525,6 +531,7 @@
 				A0000001000000000000205 /* DetailScreen.swift in Sources */,
 				A0000001000000000000207 /* SearchScreen.swift in Sources */,
 				A0000001000000000000209 /* SettingsScreen.swift in Sources */,
+				A00000010000000000000254 /* InsightsScreen.swift in Sources */,
 				A0000001000000000000221 /* ThoughtRowView.swift in Sources */,
 				A0000001000000000000223 /* ClassificationBadge.swift in Sources */,
 				A0000001000000000000225 /* ContextDisplayView.swift in Sources */,
@@ -536,6 +543,7 @@
 				A0000001000000000000245 /* DetailViewModel.swift in Sources */,
 				A0000001000000000000247 /* SearchViewModel.swift in Sources */,
 				A0000001000000000000249 /* SettingsViewModel.swift in Sources */,
+				A00000010000000000000256 /* InsightsViewModel.swift in Sources */,
 				A0000001000000000000251 /* AppError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

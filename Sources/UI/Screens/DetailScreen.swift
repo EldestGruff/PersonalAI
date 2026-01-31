@@ -283,7 +283,8 @@ struct DetailScreen: View {
                 focusState: viewModel.thought.context.focusState,
                 calendar: viewModel.thought.context.calendar,
                 activity: viewModel.thought.context.activity,
-                weather: viewModel.thought.context.weather
+                weather: viewModel.thought.context.weather,
+                stateOfMind: viewModel.thought.context.stateOfMind
             )
         }
         return viewModel.thought.context
@@ -629,7 +630,8 @@ struct BreakdownRow: View {
                             caloriesBurned: 150.0,
                             activeMinutes: 30
                         ),
-                        weather: nil
+                        weather: nil,
+                        stateOfMind: nil
                     ),
                     createdAt: Date().addingTimeInterval(-86400),
                     updatedAt: Date(),
