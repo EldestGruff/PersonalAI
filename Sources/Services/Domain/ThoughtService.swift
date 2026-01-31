@@ -97,13 +97,35 @@ actor ThoughtService: ThoughtServiceProtocol {
     /// - Returns: The created thought (may include classification)
     /// - Throws: `ServiceError` on validation or persistence failure
     func create(_ thought: Thought) async throws -> Thought {
+        // Normalize tags (convert spaces to hyphens, lowercase)
+        let normalizedTags = thought.tags.map { tag in
+            tag.lowercased()
+                .replacingOccurrences(of: " ", with: "-")
+                .trimmingCharacters(in: .whitespaces)
+        }
+
+        // Create thought with normalized tags
+        let normalizedThought = Thought(
+            id: thought.id,
+            userId: thought.userId,
+            content: thought.content,
+            tags: normalizedTags,
+            status: thought.status,
+            context: thought.context,
+            createdAt: thought.createdAt,
+            updatedAt: thought.updatedAt,
+            classification: thought.classification,
+            relatedThoughtIds: thought.relatedThoughtIds,
+            taskId: thought.taskId
+        )
+
         // Validate
-        try validateThought(thought)
+        try validateThought(normalizedThought)
 
         // Persist
         let created: Thought
         do {
-            created = try await repository.create(thought)
+            created = try await repository.create(normalizedThought)
         } catch {
             throw ServiceError.persistence(operation: "create thought", underlying: error)
         }
@@ -205,27 +227,49 @@ actor ThoughtService: ThoughtServiceProtocol {
     /// - Returns: The updated thought
     /// - Throws: `ServiceError` on validation, not found, or persistence error
     func update(_ thought: Thought) async throws -> Thought {
+        // Normalize tags (convert spaces to hyphens, lowercase)
+        let normalizedTags = thought.tags.map { tag in
+            tag.lowercased()
+                .replacingOccurrences(of: " ", with: "-")
+                .trimmingCharacters(in: .whitespaces)
+        }
+
+        // Create normalized thought for validation
+        let normalizedThought = Thought(
+            id: thought.id,
+            userId: thought.userId,
+            content: thought.content,
+            tags: normalizedTags,
+            status: thought.status,
+            context: thought.context,
+            createdAt: thought.createdAt,
+            updatedAt: thought.updatedAt,
+            classification: thought.classification,
+            relatedThoughtIds: thought.relatedThoughtIds,
+            taskId: thought.taskId
+        )
+
         // Validate
-        try validateThought(thought)
+        try validateThought(normalizedThought)
 
         // Check exists
-        guard try await repository.fetch(thought.id) != nil else {
-            throw ServiceError.notFound(entity: "Thought", id: thought.id)
+        guard try await repository.fetch(normalizedThought.id) != nil else {
+            throw ServiceError.notFound(entity: "Thought", id: normalizedThought.id)
         }
 
         // Update with new timestamp
         let updated = Thought(
-            id: thought.id,
-            userId: thought.userId,
-            content: thought.content,
-            tags: thought.tags,
-            status: thought.status,
-            context: thought.context,
-            createdAt: thought.createdAt,
+            id: normalizedThought.id,
+            userId: normalizedThought.userId,
+            content: normalizedThought.content,
+            tags: normalizedTags,
+            status: normalizedThought.status,
+            context: normalizedThought.context,
+            createdAt: normalizedThought.createdAt,
             updatedAt: Date(),
-            classification: thought.classification,
-            relatedThoughtIds: thought.relatedThoughtIds,
-            taskId: thought.taskId
+            classification: normalizedThought.classification,
+            relatedThoughtIds: normalizedThought.relatedThoughtIds,
+            taskId: normalizedThought.taskId
         )
 
         do {
