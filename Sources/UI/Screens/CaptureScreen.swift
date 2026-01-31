@@ -21,6 +21,7 @@ import SwiftUI
 /// - Capture button
 struct CaptureScreen: View {
     @State var viewModel: CaptureViewModel
+    @State private var showPaywall = false
     @Environment(\.dismiss) private var dismiss
     @SwiftUI.FocusState private var isTextFieldFocused: Bool
 
@@ -32,11 +33,9 @@ struct CaptureScreen: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    // Error banner
+                    // Error banner with upgrade option
                     if let error = viewModel.error {
-                        ErrorBanner(error: error) {
-                            viewModel.error = nil
-                        }
+                        subscriptionErrorBanner(error: error)
                     }
 
                     // Content input
@@ -88,6 +87,9 @@ struct CaptureScreen: View {
                 if succeeded {
                     dismiss()
                 }
+            }
+            .sheet(isPresented: $showPaywall) {
+                PaywallScreen()
             }
         }
     }
@@ -207,6 +209,59 @@ struct CaptureScreen: View {
                 Text(error)
                     .font(.caption)
                     .foregroundColor(.secondary)
+            }
+        }
+    }
+
+    // MARK: - Subscription Error Banner
+
+    @ViewBuilder
+    private func subscriptionErrorBanner(error: AppError) -> some View {
+        // Check if this is a subscription limit error
+        let isSubscriptionError = error.errorDescription?.contains("limit") ?? false
+
+        if isSubscriptionError {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 12) {
+                    Image(systemName: "crown.fill")
+                        .foregroundStyle(.yellow)
+                        .font(.title2)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Free Tier Limit Reached")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+
+                        Text(error.errorDescription ?? "Upgrade to Pro for unlimited thoughts")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+                }
+
+                Button {
+                    showPaywall = true
+                } label: {
+                    HStack {
+                        Image(systemName: "arrow.up.circle.fill")
+                        Text("Upgrade to Pro")
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+            }
+            .padding()
+            .background(Color.yellow.opacity(0.1))
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
+            )
+        } else {
+            ErrorBanner(error: error) {
+                viewModel.error = nil
             }
         }
     }
