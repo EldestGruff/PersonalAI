@@ -55,10 +55,28 @@ actor FoundationModelsClassifier {
             - event: Time-based activities, meetings, appointments, scheduled items
             - question: Things to research, answer, or investigate
 
+            Sentiment Analysis (IMPORTANT):
+            Range: -1.0 (very negative) to +1.0 (very positive)
+
+            Key Principles:
+            - DEFAULT TO NEUTRAL (0.0) unless there's clear emotional content
+            - Sarcasm, irony, and dry humor are typically NEUTRAL, not negative
+            - Casual/informal language ≠ negative sentiment
+            - Only mark as negative if expressing genuine frustration, sadness, or distress
+            - Only mark as positive if expressing genuine joy, excitement, or gratitude
+            - Factual statements, observations, and plans are usually neutral
+
+            Examples:
+            - "Great, another meeting" → 0.0 (sarcasm, but not genuinely negative)
+            - "Need to finish the report" → 0.0 (neutral task)
+            - "This project is a disaster" → -0.5 to -0.7 (genuinely negative)
+            - "Excited about the new feature!" → 0.6 to 0.8 (genuinely positive)
+            - "The weather is nice today" → 0.0 to 0.2 (neutral observation)
+
             Guidelines:
             1. Classify based on primary intent (a task might mention an event, but classify by main purpose)
             2. Provide 3-5 relevant, specific tags that capture key themes
-            3. Sentiment ranges from -1.0 (very negative) to +1.0 (very positive)
+            3. Be conservative with sentiment - when in doubt, lean toward neutral
             4. Be accurate with confidence scores (0.0 to 1.0)
             5. Consider context when provided (location, energy, focus state)
 
@@ -139,12 +157,19 @@ actor FoundationModelsClassifier {
     }
 
     private func mapSentiment(_ value: Double) -> Sentiment {
-        if value > 0.3 {
+        // Use a wider neutral band to avoid over-classifying as negative/positive
+        // Most casual thoughts should be neutral
+        switch value {
+        case 0.6...:
+            return .very_positive
+        case 0.25..<0.6:
             return .positive
-        } else if value < -0.3 {
+        case -0.25...0.25:
+            return .neutral  // Wide neutral band
+        case -0.6 ..< -0.25:
             return .negative
-        } else {
-            return .neutral
+        default:
+            return .very_negative
         }
     }
 }
