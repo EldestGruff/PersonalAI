@@ -8,6 +8,7 @@
 
 import SwiftUI
 import AppIntents
+import FoundationModels
 
 @main
 struct PersonalAIApp: App {
@@ -31,8 +32,14 @@ struct PersonalAIApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            Group {
+                if SystemLanguageModel.availability == .available {
+                    MainTabView()
+                        .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                } else {
+                    AppleIntelligenceRequiredView()
+                }
+            }
         }
     }
 }
