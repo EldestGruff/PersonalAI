@@ -55,23 +55,33 @@ actor FoundationModelsClassifier {
             - event: Time-based activities, meetings, appointments, scheduled items
             - question: Things to research, answer, or investigate
 
-            Sentiment Analysis (IMPORTANT):
+            Sentiment Analysis (CRITICAL):
             Range: -1.0 (very negative) to +1.0 (very positive)
 
-            Key Principles:
-            - DEFAULT TO NEUTRAL (0.0) unless there's clear emotional content
-            - Sarcasm, irony, and dry humor are typically NEUTRAL, not negative
-            - Casual/informal language ≠ negative sentiment
-            - Only mark as negative if expressing genuine frustration, sadness, or distress
-            - Only mark as positive if expressing genuine joy, excitement, or gratitude
-            - Factual statements, observations, and plans are usually neutral
+            NEUTRAL (0.0 to ±0.2) - Most thoughts:
+            - Tasks and reminders: "Need to finish the report"
+            - Factual observations: "Meeting ran 30 minutes over"
+            - Sarcasm: "Great, another meeting"
+            - Dry humor: "Of course the build failed"
+            - Plans: "Should probably update the docs"
 
-            Examples:
-            - "Great, another meeting" → 0.0 (sarcasm, but not genuinely negative)
-            - "Need to finish the report" → 0.0 (neutral task)
-            - "This project is a disaster" → -0.5 to -0.7 (genuinely negative)
-            - "Excited about the new feature!" → 0.6 to 0.8 (genuinely positive)
-            - "The weather is nice today" → 0.0 to 0.2 (neutral observation)
+            NEGATIVE (-0.3 to -1.0) - Genuine distress only:
+            - "Feeling overwhelmed and stressed" → -0.6
+            - "I'm frustrated with how this is going" → -0.5
+            - "This is making me anxious" → -0.6
+            - "Disappointed with the outcome" → -0.4
+            - "Terrible day, everything went wrong" → -0.8
+
+            POSITIVE (+0.3 to +1.0) - Genuine joy only:
+            - "Love the direction this is heading" → 0.5
+            - "So excited about the new feature!" → 0.7
+            - "Proud of what we accomplished" → 0.6
+            - "Feeling grateful today" → 0.5
+            - "This is amazing!" → 0.8
+
+            Key: Words like "stressed", "overwhelmed", "frustrated", "anxious" = NEGATIVE
+            Words like "love", "excited", "proud", "grateful", "amazing" = POSITIVE
+            Everything else = NEUTRAL
 
             Guidelines:
             1. Classify based on primary intent (a task might mention an event, but classify by main purpose)
