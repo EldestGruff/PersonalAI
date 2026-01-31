@@ -112,10 +112,17 @@ actor FoundationModelsClassifier {
             let type = mapThoughtType(rawType)
             let sentiment = mapSentiment(response.content.sentiment)
 
+            // Clean tags: replace spaces with hyphens, lowercase
+            let cleanTags = response.content.suggestedTags.map { tag in
+                tag.lowercased()
+                    .replacingOccurrences(of: " ", with: "-")
+                    .trimmingCharacters(in: .whitespaces)
+            }
+
             return FoundationModelsResult(
                 type: type,
                 confidence: response.content.confidence,
-                tags: response.content.suggestedTags,
+                tags: cleanTags,
                 sentiment: sentiment
             )
 
@@ -204,9 +211,9 @@ struct ThoughtClassificationResponse: Codable {
     @Guide(description: "Confidence score from 0.0 to 1.0")
     var confidence: Double
 
-    @Guide(description: "3-5 contextual tags based on content", .count(3...5))
+    @Guide(description: "3-5 contextual tags (single-word or hyphenated only, no spaces). Examples: work, deadline, meeting, project-alpha, follow-up", .count(3...5))
     var suggestedTags: [String]
 
-    @Guide(description: "Emotional sentiment from -1.0 (very negative) to +1.0 (very positive)")
+    @Guide(description: "Emotional sentiment score. IMPORTANT: Use 0.0 for neutral/factual content. Only use negative scores for genuine distress/frustration. Only use positive scores for genuine joy/excitement. Range: -1.0 (very negative) to +1.0 (very positive). Most thoughts should be between -0.2 and +0.2 (neutral).")
     var sentiment: Double
 }
