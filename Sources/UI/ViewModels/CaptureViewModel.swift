@@ -82,6 +82,7 @@ final class CaptureViewModel {
     private let fineTuningService: FineTuningService
     private let taskService: TaskService
     private let settingsViewModel: SettingsViewModel?
+    private let subscriptionManager: SubscriptionManager
 
     // MARK: - Constants
 
@@ -96,9 +97,11 @@ final class CaptureViewModel {
         classificationService: ClassificationService,
         fineTuningService: FineTuningService,
         taskService: TaskService,
-        settingsViewModel: SettingsViewModel? = nil
+        settingsViewModel: SettingsViewModel? = nil,
+        subscriptionManager: SubscriptionManager = .shared
     ) {
         self.thoughtService = thoughtService
+        self.subscriptionManager = subscriptionManager
         self.contextService = contextService
         self.classificationService = classificationService
         self.fineTuningService = fineTuningService
@@ -196,6 +199,19 @@ final class CaptureViewModel {
 
         _Concurrency.Task {
             do {
+                // Check subscription entitlements
+                let thoughts = try await thoughtService.list(filter: nil)
+                let usage = SubscriptionUsage.calculate(from: thoughts)
+
+                if !subscriptionManager.canCaptureThought(usage: usage) {
+                    let limit = subscriptionManager.entitlements.thoughtLimit ?? 0
+                    self.error = .validationFailed(
+                        "You've reached your limit of \(limit) thoughts this month. Upgrade to Pro for unlimited thoughts."
+                    )
+                    self.isCapturing = false
+                    return
+                }
+
                 // Ensure we have context (gather if not already)
                 if context == nil {
                     context = await contextService.gatherContext()

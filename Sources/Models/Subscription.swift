@@ -117,6 +117,42 @@ struct SubscriptionUsage: Codable {
     let currentPeriodStart: Date
     let currentPeriodEnd: Date
 
+    /// Calculate usage from a list of thoughts
+    static func calculate(from thoughts: [Thought]) -> SubscriptionUsage {
+        let calendar = Calendar.current
+        let now = Date()
+
+        // Get start of current month
+        let components = calendar.dateComponents([.year, .month], from: now)
+        guard let periodStart = calendar.date(from: components) else {
+            return SubscriptionUsage(
+                thoughtsThisMonth: 0,
+                currentPeriodStart: now,
+                currentPeriodEnd: now
+            )
+        }
+
+        // Calculate end of current month
+        guard let periodEnd = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: periodStart) else {
+            return SubscriptionUsage(
+                thoughtsThisMonth: 0,
+                currentPeriodStart: periodStart,
+                currentPeriodEnd: now
+            )
+        }
+
+        // Count thoughts in current month
+        let thoughtsThisMonth = thoughts.filter { thought in
+            thought.createdAt >= periodStart && thought.createdAt <= periodEnd
+        }.count
+
+        return SubscriptionUsage(
+            thoughtsThisMonth: thoughtsThisMonth,
+            currentPeriodStart: periodStart,
+            currentPeriodEnd: periodEnd
+        )
+    }
+
     func isWithinLimit(for entitlements: SubscriptionEntitlements) -> Bool {
         guard let limit = entitlements.thoughtLimit else {
             return true  // Unlimited
