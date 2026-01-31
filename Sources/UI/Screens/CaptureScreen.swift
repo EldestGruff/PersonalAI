@@ -132,9 +132,17 @@ struct CaptureScreen: View {
                     .cornerRadius(10)
                     .accessibilityIdentifier("captureThoughtTextField")
                     .accessibilityHint("Enter your thought content. AI will automatically classify and tag it.")
-                    .onChange(of: viewModel.thoughtContent) { _, newValue in
-                        // Trigger classification after user stops typing
-                        if newValue.count > 10 {
+                    .onChange(of: viewModel.thoughtContent) { oldValue, newValue in
+                        // Skip if too short
+                        guard newValue.count > 10 else { return }
+
+                        // Detect large paste operation (change >50 characters at once)
+                        let changeSize = abs(newValue.count - oldValue.count)
+                        if changeSize > 50 {
+                            // Immediate classification for paste
+                            viewModel.classifyThoughtImmediately()
+                        } else {
+                            // Debounced classification for typing
                             viewModel.classifyThought()
                         }
                     }

@@ -103,7 +103,10 @@ struct TagInputView: View {
     }
 
     private func addTag() {
-        let trimmed = newTagText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let trimmed = newTagText
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+            .replacingOccurrences(of: " ", with: "-")
         guard !trimmed.isEmpty else { return }
 
         onAdd(trimmed)

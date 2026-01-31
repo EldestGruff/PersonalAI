@@ -84,10 +84,16 @@ final class CaptureViewModel {
     private let settingsViewModel: SettingsViewModel?
     private let subscriptionManager: SubscriptionManager
 
+    // MARK: - Debounce
+
+    /// Task for debouncing classification requests
+    private var classificationDebounceTask: _Concurrency.Task<Void, Never>?
+
     // MARK: - Constants
 
     private let maxContentLength = 5000
     private let maxTags = 5
+    private let classificationDebounceDelay: Duration = .seconds(1.5)
 
     // MARK: - Initialization
 
@@ -136,7 +142,9 @@ final class CaptureViewModel {
 
     /// Adds a tag to the selected tags
     func addTag(_ tag: String) {
-        let normalizedTag = tag.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedTag = tag.lowercased()
+            .replacingOccurrences(of: " ", with: "-")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
         guard !normalizedTag.isEmpty,
               selectedTags.count < maxTags,
               !selectedTags.contains(normalizedTag) else {
@@ -164,30 +172,59 @@ final class CaptureViewModel {
         }
     }
 
-    /// Classifies the thought content (non-blocking)
+    /// Classifies the thought content with debounce (waits for user to stop typing)
     func classifyThought() {
+        // Cancel any pending classification
+        classificationDebounceTask?.cancel()
+
+        // Don't classify if content is too short or invalid
+        guard isValid else { return }
+
+        // Create new debounced task
+        classificationDebounceTask = _Concurrency.Task {
+            // Wait for debounce delay
+            try? await _Concurrency.Task.sleep(for: classificationDebounceDelay)
+
+            // Check if cancelled during sleep
+            guard !_Concurrency.Task.isCancelled else { return }
+
+            // Perform classification
+            await performClassification()
+        }
+    }
+
+    /// Immediately classifies without debouncing (for voice input or paste)
+    func classifyThoughtImmediately() {
+        // Cancel any pending debounced classification
+        classificationDebounceTask?.cancel()
+
+        _Concurrency.Task {
+            await performClassification()
+        }
+    }
+
+    /// Internal method that performs the actual classification
+    private func performClassification() async {
         guard isValid else { return }
 
         isClassificationLoading = true
         classificationError = nil
 
-        _Concurrency.Task {
-            do {
-                let result = try await classificationService.classify(thoughtContent)
-                self.classification = result
+        do {
+            let result = try await classificationService.classify(thoughtContent)
+            self.classification = result
 
-                // Merge suggested tags (up to max)
-                for tag in result.suggestedTags {
-                    if self.selectedTags.count >= self.maxTags { break }
-                    self.addTag(tag)
-                }
-            } catch {
-                self.classificationError = "Classification unavailable"
-                self.classification = nil
+            // Merge suggested tags (up to max)
+            for tag in result.suggestedTags {
+                if self.selectedTags.count >= self.maxTags { break }
+                self.addTag(tag)
             }
-
-            self.isClassificationLoading = false
+        } catch {
+            self.classificationError = "Classification unavailable"
+            self.classification = nil
         }
+
+        self.isClassificationLoading = false
     }
 
     /// Captures and saves the thought
@@ -283,7 +320,7 @@ final class CaptureViewModel {
     func updateFromTranscription(_ text: String) {
         thoughtContent = text
         voiceInputMode = false
-        classifyThought()
+        classifyThoughtImmediately()  // Immediate classification for voice input
     }
 
     // MARK: - Auto-Creation
