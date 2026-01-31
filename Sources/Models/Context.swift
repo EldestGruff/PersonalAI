@@ -46,6 +46,9 @@ struct Context: Codable, Equatable, Sendable {
     /// Weather conditions (if available)
     let weather: WeatherContext?
 
+    /// Mental health state from HealthKit (iOS 18+)
+    let stateOfMind: StateOfMindSnapshot?
+
     /// Creates an empty/default context with current timestamp.
     ///
     /// Used when context gathering is unavailable or fails.
@@ -58,7 +61,8 @@ struct Context: Codable, Equatable, Sendable {
             focusState: .scattered,
             calendar: nil,
             activity: nil,
-            weather: nil
+            weather: nil,
+            stateOfMind: nil
         )
     }
 }
@@ -223,4 +227,70 @@ struct WeatherContext: Codable, Equatable, Sendable {
 
     /// Temperature in Celsius
     let temperature: Double?
+}
+
+/// Mental health state snapshot from HealthKit State of Mind.
+///
+/// Captures the user's emotional and mental state at the time of thought capture.
+/// Available on iOS 18+, requires HealthKit authorization for State of Mind.
+///
+/// This data enables powerful correlations like:
+/// - "You tend to capture creative ideas when feeling content"
+/// - "Task-oriented thoughts often occur during unpleasant states"
+/// - Trend analysis of emotional patterns over time
+struct StateOfMindSnapshot: Codable, Equatable, Sendable {
+    /// Emotional valence from -1.0 (very unpleasant) to +1.0 (very pleasant)
+    let valence: Double
+
+    /// Categorized valence for simpler UI display
+    let classification: ValenceClassification
+
+    /// Descriptive labels for the mental state
+    ///
+    /// Examples: "calm", "anxious", "excited", "tired", "focused"
+    /// User-selected or inferred from context
+    let labels: [String]
+
+    /// Contextual associations
+    ///
+    /// Examples: "health", "dating", "work", "education", "community"
+    /// Helps understand what factors influenced the state
+    let associations: [String]
+
+    /// Categorized emotional valence.
+    ///
+    /// Simplifies the continuous valence scale into discrete categories
+    /// for easier visualization and filtering.
+    enum ValenceClassification: String, Codable, CaseIterable, Sendable {
+        /// Very unpleasant (-1.0 to -0.6)
+        case veryUnpleasant = "very_unpleasant"
+
+        /// Somewhat unpleasant (-0.6 to -0.2)
+        case slightlyUnpleasant = "slightly_unpleasant"
+
+        /// Neutral (-0.2 to +0.2)
+        case neutral
+
+        /// Somewhat pleasant (+0.2 to +0.6)
+        case slightlyPleasant = "slightly_pleasant"
+
+        /// Very pleasant (+0.6 to +1.0)
+        case veryPleasant = "very_pleasant"
+
+        /// Derives classification from a valence value
+        static func from(valence: Double) -> ValenceClassification {
+            switch valence {
+            case ..<(-0.6):
+                return .veryUnpleasant
+            case -0.6 ..< -0.2:
+                return .slightlyUnpleasant
+            case -0.2 ... 0.2:
+                return .neutral
+            case 0.2 ... 0.6:
+                return .slightlyPleasant
+            default:
+                return .veryPleasant
+            }
+        }
+    }
 }

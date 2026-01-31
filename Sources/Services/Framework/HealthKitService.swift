@@ -23,6 +23,9 @@ protocol HealthKitServiceProtocol: FrameworkServiceProtocol {
 
     /// Gets energy level with detailed breakdown (for debugging)
     func getEnergyBreakdown() async -> EnergyBreakdown
+
+    /// Gets the most recent state of mind from HealthKit (iOS 18+)
+    func getStateOfMind() async -> StateOfMindSnapshot?
 }
 
 // MARK: - HealthKit Service
@@ -83,6 +86,10 @@ actor HealthKitService: HealthKitServiceProtocol {
         }
         if let heartRate = HKQuantityType.quantityType(forIdentifier: .heartRate) {
             types.insert(heartRate)
+        }
+        // State of Mind (iOS 18+)
+        if #available(iOS 18.0, *) {
+            types.insert(HKObjectType.stateOfMindType())
         }
         return types
     }()
@@ -367,6 +374,79 @@ actor HealthKitService: HealthKitServiceProtocol {
         }
     }
 
+    /// Gets the most recent state of mind from HealthKit.
+    ///
+    /// Queries for the most recent HKStateOfMind sample from the last hour.
+    /// Returns nil if data is unavailable, unauthorized, or on iOS < 18.
+    ///
+    /// - Returns: StateOfMindSnapshot or nil
+    @available(iOS 18.0, *)
+    func getStateOfMind() async -> StateOfMindSnapshot? {
+        guard isAvailable, permissionStatus.allowsAccess else {
+            return nil
+        }
+
+        let timeout = configuration.timeouts.frameworkOperation
+
+        return await withTimeout(timeout, default: nil) {
+            await self.fetchStateOfMind()
+        }
+    }
+
+    @available(iOS 18.0, *)
+    private func fetchStateOfMind() async -> StateOfMindSnapshot? {
+        let stateOfMindType = HKObjectType.stateOfMindType()
+
+        // Query for samples from the last hour
+        let oneHourAgo = Date().addingTimeInterval(-3600)
+        let predicate = HKQuery.predicateForSamples(
+            withStart: oneHourAgo,
+            end: Date(),
+            options: .strictStartDate
+        )
+
+        // Sort by start date descending to get most recent first
+        let sortDescriptor = NSSortDescriptor(
+            key: HKSampleSortIdentifierStartDate,
+            ascending: false
+        )
+
+        do {
+            let samples = try await fetchSamples(
+                type: stateOfMindType,
+                predicate: predicate,
+                limit: 1,
+                sortDescriptors: [sortDescriptor]
+            )
+
+            guard let stateOfMind = samples.first as? HKStateOfMind else {
+                return nil
+            }
+
+            // Convert HKStateOfMind to our StateOfMindSnapshot
+            let classification = StateOfMindSnapshot.ValenceClassification.from(
+                valence: stateOfMind.valence
+            )
+
+            // Extract labels (convert from HKStateOfMind.Label to String)
+            let labels = stateOfMind.labels.map { $0.rawValue }
+
+            // Extract associations (convert from HKStateOfMind.Association to String)
+            let associations = stateOfMind.associations.map { $0.rawValue }
+
+            return StateOfMindSnapshot(
+                valence: stateOfMind.valence,
+                classification: classification,
+                labels: labels,
+                associations: associations
+            )
+
+        } catch {
+            NSLog("⚠️ Failed to fetch state of mind: \(error)")
+            return nil
+        }
+    }
+
     private func fetchActivityContext() async -> ActivityContext {
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: Date())
@@ -422,12 +502,26 @@ actor HealthKitService: HealthKitServiceProtocol {
     // MARK: - Query Helpers
 
     private func fetchSamples(type: HKSampleType, predicate: NSPredicate) async throws -> [HKSample] {
+        try await fetchSamples(
+            type: type,
+            predicate: predicate,
+            limit: HKObjectQueryNoLimit,
+            sortDescriptors: nil
+        )
+    }
+
+    private func fetchSamples(
+        type: HKSampleType,
+        predicate: NSPredicate,
+        limit: Int,
+        sortDescriptors: [NSSortDescriptor]?
+    ) async throws -> [HKSample] {
         try await withCheckedThrowingContinuation { continuation in
             let query = HKSampleQuery(
                 sampleType: type,
                 predicate: predicate,
-                limit: HKObjectQueryNoLimit,
-                sortDescriptors: nil
+                limit: limit,
+                sortDescriptors: sortDescriptors
             ) { _, samples, error in
                 if let error = error {
                     continuation.resume(throwing: error)
@@ -582,6 +676,16 @@ actor MockHealthKitService: HealthKitServiceProtocol {
             hrvValueMs: 58.3,
             sleepHours: 7.5,
             stepCount: 6000
+        )
+    }
+
+    func getStateOfMind() async -> StateOfMindSnapshot? {
+        // Return a mock pleasant state for testing
+        StateOfMindSnapshot(
+            valence: 0.5,
+            classification: .slightlyPleasant,
+            labels: ["calm", "focused"],
+            associations: ["work", "health"]
         )
     }
 }

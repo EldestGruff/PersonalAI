@@ -45,6 +45,7 @@ private enum ContextComponent: Sendable {
     case energy(EnergyLevel)
     case activity(ActivityContext)
     case calendar(CalendarContext)
+    case stateOfMind(StateOfMindSnapshot?)
 }
 
 // MARK: - Context Service Protocol
@@ -143,6 +144,7 @@ actor ContextService: ContextServiceProtocol {
         var energy: EnergyLevel = .medium
         var activity: ActivityContext = ActivityContext(stepCount: 0, caloriesBurned: 0, activeMinutes: 0)
         var calendar: CalendarContext = CalendarContext(nextEventMinutes: nil, isFreetime: true, eventCount: 0)
+        var stateOfMind: StateOfMindSnapshot? = nil
 
         // Run all operations in parallel using TaskGroup
         await withTaskGroup(of: (ContextComponent, Int, Bool).self) { group in
@@ -192,6 +194,19 @@ actor ContextService: ContextServiceProtocol {
                 return (.calendar(result), duration, timedOut)
             }
 
+            // State of Mind (iOS 18+)
+            if #available(iOS 18.0, *) {
+                group.addTask {
+                    let opStart = Date()
+                    let result = await self.withTimeout(timeout, default: nil) {
+                        await self.healthKitService.getStateOfMind()
+                    }
+                    let duration = Int(Date().timeIntervalSince(opStart) * 1000)
+                    let timedOut = duration >= Int(timeout * 1000)
+                    return (.stateOfMind(result), duration, timedOut)
+                }
+            }
+
             // Collect results
             for await (component, duration, timedOut) in group {
                 if timedOut {
@@ -211,6 +226,9 @@ actor ContextService: ContextServiceProtocol {
                 case .calendar(let c):
                     calendar = c
                     eventKitDuration = duration
+                case .stateOfMind(let som):
+                    stateOfMind = som
+                    // Duration already tracked in healthKitDuration
                 }
             }
         }
@@ -226,7 +244,8 @@ actor ContextService: ContextServiceProtocol {
             focusState: .scattered, // Default; will be inferred from usage patterns later
             calendar: calendar,
             activity: activity,
-            weather: nil // Weather API integration not in Phase 3A
+            weather: nil, // Weather API integration not in Phase 3A
+            stateOfMind: stateOfMind
         )
 
         let metrics = ContextGatheringMetrics(
