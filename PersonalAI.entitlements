@@ -10,7 +10,8 @@
 	</array>
 	<key>com.apple.developer.healthkit.background-delivery</key>
 	<true/>
-	<key>com.apple.developer.siri</key>
-	<true/>
+	<!-- Siri capability temporarily disabled until Apple Developer enrollment completes -->
+	<!-- <key>com.apple.developer.siri</key>
+	<true/> -->
 </dict>
 </plist>
