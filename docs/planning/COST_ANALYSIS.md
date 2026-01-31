@@ -18,13 +18,13 @@
 
 ## Variable Costs (Per User)
 
-### OpenAI API Costs
+### ~~OpenAI API Costs~~ Foundation Models (iOS 26+)
 
-**Model**: GPT-4o-mini (most cost-effective for classification)
+**UPDATED**: PersonalAI uses Apple's Foundation Models framework exclusively.
 
-**Pricing** (January 2026):
-- Input: $0.150 per 1M tokens
-- Output: $0.600 per 1M tokens
+**Model**: On-device 3B parameter LLM (Apple Intelligence)
+
+**Pricing**: **$0** (completely free, on-device processing)
 
 **Thought Classification Breakdown**:
 
@@ -46,24 +46,20 @@ Total output: ~60 tokens
 **Cost Per Classification**:
 - Input: 350 tokens × $0.15 / 1M = $0.0000525
 - Output: 60 tokens × $0.60 / 1M = $0.0000360
-- **Total per thought**: ~$0.0000885 ≈ **$0.00009**
+- **Total per thought**: **$0** (on-device processing)
 
 #### Monthly Usage by User Type
 
-**Free User** (50 thoughts/month):
-- 50 thoughts × $0.00009 = **$0.0045/month** (~half a cent)
+**All Users** (unlimited thoughts):
+- Variable cost: **$0/month** (no API calls, no network usage)
 
-**Light Premium User** (100 thoughts/month):
-- 100 thoughts × $0.00009 = **$0.009/month** (~1 cent)
-
-**Average Premium User** (200 thoughts/month):
-- 200 thoughts × $0.00009 = **$0.018/month** (~2 cents)
-
-**Heavy Premium User** (500 thoughts/month):
-- 500 thoughts × $0.00009 = **$0.045/month** (~5 cents)
-
-**Power User** (1,000 thoughts/month):
-- 1,000 thoughts × $0.00009 = **$0.09/month** (9 cents)
+**Foundation Models Benefits**:
+- ✅ Zero marginal cost per user
+- ✅ Works offline (no internet required)
+- ✅ 100% private (data never leaves device)
+- ✅ Instant classification (<1 second)
+- ✅ No API rate limits
+- ✅ No authentication/key management
 
 ---
 
@@ -139,16 +135,11 @@ Total output: ~60 tokens
 
 ### Total Variable Costs Per User
 
-| User Type | Thoughts/Mo | Classification | Auto-Tag (50%) | Insights | Total |
-|-----------|-------------|----------------|----------------|----------|-------|
-| Free (light) | 30 | $0.003 | $0 | $0 | $0.003 |
-| Free (heavy) | 50 | $0.0045 | $0 | $0 | $0.0045 |
-| Paid (light) | 100 | $0.009 | $0.0045 | $0.0001 | $0.014 |
-| Paid (avg) | 200 | $0.018 | $0.009 | $0.0001 | $0.027 |
-| Paid (heavy) | 400 | $0.036 | $0.018 | $0.0001 | $0.054 |
-| Power user | 1,000 | $0.09 | $0.045 | $0.0001 | $0.135 |
+| User Type | Thoughts/Mo | Classification | Auto-Tag | Insights | Total |
+|-----------|-------------|----------------|----------|----------|-------|
+| All users | Unlimited | $0 | $0 | $0 | **$0** |
 
-**Key Takeaway**: Even heavy users cost <$0.10/month in API fees
+**Key Takeaway**: Zero variable costs with Foundation Models = 100% gross margin
 
 ---
 
@@ -250,19 +241,19 @@ Total output: ~60 tokens
 - Revenue: $3.99/month
 - App Store cut (30%): -$1.20
 - Net revenue: **$2.79/month**
-- Variable cost: -$0.027/month
-- **Gross profit**: **$2.76/month**
-- **Gross margin**: 99% (extremely healthy)
+- Variable cost: **$0/month** ← Foundation Models
+- **Gross profit**: **$2.79/month**
+- **Gross margin**: 100% (perfect margin)
 
 **Paid User (Annual)**:
 - Revenue: $39.99/year = $3.33/month effective
 - App Store cut (30%): -$1.00/month effective
 - Net revenue: **$2.33/month**
-- Variable cost: -$0.027/month
-- **Gross profit**: **$2.30/month**
-- **Gross margin**: 99%
+- Variable cost: **$0/month** ← Foundation Models
+- **Gross profit**: **$2.33/month**
+- **Gross margin**: 100%
 
-**Key Insight**: SaaS-like margins due to low variable costs. Most revenue is profit after fixed costs covered.
+**Key Insight**: Perfect gross margins with Foundation Models. All revenue above App Store cut is pure profit (after fixed costs).
 
 ---
 
@@ -309,14 +300,14 @@ Total output: ~60 tokens
 **Required Revenue** to Cover Fixed Costs:
 - At $2.79 net revenue per paid user/month: **90 paid subscribers**
 
-**Required Revenue** to Cover Fixed + Variable Costs (Moderate):
-- Variable costs: ~$150/month (AI for 20K free, 2K paid)
-- Total costs: $400/month
-- Required paid users: **144 subscribers**
+**Required Revenue** to Cover Fixed Costs (No Variable Costs):
+- Variable costs: **$0/month** (Foundation Models)
+- Total costs: **$250/month** (fixed only)
+- Required paid users: **90 subscribers**
 
-**Realistic Break-Even**: **150-200 paid subscribers** (buffered)
+**Realistic Break-Even**: **100 paid subscribers** (with buffer)
 
-**Timeline**: Month 3-4 if launch goes well
+**Timeline**: Month 2-3 if launch goes well (faster than with API costs)
 
 ---
 
