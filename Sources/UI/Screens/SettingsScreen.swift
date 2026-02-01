@@ -53,6 +53,10 @@ struct SettingsScreen: View {
             .sheet(isPresented: $showPaywall) {
                 PaywallScreen()
             }
+            .refreshable {
+                await loadUsageAsync()
+                await viewModel.updatePermissionStatus()
+            }
             .onAppear {
                 viewModel.onAppear()
                 loadUsage()
@@ -62,6 +66,7 @@ struct SettingsScreen: View {
                     _Concurrency.Task {
                         await viewModel.updatePermissionStatus()
                     }
+                    loadUsage()  // Reload usage when returning to app
                 }
             }
         }
@@ -395,10 +400,14 @@ struct SettingsScreen: View {
 
     private func loadUsage() {
         _Concurrency.Task {
-            let thoughts = try? await ThoughtService.shared.list(filter: nil)
-            if let thoughts = thoughts {
-                thoughtUsage = SubscriptionUsage.calculate(from: thoughts)
-            }
+            await loadUsageAsync()
+        }
+    }
+
+    private func loadUsageAsync() async {
+        let thoughts = try? await ThoughtService.shared.list(filter: nil)
+        if let thoughts = thoughts {
+            thoughtUsage = SubscriptionUsage.calculate(from: thoughts)
         }
     }
 
