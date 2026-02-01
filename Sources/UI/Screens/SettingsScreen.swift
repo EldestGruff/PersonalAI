@@ -21,9 +21,16 @@ struct SettingsScreen: View {
     @State var viewModel: SettingsViewModel
     @Environment(\.scenePhase) private var scenePhase
 
+    @State private var subscriptionManager = SubscriptionManager.shared
+    @State private var showPaywall = false
+    @State private var thoughtUsage: SubscriptionUsage?
+
     var body: some View {
         NavigationStack {
             Form {
+                // Subscription section
+                subscriptionSection
+
                 // Permissions section
                 permissionsSection
 
@@ -43,8 +50,12 @@ struct SettingsScreen: View {
                 aboutSection
             }
             .navigationTitle("Settings")
+            .sheet(isPresented: $showPaywall) {
+                PaywallScreen()
+            }
             .onAppear {
                 viewModel.onAppear()
+                loadUsage()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active {
@@ -52,6 +63,114 @@ struct SettingsScreen: View {
                         await viewModel.updatePermissionStatus()
                     }
                 }
+            }
+        }
+    }
+
+    // MARK: - Subscription Section
+
+    private var subscriptionSection: some View {
+        Section {
+            VStack(alignment: .leading, spacing: 12) {
+                // Current tier badge
+                HStack {
+                    Image(systemName: subscriptionManager.status.tier == .pro ? "crown.fill" : "person.circle.fill")
+                        .foregroundStyle(subscriptionManager.status.tier == .pro ? .yellow : .blue)
+                        .font(.title2)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(subscriptionManager.status.tier.displayName)
+                            .font(.headline)
+
+                        if subscriptionManager.status.tier == .free {
+                            Text("50 thoughts per month")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text("Unlimited thoughts")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    Spacer()
+
+                    if subscriptionManager.status.tier == .pro {
+                        Image(systemName: "checkmark.seal.fill")
+                            .foregroundStyle(.green)
+                            .font(.title3)
+                    }
+                }
+
+                // Usage info (if free tier)
+                if subscriptionManager.status.tier == .free, let usage = thoughtUsage {
+                    let remaining = usage.remainingThoughts(for: subscriptionManager.entitlements) ?? 0
+
+                    Divider()
+
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("This Month")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text("\(usage.thoughtsThisMonth) / 50 thoughts")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                        }
+
+                        Spacer()
+
+                        VStack(alignment: .trailing, spacing: 4) {
+                            Text("Remaining")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text("\(remaining)")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundStyle(remaining < 10 ? .orange : .primary)
+                        }
+                    }
+                }
+
+                // Action buttons
+                Divider()
+
+                if subscriptionManager.status.tier == .free {
+                    Button {
+                        showPaywall = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "arrow.up.circle.fill")
+                            Text("Upgrade to Pro")
+                            Spacer()
+                            Text("$4.99/mo")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                } else {
+                    Button {
+                        _Concurrency.Task {
+                            await subscriptionManager.restorePurchases()
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "arrow.clockwise.circle.fill")
+                            Text("Restore Purchases")
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                }
+            }
+            .padding(.vertical, 8)
+        } header: {
+            Text("Subscription")
+        } footer: {
+            if subscriptionManager.status.tier == .pro {
+                Text("You have unlimited access to all features. Thank you for supporting PersonalAI!")
+            } else {
+                Text("Upgrade to Pro for unlimited thoughts, advanced analytics, and export features.")
             }
         }
     }
@@ -269,6 +388,17 @@ struct SettingsScreen: View {
             Text("Sync")
         } footer: {
             Text("Note: Cloud sync is not implemented in Phase 3A. This setting will take effect in future updates.")
+        }
+    }
+
+    // MARK: - Helper Functions
+
+    private func loadUsage() {
+        _Concurrency.Task {
+            let thoughts = try? await ThoughtService.shared.list(filter: nil)
+            if let thoughts = thoughts {
+                thoughtUsage = SubscriptionUsage.calculate(from: thoughts)
+            }
         }
     }
 
