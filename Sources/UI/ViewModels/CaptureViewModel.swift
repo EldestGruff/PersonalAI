@@ -297,10 +297,6 @@ final class CaptureViewModel {
                 self.error = nil
 
             } catch {
-                NSLog("❌ Capture error: \(error)")
-                if let serviceError = error as? ServiceError {
-                    NSLog("❌ ServiceError details: \(serviceError)")
-                }
                 self.error = AppError.from(error)
             }
 

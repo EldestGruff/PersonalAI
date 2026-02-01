@@ -97,15 +97,12 @@ actor ThoughtService: ThoughtServiceProtocol {
     /// - Returns: The created thought (may include classification)
     /// - Throws: `ServiceError` on validation or persistence failure
     func create(_ thought: Thought) async throws -> Thought {
-        NSLog("🔵 ThoughtService.create() started")
-
         // Normalize tags (convert spaces to hyphens, lowercase)
         let normalizedTags = thought.tags.map { tag in
             tag.lowercased()
                 .replacingOccurrences(of: " ", with: "-")
                 .trimmingCharacters(in: .whitespaces)
         }
-        NSLog("🔵 Tags normalized: \(normalizedTags)")
 
         // Create thought with normalized tags
         let normalizedThought = Thought(
@@ -123,18 +120,13 @@ actor ThoughtService: ThoughtServiceProtocol {
         )
 
         // Validate
-        NSLog("🔵 Validating thought...")
         try validateThought(normalizedThought)
-        NSLog("✅ Validation passed")
 
         // Persist
         let created: Thought
         do {
-            NSLog("🔵 Calling repository.create()...")
             created = try await repository.create(normalizedThought)
-            NSLog("✅ Repository.create() succeeded")
         } catch {
-            NSLog("❌ Repository.create() failed: \(error)")
             throw ServiceError.persistence(operation: "create thought", underlying: error)
         }
 
