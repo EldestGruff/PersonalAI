@@ -73,11 +73,40 @@ struct PersistenceController: Sendable {
             }
         }
 
+        let persistentContainer = container
         container.loadPersistentStores { storeDescription, error in
             if let error = error as NSError? {
-                // In production, handle this error appropriately
-                // For now, fatal error for development
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                NSLog("⚠️ Core Data load error: \(error), \(error.userInfo)")
+
+                // Check if this is a migration error
+                if error.domain == NSCocoaErrorDomain &&
+                   (error.code == 134100 || // NSPersistentStoreIncompatibleVersionHashError
+                    error.code == 134130 || // NSMigrationMissingSourceModelError
+                    error.code == 134140) { // NSMigrationError
+
+                    NSLog("🔄 Migration error detected - deleting and recreating store")
+
+                    // Delete the old store
+                    if let storeURL = storeDescription.url {
+                        try? FileManager.default.removeItem(at: storeURL)
+                        try? FileManager.default.removeItem(at: storeURL.deletingLastPathComponent().appendingPathComponent(storeURL.lastPathComponent + "-shm"))
+                        try? FileManager.default.removeItem(at: storeURL.deletingLastPathComponent().appendingPathComponent(storeURL.lastPathComponent + "-wal"))
+
+                        // Try loading again
+                        persistentContainer.loadPersistentStores { _, retryError in
+                            if let retryError = retryError {
+                                fatalError("Failed to recreate store: \(retryError)")
+                            } else {
+                                NSLog("✅ Store recreated successfully")
+                            }
+                        }
+                    } else {
+                        fatalError("Could not determine store URL")
+                    }
+                } else {
+                    // Non-migration error - fatal
+                    fatalError("Unresolved error \(error), \(error.userInfo)")
+                }
             }
         }
 
