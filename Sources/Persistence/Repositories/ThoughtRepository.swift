@@ -23,14 +23,42 @@ actor ThoughtRepository {
 
     /// Creates a new thought in the persistent store
     func create(_ thought: Thought) async throws -> Thought {
-        try thought.validate()
+        NSLog("🟢 ThoughtRepository.create() started")
+        NSLog("🟢 Received tags: \(thought.tags)")
 
+        // Note: Validation handled by ThoughtService - repository only persists
         let context = container.newBackgroundContext()
+        NSLog("🟢 Created background context")
 
         return try await context.perform {
-            let entity = try thought.toEntity(in: context)
-            try context.save()
-            return try Thought.from(entity)
+            NSLog("🟢 Inside context.perform...")
+
+            let entity: ThoughtEntity
+            do {
+                entity = try thought.toEntity(in: context)
+                NSLog("✅ thought.toEntity() succeeded")
+            } catch {
+                NSLog("❌ thought.toEntity() failed: \(error)")
+                throw error
+            }
+
+            do {
+                try context.save()
+                NSLog("✅ context.save() succeeded")
+            } catch {
+                NSLog("❌ context.save() failed: \(error)")
+                NSLog("❌ Core Data error details: \((error as NSError).userInfo)")
+                throw error
+            }
+
+            do {
+                let result = try Thought.from(entity)
+                NSLog("✅ Thought.from(entity) succeeded")
+                return result
+            } catch {
+                NSLog("❌ Thought.from(entity) failed: \(error)")
+                throw error
+            }
         }
     }
 
