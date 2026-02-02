@@ -60,6 +60,12 @@ struct DetailScreen: View {
                     Divider()
                 }
 
+                // Related thoughts section
+                if viewModel.hasRelatedThoughts {
+                    relatedThoughtsSection
+                    Divider()
+                }
+
                 // Feedback section
                 feedbackSection
 
@@ -126,6 +132,9 @@ struct DetailScreen: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("This action cannot be undone.")
+        }
+        .task {
+            await viewModel.loadRelatedThoughts()
         }
     }
 
@@ -305,6 +314,47 @@ struct DetailScreen: View {
             let locationService = LocationService()
             refreshedLocation = await locationService.getCurrentLocation()
             isRefreshingLocation = false
+        }
+    }
+
+    // MARK: - Related Thoughts Section
+
+    private var relatedThoughtsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "link")
+                    .foregroundColor(.blue)
+                Text("Related Thoughts")
+                    .font(.headline)
+
+                Spacer()
+
+                if viewModel.isLoadingRelated {
+                    ProgressView()
+                        .scaleEffect(0.7)
+                }
+            }
+
+            if viewModel.relatedThoughts.isEmpty && !viewModel.isLoadingRelated {
+                Text("No related thoughts found")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } else {
+                ForEach(viewModel.relatedThoughts) { result in
+                    NavigationLink {
+                        DetailScreen(
+                            viewModel: DetailViewModel(
+                                thought: result.thought,
+                                thoughtService: ThoughtService.shared,
+                                fineTuningService: FineTuningService.shared,
+                                taskService: TaskService.shared
+                            )
+                        )
+                    } label: {
+                        RelatedThoughtRow(result: result)
+                    }
+                }
+            }
         }
     }
 
@@ -656,5 +706,45 @@ struct BreakdownRow: View {
                 taskService: TaskService.shared
             )
         )
+    }
+}
+
+// MARK: - Related Thought Row
+
+/// A compact row displaying a related thought with relevance scoring
+struct RelatedThoughtRow: View {
+    let result: SearchResult
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(result.thought.content)
+                .font(.subheadline)
+                .lineLimit(2)
+                .foregroundColor(.primary)
+
+            HStack(spacing: 8) {
+                // Date
+                Text(result.thought.createdAt.formatted(.relative(presentation: .named)))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Spacer()
+
+                // Relevance score
+                HStack(spacing: 4) {
+                    Image(systemName: result.isHighConfidence ? "checkmark.circle.fill" : "checkmark.circle")
+                        .font(.caption2)
+                        .foregroundColor(result.isHighConfidence ? .green : .orange)
+
+                    Text("\(result.relevancePercentage)% similar")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                }
+            }
+        }
+        .padding(.vertical, 6)
+        .padding(.horizontal, 12)
+        .background(Color.gray.opacity(0.05))
+        .cornerRadius(8)
     }
 }

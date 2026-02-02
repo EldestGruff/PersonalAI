@@ -33,14 +33,19 @@ final class SearchViewModel {
 
     // MARK: - Results State
 
-    /// Search results
-    var searchResults: [Thought] = []
+    /// Search results (wrapped with relevance scores)
+    var searchResults: [SearchResult] = []
 
     /// Whether a search is in progress
     var isSearching: Bool = false
 
     /// Current error to display
     var error: AppError?
+
+    /// Whether semantic search is available (vs keyword fallback)
+    var isSemanticSearchAvailable: Bool {
+        semanticSearchService.isAvailable
+    }
 
     // MARK: - Pagination
 
@@ -61,6 +66,7 @@ final class SearchViewModel {
     // MARK: - Services
 
     private let thoughtService: ThoughtService
+    private let semanticSearchService = SemanticSearchService.shared
 
     // MARK: - Initialization
 
@@ -86,7 +92,7 @@ final class SearchViewModel {
         }
     }
 
-    /// Executes the search
+    /// Executes the search using semantic search (or keyword fallback)
     func search() async {
         let query = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -101,10 +107,14 @@ final class SearchViewModel {
         offset = 0
 
         do {
-            let results = try await thoughtService.search(query: query)
+            // Fetch all thoughts for semantic search
+            let thoughts = try await thoughtService.list(filter: nil)
+
+            // Perform semantic search
+            let results = await semanticSearchService.search(query: query, in: thoughts)
 
             self.searchResults = results
-            self.hasMore = false  // Service doesn't support pagination yet
+            self.hasMore = false  // Semantic search returns all relevant results
 
         } catch {
             self.error = AppError.from(error)

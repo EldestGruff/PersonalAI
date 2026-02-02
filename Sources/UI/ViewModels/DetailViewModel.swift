@@ -100,11 +100,25 @@ final class DetailViewModel {
     /// Current error to display
     var error: AppError?
 
+    // MARK: - Related Thoughts State
+
+    /// Related thoughts for this thought
+    var relatedThoughts: [SearchResult] = []
+
+    /// Whether related thoughts are loading
+    var isLoadingRelated: Bool = false
+
+    /// Whether to show the related thoughts section
+    var hasRelatedThoughts: Bool {
+        !relatedThoughts.isEmpty
+    }
+
     // MARK: - Services
 
     private let thoughtService: ThoughtService
     private let fineTuningService: FineTuningService
     private let taskService: TaskService
+    private let smartInsights = SmartInsightsService.shared
 
     // MARK: - Initialization
 
@@ -388,6 +402,35 @@ final class DetailViewModel {
     /// Deletes the current thought
     func deleteThought() async throws {
         try await thoughtService.delete(thought.id)
+    }
+
+    // MARK: - Related Thoughts
+
+    /// Load related thoughts for this thought
+    func loadRelatedThoughts() async {
+        guard !isLoadingRelated else { return }
+
+        isLoadingRelated = true
+
+        do {
+            // Fetch all thoughts to search
+            let allThoughts = try await thoughtService.list(filter: nil)
+
+            // Find related thoughts using semantic search
+            let related = await smartInsights.findRelatedThoughts(
+                for: thought,
+                in: allThoughts,
+                limit: 5
+            )
+
+            self.relatedThoughts = related
+
+        } catch {
+            // Silently fail - related thoughts are nice-to-have
+            self.relatedThoughts = []
+        }
+
+        isLoadingRelated = false
     }
 
     // MARK: - Computed Properties

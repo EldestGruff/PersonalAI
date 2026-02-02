@@ -132,8 +132,8 @@ struct SubscriptionUsage: Codable {
             )
         }
 
-        // Calculate end of current month
-        guard let periodEnd = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: periodStart) else {
+        // Calculate end of current month (start of next month minus 1 second)
+        guard let nextMonthStart = calendar.date(byAdding: DateComponents(month: 1), to: periodStart) else {
             return SubscriptionUsage(
                 thoughtsThisMonth: 0,
                 currentPeriodStart: periodStart,
@@ -141,9 +141,11 @@ struct SubscriptionUsage: Codable {
             )
         }
 
+        let periodEnd = calendar.date(byAdding: .second, value: -1, to: nextMonthStart) ?? now
+
         // Count thoughts in current month
         let thoughtsThisMonth = thoughts.filter { thought in
-            thought.createdAt >= periodStart && thought.createdAt <= periodEnd
+            thought.createdAt >= periodStart && thought.createdAt < nextMonthStart
         }.count
 
         return SubscriptionUsage(

@@ -165,20 +165,34 @@ struct SearchScreen: View {
                 .listRowBackground(Color.clear)
             }
 
-            // Results count
+            // Results count and search mode
             Section {
-                Text("\(viewModel.searchResults.count) result\(viewModel.searchResults.count == 1 ? "" : "s")")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                HStack {
+                    Text("\(viewModel.searchResults.count) result\(viewModel.searchResults.count == 1 ? "" : "s")")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+
+                    Spacer()
+
+                    if viewModel.isSemanticSearchAvailable {
+                        Label("Semantic", systemImage: "brain")
+                            .font(.caption)
+                            .foregroundColor(.blue)
+                    } else {
+                        Label("Keyword", systemImage: "text.magnifyingglass")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
 
             // Results
             Section {
-                ForEach(viewModel.searchResults) { thought in
+                ForEach(viewModel.searchResults) { result in
                     NavigationLink {
                         DetailScreen(
                             viewModel: DetailViewModel(
-                                thought: thought,
+                                thought: result.thought,
                                 thoughtService: ThoughtService.shared,
                                 fineTuningService: FineTuningService.shared,
                                 taskService: TaskService.shared
@@ -186,7 +200,7 @@ struct SearchScreen: View {
                         )
                     } label: {
                         SearchResultRow(
-                            thought: thought,
+                            result: result,
                             searchQuery: viewModel.searchQuery
                         )
                     }
@@ -223,19 +237,38 @@ struct SearchScreen: View {
 
 // MARK: - Search Result Row
 
-/// A row displaying a search result with query highlighting.
+/// A row displaying a search result with relevance scoring.
 struct SearchResultRow: View {
-    let thought: Thought
+    let result: SearchResult
     let searchQuery: String
+
+    private var thought: Thought {
+        result.thought
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Content with highlighted query
             highlightedContent
 
-            // Classification
-            if let classification = thought.classification {
-                ClassificationBadgeCompact(classification: classification)
+            // Classification and relevance
+            HStack(spacing: 8) {
+                if let classification = thought.classification {
+                    ClassificationBadgeCompact(classification: classification)
+                }
+
+                // Show relevance score for semantic search (not perfect keyword matches)
+                if result.score < 1.0 {
+                    HStack(spacing: 4) {
+                        Image(systemName: result.isHighConfidence ? "checkmark.circle.fill" : "checkmark.circle")
+                            .font(.caption2)
+                            .foregroundColor(result.isHighConfidence ? .green : .orange)
+
+                        Text("\(result.relevancePercentage)%")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
 
             // Metadata
