@@ -74,6 +74,19 @@ final class CaptureViewModel {
     /// Current error to display to user
     var error: AppError?
 
+    // MARK: - Similar Thoughts Insight
+
+    /// Similar thoughts found (for helpful insight)
+    var similarThoughts: [SearchResult] = []
+
+    /// Whether similar thoughts are being checked
+    var isCheckingSimilar: Bool = false
+
+    /// Whether to show the similar thoughts insight
+    var hasSimilarThoughts: Bool {
+        !similarThoughts.isEmpty
+    }
+
     // MARK: - Services
 
     private let thoughtService: ThoughtService
@@ -83,17 +96,22 @@ final class CaptureViewModel {
     private let taskService: TaskService
     private let settingsViewModel: SettingsViewModel?
     private let subscriptionManager: SubscriptionManager
+    private let smartInsights = SmartInsightsService.shared
 
     // MARK: - Debounce
 
     /// Task for debouncing classification requests
     private var classificationDebounceTask: _Concurrency.Task<Void, Never>?
 
+    /// Task for debouncing similar thought checks
+    private var similarCheckDebounceTask: _Concurrency.Task<Void, Never>?
+
     // MARK: - Constants
 
     private let maxContentLength = 5000
     private let maxTags = 5
     private let classificationDebounceDelay: Duration = .seconds(1.5)
+    private let similarCheckDebounceDelay: Duration = .seconds(2.0)
 
     // MARK: - Initialization
 
@@ -113,6 +131,16 @@ final class CaptureViewModel {
         self.fineTuningService = fineTuningService
         self.taskService = taskService
         self.settingsViewModel = settingsViewModel
+    }
+
+    // MARK: - Lifecycle
+
+    /// Pre-warm services for optimal performance (Issue #8)
+    /// Call this when capture screen appears
+    func prewarmServices() {
+        Task {
+            await classificationService.prewarm()
+        }
     }
 
     // MARK: - Computed Properties
@@ -225,6 +253,76 @@ final class CaptureViewModel {
         }
 
         self.isClassificationLoading = false
+    }
+
+    // MARK: - Similar Thoughts Check
+
+    /// Check for similar thoughts with debounce (waits for user to stop typing)
+    func checkForSimilarThoughts() {
+        // Cancel any pending check
+        similarCheckDebounceTask?.cancel()
+
+        // Don't check if content is too short
+        guard thoughtContent.count > 20 else {
+            similarThoughts = []
+            return
+        }
+
+        // Create new debounced task
+        similarCheckDebounceTask = _Concurrency.Task {
+            // Wait for debounce delay
+            try? await _Concurrency.Task.sleep(for: similarCheckDebounceDelay)
+
+            // Check if cancelled during sleep
+            guard !_Concurrency.Task.isCancelled else { return }
+
+            // Perform similar check
+            await performSimilarCheck()
+        }
+    }
+
+    /// Internal method that performs the actual similar thoughts check
+    private func performSimilarCheck() async {
+        guard thoughtContent.count > 20 else {
+            similarThoughts = []
+            return
+        }
+
+        isCheckingSimilar = true
+
+        do {
+            // Fetch all thoughts
+            let allThoughts = try await thoughtService.list(filter: nil)
+
+            // Create a temporary thought for comparison
+            let tempThought = Thought(
+                id: UUID(),
+                userId: UUID(),
+                content: thoughtContent,
+                tags: selectedTags,
+                status: .active,
+                context: Context.empty(),
+                createdAt: Date(),
+                updatedAt: Date(),
+                classification: classification,
+                relatedThoughtIds: [],
+                taskId: nil
+            )
+
+            // Find possible duplicates (high similarity)
+            let duplicates = await smartInsights.findPossibleDuplicates(
+                for: tempThought,
+                in: allThoughts
+            )
+
+            self.similarThoughts = Array(duplicates.prefix(3)) // Show top 3
+
+        } catch {
+            // Silently fail - similar thoughts are nice-to-have
+            self.similarThoughts = []
+        }
+
+        isCheckingSimilar = false
     }
 
     /// Captures and saves the thought

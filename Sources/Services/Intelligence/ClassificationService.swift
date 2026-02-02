@@ -148,8 +148,9 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
 
                 NSLog("✅ Foundation Models classification: type=\(type), sentiment=\(sentiment), confidence=\(confidence)")
             } catch {
-                // Fallback to keyword-based classification
-                NSLog("❌ Foundation Models classification failed, using keyword fallback: \(error)")
+                // Fallback to keyword-based classification (Issue #8: improved logging)
+                NSLog("⚠️  Foundation Models unavailable, using keyword-based fallback")
+                NSLog("   Reason: \(error.localizedDescription)")
                 async let typeResult = classifyType(content)
                 async let sentimentResult = nlpService.analyzeSentiment(content)
                 async let entitiesResult = nlpService.extractEntities(content)
@@ -187,8 +188,9 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
 
         // Only include parsed date/time if it has reasonable confidence
         // Convert from internal detailed version to model version
+        // Issue #8: Lowered threshold from 0.7 to 0.6 to catch more valid dates
         let finalParsedDateTime: ParsedDateTime?
-        if parsedDateTime.confidence >= 0.7 {
+        if parsedDateTime.confidence >= 0.6 {
             finalParsedDateTime = parsedDateTime.toModel()
         } else {
             finalParsedDateTime = nil
@@ -460,6 +462,14 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     /// Clears the classification cache
     func clearCache() {
         cache.removeAll()
+    }
+
+    /// Pre-warm Foundation Models for faster first classification
+    /// Call this when user opens capture screen for optimal performance
+    func prewarm() {
+        if let classifier = foundationModelsClassifier {
+            classifier.prewarm()
+        }
     }
 
     // MARK: - Timeout Helper

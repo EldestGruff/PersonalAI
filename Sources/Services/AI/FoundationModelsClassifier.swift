@@ -176,14 +176,21 @@ actor FoundationModelsClassifier {
     private func mapSentiment(_ value: Double) -> Sentiment {
         // Use a wider neutral band to avoid over-classifying as negative/positive
         // Most casual thoughts should be neutral
+        //
+        // Tuned thresholds (Issue #8):
+        // - Very positive: 0.7+ (strong joy/excitement)
+        // - Positive: 0.3-0.7 (mild positive)
+        // - Neutral: -0.3 to 0.3 (wide band for most thoughts)
+        // - Negative: -0.7 to -0.3 (mild negative)
+        // - Very negative: < -0.7 (strong distress)
         switch value {
-        case 0.6...:
+        case 0.7...:
             return .very_positive
-        case 0.25..<0.6:
+        case 0.3..<0.7:
             return .positive
-        case -0.25...0.25:
-            return .neutral  // Wide neutral band
-        case -0.6 ..< -0.25:
+        case -0.3...0.3:
+            return .neutral  // Wide neutral band - most thoughts here
+        case -0.7 ..< -0.3:
             return .negative
         default:
             return .very_negative
@@ -221,7 +228,7 @@ struct ThoughtClassificationResponse: Codable {
     @Guide(description: "Confidence score from 0.0 to 1.0")
     var confidence: Double
 
-    @Guide(description: "3-5 contextual tags (single-word or hyphenated only, no spaces). Examples: work, deadline, meeting, project-alpha, follow-up", .count(3...5))
+    @Guide(description: "3-5 contextual tags (single-word or hyphenated only, no spaces). Be specific and relevant. Examples: work, deadline, meeting, project-alpha, follow-up, swiftui, ios-development, health-tracking. Avoid generic tags like 'task' or 'todo'.", .count(3...5))
     var suggestedTags: [String]
 
     @Guide(description: "Emotional sentiment score. IMPORTANT: Use 0.0 for neutral/factual content. Only use negative scores for genuine distress/frustration. Only use positive scores for genuine joy/excitement. Range: -1.0 (very negative) to +1.0 (very positive). Most thoughts should be between -0.2 and +0.2 (neutral).")

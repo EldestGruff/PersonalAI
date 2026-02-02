@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>NSPrivacyTracking</key>
+    <false/>
+
+    <key>NSPrivacyTrackingDomains</key>
+    <array/>
+
+    <key>NSPrivacyCollectedDataTypes</key>
+    <array/>
+
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array>
+        <!-- UserDefaults Usage -->
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>CA92.1</string> <!-- Store user preferences and app settings -->
+            </array>
+        </dict>
+
+        <!-- File Timestamp Usage -->
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>C617.1</string> <!-- Access timestamps for thought sorting and Core Data operations -->
+            </array>
+        </dict>
+
+        <!-- System Boot Time -->
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategorySystemBootTime</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>35F9.1</string> <!-- Measure time intervals for performance monitoring -->
+            </array>
+        </dict>
+
+        <!-- Disk Space -->
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryDiskSpace</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>E174.1</string> <!-- Check available space before database operations -->
+            </array>
+        </dict>
+    </array>
+
+    <key>NSPrivacyAccessedAPI TypesDescription</key>
+    <dict>
+        <key>UserDefaults</key>
+        <string>PersonalAI uses UserDefaults to store user preferences including theme settings, notification preferences, and app configuration. No personally identifiable information is stored.</string>
+
+        <key>FileTimestamp</key>
+        <string>File timestamps are accessed to sort thoughts chronologically and manage Core Data persistence. This is essential for the app's core functionality of organizing captured thoughts.</string>
+
+        <key>SystemBootTime</key>
+        <string>System boot time is used to measure performance metrics and ensure optimal app responsiveness. This helps identify and resolve performance issues.</string>
+
+        <key>DiskSpace</key>
+        <string>Disk space is checked before database operations to prevent data corruption and ensure sufficient storage for thought capture and media attachments.</string>
+    </dict>
+</dict>
+</plist>

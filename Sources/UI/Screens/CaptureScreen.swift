@@ -44,6 +44,11 @@ struct CaptureScreen: View {
                     // Tags
                     tagsSection
 
+                    // Similar thoughts insight
+                    if viewModel.hasSimilarThoughts {
+                        similarThoughtsInsight
+                    }
+
                     // Context & Classification
                     if viewModel.isContextLoading || viewModel.context != nil {
                         contextSection
@@ -81,6 +86,7 @@ struct CaptureScreen: View {
             }
             .onAppear {
                 viewModel.gatherContext()
+                viewModel.prewarmServices() // Issue #8: Pre-warm Foundation Models
                 isTextFieldFocused = true
             }
             .onChange(of: viewModel.captureSucceeded) { _, succeeded in
@@ -145,6 +151,9 @@ struct CaptureScreen: View {
                             // Debounced classification for typing
                             viewModel.classifyThought()
                         }
+
+                        // Check for similar thoughts (debounced)
+                        viewModel.checkForSimilarThoughts()
                     }
 
                 // Character count
@@ -171,6 +180,68 @@ struct CaptureScreen: View {
                 onRemove: { viewModel.removeTag($0) }
             )
         }
+    }
+
+    // MARK: - Similar Thoughts Insight
+
+    private var similarThoughtsInsight: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "lightbulb")
+                    .foregroundColor(.blue)
+                Text("You've thought about this before")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+
+                Spacer()
+
+                if viewModel.isCheckingSimilar {
+                    ProgressView()
+                        .scaleEffect(0.7)
+                }
+            }
+
+            ForEach(viewModel.similarThoughts.prefix(2)) { result in
+                NavigationLink {
+                    DetailScreen(
+                        viewModel: DetailViewModel(
+                            thought: result.thought,
+                            thoughtService: ThoughtService.shared,
+                            fineTuningService: FineTuningService.shared,
+                            taskService: TaskService.shared
+                        )
+                    )
+                } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(result.thought.content)
+                            .font(.caption)
+                            .foregroundColor(.primary)
+                            .lineLimit(2)
+
+                        HStack {
+                            Text(result.thought.createdAt.formatted(.relative(presentation: .named)))
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+
+                            Text("•")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+
+                            Text("\(result.relevancePercentage)% similar")
+                                .font(.caption2)
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    .padding(8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.blue.opacity(0.05))
+                    .cornerRadius(6)
+                }
+            }
+        }
+        .padding(12)
+        .background(Color.blue.opacity(0.03))
+        .cornerRadius(12)
     }
 
     // MARK: - Context Section
@@ -212,7 +283,20 @@ struct CaptureScreen: View {
             }
 
             if let classification = viewModel.classification {
-                ClassificationBadge(classification: classification)
+                VStack(alignment: .leading, spacing: 8) {
+                    ClassificationBadge(classification: classification)
+
+                    // Issue #8: Show confidence indicator for user awareness
+                    if classification.confidence < 0.7 {
+                        HStack(spacing: 4) {
+                            Image(systemName: "info.circle")
+                                .font(.caption)
+                            Text("Low confidence (\(Int(classification.confidence * 100))%) - you can edit type if needed")
+                                .font(.caption)
+                        }
+                        .foregroundColor(.secondary)
+                    }
+                }
             } else if let error = viewModel.classificationError {
                 Text(error)
                     .font(.caption)
