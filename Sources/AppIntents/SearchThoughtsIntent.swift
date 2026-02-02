@@ -19,15 +19,15 @@ import Foundation
 struct SearchThoughtsIntent: AppIntent {
     // MARK: - Intent Metadata
 
-    static var title: LocalizedStringResource = "Search Thoughts"
+    static let title: LocalizedStringResource = "Search Thoughts"
 
-    static var description = IntentDescription(
+    static let description = IntentDescription(
         "Search your thoughts by keyword or topic",
         categoryName: "Thoughts",
         searchKeywords: ["find", "search", "look", "filter"]
     )
 
-    static var openAppWhenRun: Bool = true // Open app to show results
+    static let openAppWhenRun: Bool = true // Open app to show results
 
     // MARK: - Parameters
 
@@ -51,7 +51,7 @@ struct SearchThoughtsIntent: AppIntent {
     // MARK: - Performance
 
     @MainActor
-    func perform() async throws -> some IntentResult & ReturnsValue<[ThoughtEntity]> & ProvidesDialog {
+    func perform() async throws -> some IntentResult & ReturnsValue<[ThoughtAppEntity]> & ProvidesDialog {
         // Validate input
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedQuery.isEmpty else {
@@ -62,7 +62,7 @@ struct SearchThoughtsIntent: AppIntent {
         let repository = ThoughtRepository.shared
 
         // Get all thoughts
-        let allThoughts = try await repository.fetchAll()
+        let allThoughts = try await repository.list()
 
         // Apply type filter if specified
         let filteredByType: [Thought]
@@ -91,7 +91,7 @@ struct SearchThoughtsIntent: AppIntent {
         }
 
         // Convert to entities
-        let entities = results.map { ThoughtEntity(from: $0) }
+        let entities = results.map { ThoughtAppEntity(from: $0) }
 
         // Create dialog
         let dialog: IntentDialog

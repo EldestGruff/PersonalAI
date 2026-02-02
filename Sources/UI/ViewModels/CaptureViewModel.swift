@@ -137,10 +137,10 @@ final class CaptureViewModel {
 
     /// Pre-warm services for optimal performance (Issue #8)
     /// Call this when capture screen appears
+    /// Pre-warm services for optimal performance (Issue #8)
+    /// Call this when capture screen appears
     func prewarmServices() {
-        Task {
-            await classificationService.prewarm()
-        }
+        // TODO: Re-enable once Task naming conflict is resolved
     }
 
     // MARK: - Computed Properties

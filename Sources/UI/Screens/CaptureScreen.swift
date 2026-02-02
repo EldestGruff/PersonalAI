@@ -86,7 +86,6 @@ struct CaptureScreen: View {
             }
             .onAppear {
                 viewModel.gatherContext()
-                viewModel.prewarmServices() // Issue #8: Pre-warm Foundation Models
                 isTextFieldFocused = true
             }
             .onChange(of: viewModel.captureSucceeded) { _, succeeded in

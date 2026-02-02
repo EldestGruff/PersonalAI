@@ -19,15 +19,15 @@ import Foundation
 struct ReviewIntent: AppIntent {
     // MARK: - Intent Metadata
 
-    static var title: LocalizedStringResource = "Review Thoughts"
+    static let title: LocalizedStringResource = "Review Thoughts"
 
-    static var description = IntentDescription(
+    static let description = IntentDescription(
         "Review your thoughts from a specific time period",
         categoryName: "Thoughts",
         searchKeywords: ["review", "show", "recent", "today", "week"]
     )
 
-    static var openAppWhenRun: Bool = true // Open app to show results
+    static let openAppWhenRun: Bool = true // Open app to show results
 
     // MARK: - Parameters
 
@@ -48,12 +48,12 @@ struct ReviewIntent: AppIntent {
     // MARK: - Performance
 
     @MainActor
-    func perform() async throws -> some IntentResult & ReturnsValue<[ThoughtEntity]> & ProvidesDialog {
+    func perform() async throws -> some IntentResult & ReturnsValue<[ThoughtAppEntity]> & ProvidesDialog {
         // Get repository
         let repository = ThoughtRepository.shared
 
         // Get all thoughts
-        let allThoughts = try await repository.fetchAll()
+        let allThoughts = try await repository.list()
 
         // Calculate date range
         let calendar = Calendar.current
@@ -105,7 +105,7 @@ struct ReviewIntent: AppIntent {
         results.sort { $0.createdAt > $1.createdAt }
 
         // Convert to entities
-        let entities = results.map { ThoughtEntity(from: $0) }
+        let entities = results.map { ThoughtAppEntity(from: $0) }
 
         // Create dialog
         let periodName = timePeriod.displayName

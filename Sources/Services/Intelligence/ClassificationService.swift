@@ -466,10 +466,13 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
 
     /// Pre-warm Foundation Models for faster first classification
     /// Call this when user opens capture screen for optimal performance
-    func prewarm() {
-        if let classifier = foundationModelsClassifier {
-            classifier.prewarm()
-        }
+    func prewarm() async {
+        // TODO: Fix actor isolation issue with FoundationModelsClassifier.prewarm()
+        // The method exists but causes compilation issues due to actor isolation
+        // For now, pre-warming is disabled (optimization only, not critical)
+        // if let classifier = foundationModelsClassifier {
+        //     await classifier.prewarm()
+        // }
     }
 
     // MARK: - Timeout Helper
