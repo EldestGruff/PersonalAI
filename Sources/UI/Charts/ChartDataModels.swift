@@ -154,6 +154,130 @@ struct ChartSummaryMetrics {
     }
 }
 
+// MARK: - Capture Heatmap (Enhanced)
+
+/// Complete heatmap data for time pattern analysis
+struct CaptureHeatmapResult {
+    let hourOfDayDistribution: [HourDataPoint]  // 0-23
+    let dayOfWeekDistribution: [DayDataPoint]   // 1-7 (1=Sunday)
+    let hourByDayMatrix: [[Int]]                 // 7x24 matrix for full heatmap
+}
+
+/// Data point for hour of day analysis
+struct HourDataPoint: Identifiable {
+    let id = UUID()
+    let hour: Int           // 0-23
+    let count: Int
+    let averageSentiment: Double?
+}
+
+/// Data point for day of week analysis
+struct DayDataPoint: Identifiable {
+    let id = UUID()
+    let dayOfWeek: Int      // 1=Sunday, 7=Saturday
+    let count: Int
+    let averageSentiment: Double?
+
+    var dayName: String {
+        let formatter = DateFormatter()
+        formatter.weekdaySymbols = Calendar.current.shortWeekdaySymbols
+        return formatter.weekdaySymbols[dayOfWeek - 1]
+    }
+}
+
+// MARK: - Streak Data
+
+/// Gamification data for capture consistency
+struct StreakData {
+    let currentStreak: Int
+    let longestStreak: Int
+    let totalDaysWithThoughts: Int
+    let streakHistory: [StreakPeriod]
+}
+
+/// A continuous period of daily captures
+struct StreakPeriod: Identifiable {
+    let id = UUID()
+    let startDate: Date
+    let endDate: Date
+    let length: Int
+}
+
+// MARK: - Confidence Trends
+
+/// Classification confidence over time
+struct ConfidenceDataPoint: Identifiable {
+    let id = UUID()
+    let date: Date
+    let averageConfidence: Double
+    let thoughtCount: Int
+    let byType: [ClassificationType: Double]
+
+    var confidenceLabel: String {
+        switch averageConfidence {
+        case 0.8...1.0: return "Very High"
+        case 0.6..<0.8: return "High"
+        case 0.4..<0.6: return "Moderate"
+        case 0.2..<0.4: return "Low"
+        default: return "Very Low"
+        }
+    }
+}
+
+// MARK: - Health Correlation (Enhanced)
+
+/// Complete health correlation data with coefficients
+struct HealthCorrelationData {
+    let sleepVsSentiment: [SleepSentimentPoint]
+    let stepsVsVolume: [StepsVolumePoint]
+    let correlationCoefficients: CorrelationSummary
+}
+
+/// Sleep hours vs mood correlation point
+struct SleepSentimentPoint: Identifiable {
+    let id = UUID()
+    let date: Date
+    let sleepHours: Double
+    let sentiment: Double
+}
+
+/// Activity vs thought volume correlation point
+struct StepsVolumePoint: Identifiable {
+    let id = UUID()
+    let date: Date
+    let steps: Int
+    let thoughtCount: Int
+}
+
+/// Statistical correlation summary
+struct CorrelationSummary {
+    let sleepSentimentCorrelation: Double?  // Pearson correlation coefficient
+    let stepsVolumeCorrelation: Double?
+    let description: String                  // Human-readable insight
+
+    var sleepStrength: String {
+        guard let r = sleepSentimentCorrelation else { return "Unknown" }
+        let abs = Swift.abs(r)
+        switch abs {
+        case 0.7...1.0: return "Strong"
+        case 0.4..<0.7: return "Moderate"
+        case 0.2..<0.4: return "Weak"
+        default: return "Very Weak"
+        }
+    }
+
+    var stepsStrength: String {
+        guard let r = stepsVolumeCorrelation else { return "Unknown" }
+        let abs = Swift.abs(r)
+        switch abs {
+        case 0.7...1.0: return "Strong"
+        case 0.4..<0.7: return "Moderate"
+        case 0.2..<0.4: return "Weak"
+        default: return "Very Weak"
+        }
+    }
+}
+
 // MARK: - Helper Extensions
 
 extension ThoughtType {

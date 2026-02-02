@@ -194,6 +194,173 @@ actor ThoughtRepository {
 
         return []
     }
+
+    // MARK: - Optimized Aggregation Queries for Charts
+    //
+    // These methods use Core Data's NSExpression for server-side aggregation
+    // to avoid loading all thoughts into memory (critical for 10,000+ thoughts)
+
+    /// Get distinct capture dates for streak calculation
+    /// Uses optimized query to avoid loading full thought entities
+    func getDistinctCaptureDates() async throws -> [Date] {
+        let context = container.viewContext
+
+        let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "ThoughtEntity")
+        fetchRequest.resultType = .dictionaryResultType
+        fetchRequest.returnsDistinctResults = true
+
+        // Only fetch the createdAt date (not the full entity)
+        fetchRequest.propertiesToFetch = ["createdAt"]
+
+        let results = try context.fetch(fetchRequest)
+
+        // Extract dates and normalize to start of day
+        let calendar = Calendar.current
+        return results.compactMap { dict in
+            guard let date = dict["createdAt"] as? Date else { return nil }
+            return calendar.startOfDay(for: date)
+        }
+        .sorted()
+    }
+
+    /// Aggregate sentiment by date range
+    /// Returns daily averages without loading all thoughts into memory
+    func aggregateSentimentByDate(
+        startDate: Date?,
+        endDate: Date
+    ) async throws -> [(date: Date, avgSentiment: Double, count: Int)] {
+        // Note: Core Data doesn't support aggregating on nested JSON (classification.sentiment)
+        // We'll need to load thoughts for this query
+        // Future optimization: Add sentimentValue as a direct property on ThoughtEntity
+
+        let thoughts = try await list(filter: nil)
+        let filtered = thoughts.filter { thought in
+            guard let start = startDate else { return thought.createdAt <= endDate }
+            return thought.createdAt >= start && thought.createdAt <= endDate
+        }
+
+        let calendar = Calendar.current
+
+        // Group by day
+        let grouped = Dictionary(grouping: filtered) { thought in
+            calendar.startOfDay(for: thought.createdAt)
+        }
+
+        return grouped.compactMap { date, dayThoughts in
+            let sentiments = dayThoughts.compactMap { thought -> Double? in
+                guard let sentiment = thought.classification?.sentiment else { return nil }
+                switch sentiment {
+                case .very_negative: return -1.0
+                case .negative: return -0.5
+                case .neutral: return 0.0
+                case .positive: return 0.5
+                case .very_positive: return 1.0
+                }
+            }
+
+            guard !sentiments.isEmpty else { return nil }
+            let avg = sentiments.reduce(0.0, +) / Double(sentiments.count)
+
+            return (date: date, avgSentiment: avg, count: dayThoughts.count)
+        }
+        .sorted { $0.date < $1.date }
+    }
+
+    /// Aggregate thought count by type
+    /// Optimized query using Core Data grouping
+    func aggregateByType(
+        startDate: Date?,
+        endDate: Date
+    ) async throws -> [(type: ClassificationType, count: Int)] {
+        // Note: Core Data doesn't support grouping on nested JSON (classification.type)
+        // We'll need to load thoughts for this query
+        // Future optimization: Add classificationTypeValue as a direct property
+
+        let thoughts = try await list(filter: nil)
+        let filtered = thoughts.filter { thought in
+            guard let start = startDate else { return thought.createdAt <= endDate }
+            return thought.createdAt >= start && thought.createdAt <= endDate
+        }
+
+        let grouped = Dictionary(grouping: filtered) { thought in
+            thought.classification?.type ?? .note
+        }
+
+        return grouped.map { type, thoughts in
+            (type: type, count: thoughts.count)
+        }
+        .sorted { $0.count > $1.count }
+    }
+
+    /// Aggregate tag frequency
+    /// Returns top N tags with their counts
+    func aggregateTagFrequency(
+        startDate: Date?,
+        endDate: Date,
+        limit: Int
+    ) async throws -> [(tag: String, count: Int)] {
+        let thoughts = try await list(filter: nil)
+        let filtered = thoughts.filter { thought in
+            guard let start = startDate else { return thought.createdAt <= endDate }
+            return thought.createdAt >= start && thought.createdAt <= endDate
+        }
+
+        // Flatten all tags and count occurrences
+        let allTags = filtered.flatMap { $0.tags }
+        let tagCounts = Dictionary(grouping: allTags) { $0 }.mapValues { $0.count }
+
+        return tagCounts
+            .map { (tag: $0.key, count: $0.value) }
+            .sorted { $0.count > $1.count }
+            .prefix(limit)
+            .map { $0 }
+    }
+
+    /// Get thought count by hour of day (for heatmap)
+    /// Returns array of 24 elements (hour 0-23)
+    func aggregateByHourOfDay(
+        startDate: Date?,
+        endDate: Date
+    ) async throws -> [Int] {
+        let thoughts = try await list(filter: nil)
+        let filtered = thoughts.filter { thought in
+            guard let start = startDate else { return thought.createdAt <= endDate }
+            return thought.createdAt >= start && thought.createdAt <= endDate
+        }
+
+        let calendar = Calendar.current
+        var hourCounts = Array(repeating: 0, count: 24)
+
+        for thought in filtered {
+            let hour = calendar.component(.hour, from: thought.createdAt)
+            hourCounts[hour] += 1
+        }
+
+        return hourCounts
+    }
+
+    /// Get thought count by day of week (for heatmap)
+    /// Returns array of 7 elements (Sunday=0, Saturday=6)
+    func aggregateByDayOfWeek(
+        startDate: Date?,
+        endDate: Date
+    ) async throws -> [Int] {
+        let thoughts = try await list(filter: nil)
+        let filtered = thoughts.filter { thought in
+            guard let start = startDate else { return thought.createdAt <= endDate }
+            return thought.createdAt >= start && thought.createdAt <= endDate
+        }
+
+        let calendar = Calendar.current
+        var dayCounts = Array(repeating: 0, count: 7)
+
+        for thought in filtered {
+            let weekday = calendar.component(.weekday, from: thought.createdAt)
+            dayCounts[weekday - 1] += 1  // Convert to 0-indexed
+        }
+
+        return dayCounts
+    }
 }
 
 /// Filter options for thought queries

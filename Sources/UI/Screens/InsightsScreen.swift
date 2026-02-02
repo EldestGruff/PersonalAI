@@ -11,6 +11,25 @@ import Charts
 struct InsightsScreen: View {
 
     @State private var viewModel: InsightsViewModel
+    @State private var selectedSection: InsightSection = .overview
+
+    enum InsightSection: String, CaseIterable, Identifiable {
+        case overview = "Overview"
+        case mood = "Mood"
+        case patterns = "Patterns"
+        case health = "Health"
+
+        var id: String { rawValue }
+
+        var icon: String {
+            switch self {
+            case .overview: return "chart.bar.fill"
+            case .mood: return "face.smiling"
+            case .patterns: return "calendar"
+            case .health: return "heart.fill"
+            }
+        }
+    }
 
     init(viewModel: InsightsViewModel) {
         self.viewModel = viewModel
@@ -23,13 +42,26 @@ struct InsightsScreen: View {
                     // Date range picker
                     dateRangePicker
 
+                    // Section picker
+                    sectionPicker
+
                     if viewModel.isLoading {
                         ProgressView("Loading insights...")
                             .padding()
                     } else if let error = viewModel.error {
                         errorView(error)
                     } else {
-                        chartsContent
+                        // Content based on selected section
+                        switch selectedSection {
+                        case .overview:
+                            overviewSection
+                        case .mood:
+                            moodSection
+                        case .patterns:
+                            patternsSection
+                        case .health:
+                            healthSection
+                        }
                     }
                 }
                 .padding()
@@ -57,18 +89,92 @@ struct InsightsScreen: View {
         .pickerStyle(.segmented)
     }
 
-    // MARK: - Charts Content
+    // MARK: - Section Picker
 
-    private var chartsContent: some View {
-        VStack(spacing: 32) {
+    private var sectionPicker: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(InsightSection.allCases) { section in
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            selectedSection = section
+                        }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: section.icon)
+                                .font(.caption)
+                            Text(section.rawValue)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(
+                            selectedSection == section
+                                ? Color.accentColor
+                                : Color(.secondarySystemBackground)
+                        )
+                        .foregroundStyle(
+                            selectedSection == section
+                                ? .white
+                                : .primary
+                        )
+                        .cornerRadius(20)
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Section Views
+
+    private var overviewSection: some View {
+        VStack(spacing: 20) {
             // AI Insights card at the top
             if #available(iOS 26.0, *) {
                 aiInsightsCard
             }
 
+            // Streak visualization
+            // TODO: Wire up with ChartDataService
+            // StreakVisualization(streakData: viewModel.streakData)
+
             thoughtCountChart
-            sentimentTrendChart
             typeDistributionChart
+        }
+    }
+
+    private var moodSection: some View {
+        VStack(spacing: 20) {
+            sentimentTrendChart
+
+            // Tag frequency (mood-related tags)
+            // TODO: Wire up with ChartDataService
+            // TagFrequencyChart(data: viewModel.tagFrequencyData)
+        }
+    }
+
+    private var patternsSection: some View {
+        VStack(spacing: 20) {
+            // Capture heatmap
+            // TODO: Wire up with ChartDataService
+            // CaptureHeatmapChart(data: viewModel.captureHeatmapData)
+
+            // Tag frequency
+            // TODO: Wire up with ChartDataService
+            // TagFrequencyChart(data: viewModel.tagFrequencyData)
+
+            energyCorrelationChart
+        }
+    }
+
+    private var healthSection: some View {
+        VStack(spacing: 20) {
+            // Health correlation chart
+            // TODO: Wire up with ChartDataService
+            // HealthCorrelationChart(data: viewModel.healthCorrelationData)
+
+            sentimentTrendChart
             energyCorrelationChart
         }
     }
