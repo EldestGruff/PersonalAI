@@ -136,8 +136,9 @@ struct InsightsScreen: View {
             }
 
             // Streak visualization
-            // TODO: Wire up with ChartDataService
-            // StreakVisualization(streakData: viewModel.streakData)
+            if let streakData = viewModel.streakData {
+                StreakVisualization(streakData: streakData)
+            }
 
             thoughtCountChart
             typeDistributionChart
@@ -148,21 +149,24 @@ struct InsightsScreen: View {
         VStack(spacing: 20) {
             sentimentTrendChart
 
-            // Tag frequency (mood-related tags)
-            // TODO: Wire up with ChartDataService
-            // TagFrequencyChart(data: viewModel.tagFrequencyData)
+            // Tag frequency
+            if !viewModel.tagFrequencyData.isEmpty {
+                TagFrequencyChart(data: viewModel.tagFrequencyData)
+            }
         }
     }
 
     private var patternsSection: some View {
         VStack(spacing: 20) {
             // Capture heatmap
-            // TODO: Wire up with ChartDataService
-            // CaptureHeatmapChart(data: viewModel.captureHeatmapData)
+            if let heatmapData = viewModel.captureHeatmapData {
+                CaptureHeatmapChart(data: heatmapData)
+            }
 
             // Tag frequency
-            // TODO: Wire up with ChartDataService
-            // TagFrequencyChart(data: viewModel.tagFrequencyData)
+            if !viewModel.tagFrequencyData.isEmpty {
+                TagFrequencyChart(data: viewModel.tagFrequencyData)
+            }
 
             energyCorrelationChart
         }
@@ -171,8 +175,9 @@ struct InsightsScreen: View {
     private var healthSection: some View {
         VStack(spacing: 20) {
             // Health correlation chart
-            // TODO: Wire up with ChartDataService
-            // HealthCorrelationChart(data: viewModel.healthCorrelationData)
+            if let healthData = viewModel.healthCorrelationData {
+                HealthCorrelationChart(data: healthData)
+            }
 
             sentimentTrendChart
             energyCorrelationChart

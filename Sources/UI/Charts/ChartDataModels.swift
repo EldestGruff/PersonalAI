@@ -8,6 +8,11 @@
 
 import Foundation
 
+// MARK: - Type Aliases
+
+/// ThoughtType is an alias for ClassificationType for chart compatibility
+typealias ThoughtType = ClassificationType
+
 // MARK: - Sentiment Trend Data
 
 /// Data point for sentiment trend over time

@@ -174,6 +174,21 @@
 			path = AppIntents;
 			sourceTree = "<group>";
 		};
+		A1803E152F3145770071D950 /* AI */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AI;
+			sourceTree = "<group>";
+		};
+		A1803E182F3145810071D950 /* Analytics */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Analytics;
+			sourceTree = "<group>";
+		};
+		A1803E1F2F31459D0071D950 /* Charts */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Charts;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -299,6 +314,8 @@
 				A0800000000000000000034 /* Domain */,
 				A0800000000000000000035 /* Orchestration */,
 				A0800000000000000000036 /* Monetization */,
+				A1803E152F3145770071D950 /* AI */,
+				A1803E182F3145810071D950 /* Analytics */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -379,6 +396,7 @@
 				A0800000000000000000041 /* Screens */,
 				A0800000000000000000042 /* Components */,
 				A0800000000000000000043 /* ViewModels */,
+				A1803E1F2F31459D0071D950 /* Charts */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -449,6 +467,9 @@
 			fileSystemSynchronizedGroups = (
 				A1803D4E2F270E6C0071D950 /* Assets */,
 				A1803D832F27C6A00071D950 /* AppIntents */,
+				A1803E152F3145770071D950 /* AI */,
+				A1803E182F3145810071D950 /* Analytics */,
+				A1803E1F2F31459D0071D950 /* Charts */,
 			);
 			name = PersonalAI;
 			packageProductDependencies = (
