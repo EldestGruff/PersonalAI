@@ -83,6 +83,9 @@
 		A1803DF12F2FF8750071D950 /* SemanticSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803DEE2F2FF8750071D950 /* SemanticSearchService.swift */; };
 		A1803DF32F3047FF0071D950 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A1803DF22F3047FF0071D950 /* PrivacyInfo.xcprivacy */; };
 		A1803E282F327EC60071D950 /* AIInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803E272F327EC60071D950 /* AIInsightsView.swift */; };
+		A1A6326A2F33A8B900DA552B /* ConversationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632692F33A8B900DA552B /* ConversationScreen.swift */; };
+		A1A6326B2F33A8B900DA552B /* AppleIntelligenceRequiredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632682F33A8B900DA552B /* AppleIntelligenceRequiredView.swift */; };
+		A1A6326D2F33A8CF00DA552B /* ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A6326C2F33A8CF00DA552B /* ConversationViewModel.swift */; };
 		ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */; };
 /* End PBXBuildFile section */
 
@@ -164,6 +167,9 @@
 		A1803DEF2F2FF8750071D950 /* SmartInsightsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartInsightsService.swift; sourceTree = "<group>"; };
 		A1803DF22F3047FF0071D950 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A1803E272F327EC60071D950 /* AIInsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInsightsView.swift; sourceTree = "<group>"; };
+		A1A632682F33A8B900DA552B /* AppleIntelligenceRequiredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntelligenceRequiredView.swift; sourceTree = "<group>"; };
+		A1A632692F33A8B900DA552B /* ConversationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationScreen.swift; sourceTree = "<group>"; };
+		A1A6326C2F33A8CF00DA552B /* ConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewModel.swift; sourceTree = "<group>"; };
 		A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsAnalyzer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -409,6 +415,8 @@
 		A0800000000000000000041 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				A1A632682F33A8B900DA552B /* AppleIntelligenceRequiredView.swift */,
+				A1A632692F33A8B900DA552B /* ConversationScreen.swift */,
 				A0000001000000000000202 /* BrowseScreen.swift */,
 				A0000001000000000000204 /* CaptureScreen.swift */,
 				A0000001000000000000206 /* DetailScreen.swift */,
@@ -437,6 +445,7 @@
 		A0800000000000000000043 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				A1A6326C2F33A8CF00DA552B /* ConversationViewModel.swift */,
 				A0000001000000000000242 /* BrowseViewModel.swift */,
 				A0000001000000000000244 /* CaptureViewModel.swift */,
 				A0000001000000000000246 /* DetailViewModel.swift */,
@@ -556,6 +565,7 @@
 				A0000001000000000000073 /* ClassificationEntity.swift in Sources */,
 				A0000001000000000000075 /* TaskEntity.swift in Sources */,
 				A0000001000000000000077 /* FineTuningDataEntity.swift in Sources */,
+				A1A6326D2F33A8CF00DA552B /* ConversationViewModel.swift in Sources */,
 				A0000001000000000000079 /* SyncQueueEntity.swift in Sources */,
 				A0000001000000000000091 /* ThoughtRepository.swift in Sources */,
 				A0000001000000000000093 /* TaskRepository.swift in Sources */,
@@ -579,6 +589,8 @@
 				A0000001000000000000143 /* NetworkMonitor.swift in Sources */,
 				A0000001000000000000151 /* NLPService.swift in Sources */,
 				A0000001000000000000153 /* ClassificationService.swift in Sources */,
+				A1A6326A2F33A8B900DA552B /* ConversationScreen.swift in Sources */,
+				A1A6326B2F33A8B900DA552B /* AppleIntelligenceRequiredView.swift in Sources */,
 				ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */,
 				A1803D4B2F25BDFD0071D953 /* ClassificationService_FoundationModels.swift in Sources */,
 				A0000001000000000000161 /* ThoughtService.swift in Sources */,

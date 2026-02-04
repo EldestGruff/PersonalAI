@@ -46,6 +46,7 @@ struct MainTabView: View {
 
     enum Tab: String {
         case browse
+        case chat
         case search
         case insights
         case settings
@@ -64,6 +65,15 @@ struct MainTabView: View {
                 Label("Thoughts", systemImage: "brain.head.profile")
             }
             .tag(Tab.browse)
+
+            // Chat tab (iOS 26+)
+            if #available(iOS 26.0, *) {
+                ConversationScreen(thoughtService: ThoughtService.shared)
+                    .tabItem {
+                        Label("Chat", systemImage: "bubble.left.and.bubble.right")
+                    }
+                    .tag(Tab.chat)
+            }
 
             // Search tab
             SearchScreen(

@@ -371,7 +371,7 @@ struct SuggestedQuestionsView: View {
             }
         }
         .padding(12)
-        .background(Color(.quaternarySystemBackground))
+        .background(Color(.tertiarySystemBackground).opacity(0.5))
         .cornerRadius(12)
     }
 }
@@ -439,7 +439,7 @@ struct ErrorMessageView: View {
 #Preview {
     NavigationStack {
         if #available(iOS 26.0, *) {
-            ConversationScreen(thoughtService: PreviewThoughtService())
+            ConversationScreen(thoughtService: ThoughtService.shared)
         } else {
             Text("iOS 26+ required")
         }

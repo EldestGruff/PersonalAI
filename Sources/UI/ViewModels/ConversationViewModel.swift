@@ -9,6 +9,7 @@ import Foundation
 
 @available(iOS 26.0, *)
 @Observable
+@MainActor
 class ConversationViewModel {
 
     // MARK: - Properties
@@ -31,10 +32,9 @@ class ConversationViewModel {
 
     init(thoughtService: ThoughtServiceProtocol) {
         self.thoughtService = thoughtService
-        let semanticSearchService = SemanticSearchService(thoughtService: thoughtService)
         self.conversationService = ConversationService(
             thoughtService: thoughtService,
-            semanticSearchService: semanticSearchService
+            semanticSearchService: SemanticSearchService.shared
         )
     }
 
