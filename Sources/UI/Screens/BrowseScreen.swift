@@ -14,15 +14,18 @@ import SwiftUI
 ///
 /// Features:
 /// - List of thoughts with swipe actions
-/// - Filter by status and tags
+/// - Filter by status, tags, date range, type, and sentiment (Issue #4)
+/// - Text search with .searchable() modifier (Issue #4)
 /// - Sort options
 /// - Navigation to detail view
 /// - Floating action button for new thought
+/// - Multi-select mode with bulk actions (Issue #5)
 struct BrowseScreen: View {
     @State var viewModel: BrowseViewModel
     @State private var showCaptureSheet = false
     @State private var showFilterSheet = false
     @State private var thoughtToDelete: Thought?
+    @State private var bulkTagInput: String = ""
 
     var body: some View {
         NavigationStack {
@@ -36,19 +39,39 @@ struct BrowseScreen: View {
                     thoughtList
                 }
 
-                // Floating action button
-                VStack {
-                    Spacer()
-                    HStack {
+                // Floating action button (hidden in edit mode)
+                if !viewModel.isEditMode {
+                    VStack {
                         Spacer()
-                        floatingActionButton
+                        HStack {
+                            Spacer()
+                            floatingActionButton
+                        }
+                    }
+                }
+
+                // Bulk action toolbar (Issue #5)
+                if viewModel.isEditMode && viewModel.selectedCount > 0 {
+                    VStack {
+                        Spacer()
+                        bulkActionToolbar
                     }
                 }
             }
             .navigationTitle("Thoughts")
+            .searchable(
+                text: Binding(
+                    get: { viewModel.searchText },
+                    set: { viewModel.setSearchText($0) }
+                ),
+                prompt: "Search thoughts"
+            )
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    filterButton
+                    HStack(spacing: 16) {
+                        editButton
+                        filterButton
+                    }
                 }
             }
             .sheet(isPresented: $showCaptureSheet, onDismiss: {
@@ -112,6 +135,23 @@ struct BrowseScreen: View {
             } message: {
                 Text("This action cannot be undone.")
             }
+            // Bulk delete confirmation (Issue #5)
+            .confirmationDialog(
+                "Delete \(viewModel.selectedCount) thoughts?",
+                isPresented: $viewModel.showBulkDeleteConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Delete \(viewModel.selectedCount) Thoughts", role: .destructive) {
+                    viewModel.deleteSelected()
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This action cannot be undone.")
+            }
+            // Bulk tag sheet (Issue #5)
+            .sheet(isPresented: $viewModel.showBulkTagSheet) {
+                bulkTagSheet
+            }
         }
     }
 
@@ -133,32 +173,28 @@ struct BrowseScreen: View {
             // Active filter indicator
             if viewModel.hasActiveFilters {
                 Section {
+                    activeFilterBanner
+                }
+            }
+
+            // Select all / Deselect all in edit mode (Issue #5)
+            if viewModel.isEditMode {
+                Section {
                     HStack {
-                        Text("Filtered")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-
-                        if let status = viewModel.filterStatus {
-                            Text(status.rawValue.capitalized)
-                                .font(.caption)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 2)
-                                .background(Color.blue.opacity(0.1))
-                                .cornerRadius(4)
+                        Button(viewModel.allSelected ? "Deselect All" : "Select All") {
+                            if viewModel.allSelected {
+                                viewModel.deselectAll()
+                            } else {
+                                viewModel.selectAll()
+                            }
                         }
-
-                        ForEach(viewModel.selectedFilterTags, id: \.self) { tag in
-                            Text("#\(tag)")
-                                .font(.caption)
-                                .foregroundColor(.blue)
-                        }
+                        .font(.subheadline)
 
                         Spacer()
 
-                        Button("Clear") {
-                            viewModel.clearFilters()
-                        }
-                        .font(.caption)
+                        Text("\(viewModel.selectedCount) selected")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
                 }
             }
@@ -166,19 +202,43 @@ struct BrowseScreen: View {
             // Thoughts
             Section {
                 ForEach(viewModel.thoughts) { thought in
-                    ThoughtRowView(thought: thought)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
+                    HStack(spacing: 12) {
+                        // Checkbox in edit mode (Issue #5)
+                        if viewModel.isEditMode {
+                            Button {
+                                viewModel.toggleSelection(thought)
+                            } label: {
+                                Image(systemName: viewModel.isSelected(thought) ? "checkmark.circle.fill" : "circle")
+                                    .font(.title2)
+                                    .foregroundColor(viewModel.isSelected(thought) ? .blue : .secondary)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(viewModel.isSelected(thought) ? "Selected" : "Not selected")
+                            .accessibilityHint("Double tap to \(viewModel.isSelected(thought) ? "deselect" : "select")")
+                        }
+
+                        ThoughtRowView(thought: thought)
+                            .contentShape(Rectangle())
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        if viewModel.isEditMode {
+                            viewModel.toggleSelection(thought)
+                        } else {
                             viewModel.selectThought(thought)
                         }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        if !viewModel.isEditMode {
                             Button(role: .destructive) {
                                 thoughtToDelete = thought
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
                         }
-                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                    }
+                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                        if !viewModel.isEditMode {
                             if thought.status == .archived {
                                 Button {
                                     viewModel.unarchiveThought(thought)
@@ -195,6 +255,7 @@ struct BrowseScreen: View {
                                 .tint(.orange)
                             }
                         }
+                    }
                 }
             }
         }
@@ -203,6 +264,71 @@ struct BrowseScreen: View {
         #else
         .listStyle(.sidebar)
         #endif
+    }
+
+    // MARK: - Active Filter Banner (Issue #4)
+
+    private var activeFilterBanner: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                Text("Filtered:")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                if let status = viewModel.filterStatus {
+                    filterChip(status.rawValue.capitalized, color: .blue)
+                }
+
+                ForEach(viewModel.selectedFilterTags, id: \.self) { tag in
+                    filterChip("#\(tag)", color: .green)
+                }
+
+                if viewModel.dateRangeFilter != .all {
+                    filterChip(viewModel.dateRangeFilter.rawValue, color: .orange)
+                }
+
+                if let type = viewModel.filterType {
+                    filterChip(type.rawValue.capitalized, color: .purple)
+                }
+
+                if let sentiment = viewModel.filterSentiment {
+                    filterChip(sentimentDisplayName(sentiment), color: .pink)
+                }
+
+                if !viewModel.searchText.isEmpty {
+                    filterChip("\"\(viewModel.searchText)\"", color: .gray)
+                }
+
+                Spacer()
+
+                Button("Clear") {
+                    viewModel.clearFilters()
+                }
+                .font(.caption)
+                .foregroundColor(.red)
+            }
+            .padding(.vertical, 4)
+        }
+    }
+
+    private func filterChip(_ text: String, color: Color) -> some View {
+        Text(text)
+            .font(.caption)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(color.opacity(0.15))
+            .foregroundColor(color)
+            .cornerRadius(8)
+    }
+
+    private func sentimentDisplayName(_ sentiment: Sentiment) -> String {
+        switch sentiment {
+        case .very_positive: return "Very Positive"
+        case .positive: return "Positive"
+        case .neutral: return "Neutral"
+        case .negative: return "Negative"
+        case .very_negative: return "Very Negative"
+        }
     }
 
     // MARK: - Empty State
@@ -239,6 +365,19 @@ struct BrowseScreen: View {
         .accessibilityIdentifier("addThoughtButton")
     }
 
+    // MARK: - Edit Button (Issue #5)
+
+    private var editButton: some View {
+        Button {
+            viewModel.toggleEditMode()
+        } label: {
+            Text(viewModel.isEditMode ? "Done" : "Edit")
+        }
+        .accessibilityLabel(viewModel.isEditMode ? "Exit edit mode" : "Enter edit mode")
+        .accessibilityHint("Double tap to \(viewModel.isEditMode ? "exit" : "enter") multi-select mode")
+        .accessibilityIdentifier("editButton")
+    }
+
     // MARK: - Filter Button
 
     private var filterButton: some View {
@@ -250,6 +389,124 @@ struct BrowseScreen: View {
         .accessibilityLabel(viewModel.hasActiveFilters ? "Filter thoughts (active filters)" : "Filter thoughts")
         .accessibilityHint("Double tap to open filter and sort options")
         .accessibilityIdentifier("filterButton")
+    }
+
+    // MARK: - Bulk Action Toolbar (Issue #5)
+
+    private var bulkActionToolbar: some View {
+        HStack(spacing: 20) {
+            // Archive button
+            Button {
+                viewModel.archiveSelected()
+            } label: {
+                VStack(spacing: 4) {
+                    Image(systemName: "archivebox")
+                        .font(.title2)
+                    Text("Archive")
+                        .font(.caption)
+                }
+            }
+            .accessibilityLabel("Archive selected thoughts")
+            .accessibilityIdentifier("bulkArchiveButton")
+
+            // Add tags button
+            Button {
+                viewModel.showBulkTagSheet = true
+            } label: {
+                VStack(spacing: 4) {
+                    Image(systemName: "tag")
+                        .font(.title2)
+                    Text("Add Tags")
+                        .font(.caption)
+                }
+            }
+            .accessibilityLabel("Add tags to selected thoughts")
+            .accessibilityIdentifier("bulkTagButton")
+
+            // Delete button
+            Button(role: .destructive) {
+                viewModel.showBulkDeleteConfirmation = true
+            } label: {
+                VStack(spacing: 4) {
+                    Image(systemName: "trash")
+                        .font(.title2)
+                    Text("Delete")
+                        .font(.caption)
+                }
+            }
+            .accessibilityLabel("Delete selected thoughts")
+            .accessibilityIdentifier("bulkDeleteButton")
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .background(.ultraThinMaterial)
+        .cornerRadius(16)
+        .padding(.horizontal)
+        .padding(.bottom, 8)
+    }
+
+    // MARK: - Bulk Tag Sheet (Issue #5)
+
+    private var bulkTagSheet: some View {
+        NavigationStack {
+            Form {
+                Section("Add Tags to \(viewModel.selectedCount) Thoughts") {
+                    TextField("Enter tag (e.g., work, personal)", text: $bulkTagInput)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .accessibilityLabel("Tag input")
+                        .accessibilityIdentifier("bulkTagInput")
+
+                    if !bulkTagInput.isEmpty {
+                        Text("Will add: #\(bulkTagInput.lowercased().replacingOccurrences(of: " ", with: "-"))")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+
+                Section("Quick Tags") {
+                    let suggestedTags = ["important", "follow-up", "review", "personal", "work"]
+                    ForEach(suggestedTags, id: \.self) { tag in
+                        Button {
+                            bulkTagInput = tag
+                        } label: {
+                            HStack {
+                                Text("#\(tag)")
+                                Spacer()
+                                if bulkTagInput == tag {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.blue)
+                                }
+                            }
+                        }
+                        .foregroundColor(.primary)
+                    }
+                }
+            }
+            .navigationTitle("Add Tags")
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+            #endif
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        bulkTagInput = ""
+                        viewModel.showBulkTagSheet = false
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Add Tag") {
+                        if !bulkTagInput.isEmpty {
+                            viewModel.addTagsToSelected([bulkTagInput])
+                            bulkTagInput = ""
+                            viewModel.showBulkTagSheet = false
+                        }
+                    }
+                    .disabled(bulkTagInput.isEmpty)
+                }
+            }
+        }
+        .presentationDetents([.medium])
     }
 
     // MARK: - Filter Sheet
@@ -280,6 +537,151 @@ struct BrowseScreen: View {
                         .foregroundColor(.primary)
                         .accessibilityValue(viewModel.filterStatus == status ? "Selected" : "Not selected")
                         .accessibilityHint("Double tap to \(viewModel.filterStatus == status ? "deselect" : "select") \(status.rawValue) status")
+                    }
+                }
+                .accessibilitySortPriority(7)
+
+                // Date Range filter (Issue #4)
+                Section("Date Range") {
+                    ForEach(DateRangeFilter.allCases.filter { $0 != .custom }, id: \.self) { range in
+                        Button {
+                            if viewModel.dateRangeFilter == range {
+                                viewModel.setDateRangeFilter(.all)
+                            } else {
+                                viewModel.setDateRangeFilter(range)
+                            }
+                        } label: {
+                            HStack {
+                                Text(range.rawValue)
+                                Spacer()
+                                if viewModel.dateRangeFilter == range {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.blue)
+                                        .accessibilityHidden(true)
+                                }
+                            }
+                        }
+                        .foregroundColor(.primary)
+                        .accessibilityValue(viewModel.dateRangeFilter == range ? "Selected" : "Not selected")
+                        .accessibilityIdentifier("dateRange_\(range.rawValue)")
+                    }
+
+                    // Custom date range
+                    DisclosureGroup("Custom Range") {
+                        DatePicker(
+                            "From",
+                            selection: Binding(
+                                get: { viewModel.customStartDate },
+                                set: { newValue in
+                                    viewModel.setCustomDateRange(start: newValue, end: viewModel.customEndDate)
+                                }
+                            ),
+                            displayedComponents: .date
+                        )
+                        .accessibilityIdentifier("customStartDate")
+
+                        DatePicker(
+                            "To",
+                            selection: Binding(
+                                get: { viewModel.customEndDate },
+                                set: { newValue in
+                                    viewModel.setCustomDateRange(start: viewModel.customStartDate, end: newValue)
+                                }
+                            ),
+                            displayedComponents: .date
+                        )
+                        .accessibilityIdentifier("customEndDate")
+                    }
+                }
+                .accessibilitySortPriority(6)
+
+                // Classification Type filter (Issue #4)
+                Section("Type") {
+                    Button {
+                        viewModel.setTypeFilter(nil)
+                    } label: {
+                        HStack {
+                            Text("All Types")
+                            Spacer()
+                            if viewModel.filterType == nil {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.blue)
+                                    .accessibilityHidden(true)
+                            }
+                        }
+                    }
+                    .foregroundColor(.primary)
+                    .accessibilityIdentifier("typeFilter_all")
+
+                    ForEach(ClassificationType.allCases, id: \.self) { type in
+                        Button {
+                            if viewModel.filterType == type {
+                                viewModel.setTypeFilter(nil)
+                            } else {
+                                viewModel.setTypeFilter(type)
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: typeIcon(type))
+                                    .foregroundColor(typeColor(type))
+                                    .frame(width: 24)
+                                Text(type.rawValue.capitalized)
+                                Spacer()
+                                if viewModel.filterType == type {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.blue)
+                                        .accessibilityHidden(true)
+                                }
+                            }
+                        }
+                        .foregroundColor(.primary)
+                        .accessibilityValue(viewModel.filterType == type ? "Selected" : "Not selected")
+                        .accessibilityIdentifier("typeFilter_\(type.rawValue)")
+                    }
+                }
+                .accessibilitySortPriority(5)
+
+                // Sentiment filter (Issue #4)
+                Section("Sentiment") {
+                    Button {
+                        viewModel.setSentimentFilter(nil)
+                    } label: {
+                        HStack {
+                            Text("All Sentiments")
+                            Spacer()
+                            if viewModel.filterSentiment == nil {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.blue)
+                                    .accessibilityHidden(true)
+                            }
+                        }
+                    }
+                    .foregroundColor(.primary)
+                    .accessibilityIdentifier("sentimentFilter_all")
+
+                    ForEach(Sentiment.allCases, id: \.self) { sentiment in
+                        Button {
+                            if viewModel.filterSentiment == sentiment {
+                                viewModel.setSentimentFilter(nil)
+                            } else {
+                                viewModel.setSentimentFilter(sentiment)
+                            }
+                        } label: {
+                            HStack {
+                                Text(sentimentEmoji(sentiment))
+                                    .frame(width: 24)
+                                Text(sentimentDisplayName(sentiment))
+                                Spacer()
+                                if viewModel.filterSentiment == sentiment {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.blue)
+                                        .accessibilityHidden(true)
+                                }
+                            }
+                        }
+                        .foregroundColor(.primary)
+                        .accessibilityValue(viewModel.filterSentiment == sentiment ? "Selected" : "Not selected")
+                        .accessibilityIdentifier("sentimentFilter_\(sentiment.rawValue)")
                     }
                 }
                 .accessibilitySortPriority(4)
@@ -378,6 +780,38 @@ struct BrowseScreen: View {
             }
         }
         .presentationDetents([.medium, .large])
+    }
+
+    // MARK: - Filter Sheet Helpers
+
+    private func typeIcon(_ type: ClassificationType) -> String {
+        switch type {
+        case .reminder: return "bell"
+        case .event: return "calendar"
+        case .note: return "note.text"
+        case .question: return "questionmark.circle"
+        case .idea: return "lightbulb"
+        }
+    }
+
+    private func typeColor(_ type: ClassificationType) -> Color {
+        switch type {
+        case .reminder: return .orange
+        case .event: return .blue
+        case .note: return .gray
+        case .question: return .purple
+        case .idea: return .yellow
+        }
+    }
+
+    private func sentimentEmoji(_ sentiment: Sentiment) -> String {
+        switch sentiment {
+        case .very_positive: return "😄"
+        case .positive: return "🙂"
+        case .neutral: return "😐"
+        case .negative: return "😕"
+        case .very_negative: return "😢"
+        }
     }
 }
 

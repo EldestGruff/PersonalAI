@@ -22,6 +22,7 @@
 		A0000001000000000000033 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000034 /* Enums.swift */; };
 		A0000001000000000000035 /* ModelError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000036 /* ModelError.swift */; };
 		A0000001000000000000038 /* Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000037 /* Subscription.swift */; };
+		A0000001000000000000039 /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000040 /* Conversation.swift */; };
 		A0000001000000000000041 /* Thought+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000042 /* Thought+CoreData.swift */; };
 		A0000001000000000000043 /* Classification+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000044 /* Classification+CoreData.swift */; };
 		A0000001000000000000045 /* Task+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000046 /* Task+CoreData.swift */; };
@@ -101,6 +102,7 @@
 		A0000001000000000000034 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		A0000001000000000000036 /* ModelError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelError.swift; sourceTree = "<group>"; };
 		A0000001000000000000037 /* Subscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subscription.swift; sourceTree = "<group>"; };
+		A0000001000000000000040 /* Conversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
 		A0000001000000000000042 /* Thought+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Thought+CoreData.swift"; sourceTree = "<group>"; };
 		A0000001000000000000044 /* Classification+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Classification+CoreData.swift"; sourceTree = "<group>"; };
 		A0000001000000000000046 /* Task+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Task+CoreData.swift"; sourceTree = "<group>"; };
@@ -248,6 +250,7 @@
 				A0000001000000000000034 /* Enums.swift */,
 				A0000001000000000000036 /* ModelError.swift */,
 				A0000001000000000000037 /* Subscription.swift */,
+				A0000001000000000000040 /* Conversation.swift */,
 				A0800000000000000000011 /* Conversions */,
 			);
 			path = Models;
@@ -604,6 +607,7 @@
 				A00000010000000000000256 /* InsightsViewModel.swift in Sources */,
 				A0000001000000000000251 /* AppError.swift in Sources */,
 				A0000001000000000000038 /* Subscription.swift in Sources */,
+				A0000001000000000000039 /* Conversation.swift in Sources */,
 				A0000001000000000000123 /* SubscriptionManager.swift in Sources */,
 				A0000001000000000000212 /* PaywallScreen.swift in Sources */,
 			);
