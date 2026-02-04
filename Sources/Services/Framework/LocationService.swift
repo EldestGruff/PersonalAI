@@ -160,13 +160,17 @@ actor LocationService: LocationServiceProtocol {
 
         // Note: CLGeocoder is deprecated in iOS 26 but remains functional and stable.
         // The recommended MapKit alternatives (MKReverseGeocodingRequest, MKLocalSearch, MKAddress)
-        // have incomplete or undocumented APIs in iOS 26.0/26.1.
-        // Will migrate when MapKit reverse geocoding API stabilizes in future iOS releases.
+        // have incomplete APIs - MKMapItem doesn't provide CNPostalAddress (structured data).
+        // See: https://developer.apple.com/forums/thread/795687
+        // Will migrate when MapKit reverse geocoding API provides structured address data.
         let geocoder = CLGeocoder()
         let location = CLLocation(latitude: latitude, longitude: longitude)
 
         do {
             NSLog("📍 LocationService - Executing CLGeocoder reverseGeocodeLocation")
+            #if compiler(>=6.0)
+            #warning("TODO: Migrate to MKReverseGeocodingRequest when CNPostalAddress support is added")
+            #endif
             let placemarks = try await geocoder.reverseGeocodeLocation(location)
             NSLog("📍 LocationService - Got %d placemarks", placemarks.count)
 

@@ -545,6 +545,8 @@ actor HealthKitService: HealthKitServiceProtocol {
             let labels = stateOfMind.labels.map { label in
                 // HKStateOfMind.Label is an enum with descriptive string values
                 switch label {
+                case .amazed: return "amazed"
+                case .amused: return "amused"
                 case .anxious: return "anxious"
                 case .calm: return "calm"
                 case .content: return "content"
@@ -901,7 +903,10 @@ actor HealthKitService: HealthKitServiceProtocol {
                 guard let workout = sample as? HKWorkout else { continue }
                 let date = calendar.startOfDay(for: workout.startDate)
                 let duration = Int(workout.duration / 60)  // Convert to minutes
-                let calories = workout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0
+
+                // Use statisticsForType for activeEnergyBurned (iOS 18+ recommendation)
+                let activeEnergyType = HKQuantityType(.activeEnergyBurned)
+                let calories = workout.statistics(for: activeEnergyType)?.sumQuantity()?.doubleValue(for: .kilocalorie()) ?? 0
 
                 // Get workout type name
                 let workoutTypeName = workout.workoutActivityType.name
