@@ -16,13 +16,7 @@ struct ThoughtCountDataPoint: Identifiable {
     let count: Int
 }
 
-/// Data point for sentiment trends chart
-struct SentimentDataPoint: Identifiable {
-    let id = UUID()
-    let date: Date
-    let averageSentiment: Double
-    let stateOfMindValence: Double?
-}
+// SentimentDataPoint is now defined in ChartDataModels.swift
 
 /// Data point for type distribution chart
 struct TypeDistributionDataPoint: Identifiable {
@@ -86,9 +80,13 @@ class InsightsViewModel {
     var streakData: StreakData?
     var summaryMetrics: ChartSummaryMetrics?
 
-    // AI Insights
+    // AI Insights (legacy - for backward compatibility)
     var aiInsights: AIInsightsResponse?
     var isLoadingInsights = false
+
+    // New comprehensive AI insights (iOS 26+)
+    var generatedInsights: GeneratedInsights?
+    var insightsError: Error?
 
     // Date range for filtering
     var dateRange: DateRange = .last30Days
@@ -182,7 +180,12 @@ class InsightsViewModel {
 
             isLoading = false
 
-            // Generate AI insights in parallel
+            // Generate comprehensive AI insights (iOS 26+)
+            if #available(iOS 26.0, *), filteredThoughts.count >= 5 {
+                await loadGeneratedInsights(dateRange: chartRange)
+            }
+
+            // Also load legacy AI insights for backward compatibility
             if #available(iOS 26.0, *), filteredThoughts.count >= 5 {
                 await loadAIInsights(thoughts: filteredThoughts)
             }
@@ -203,9 +206,32 @@ class InsightsViewModel {
     }
 
     @available(iOS 26.0, *)
-    private func loadAIInsights(thoughts: [Thought]) async {
+    private func loadGeneratedInsights(dateRange: ChartDateRange) async {
         isLoadingInsights = true
+        insightsError = nil
 
+        do {
+            // Try to generate AI-powered insights
+            generatedInsights = try await chartDataService.generateInsights(dateRange: dateRange)
+        } catch {
+            NSLog("⚠️ Failed to generate AI insights: \(error)")
+            insightsError = error
+
+            // Fall back to rule-based insights
+            do {
+                generatedInsights = try await chartDataService.generateFallbackInsights(dateRange: dateRange)
+            } catch {
+                NSLog("⚠️ Failed to generate fallback insights: \(error)")
+                generatedInsights = nil
+            }
+        }
+
+        isLoadingInsights = false
+    }
+
+    @available(iOS 26.0, *)
+    private func loadAIInsights(thoughts: [Thought]) async {
+        // Legacy insights loading - keep for backward compatibility
         do {
             let analyzer = InsightsAnalyzer()
             aiInsights = try await analyzer.generateInsights(
@@ -213,11 +239,9 @@ class InsightsViewModel {
                 dateRange: dateRange.rawValue
             )
         } catch {
-            NSLog("⚠️ Failed to generate AI insights: \(error)")
+            NSLog("⚠️ Failed to generate legacy AI insights: \(error)")
             aiInsights = nil
         }
-
-        isLoadingInsights = false
     }
 
     // MARK: - Data Aggregation
@@ -268,6 +292,7 @@ class InsightsViewModel {
             return SentimentDataPoint(
                 date: date,
                 averageSentiment: avgSentiment,
+                thoughtCount: dayThoughts.count,
                 stateOfMindValence: avgValence
             )
         }
@@ -363,6 +388,7 @@ class MockInsightsViewModel: InsightsViewModel {
             return SentimentDataPoint(
                 date: calendar.startOfDay(for: date),
                 averageSentiment: Double.random(in: -0.5...0.8),
+                thoughtCount: Int.random(in: 3...15),
                 stateOfMindValence: Double.random(in: -0.3...0.7)
             )
         }.reversed()
@@ -412,7 +438,7 @@ class MockInsightsViewModel: InsightsViewModel {
             hourByDayMatrix: []
         )
 
-        // Mock health correlation
+        // Mock health correlation with all new data types
         healthCorrelationData = HealthCorrelationData(
             sleepVsSentiment: (0..<15).map { i in
                 let sleep = 5.0 + Double(i) * 0.3
@@ -420,6 +446,7 @@ class MockInsightsViewModel: InsightsViewModel {
                 return SleepSentimentPoint(
                     date: calendar.date(byAdding: .day, value: -i, to: today)!,
                     sleepHours: sleep,
+                    sleepQuality: Double.random(in: 0.5...0.95),
                     sentiment: sentiment
                 )
             },
@@ -432,10 +459,54 @@ class MockInsightsViewModel: InsightsViewModel {
                     thoughtCount: max(0, thoughts)
                 )
             },
+            hrvVsSentiment: (0..<15).map { i in
+                let hrv = 40.0 + Double(i) * 3.0 + Double.random(in: -5...5)
+                let sentiment = -0.3 + (hrv - 40.0) * 0.02 + Double.random(in: -0.15...0.15)
+                let recovery: String
+                if hrv < 30 { recovery = "poor" }
+                else if hrv < 50 { recovery = "below_average" }
+                else if hrv < 70 { recovery = "average" }
+                else if hrv < 90 { recovery = "good" }
+                else { recovery = "excellent" }
+                return HRVSentimentPoint(
+                    date: calendar.date(byAdding: .day, value: -i, to: today)!,
+                    hrv: hrv,
+                    recoveryLevel: recovery,
+                    sentiment: min(1.0, max(-1.0, sentiment))
+                )
+            },
+            workoutsVsVolume: (0..<10).map { i in
+                let minutes = 20 + i * 8 + Int.random(in: -10...10)
+                let thoughts = 6 + Int(Double(minutes) / 15) + Int.random(in: -2...2)
+                return WorkoutVolumePoint(
+                    date: calendar.date(byAdding: .day, value: -i, to: today)!,
+                    workoutMinutes: max(0, minutes),
+                    workoutCount: Int.random(in: 1...2),
+                    workoutTypes: ["Running", "Strength"].shuffled().prefix(Int.random(in: 1...2)).map { $0 },
+                    thoughtCount: max(0, thoughts)
+                )
+            },
+            restingHRVsSentiment: (0..<15).map { i in
+                let restingHR = 68.0 - Double(i) * 0.3 + Double.random(in: -3...3)
+                let sentiment = 0.8 - (restingHR - 55.0) * 0.03 + Double.random(in: -0.2...0.2)
+                let trend: String
+                if restingHR > 70 { trend = "elevated" }
+                else if restingHR < 60 { trend = "low" }
+                else { trend = "normal" }
+                return RestingHRSentimentPoint(
+                    date: calendar.date(byAdding: .day, value: -i, to: today)!,
+                    restingHeartRate: restingHR,
+                    trend: trend,
+                    sentiment: min(1.0, max(-1.0, sentiment))
+                )
+            },
             correlationCoefficients: CorrelationSummary(
                 sleepSentimentCorrelation: 0.78,
                 stepsVolumeCorrelation: 0.65,
-                description: "Your mood strongly improves with more sleep. You capture moderately more thoughts on active days."
+                hrvSentimentCorrelation: 0.52,
+                workoutVolumeCorrelation: 0.45,
+                restingHRSentimentCorrelation: -0.38,
+                description: "Your mood strongly improves with more sleep. You capture moderately more thoughts on active days. Higher HRV correlates with better mood."
             )
         )
 
@@ -462,5 +533,76 @@ class MockInsightsViewModel: InsightsViewModel {
             currentStreak: 12,
             longestStreak: 15
         )
+
+        // Mock comprehensive AI insights (iOS 26+)
+        if #available(iOS 26.0, *) {
+            generatedInsights = GeneratedInsights(
+                patterns: [
+                    InsightItem(
+                        type: .pattern,
+                        title: "Morning Momentum",
+                        description: "You capture 65% of your thoughts between 9-11 AM. This appears to be your peak clarity window.",
+                        confidence: 0.92,
+                        icon: "sunrise.fill",
+                        actionable: false
+                    ),
+                    InsightItem(
+                        type: .pattern,
+                        title: "Tuesday Surge",
+                        description: "Tuesdays show 2.3x more thought capture than other weekdays, often tagged with 'planning' and 'goals'.",
+                        confidence: 0.87,
+                        icon: "calendar",
+                        actionable: false
+                    ),
+                    InsightItem(
+                        type: .pattern,
+                        title: "Work-Focused",
+                        description: "The 'work' tag appears in 45 of your 128 thoughts (35%). You're highly focused on professional growth.",
+                        confidence: 0.95,
+                        icon: "briefcase.fill",
+                        actionable: false
+                    )
+                ],
+                recommendations: [
+                    InsightItem(
+                        type: .recommendation,
+                        title: "Evening Reflections",
+                        description: "Your sentiment is 0.4 points higher on days with evening thoughts. Consider a bedtime reflection practice.",
+                        confidence: 0.81,
+                        icon: "moon.stars.fill",
+                        actionable: true
+                    ),
+                    InsightItem(
+                        type: .recommendation,
+                        title: "Sleep Priority",
+                        description: "Your mood strongly improves with more sleep (r=0.78). Prioritizing 7-8 hours could boost your well-being.",
+                        confidence: 0.85,
+                        icon: "bed.double.fill",
+                        actionable: true
+                    )
+                ],
+                achievements: [
+                    InsightItem(
+                        type: .achievement,
+                        title: "12-Day Streak!",
+                        description: "You've captured thoughts for 12 consecutive days. Consistency builds powerful habits - you're almost at your record of 15!",
+                        confidence: 1.0,
+                        icon: "flame.fill",
+                        actionable: false
+                    )
+                ],
+                anomalies: [
+                    InsightItem(
+                        type: .anomaly,
+                        title: "Monday Spike",
+                        description: "This Monday had 3x your typical thought volume. Similar spikes appear after weekends with social events.",
+                        confidence: 0.76,
+                        icon: "exclamationmark.triangle.fill",
+                        actionable: false
+                    )
+                ],
+                summary: "Most productive in mornings with strong Tuesday patterns. Consider expanding evening reflections."
+            )
+        }
     }
 }

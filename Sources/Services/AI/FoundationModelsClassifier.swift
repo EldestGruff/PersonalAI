@@ -27,19 +27,19 @@ actor FoundationModelsClassifier {
 
     /// Availability status of Apple Intelligence
     nonisolated var isAvailable: Bool {
-        SystemLanguageModel.availability == .available
+        SystemLanguageModel().availability == .available
     }
 
     // MARK: - Initialization
 
     init() {
-        setupSession()
+        // Session will be created lazily on first classification
     }
 
     // MARK: - Session Setup
 
     private func setupSession() {
-        guard SystemLanguageModel.availability == .available else {
+        guard SystemLanguageModel().availability == .available else {
             print("⚠️ Apple Intelligence not available")
             return
         }
@@ -149,7 +149,7 @@ actor FoundationModelsClassifier {
     func prewarm() {
         guard !isPrewarmed, let session else { return }
 
-        Task {
+        _Concurrency.Task {
             session.prewarm()
             isPrewarmed = true
             print("✅ Foundation Models pre-warmed")

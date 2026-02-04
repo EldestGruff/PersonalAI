@@ -123,7 +123,8 @@ struct CaptureThoughtIntent: AppIntent {
                 calendar: nil,
                 activity: nil,
                 weather: nil,
-                stateOfMind: nil
+                stateOfMind: nil,
+                energyBreakdown: nil
             ),
             createdAt: now,
             updatedAt: now,

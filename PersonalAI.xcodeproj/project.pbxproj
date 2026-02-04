@@ -81,6 +81,7 @@
 		A1803DF02F2FF8750071D950 /* SmartInsightsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803DEF2F2FF8750071D950 /* SmartInsightsService.swift */; };
 		A1803DF12F2FF8750071D950 /* SemanticSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803DEE2F2FF8750071D950 /* SemanticSearchService.swift */; };
 		A1803DF32F3047FF0071D950 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A1803DF22F3047FF0071D950 /* PrivacyInfo.xcprivacy */; };
+		A1803E282F327EC60071D950 /* AIInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803E272F327EC60071D950 /* AIInsightsView.swift */; };
 		ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */; };
 /* End PBXBuildFile section */
 
@@ -160,6 +161,7 @@
 		A1803DEE2F2FF8750071D950 /* SemanticSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SemanticSearchService.swift; sourceTree = "<group>"; };
 		A1803DEF2F2FF8750071D950 /* SmartInsightsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartInsightsService.swift; sourceTree = "<group>"; };
 		A1803DF22F3047FF0071D950 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		A1803E272F327EC60071D950 /* AIInsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInsightsView.swift; sourceTree = "<group>"; };
 		A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsAnalyzer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -418,6 +420,7 @@
 		A0800000000000000000042 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				A1803E272F327EC60071D950 /* AIInsightsView.swift */,
 				A0000001000000000000222 /* ThoughtRowView.swift */,
 				A0000001000000000000224 /* ClassificationBadge.swift */,
 				A0000001000000000000226 /* ContextDisplayView.swift */,
@@ -586,6 +589,7 @@
 				A0000001000000000000207 /* SearchScreen.swift in Sources */,
 				A0000001000000000000209 /* SettingsScreen.swift in Sources */,
 				A00000010000000000000254 /* InsightsScreen.swift in Sources */,
+				A1803E282F327EC60071D950 /* AIInsightsView.swift in Sources */,
 				A0000001000000000000221 /* ThoughtRowView.swift in Sources */,
 				A0000001000000000000223 /* ClassificationBadge.swift in Sources */,
 				A0000001000000000000225 /* ContextDisplayView.swift in Sources */,

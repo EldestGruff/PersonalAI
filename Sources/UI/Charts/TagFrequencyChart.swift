@@ -86,7 +86,7 @@ struct TagFrequencyChart: View {
             AxisMarks(position: .bottom)
         }
         .frame(height: CGFloat(min(data.count, maxToShow) * 35))
-        .chartAngleSelection(value: $selectedTag)
+        .chartYSelection(value: $selectedTag)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityDescription)
         .accessibilityHint("Chart showing frequency of tags")

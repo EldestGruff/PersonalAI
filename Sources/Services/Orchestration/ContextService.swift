@@ -43,6 +43,7 @@ struct ContextGatheringMetrics: Sendable {
 private enum ContextComponent: Sendable {
     case location(Location?)
     case energy(EnergyLevel)
+    case energyBreakdown(EnergyBreakdown)
     case activity(ActivityContext)
     case calendar(CalendarContext)
     case stateOfMind(StateOfMindSnapshot?)
@@ -142,6 +143,7 @@ actor ContextService: ContextServiceProtocol {
         // Default values
         var location: Location? = nil
         var energy: EnergyLevel = .medium
+        var energyBreakdown: EnergyBreakdown? = nil
         var activity: ActivityContext = ActivityContext(stepCount: 0, caloriesBurned: 0, activeMinutes: 0)
         var calendar: CalendarContext = CalendarContext(nextEventMinutes: nil, isFreetime: true, eventCount: 0)
         var stateOfMind: StateOfMindSnapshot? = nil
@@ -159,15 +161,26 @@ actor ContextService: ContextServiceProtocol {
                 return (.location(result), duration, timedOut)
             }
 
-            // Energy level
+            // Energy breakdown (includes energy level) - replaces separate energy level query
             group.addTask {
                 let opStart = Date()
-                let result = await self.withTimeout(timeout, default: EnergyLevel.medium) {
-                    await self.healthKitService.getEnergyLevel()
+                let defaultBreakdown = EnergyBreakdown(
+                    sleepScore: 0.5,
+                    activityScore: 0.5,
+                    hrvScore: 0.5,
+                    timeBonus: 0.5,
+                    totalScore: 0.5,
+                    level: .medium,
+                    hrvValueMs: nil,
+                    sleepHours: nil,
+                    stepCount: nil
+                )
+                let result = await self.withTimeout(timeout, default: defaultBreakdown) {
+                    await self.healthKitService.getEnergyBreakdown()
                 }
                 let duration = Int(Date().timeIntervalSince(opStart) * 1000)
                 let timedOut = duration >= Int(timeout * 1000)
-                return (.energy(result), duration, timedOut)
+                return (.energyBreakdown(result), duration, timedOut)
             }
 
             // Activity context
@@ -219,6 +232,10 @@ actor ContextService: ContextServiceProtocol {
                     locationDuration = duration
                 case .energy(let e):
                     energy = e
+                    // Legacy case - not used when energyBreakdown is captured
+                case .energyBreakdown(let eb):
+                    energyBreakdown = eb
+                    energy = eb.level
                     healthKitDuration = duration
                 case .activity(let a):
                     activity = a
@@ -245,7 +262,8 @@ actor ContextService: ContextServiceProtocol {
             calendar: calendar,
             activity: activity,
             weather: nil, // Weather API integration not in Phase 3A
-            stateOfMind: stateOfMind
+            stateOfMind: stateOfMind,
+            energyBreakdown: energyBreakdown
         )
 
         let metrics = ContextGatheringMetrics(
@@ -340,6 +358,17 @@ actor MockContextService: ContextServiceProtocol {
                 classification: .slightlyPleasant,
                 labels: ["calm", "focused"],
                 associations: ["work"]
+            ),
+            energyBreakdown: EnergyBreakdown(
+                sleepScore: 0.8,
+                activityScore: 0.6,
+                hrvScore: 0.75,
+                timeBonus: 0.9,
+                totalScore: 0.74,
+                level: .high,
+                hrvValueMs: 58.3,
+                sleepHours: 7.5,
+                stepCount: 6000
             )
         )
     }

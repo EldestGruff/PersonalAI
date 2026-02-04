@@ -348,7 +348,9 @@ struct ThoughtModelTests {
             focusState: .deep_work,
             calendar: nil,
             activity: nil,
-            weather: nil
+            weather: nil,
+            stateOfMind: nil,
+            energyBreakdown: nil
         )
     }
 }

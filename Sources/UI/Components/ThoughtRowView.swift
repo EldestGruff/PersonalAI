@@ -178,7 +178,8 @@ struct ThoughtCardView: View {
                     calendar: nil,
                     activity: nil,
                     weather: nil,
-                    stateOfMind: nil
+                    stateOfMind: nil,
+                    energyBreakdown: nil
                 ),
                 createdAt: Date().addingTimeInterval(-3600),
                 updatedAt: Date(),

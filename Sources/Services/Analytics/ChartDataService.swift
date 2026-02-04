@@ -194,6 +194,139 @@ actor ChartDataService {
         )
     }
 
+    // MARK: - AI Insights Generation
+
+    /// Generate AI-powered insights using Foundation Models
+    /// - Parameter dateRange: The date range to analyze
+    /// - Returns: Generated insights with patterns, recommendations, achievements, and anomalies
+    @available(iOS 26.0, *)
+    func generateInsights(dateRange: ChartDateRange) async throws -> GeneratedInsights {
+        // Gather all chart data
+        let summary = try await getSummaryMetrics(dateRange: dateRange)
+        let tags = try await getTagFrequency(dateRange: dateRange, limit: 10)
+        let heatmap = try await getCaptureHeatmap(dateRange: dateRange)
+        let health = try await getHealthCorrelation(dateRange: dateRange)
+        let streaks = try await getStreakData()
+        let sentiment = try await getSentimentTrend(dateRange: dateRange)
+
+        // Build insights context
+        let context = InsightsContext(
+            totalThoughts: summary.totalThoughts,
+            averageSentiment: summary.averageSentiment,
+            currentStreak: streaks.currentStreak,
+            longestStreak: streaks.longestStreak,
+            topTags: Dictionary(uniqueKeysWithValues: tags.map { ($0.tag, $0.count) }),
+            thoughtsByHour: buildHourlyDistribution(from: heatmap),
+            thoughtsByDay: buildDayDistribution(from: heatmap),
+            typeDistribution: buildTypeDistribution(from: summary),
+            sleepCorrelation: health.correlationCoefficients.sleepSentimentCorrelation,
+            stepsCorrelation: health.correlationCoefficients.stepsVolumeCorrelation,
+            hrvCorrelation: health.correlationCoefficients.hrvSentimentCorrelation,
+            workoutCorrelation: health.correlationCoefficients.workoutVolumeCorrelation,
+            restingHRCorrelation: health.correlationCoefficients.restingHRSentimentCorrelation,
+            sentimentTrend: calculateSentimentTrend(sentiment),
+            volumeTrend: calculateVolumeTrend(dateRange: dateRange),
+            dateRangeDescription: dateRange.displayName.lowercased()
+        )
+
+        // Generate insights with Foundation Models
+        let insightsService = InsightsGenerationService()
+        let insights = try await insightsService.generateInsights(from: context)
+
+        return insights
+    }
+
+    /// Generate fallback insights when AI is unavailable
+    @available(iOS 26.0, *)
+    func generateFallbackInsights(dateRange: ChartDateRange) async throws -> GeneratedInsights {
+        // Gather all chart data
+        let summary = try await getSummaryMetrics(dateRange: dateRange)
+        let tags = try await getTagFrequency(dateRange: dateRange, limit: 10)
+        let heatmap = try await getCaptureHeatmap(dateRange: dateRange)
+        let health = try await getHealthCorrelation(dateRange: dateRange)
+        let streaks = try await getStreakData()
+        let sentiment = try await getSentimentTrend(dateRange: dateRange)
+
+        // Build insights context
+        let context = InsightsContext(
+            totalThoughts: summary.totalThoughts,
+            averageSentiment: summary.averageSentiment,
+            currentStreak: streaks.currentStreak,
+            longestStreak: streaks.longestStreak,
+            topTags: Dictionary(uniqueKeysWithValues: tags.map { ($0.tag, $0.count) }),
+            thoughtsByHour: buildHourlyDistribution(from: heatmap),
+            thoughtsByDay: buildDayDistribution(from: heatmap),
+            typeDistribution: buildTypeDistribution(from: summary),
+            sleepCorrelation: health.correlationCoefficients.sleepSentimentCorrelation,
+            stepsCorrelation: health.correlationCoefficients.stepsVolumeCorrelation,
+            hrvCorrelation: health.correlationCoefficients.hrvSentimentCorrelation,
+            workoutCorrelation: health.correlationCoefficients.workoutVolumeCorrelation,
+            restingHRCorrelation: health.correlationCoefficients.restingHRSentimentCorrelation,
+            sentimentTrend: calculateSentimentTrend(sentiment),
+            volumeTrend: calculateVolumeTrend(dateRange: dateRange),
+            dateRangeDescription: dateRange.displayName.lowercased()
+        )
+
+        // Generate fallback insights
+        let insightsService = InsightsGenerationService()
+        return await insightsService.generateFallbackInsights(from: context)
+    }
+
+    // MARK: - Insights Helper Methods
+
+    private func buildHourlyDistribution(from heatmap: CaptureHeatmapResult) -> [Int: Int] {
+        var distribution: [Int: Int] = [:]
+        for point in heatmap.hourOfDayDistribution {
+            distribution[point.hour] = point.count
+        }
+        return distribution
+    }
+
+    private func buildDayDistribution(from heatmap: CaptureHeatmapResult) -> [String: Int] {
+        var distribution: [String: Int] = [:]
+        for point in heatmap.dayOfWeekDistribution {
+            distribution[point.dayName] = point.count
+        }
+        return distribution
+    }
+
+    private func buildTypeDistribution(from summary: ChartSummaryMetrics) -> [String: Int] {
+        // We don't have full type distribution in summary, so return what we have
+        var distribution: [String: Int] = [:]
+        if let type = summary.mostCommonType {
+            distribution[type.displayName] = summary.totalThoughts  // Approximation
+        }
+        return distribution
+    }
+
+    private func calculateSentimentTrend(_ sentimentData: [SentimentDataPoint]) -> String {
+        guard sentimentData.count >= 2 else { return "stable" }
+
+        // Compare first half to second half
+        let midpoint = sentimentData.count / 2
+        let firstHalf = sentimentData.prefix(midpoint)
+        let secondHalf = sentimentData.suffix(midpoint)
+
+        let firstAvg = firstHalf.map { $0.averageSentiment }.reduce(0, +) / Double(firstHalf.count)
+        let secondAvg = secondHalf.map { $0.averageSentiment }.reduce(0, +) / Double(secondHalf.count)
+
+        let difference = secondAvg - firstAvg
+
+        if difference > 0.15 {
+            return "improving"
+        } else if difference < -0.15 {
+            return "declining"
+        } else {
+            return "stable"
+        }
+    }
+
+    private func calculateVolumeTrend(dateRange: ChartDateRange) -> String {
+        // This would require comparing thought counts over time
+        // For now, return stable as a placeholder
+        return "stable"
+    }
+
     // MARK: - Cache Management
 
     /// Invalidate all cached data
@@ -225,16 +358,24 @@ actor ChartDataService {
         }
 
         // Calculate average sentiment per day
-        return grouped.compactMap { date, dayThoughts in
-            let sentiments = dayThoughts.compactMap { $0.classification?.sentiment?.numericalValue }
+        return grouped.compactMap { date, dayThoughts -> SentimentDataPoint? in
+            let sentiments = dayThoughts.compactMap { thought -> Double? in
+                guard let sentiment = thought.classification?.sentiment else { return nil }
+                return sentiment.numericalValue
+            }
             guard !sentiments.isEmpty else { return nil }
 
             let avgSentiment = sentiments.reduce(0.0, +) / Double(sentiments.count)
 
+            // Calculate average state of mind valence for the day
+            let valences = dayThoughts.compactMap { $0.context.stateOfMind?.valence }
+            let avgValence = valences.isEmpty ? nil : valences.reduce(0.0, +) / Double(valences.count)
+
             return SentimentDataPoint(
                 date: date,
                 averageSentiment: avgSentiment,
-                thoughtCount: dayThoughts.count
+                thoughtCount: dayThoughts.count,
+                stateOfMindValence: avgValence
             )
         }
         .sorted { $0.date < $1.date }
@@ -301,14 +442,14 @@ actor ChartDataService {
 
             // Hour counts
             hourCounts[hour, default: 0] += 1
-            if let sentiment = thought.classification?.sentiment?.numericalValue {
-                hourSentiments[hour, default: []].append(sentiment)
+            if let sentiment = thought.classification?.sentiment {
+                hourSentiments[hour, default: []].append(sentiment.numericalValue)
             }
 
             // Day counts
             dayCounts[weekday, default: 0] += 1
-            if let sentiment = thought.classification?.sentiment?.numericalValue {
-                daySentiments[weekday, default: []].append(sentiment)
+            if let sentiment = thought.classification?.sentiment {
+                daySentiments[weekday, default: []].append(sentiment.numericalValue)
             }
 
             // Matrix (weekday-1 because array is 0-indexed)
@@ -347,52 +488,107 @@ actor ChartDataService {
         let thoughts = try await getFilteredThoughts(dateRange: dateRange)
         let calendar = Calendar.current
 
-        // Group thoughts by day
+        // Determine date range for HealthKit queries
+        let endDate = Date()
+        let startDate = dateRange.startDate ?? calendar.date(byAdding: .year, value: -1, to: endDate)!
+
+        // Group thoughts by day with sentiment
         let thoughtsByDay = Dictionary(grouping: thoughts) { thought in
             calendar.startOfDay(for: thought.createdAt)
         }
 
-        // For each day, get health data and thought metrics
-        var sleepSentimentPoints: [SleepSentimentPoint] = []
-        var stepsVolumePoints: [StepsVolumePoint] = []
+        // Calculate daily sentiment averages
+        var dailySentiments: [Date: Double] = [:]
+        var dailyThoughtCounts: [Date: Int] = [:]
 
         for (date, dayThoughts) in thoughtsByDay {
-            // Calculate average sentiment for the day
-            let sentiments = dayThoughts.compactMap { $0.classification?.sentiment?.numericalValue }
-            guard !sentiments.isEmpty else { continue }
-            let avgSentiment = sentiments.reduce(0.0, +) / Double(sentiments.count)
-
-            // Get health data for this day
-            // Note: HealthKitService currently only provides real-time data
-            // For historical correlation, we'd need to query HealthKit's historical samples
-            // For now, we'll use the context data that was captured with each thought
-
-            // Sleep correlation (using energy breakdown from thought context)
-            let sleepHours = dayThoughts.compactMap { thought -> Double? in
-                thought.context.energyBreakdown?.sleepHours
+            let sentiments = dayThoughts.compactMap { thought -> Double? in
+                guard let sentiment = thought.classification?.sentiment else { return nil }
+                return sentiment.numericalValue
             }
-            if let avgSleep = sleepHours.isEmpty ? nil : sleepHours.reduce(0.0, +) / Double(sleepHours.count) {
-                sleepSentimentPoints.append(
-                    SleepSentimentPoint(
-                        date: date,
-                        sleepHours: avgSleep,
-                        sentiment: avgSentiment
-                    )
-                )
+            if !sentiments.isEmpty {
+                dailySentiments[date] = sentiments.reduce(0.0, +) / Double(sentiments.count)
             }
+            dailyThoughtCounts[date] = dayThoughts.count
+        }
 
-            // Steps correlation (using activity context)
-            let steps = dayThoughts.compactMap { thought -> Int? in
-                thought.context.activity?.stepCount
+        // Fetch historical health data in parallel
+        async let sleepDataTask = healthKitService.getHistoricalSleepData(from: startDate, to: endDate)
+        async let hrvDataTask = healthKitService.getHistoricalHRVData(from: startDate, to: endDate)
+        async let workoutDataTask = healthKitService.getHistoricalWorkoutData(from: startDate, to: endDate)
+        async let restingHRDataTask = healthKitService.getHistoricalRestingHRData(from: startDate, to: endDate)
+        async let stepDataTask = healthKitService.getHistoricalStepData(from: startDate, to: endDate)
+
+        let sleepData = await sleepDataTask
+        let hrvData = await hrvDataTask
+        let workoutData = await workoutDataTask
+        let restingHRData = await restingHRDataTask
+        let stepData = await stepDataTask
+
+        // Build correlation data points
+
+        // 1. Sleep vs Sentiment
+        var sleepSentimentPoints: [SleepSentimentPoint] = []
+        for sleep in sleepData {
+            if let sentiment = dailySentiments[sleep.date] {
+                sleepSentimentPoints.append(SleepSentimentPoint(
+                    date: sleep.date,
+                    sleepHours: sleep.totalSleepHours,
+                    sleepQuality: sleep.sleepQuality,
+                    sentiment: sentiment
+                ))
             }
-            if let avgSteps = steps.isEmpty ? nil : steps.reduce(0, +) / steps.count {
-                stepsVolumePoints.append(
-                    StepsVolumePoint(
-                        date: date,
-                        steps: avgSteps,
-                        thoughtCount: dayThoughts.count
-                    )
-                )
+        }
+
+        // 2. Steps vs Volume (using historical step data now)
+        var stepsVolumePoints: [StepsVolumePoint] = []
+        for (date, steps) in stepData {
+            if let thoughtCount = dailyThoughtCounts[date] {
+                stepsVolumePoints.append(StepsVolumePoint(
+                    date: date,
+                    steps: steps,
+                    thoughtCount: thoughtCount
+                ))
+            }
+        }
+
+        // 3. HRV vs Sentiment (NEW)
+        var hrvSentimentPoints: [HRVSentimentPoint] = []
+        for hrv in hrvData {
+            if let sentiment = dailySentiments[hrv.date] {
+                hrvSentimentPoints.append(HRVSentimentPoint(
+                    date: hrv.date,
+                    hrv: hrv.averageHRV,
+                    recoveryLevel: hrv.recoveryIndicator.rawValue,
+                    sentiment: sentiment
+                ))
+            }
+        }
+
+        // 4. Workouts vs Volume (NEW)
+        var workoutVolumePoints: [WorkoutVolumePoint] = []
+        for workout in workoutData {
+            if let thoughtCount = dailyThoughtCounts[workout.date] {
+                workoutVolumePoints.append(WorkoutVolumePoint(
+                    date: workout.date,
+                    workoutMinutes: workout.totalWorkoutMinutes,
+                    workoutCount: workout.workoutCount,
+                    workoutTypes: workout.workoutTypes,
+                    thoughtCount: thoughtCount
+                ))
+            }
+        }
+
+        // 5. Resting HR vs Sentiment (NEW)
+        var restingHRSentimentPoints: [RestingHRSentimentPoint] = []
+        for hr in restingHRData {
+            if let sentiment = dailySentiments[hr.date] {
+                restingHRSentimentPoints.append(RestingHRSentimentPoint(
+                    date: hr.date,
+                    restingHeartRate: hr.restingHeartRate,
+                    trend: hr.trend.rawValue,
+                    sentiment: sentiment
+                ))
             }
         }
 
@@ -407,17 +603,41 @@ actor ChartDataService {
             y: stepsVolumePoints.map { Double($0.thoughtCount) }
         )
 
+        let hrvCorrelation = calculatePearsonCorrelation(
+            x: hrvSentimentPoints.map { $0.hrv },
+            y: hrvSentimentPoints.map { $0.sentiment }
+        )
+
+        let workoutCorrelation = calculatePearsonCorrelation(
+            x: workoutVolumePoints.map { Double($0.workoutMinutes) },
+            y: workoutVolumePoints.map { Double($0.thoughtCount) }
+        )
+
+        let restingHRCorrelation = calculatePearsonCorrelation(
+            x: restingHRSentimentPoints.map { $0.restingHeartRate },
+            y: restingHRSentimentPoints.map { $0.sentiment }
+        )
+
         let description = generateCorrelationDescription(
             sleepCorrelation: sleepCorrelation,
-            stepsCorrelation: stepsCorrelation
+            stepsCorrelation: stepsCorrelation,
+            hrvCorrelation: hrvCorrelation,
+            workoutCorrelation: workoutCorrelation,
+            restingHRCorrelation: restingHRCorrelation
         )
 
         return HealthCorrelationData(
-            sleepVsSentiment: sleepSentimentPoints,
-            stepsVsVolume: stepsVolumePoints,
+            sleepVsSentiment: sleepSentimentPoints.sorted { $0.date < $1.date },
+            stepsVsVolume: stepsVolumePoints.sorted { $0.date < $1.date },
+            hrvVsSentiment: hrvSentimentPoints.sorted { $0.date < $1.date },
+            workoutsVsVolume: workoutVolumePoints.sorted { $0.date < $1.date },
+            restingHRVsSentiment: restingHRSentimentPoints.sorted { $0.date < $1.date },
             correlationCoefficients: CorrelationSummary(
                 sleepSentimentCorrelation: sleepCorrelation,
                 stepsVolumeCorrelation: stepsCorrelation,
+                hrvSentimentCorrelation: hrvCorrelation,
+                workoutVolumeCorrelation: workoutCorrelation,
+                restingHRSentimentCorrelation: restingHRCorrelation,
                 description: description
             )
         )
@@ -590,10 +810,14 @@ actor ChartDataService {
 
     private func generateCorrelationDescription(
         sleepCorrelation: Double?,
-        stepsCorrelation: Double?
+        stepsCorrelation: Double?,
+        hrvCorrelation: Double? = nil,
+        workoutCorrelation: Double? = nil,
+        restingHRCorrelation: Double? = nil
     ) -> String {
         var parts: [String] = []
 
+        // Sleep correlation insight
         if let sleep = sleepCorrelation {
             let strength = abs(sleep)
             let direction = sleep > 0 ? "improves" : "declines"
@@ -607,18 +831,62 @@ actor ChartDataService {
             }
         }
 
+        // Steps/Activity correlation insight
         if let steps = stepsCorrelation {
             let strength = abs(steps)
-            let direction = steps > 0 ? "increases" : "decreases"
+            let direction = steps > 0 ? "more" : "fewer"
 
             if strength > 0.7 {
-                parts.append("You capture significantly more thoughts on active days")
+                parts.append("You capture significantly \(direction) thoughts on active days")
             } else if strength > 0.4 {
-                parts.append("You capture moderately more thoughts on active days")
+                parts.append("You capture moderately \(direction) thoughts on active days")
             }
         }
 
-        return parts.isEmpty ? "Not enough data to determine correlations" : parts.joined(separator: ". ")
+        // HRV correlation insight
+        if let hrv = hrvCorrelation {
+            let strength = abs(hrv)
+            let direction = hrv > 0 ? "better" : "lower"
+
+            if strength > 0.7 {
+                parts.append("Your mood is strongly \(direction) when your HRV is higher (better recovery)")
+            } else if strength > 0.4 {
+                parts.append("Your mood tends to be \(direction) with higher HRV")
+            }
+        }
+
+        // Workout correlation insight
+        if let workout = workoutCorrelation {
+            let strength = abs(workout)
+            let direction = workout > 0 ? "more productive" : "less active"
+
+            if strength > 0.7 {
+                parts.append("You're significantly \(direction) on workout days")
+            } else if strength > 0.4 {
+                parts.append("You tend to be \(direction) on days you exercise")
+            }
+        }
+
+        // Resting HR correlation insight
+        if let restingHR = restingHRCorrelation {
+            let strength = abs(restingHR)
+            // Note: Lower resting HR is generally better, so negative correlation with mood is good
+            let insight: String
+            if restingHR < 0 {
+                insight = strength > 0.4 ? "Lower resting heart rate days correlate with better mood" : ""
+            } else {
+                insight = strength > 0.4 ? "Higher resting heart rate may indicate stress affecting your mood" : ""
+            }
+            if !insight.isEmpty {
+                parts.append(insight)
+            }
+        }
+
+        if parts.isEmpty {
+            return "Not enough data to determine correlations. Keep capturing thoughts to see patterns!"
+        }
+
+        return parts.joined(separator: ". ") + "."
     }
 }
 

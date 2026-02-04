@@ -244,7 +244,8 @@ extension UserFocusState {
                 activeMinutes: 45
             ),
             weather: nil,
-            stateOfMind: nil
+            stateOfMind: nil,
+            energyBreakdown: nil
         )
     )
     .padding()
@@ -266,7 +267,8 @@ extension UserFocusState {
             calendar: nil,
             activity: nil,
             weather: nil,
-            stateOfMind: nil
+            stateOfMind: nil,
+            energyBreakdown: nil
         )
     )
     .padding()

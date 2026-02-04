@@ -35,7 +35,8 @@ struct PersistenceController: Sendable {
                     calendar: nil,
                     activity: nil,
                     weather: nil,
-                    stateOfMind: nil
+                    stateOfMind: nil,
+                    energyBreakdown: nil
                 ),
                 createdAt: Date(),
                 updatedAt: Date(),

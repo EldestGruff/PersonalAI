@@ -49,6 +49,12 @@ struct Context: Codable, Equatable, Sendable {
     /// Mental health state from HealthKit (iOS 18+)
     let stateOfMind: StateOfMindSnapshot?
 
+    /// Detailed energy breakdown from HealthKit (for health correlations)
+    ///
+    /// Stores the complete energy calculation including sleep hours, HRV,
+    /// and step count. Used for historical health correlation analysis.
+    let energyBreakdown: EnergyBreakdown?
+
     /// Creates an empty/default context with current timestamp.
     ///
     /// Used when context gathering is unavailable or fails.
@@ -62,7 +68,8 @@ struct Context: Codable, Equatable, Sendable {
             calendar: nil,
             activity: nil,
             weather: nil,
-            stateOfMind: nil
+            stateOfMind: nil,
+            energyBreakdown: nil
         )
     }
 }

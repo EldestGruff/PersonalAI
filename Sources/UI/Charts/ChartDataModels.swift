@@ -21,6 +21,7 @@ struct SentimentDataPoint: Identifiable {
     let date: Date
     let averageSentiment: Double  // Range: -1.0 (negative) to 1.0 (positive)
     let thoughtCount: Int
+    let stateOfMindValence: Double?  // Optional State of Mind valence from HealthKit
 
     /// Sentiment as a user-friendly string
     var sentimentLabel: String {
@@ -235,6 +236,9 @@ struct ConfidenceDataPoint: Identifiable {
 struct HealthCorrelationData {
     let sleepVsSentiment: [SleepSentimentPoint]
     let stepsVsVolume: [StepsVolumePoint]
+    let hrvVsSentiment: [HRVSentimentPoint]        // NEW: HRV vs mood
+    let workoutsVsVolume: [WorkoutVolumePoint]    // NEW: Workouts vs thought volume
+    let restingHRVsSentiment: [RestingHRSentimentPoint]  // NEW: Resting HR vs mood
     let correlationCoefficients: CorrelationSummary
 }
 
@@ -243,6 +247,7 @@ struct SleepSentimentPoint: Identifiable {
     let id = UUID()
     let date: Date
     let sleepHours: Double
+    let sleepQuality: Double?  // NEW: 0.0-1.0 quality score
     let sentiment: Double
 }
 
@@ -254,25 +259,65 @@ struct StepsVolumePoint: Identifiable {
     let thoughtCount: Int
 }
 
+/// HRV vs mood correlation point (NEW)
+struct HRVSentimentPoint: Identifiable {
+    let id = UUID()
+    let date: Date
+    let hrv: Double           // SDNN in milliseconds
+    let recoveryLevel: String // poor/belowAverage/average/good/excellent
+    let sentiment: Double
+}
+
+/// Workout vs thought volume correlation point (NEW)
+struct WorkoutVolumePoint: Identifiable {
+    let id = UUID()
+    let date: Date
+    let workoutMinutes: Int
+    let workoutCount: Int
+    let workoutTypes: [String]
+    let thoughtCount: Int
+}
+
+/// Resting heart rate vs mood correlation point (NEW)
+struct RestingHRSentimentPoint: Identifiable {
+    let id = UUID()
+    let date: Date
+    let restingHeartRate: Double  // BPM
+    let trend: String             // elevated/normal/low
+    let sentiment: Double
+}
+
 /// Statistical correlation summary
 struct CorrelationSummary {
     let sleepSentimentCorrelation: Double?  // Pearson correlation coefficient
     let stepsVolumeCorrelation: Double?
-    let description: String                  // Human-readable insight
+    let hrvSentimentCorrelation: Double?      // NEW
+    let workoutVolumeCorrelation: Double?     // NEW
+    let restingHRSentimentCorrelation: Double? // NEW
+    let description: String                    // Human-readable insight
 
     var sleepStrength: String {
-        guard let r = sleepSentimentCorrelation else { return "Unknown" }
-        let abs = Swift.abs(r)
-        switch abs {
-        case 0.7...1.0: return "Strong"
-        case 0.4..<0.7: return "Moderate"
-        case 0.2..<0.4: return "Weak"
-        default: return "Very Weak"
-        }
+        strengthLabel(for: sleepSentimentCorrelation)
     }
 
     var stepsStrength: String {
-        guard let r = stepsVolumeCorrelation else { return "Unknown" }
+        strengthLabel(for: stepsVolumeCorrelation)
+    }
+
+    var hrvStrength: String {
+        strengthLabel(for: hrvSentimentCorrelation)
+    }
+
+    var workoutStrength: String {
+        strengthLabel(for: workoutVolumeCorrelation)
+    }
+
+    var restingHRStrength: String {
+        strengthLabel(for: restingHRSentimentCorrelation)
+    }
+
+    private func strengthLabel(for correlation: Double?) -> String {
+        guard let r = correlation else { return "Unknown" }
         let abs = Swift.abs(r)
         switch abs {
         case 0.7...1.0: return "Strong"
