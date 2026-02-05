@@ -6,7 +6,9 @@
 //
 
 import Foundation
+import Observation
 
+@Observable
 @MainActor
 class PersonalityEngine {
     static let shared = PersonalityEngine()
@@ -14,19 +16,20 @@ class PersonalityEngine {
     private let styleKey = "communication_style"
 
     var currentStyle: MessageStyle {
-        get {
-            if let savedStyle = UserDefaults.standard.string(forKey: styleKey),
-               let style = MessageStyle(rawValue: savedStyle) {
-                return style
-            }
-            return .chatty // Default
-        }
-        set {
-            UserDefaults.standard.set(newValue.rawValue, forKey: styleKey)
+        didSet {
+            UserDefaults.standard.set(currentStyle.rawValue, forKey: styleKey)
         }
     }
 
-    private init() {}
+    private init() {
+        // Load saved style or use default
+        if let savedStyle = UserDefaults.standard.string(forKey: styleKey),
+           let style = MessageStyle(rawValue: savedStyle) {
+            self.currentStyle = style
+        } else {
+            self.currentStyle = .chatty
+        }
+    }
 
     // MARK: - Message Retrieval
 

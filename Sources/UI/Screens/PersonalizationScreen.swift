@@ -149,6 +149,8 @@ struct PersonalizationScreen: View {
 // MARK: - Theme Section View
 
 struct ThemeSectionView: View {
+    @State private var themeEngine = ThemeEngine.shared
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Visual Theme")
@@ -160,10 +162,10 @@ struct ThemeSectionView: View {
                     ForEach(ThemeType.allCases) { themeType in
                         ThemePreviewCard(
                             themeType: themeType,
-                            isSelected: ThemeEngine.shared.currentTheme == themeType,
+                            isSelected: themeEngine.currentTheme == themeType,
                             onTap: {
                                 withAnimation {
-                                    ThemeEngine.shared.setTheme(themeType)
+                                    themeEngine.setTheme(themeType)
                                 }
                             }
                         )
@@ -178,6 +180,8 @@ struct ThemeSectionView: View {
 // MARK: - Communication Style Section View
 
 struct CommunicationStyleSectionView: View {
+    @State private var personalityEngine = PersonalityEngine.shared
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Communication Style")
@@ -188,9 +192,9 @@ struct CommunicationStyleSectionView: View {
                 ForEach(MessageStyle.allCases) { style in
                     CommunicationStyleCard(
                         style: style,
-                        isSelected: PersonalityEngine.shared.currentStyle == style,
+                        isSelected: personalityEngine.currentStyle == style,
                         onTap: {
-                            PersonalityEngine.shared.setStyle(style)
+                            personalityEngine.setStyle(style)
                         }
                     )
                 }
