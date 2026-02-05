@@ -9,7 +9,8 @@ import SwiftUI
 
 struct PersonalizationScreen: View {
     @ObservedObject private var personaService = PersonaService.shared
-    @ObservedObject private var themeEngine = ThemeEngine.shared
+    @State private var themeEngine = ThemeEngine.shared
+    @State private var personalityEngine = PersonalityEngine.shared
     @State private var showCreatePersona = false
     @State private var showPersonaDetail: SquirrelPersona?
     @State private var showDeleteConfirmation = false
@@ -184,9 +185,9 @@ struct PersonalizationScreen: View {
                 ForEach(MessageStyle.allCases) { style in
                     CommunicationStyleCard(
                         style: style,
-                        isSelected: PersonalityEngine.shared.currentStyle == style,
+                        isSelected: personalityEngine.currentStyle == style,
                         onTap: {
-                            PersonalityEngine.shared.setStyle(style)
+                            personalityEngine.setStyle(style)
                         }
                     )
                 }

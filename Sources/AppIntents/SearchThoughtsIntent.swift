@@ -77,7 +77,7 @@ struct SearchThoughtsIntent: AppIntent {
 
         // Perform search
         let results: [Thought]
-        if useSemanticSearch, #available(iOS 26.0, *) {
+        if useSemanticSearch {
             // Use semantic search service
             let semanticSearch = SemanticSearchService.shared
             let searchResults = await semanticSearch.search(query: trimmedQuery, in: filteredByType)
