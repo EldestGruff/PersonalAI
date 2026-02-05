@@ -9,8 +9,6 @@ import SwiftUI
 
 struct PersonalizationScreen: View {
     @ObservedObject private var personaService = PersonaService.shared
-    @State private var themeEngine = ThemeEngine.shared
-    @State private var personalityEngine = PersonalityEngine.shared
     @State private var showCreatePersona = false
     @State private var showPersonaDetail: SquirrelPersona?
     @State private var showDeleteConfirmation = false
@@ -23,10 +21,10 @@ struct PersonalizationScreen: View {
                 headerView
 
                 // Theme Selection
-                themeSection
+                ThemeSectionView()
 
                 // Communication Style
-                communicationStyleSection
+                CommunicationStyleSectionView()
 
                 // Built-in personas
                 VStack(alignment: .leading, spacing: 12) {
@@ -146,9 +144,12 @@ struct PersonalizationScreen: View {
         .padding()
     }
 
-    // MARK: - Theme Section
+}
 
-    private var themeSection: some View {
+// MARK: - Theme Section View
+
+struct ThemeSectionView: View {
+    var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Visual Theme")
                 .font(.headline)
@@ -159,10 +160,10 @@ struct PersonalizationScreen: View {
                     ForEach(ThemeType.allCases) { themeType in
                         ThemePreviewCard(
                             themeType: themeType,
-                            isSelected: themeEngine.currentTheme == themeType,
+                            isSelected: ThemeEngine.shared.currentTheme == themeType,
                             onTap: {
                                 withAnimation {
-                                    themeEngine.setTheme(themeType)
+                                    ThemeEngine.shared.setTheme(themeType)
                                 }
                             }
                         )
@@ -172,10 +173,12 @@ struct PersonalizationScreen: View {
             }
         }
     }
+}
 
-    // MARK: - Communication Style Section
+// MARK: - Communication Style Section View
 
-    private var communicationStyleSection: some View {
+struct CommunicationStyleSectionView: View {
+    var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Communication Style")
                 .font(.headline)
@@ -185,9 +188,9 @@ struct PersonalizationScreen: View {
                 ForEach(MessageStyle.allCases) { style in
                     CommunicationStyleCard(
                         style: style,
-                        isSelected: personalityEngine.currentStyle == style,
+                        isSelected: PersonalityEngine.shared.currentStyle == style,
                         onTap: {
-                            personalityEngine.setStyle(style)
+                            PersonalityEngine.shared.setStyle(style)
                         }
                     )
                 }
