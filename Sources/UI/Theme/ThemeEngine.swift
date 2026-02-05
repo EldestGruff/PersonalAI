@@ -50,8 +50,8 @@ class ThemeEngine {
 
 // MARK: - Environment Key
 
-struct ThemeEngineKey: EnvironmentKey {
-    static let defaultValue = ThemeEngine.shared
+struct ThemeEngineKey: @preconcurrency EnvironmentKey {
+    @MainActor static let defaultValue = ThemeEngine.shared
 }
 
 extension EnvironmentValues {

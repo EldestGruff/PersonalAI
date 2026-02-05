@@ -92,6 +92,9 @@
 		A1A632782F33BFE700DA552B /* PersonalizationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632762F33BFE700DA552B /* PersonalizationScreen.swift */; };
 		A1A632792F33BFE700DA552B /* ThoughtConversationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632772F33BFE700DA552B /* ThoughtConversationScreen.swift */; };
 		ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */; };
+		A1B632832F3510000071D950 /* ThoughtContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B632862F3510000071D953 /* ThoughtContentView.swift */; };
+		A1B632842F3510000071D951 /* FormattingToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B632872F3510000071D954 /* FormattingToolbar.swift */; };
+		A1B632852F3510000071D952 /* LiquidGlassModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B632882F3510000071D955 /* LiquidGlassModifiers.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -181,6 +184,9 @@
 		A1A632762F33BFE700DA552B /* PersonalizationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalizationScreen.swift; sourceTree = "<group>"; };
 		A1A632772F33BFE700DA552B /* ThoughtConversationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtConversationScreen.swift; sourceTree = "<group>"; };
 		A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsAnalyzer.swift; sourceTree = "<group>"; };
+		A1B632862F3510000071D953 /* ThoughtContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtContentView.swift; sourceTree = "<group>"; };
+		A1B632872F3510000071D954 /* FormattingToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattingToolbar.swift; sourceTree = "<group>"; };
+		A1B632882F3510000071D955 /* LiquidGlassModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassModifiers.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -207,6 +213,21 @@
 		A1803E1F2F31459D0071D950 /* Charts */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Charts;
+			sourceTree = "<group>";
+		};
+		A1B632802F3500000071D950 /* Theme */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		A1B632812F3500000071D951 /* Messaging */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Messaging;
+			sourceTree = "<group>";
+		};
+		A1B632822F3500000071D952 /* Extensions */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -420,6 +441,9 @@
 				A0800000000000000000042 /* Components */,
 				A0800000000000000000043 /* ViewModels */,
 				A1803E1F2F31459D0071D950 /* Charts */,
+				A1B632802F3500000071D950 /* Theme */,
+				A1B632812F3500000071D951 /* Messaging */,
+				A1B632822F3500000071D952 /* Extensions */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -447,11 +471,14 @@
 			children = (
 				A1803E272F327EC60071D950 /* AIInsightsView.swift */,
 				A0000001000000000000222 /* ThoughtRowView.swift */,
+				A1B632862F3510000071D953 /* ThoughtContentView.swift */,
 				A0000001000000000000224 /* ClassificationBadge.swift */,
 				A0000001000000000000226 /* ContextDisplayView.swift */,
 				A0000001000000000000228 /* TagInputView.swift */,
 				A0000001000000000000230 /* FlowLayout.swift */,
 				A0000001000000000000232 /* ErrorView.swift */,
+				A1B632872F3510000071D954 /* FormattingToolbar.swift */,
+				A1B632882F3510000071D955 /* LiquidGlassModifiers.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -500,6 +527,9 @@
 				A1803E152F3145770071D950 /* AI */,
 				A1803E182F3145810071D950 /* Analytics */,
 				A1803E1F2F31459D0071D950 /* Charts */,
+				A1B632802F3500000071D950 /* Theme */,
+				A1B632812F3500000071D951 /* Messaging */,
+				A1B632822F3500000071D952 /* Extensions */,
 			);
 			name = PersonalAI;
 			packageProductDependencies = (
@@ -631,6 +661,9 @@
 				A0000001000000000000227 /* TagInputView.swift in Sources */,
 				A0000001000000000000229 /* FlowLayout.swift in Sources */,
 				A0000001000000000000231 /* ErrorView.swift in Sources */,
+				A1B632832F3510000071D950 /* ThoughtContentView.swift in Sources */,
+				A1B632842F3510000071D951 /* FormattingToolbar.swift in Sources */,
+				A1B632852F3510000071D952 /* LiquidGlassModifiers.swift in Sources */,
 				A0000001000000000000241 /* BrowseViewModel.swift in Sources */,
 				A0000001000000000000243 /* CaptureViewModel.swift in Sources */,
 				A0000001000000000000245 /* DetailViewModel.swift in Sources */,
