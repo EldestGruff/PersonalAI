@@ -150,7 +150,7 @@ actor ThoughtConversationService {
         thoughtConvos.append(conversation)
         conversations[thoughtId] = thoughtConvos
 
-        await saveConversations()
+        saveConversations()
 
         return conversation
     }
@@ -163,9 +163,7 @@ actor ThoughtConversationService {
             thoughtConvos[index] = conversation
             conversations[conversation.thoughtId] = thoughtConvos
 
-            Task {
-                await saveConversations()
-            }
+            saveConversations()
         }
     }
 
@@ -182,9 +180,7 @@ actor ThoughtConversationService {
             }
         }
 
-        Task {
-            await saveConversations()
-        }
+        saveConversations()
     }
 
     /// Add message to conversation
