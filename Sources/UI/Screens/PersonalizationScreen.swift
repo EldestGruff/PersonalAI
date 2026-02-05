@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct PersonalizationScreen: View {
-    @State private var personaService = PersonaService.shared
+    @ObservedObject private var personaService = PersonaService.shared
+    @ObservedObject private var themeEngine = ThemeEngine.shared
     @State private var showCreatePersona = false
     @State private var showPersonaDetail: SquirrelPersona?
     @State private var showDeleteConfirmation = false
@@ -19,6 +20,12 @@ struct PersonalizationScreen: View {
             VStack(spacing: 20) {
                 // Header
                 headerView
+
+                // Theme Selection
+                themeSection
+
+                // Communication Style
+                communicationStyleSection
 
                 // Built-in personas
                 VStack(alignment: .leading, spacing: 12) {
@@ -136,6 +143,147 @@ struct PersonalizationScreen: View {
                 .multilineTextAlignment(.center)
         }
         .padding()
+    }
+
+    // MARK: - Theme Section
+
+    private var themeSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Visual Theme")
+                .font(.headline)
+                .padding(.horizontal)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 16) {
+                    ForEach(ThemeType.allCases) { themeType in
+                        ThemePreviewCard(
+                            themeType: themeType,
+                            isSelected: themeEngine.currentTheme == themeType,
+                            onTap: {
+                                withAnimation {
+                                    themeEngine.setTheme(themeType)
+                                }
+                            }
+                        )
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+
+    // MARK: - Communication Style Section
+
+    private var communicationStyleSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Communication Style")
+                .font(.headline)
+                .padding(.horizontal)
+
+            HStack(spacing: 16) {
+                ForEach(MessageStyle.allCases) { style in
+                    CommunicationStyleCard(
+                        style: style,
+                        isSelected: PersonalityEngine.shared.currentStyle == style,
+                        onTap: {
+                            PersonalityEngine.shared.setStyle(style)
+                        }
+                    )
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+}
+
+// MARK: - Theme Preview Card
+
+struct ThemePreviewCard: View {
+    let themeType: ThemeType
+    let isSelected: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button {
+            onTap()
+        } label: {
+            VStack(spacing: 12) {
+                Text(themeType.emoji)
+                    .font(.system(size: 48))
+
+                Text(themeType.displayName)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+
+                if isSelected {
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.caption)
+                        Text("Selected")
+                            .font(.caption)
+                    }
+                    .foregroundColor(.blue)
+                }
+            }
+            .frame(width: 140, height: 140)
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .cornerRadius(16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 3)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Communication Style Card
+
+struct CommunicationStyleCard: View {
+    let style: MessageStyle
+    let isSelected: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button {
+            onTap()
+        } label: {
+            VStack(spacing: 12) {
+                Text(style.emoji)
+                    .font(.system(size: 36))
+
+                Text(style.displayName)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+
+                Text(style.description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+
+                if isSelected {
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.caption)
+                        Text("Active")
+                            .font(.caption)
+                    }
+                    .foregroundColor(.blue)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 160)
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .cornerRadius(16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 3)
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -285,7 +433,7 @@ struct PersonaDetailSheet: View {
 
 struct CreatePersonaSheet: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var personaService = PersonaService.shared
+    @ObservedObject private var personaService = PersonaService.shared
 
     @State private var name = ""
     @State private var emoji = "🐿️"
