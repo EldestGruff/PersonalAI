@@ -171,11 +171,11 @@ struct CaptureScreen: View {
                     }
 
                     // Formatting toolbar (iOS 26+)
-                    if #available(iOS 26.0, *), let attributedBinding = Binding(
-                        get: { viewModel.attributedThoughtContent ?? AttributedString() },
-                        set: { viewModel.attributedThoughtContent = $0 }
-                    ) {
-                        FormattingToolbar(attributedText: attributedBinding)
+                    if #available(iOS 26.0, *) {
+                        FormattingToolbar(attributedText: Binding(
+                            get: { viewModel.attributedThoughtContent ?? AttributedString() },
+                            set: { viewModel.attributedThoughtContent = $0 }
+                        ))
                     }
                 }
 
