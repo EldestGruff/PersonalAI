@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class PersonalityEngine {
     static let shared = PersonalityEngine()
 

@@ -9,6 +9,7 @@ import SwiftUI
 import Observation
 
 @Observable
+@MainActor
 class ThemeEngine {
     static let shared = ThemeEngine()
 
