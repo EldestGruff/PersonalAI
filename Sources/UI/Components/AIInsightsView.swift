@@ -87,9 +87,9 @@ struct AIInsightsView: View {
             Spacer()
         }
         .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color.purple.opacity(0.08))
+        .glassEffect(
+            .regular.tint(.purple.opacity(0.2)),
+            in: RoundedRectangle(cornerRadius: 10)
         )
     }
 
@@ -228,9 +228,9 @@ struct InsightItemView: View {
             }
         }
         .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color(.tertiarySystemBackground))
+        .glassEffect(
+            .regular.tint(.purple.opacity(0.5)),
+            in: RoundedRectangle(cornerRadius: 10)
         )
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(item.title). \(item.description)")

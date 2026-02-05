@@ -290,7 +290,7 @@ actor InsightsGenerationService {
         var patterns: [InsightItem] = []
         var recommendations: [InsightItem] = []
         var achievements: [InsightItem] = []
-        var anomalies: [InsightItem] = []
+        let anomalies: [InsightItem] = []
 
         // Pattern: Peak hours
         if let peakHour = context.thoughtsByHour.max(by: { $0.value < $1.value }) {

@@ -316,9 +316,11 @@ struct BrowseScreen: View {
             .font(.caption)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(color.opacity(0.15))
+            .glassEffect(
+                .regular.tint(color.opacity(0.4)),
+                in: RoundedRectangle(cornerRadius: 8)
+            )
             .foregroundColor(color)
-            .cornerRadius(8)
     }
 
     private func sentimentDisplayName(_ sentiment: Sentiment) -> String {

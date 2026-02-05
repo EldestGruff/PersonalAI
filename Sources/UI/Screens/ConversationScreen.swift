@@ -228,9 +228,11 @@ struct MessageBubbleView: View {
                 Text(message.content)
                     .font(.body)
                     .padding(12)
-                    .background(backgroundColor)
+                    .glassEffect(
+                        .regular.tint((message.role == .user ? Color.accentColor : Color.purple).opacity(0.5)),
+                        in: RoundedRectangle(cornerRadius: 16)
+                    )
                     .foregroundColor(textColor)
-                    .cornerRadius(16)
 
                 // Citations
                 if let citations = message.citations, !citations.isEmpty {

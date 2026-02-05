@@ -67,7 +67,7 @@ final class SemanticSearchService {
         }
 
         // Generate query vector
-        guard let queryVector = try? embedding.vector(for: query) else {
+        guard let queryVector = embedding.vector(for: query) else {
             return keywordSearch(query: query, in: thoughts)
         }
 
@@ -79,7 +79,7 @@ final class SemanticSearchService {
             guard !content.isEmpty else { continue }
 
             // Generate thought vector
-            if let thoughtVector = try? embedding.vector(for: content) {
+            if let thoughtVector = embedding.vector(for: content) {
                 let similarity = cosineSimilarity(queryVector, thoughtVector)
 
                 // Include if above threshold

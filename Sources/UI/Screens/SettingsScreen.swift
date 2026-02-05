@@ -34,6 +34,9 @@ struct SettingsScreen: View {
                 // Permissions section
                 permissionsSection
 
+                // Personalization section
+                personalizationSection
+
                 // Features section
                 featuresSection
 
@@ -177,6 +180,33 @@ struct SettingsScreen: View {
             } else {
                 Text("Upgrade to Pro for unlimited thoughts, advanced analytics, and export features.")
             }
+        }
+    }
+
+    // MARK: - Personalization Section
+
+    private var personalizationSection: some View {
+        Section {
+            NavigationLink {
+                PersonalizationScreen()
+            } label: {
+                HStack(spacing: 12) {
+                    Text("🐿️")
+                        .font(.title2)
+                        .frame(width: 32)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Squirrel-Sona")
+                        Text("Customize your AI companion")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+        } header: {
+            Text("AI Companion")
+        } footer: {
+            Text("Choose from built-in personas or create your own custom AI companion personality.")
         }
     }
 

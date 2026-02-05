@@ -26,53 +26,61 @@ struct DetailScreen: View {
     @State private var energyBreakdown: EnergyBreakdown?
     @State private var isRefreshingLocation = false
     @State private var refreshedLocation: Location?
+    @State private var conversationCount: Int = 0
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                // Error banner
-                if let error = viewModel.error {
-                    ErrorBanner(error: error) {
-                        viewModel.error = nil
+        ZStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    // Error banner
+                    if let error = viewModel.error {
+                        ErrorBanner(error: error) {
+                            viewModel.error = nil
+                        }
                     }
-                }
 
-                // Content section
-                contentSection
+                    // Content section
+                    contentSection
 
-                Divider()
-
-                // Tags section
-                if !viewModel.thought.tags.isEmpty || viewModel.isEditing {
-                    tagsSection
                     Divider()
+
+                    // Tags section
+                    if !viewModel.thought.tags.isEmpty || viewModel.isEditing {
+                        tagsSection
+                        Divider()
+                    }
+
+                    // Classification section
+                    if viewModel.hasClassification {
+                        classificationSection
+                        Divider()
+                    }
+
+                    // Context section
+                    if viewModel.hasContext {
+                        contextSection
+                        Divider()
+                    }
+
+                    // Related thoughts section
+                    if viewModel.hasRelatedThoughts {
+                        relatedThoughtsSection
+                        Divider()
+                    }
+
+                    // Feedback section
+                    feedbackSection
+
+                    // Metadata
+                    metadataSection
                 }
-
-                // Classification section
-                if viewModel.hasClassification {
-                    classificationSection
-                    Divider()
-                }
-
-                // Context section
-                if viewModel.hasContext {
-                    contextSection
-                    Divider()
-                }
-
-                // Related thoughts section
-                if viewModel.hasRelatedThoughts {
-                    relatedThoughtsSection
-                    Divider()
-                }
-
-                // Feedback section
-                feedbackSection
-
-                // Metadata
-                metadataSection
+                .padding()
             }
-            .padding()
+
+            // Floating conversation button
+            if #available(iOS 26.0, *) {
+                conversationFloatingButton
+            }
         }
         .navigationTitle("Thought")
         #if os(iOS)
@@ -135,7 +143,54 @@ struct DetailScreen: View {
         }
         .task {
             await viewModel.loadRelatedThoughts()
+            await loadConversationCount()
         }
+    }
+
+    // MARK: - Conversation Floating Button
+
+    @available(iOS 26.0, *)
+    private var conversationFloatingButton: some View {
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                NavigationLink {
+                    ThoughtConversationScreen(thought: viewModel.thought)
+                } label: {
+                    ZStack(alignment: .topTrailing) {
+                        Circle()
+                            .fill(.blue.gradient)
+                            .frame(width: 56, height: 56)
+                            .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+
+                        Image(systemName: "bubble.left.and.bubble.right.fill")
+                            .foregroundColor(.white)
+                            .font(.title3)
+                            .frame(width: 56, height: 56)
+
+                        if conversationCount > 0 {
+                            Text("\(conversationCount)")
+                                .font(.caption2)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                                .padding(6)
+                                .background(Color.red)
+                                .clipShape(Circle())
+                                .offset(x: 4, y: -4)
+                        }
+                    }
+                }
+                .padding()
+                .accessibilityLabel("Chat with companion")
+                .accessibilityHint(conversationCount > 0 ? "You have \(conversationCount) conversation\(conversationCount == 1 ? "" : "s")" : "Start a new conversation")
+            }
+        }
+    }
+
+    private func loadConversationCount() async {
+        let conversations = await ThoughtConversationService.shared.getConversations(forThought: viewModel.thought.id)
+        conversationCount = conversations.count
     }
 
     // MARK: - Content Section
@@ -658,6 +713,7 @@ struct BreakdownRow: View {
                     id: UUID(),
                     userId: UUID(),
                     content: "Need to review the Q4 marketing strategy and prepare presentation for the board meeting next Tuesday.",
+                    attributedContent: nil,
                     tags: ["work", "presentation", "urgent"],
                     status: .active,
                     context: Context(

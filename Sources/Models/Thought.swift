@@ -39,6 +39,7 @@ import Foundation
 ///     id: UUID(),
 ///     userId: UUID(),
 ///     content: "Should optimize email spam filter",
+///     attributedContent: nil,
 ///     tags: ["email", "improvement"],
 ///     status: .active,
 ///     context: Context(
@@ -55,10 +56,11 @@ import Foundation
 ///     updatedAt: Date(),
 ///     classification: nil,
 ///     relatedThoughtIds: [],
-///     taskId: nil
+///     taskId: nil,
+///     attributedContent: nil
 /// )
 /// ```
-struct Thought: Identifiable, Codable, Equatable, Sendable {
+struct Thought: Identifiable, Equatable, Sendable {
     /// Unique identifier (UUID v4)
     let id: UUID
 
@@ -71,7 +73,15 @@ struct Thought: Identifiable, Codable, Equatable, Sendable {
     ///
     /// Main text captured by the user. Can be a sentence, paragraph, or longer note.
     /// Validated to be non-empty after trimming whitespace.
+    /// Plain text representation (always present for backwards compatibility)
     let content: String
+
+    /// Rich text representation with formatting (iOS 15+, optional)
+    ///
+    /// Contains formatted text with bold, italic, highlighting, links, etc.
+    /// When nil, falls back to plain `content` field.
+    /// Stored as NSAttributedString in Core Data for compatibility.
+    let attributedContent: AttributedString?
 
     /// User-assigned or AI-suggested tags (0-5 tags, max 50 chars each)
     ///
@@ -119,6 +129,62 @@ struct Thought: Identifiable, Codable, Equatable, Sendable {
     /// If user converts thought to a task, this links to the TaskEntity.
     /// One-to-zero-or-one relationship.
     let taskId: UUID?
+}
+
+// MARK: - Codable
+
+extension Thought: Codable {
+    enum CodingKeys: String, CodingKey {
+        case id, userId, content, attributedContentData, tags, status, context
+        case createdAt, updatedAt, classification, relatedThoughtIds, taskId
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        userId = try container.decode(UUID.self, forKey: .userId)
+        content = try container.decode(String.self, forKey: .content)
+
+        // Decode attributedContent from Data if available
+        if let data = try container.decodeIfPresent(Data.self, forKey: .attributedContentData),
+           let nsAttributed = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSAttributedString.self, from: data) {
+            attributedContent = try? AttributedString(nsAttributed)
+        } else {
+            attributedContent = nil
+        }
+
+        tags = try container.decode([String].self, forKey: .tags)
+        status = try container.decode(ThoughtStatus.self, forKey: .status)
+        context = try container.decode(Context.self, forKey: .context)
+        createdAt = try container.decode(Date.self, forKey: .createdAt)
+        updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        classification = try container.decodeIfPresent(Classification.self, forKey: .classification)
+        relatedThoughtIds = try container.decode([UUID].self, forKey: .relatedThoughtIds)
+        taskId = try container.decodeIfPresent(UUID.self, forKey: .taskId)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(userId, forKey: .userId)
+        try container.encode(content, forKey: .content)
+
+        // Encode attributedContent as Data if present
+        if let attributedContent = attributedContent {
+            let nsAttributed = NSAttributedString(attributedContent)
+            let data = try? NSKeyedArchiver.archivedData(withRootObject: nsAttributed, requiringSecureCoding: true)
+            try container.encodeIfPresent(data, forKey: .attributedContentData)
+        }
+
+        try container.encode(tags, forKey: .tags)
+        try container.encode(status, forKey: .status)
+        try container.encode(context, forKey: .context)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(updatedAt, forKey: .updatedAt)
+        try container.encodeIfPresent(classification, forKey: .classification)
+        try container.encode(relatedThoughtIds, forKey: .relatedThoughtIds)
+        try container.encodeIfPresent(taskId, forKey: .taskId)
+    }
 }
 
 // MARK: - Validation

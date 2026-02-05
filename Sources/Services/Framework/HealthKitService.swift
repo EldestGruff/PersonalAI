@@ -178,32 +178,157 @@ actor HealthKitService: HealthKitServiceProtocol {
 
     private let readTypes: Set<HKObjectType> = {
         var types = Set<HKObjectType>()
+
+        // MARK: Activity & Fitness
         if let stepCount = HKQuantityType.quantityType(forIdentifier: .stepCount) {
             types.insert(stepCount)
+        }
+        if let distance = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning) {
+            types.insert(distance)
+        }
+        if let cycling = HKQuantityType.quantityType(forIdentifier: .distanceCycling) {
+            types.insert(cycling)
+        }
+        if let swimming = HKQuantityType.quantityType(forIdentifier: .distanceSwimming) {
+            types.insert(swimming)
+        }
+        if let flightsClimbed = HKQuantityType.quantityType(forIdentifier: .flightsClimbed) {
+            types.insert(flightsClimbed)
         }
         if let activeEnergy = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned) {
             types.insert(activeEnergy)
         }
-        if let sleepAnalysis = HKCategoryType.categoryType(forIdentifier: .sleepAnalysis) {
-            types.insert(sleepAnalysis)
+        if let basalEnergy = HKQuantityType.quantityType(forIdentifier: .basalEnergyBurned) {
+            types.insert(basalEnergy)
         }
+        if let exerciseTime = HKQuantityType.quantityType(forIdentifier: .appleExerciseTime) {
+            types.insert(exerciseTime)
+        }
+        if let standTime = HKQuantityType.quantityType(forIdentifier: .appleStandTime) {
+            types.insert(standTime)
+        }
+        types.insert(HKObjectType.workoutType())
+
+        // MARK: Heart & Cardiovascular
         if let heartRate = HKQuantityType.quantityType(forIdentifier: .heartRate) {
             types.insert(heartRate)
         }
-        // HRV (Heart Rate Variability SDNN)
         if let hrv = HKQuantityType.quantityType(forIdentifier: .heartRateVariabilitySDNN) {
             types.insert(hrv)
         }
-        // Resting heart rate
         if let restingHR = HKQuantityType.quantityType(forIdentifier: .restingHeartRate) {
             types.insert(restingHR)
         }
-        // Workout type
-        types.insert(HKObjectType.workoutType())
-        // State of Mind (iOS 18+)
+        if let walkingHR = HKQuantityType.quantityType(forIdentifier: .walkingHeartRateAverage) {
+            types.insert(walkingHR)
+        }
+        if let vo2Max = HKQuantityType.quantityType(forIdentifier: .vo2Max) {
+            types.insert(vo2Max)
+        }
+
+        // MARK: Sleep
+        if let sleepAnalysis = HKCategoryType.categoryType(forIdentifier: .sleepAnalysis) {
+            types.insert(sleepAnalysis)
+        }
+
+        // MARK: Mindfulness & Mental Health
+        if let mindfulMinutes = HKCategoryType.categoryType(forIdentifier: .mindfulSession) {
+            types.insert(mindfulMinutes)
+        }
         if #available(iOS 18.0, *) {
             types.insert(HKObjectType.stateOfMindType())
         }
+
+        // MARK: Nutrition (MyFitnessPal-style tracking)
+        if let dietaryEnergy = HKQuantityType.quantityType(forIdentifier: .dietaryEnergyConsumed) {
+            types.insert(dietaryEnergy)
+        }
+        if let protein = HKQuantityType.quantityType(forIdentifier: .dietaryProtein) {
+            types.insert(protein)
+        }
+        if let carbs = HKQuantityType.quantityType(forIdentifier: .dietaryCarbohydrates) {
+            types.insert(carbs)
+        }
+        if let fat = HKQuantityType.quantityType(forIdentifier: .dietaryFatTotal) {
+            types.insert(fat)
+        }
+        if let sugar = HKQuantityType.quantityType(forIdentifier: .dietarySugar) {
+            types.insert(sugar)
+        }
+        if let fiber = HKQuantityType.quantityType(forIdentifier: .dietaryFiber) {
+            types.insert(fiber)
+        }
+        if let sodium = HKQuantityType.quantityType(forIdentifier: .dietarySodium) {
+            types.insert(sodium)
+        }
+        if let water = HKQuantityType.quantityType(forIdentifier: .dietaryWater) {
+            types.insert(water)
+        }
+        if let caffeine = HKQuantityType.quantityType(forIdentifier: .dietaryCaffeine) {
+            types.insert(caffeine)
+        }
+
+        // MARK: Body Measurements
+        if let weight = HKQuantityType.quantityType(forIdentifier: .bodyMass) {
+            types.insert(weight)
+        }
+        if let bodyFat = HKQuantityType.quantityType(forIdentifier: .bodyFatPercentage) {
+            types.insert(bodyFat)
+        }
+        if let leanMass = HKQuantityType.quantityType(forIdentifier: .leanBodyMass) {
+            types.insert(leanMass)
+        }
+        if let height = HKQuantityType.quantityType(forIdentifier: .height) {
+            types.insert(height)
+        }
+        if let bmi = HKQuantityType.quantityType(forIdentifier: .bodyMassIndex) {
+            types.insert(bmi)
+        }
+        if let waist = HKQuantityType.quantityType(forIdentifier: .waistCircumference) {
+            types.insert(waist)
+        }
+
+        // MARK: Vitals
+        if let oxygenSat = HKQuantityType.quantityType(forIdentifier: .oxygenSaturation) {
+            types.insert(oxygenSat)
+        }
+        if let bloodPressureSystolic = HKQuantityType.quantityType(forIdentifier: .bloodPressureSystolic) {
+            types.insert(bloodPressureSystolic)
+        }
+        if let bloodPressureDiastolic = HKQuantityType.quantityType(forIdentifier: .bloodPressureDiastolic) {
+            types.insert(bloodPressureDiastolic)
+        }
+        if let respiratoryRate = HKQuantityType.quantityType(forIdentifier: .respiratoryRate) {
+            types.insert(respiratoryRate)
+        }
+        if let bodyTemp = HKQuantityType.quantityType(forIdentifier: .bodyTemperature) {
+            types.insert(bodyTemp)
+        }
+        if let bloodGlucose = HKQuantityType.quantityType(forIdentifier: .bloodGlucose) {
+            types.insert(bloodGlucose)
+        }
+
+        // MARK: Reproductive Health
+        if let basalBodyTemp = HKQuantityType.quantityType(forIdentifier: .basalBodyTemperature) {
+            types.insert(basalBodyTemp)
+        }
+        if let menstruation = HKCategoryType.categoryType(forIdentifier: .menstrualFlow) {
+            types.insert(menstruation)
+        }
+
+        // MARK: Hearing
+        if let headphoneAudio = HKQuantityType.quantityType(forIdentifier: .headphoneAudioExposure) {
+            types.insert(headphoneAudio)
+        }
+        if let envAudio = HKQuantityType.quantityType(forIdentifier: .environmentalAudioExposure) {
+            types.insert(envAudio)
+        }
+
+        // MARK: Medications (iOS 16+)
+        // Note: Medication tracking uses HKUserAnnotatedMedicationQueryDescriptor
+        // which requires per-object authorization (requested at query time)
+        // No types to add here - medications handled separately
+
         return types
     }()
 

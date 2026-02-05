@@ -112,6 +112,7 @@ struct CaptureThoughtIntent: AppIntent {
             id: UUID(),
             userId: userId,
             content: content,
+                    attributedContent: nil,
             tags: classification?.suggestedTags ?? [],
             status: .active,
             context: Context(

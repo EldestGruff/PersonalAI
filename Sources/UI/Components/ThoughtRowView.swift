@@ -25,11 +25,13 @@ struct ThoughtRowView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Content preview
-            Text(thought.content)
-                .font(.body)
-                .lineLimit(2)
-                .foregroundColor(.primary)
+            // Content preview (supports rich text)
+            ThoughtContentView(
+                thought: thought,
+                font: .body,
+                color: .primary,
+                lineLimit: 2
+            )
 
             // Classification (compact)
             if let classification = thought.classification {
@@ -101,11 +103,13 @@ struct ThoughtCardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            // Content
-            Text(thought.content)
-                .font(.body)
-                .lineLimit(4)
-                .foregroundColor(.primary)
+            // Content (supports rich text)
+            ThoughtContentView(
+                thought: thought,
+                font: .body,
+                color: .primary,
+                lineLimit: 4
+            )
 
             Spacer()
 
@@ -162,6 +166,7 @@ struct ThoughtCardView: View {
                 id: UUID(),
                 userId: UUID(),
                 content: "Remember to schedule the team meeting for next week to discuss the project roadmap.",
+                attributedContent: nil,
                 tags: ["work", "meeting", "planning"],
                 status: .active,
                 context: Context(
@@ -209,6 +214,7 @@ struct ThoughtCardView: View {
             id: UUID(),
             userId: UUID(),
             content: "What if we could use on-device ML to automatically categorize thoughts based on context and content?",
+            attributedContent: nil,
             tags: ["idea", "ml"],
             status: .active,
             context: Context.empty(),

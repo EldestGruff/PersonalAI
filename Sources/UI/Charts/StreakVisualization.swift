@@ -165,7 +165,6 @@ struct StreakVisualization: View {
     private var contributionDays: [ContributionDay] {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
-        let ninetyDaysAgo = calendar.date(byAdding: .day, value: -90, to: today)!
 
         // Get dates with thoughts
         let datesWithThoughts = Set(

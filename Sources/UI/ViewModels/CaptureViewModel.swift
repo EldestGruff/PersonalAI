@@ -29,6 +29,12 @@ final class CaptureViewModel {
     /// The thought content being captured
     var thoughtContent: String = ""
 
+    /// Rich text content with formatting (iOS 15+)
+    var attributedThoughtContent: AttributedString?
+
+    /// Whether rich text formatting is enabled
+    var richTextEnabled: Bool = false
+
     /// Tags selected for this thought
     var selectedTags: [String] = []
 
@@ -168,6 +174,31 @@ final class CaptureViewModel {
         voiceInputMode.toggle()
     }
 
+    /// Toggles rich text formatting mode
+    func toggleRichText() {
+        richTextEnabled.toggle()
+
+        if richTextEnabled {
+            // Convert plain text to AttributedString
+            attributedThoughtContent = AttributedString(thoughtContent)
+        } else {
+            // Extract plain text from AttributedString
+            if let attributed = attributedThoughtContent {
+                thoughtContent = String(attributed.characters)
+            }
+            attributedThoughtContent = nil
+        }
+    }
+
+    /// Syncs plain text with attributed content
+    func syncAttributedContent() {
+        if richTextEnabled {
+            if let attributed = attributedThoughtContent {
+                thoughtContent = String(attributed.characters)
+            }
+        }
+    }
+
     /// Adds a tag to the selected tags
     func addTag(_ tag: String) {
         let normalizedTag = tag.lowercased()
@@ -299,6 +330,7 @@ final class CaptureViewModel {
                 id: UUID(),
                 userId: UUID(),
                 content: thoughtContent,
+                    attributedContent: nil,
                 tags: selectedTags,
                 status: .active,
                 context: Context.empty(),
@@ -362,6 +394,7 @@ final class CaptureViewModel {
                     id: UUID(),
                     userId: UUID(), // Phase 3A: hardcoded, Phase 4+ from settings
                     content: thoughtContent.trimmingCharacters(in: .whitespacesAndNewlines),
+                    attributedContent: richTextEnabled ? attributedThoughtContent : nil,
                     tags: selectedTags,
                     status: .active,
                     context: context ?? Context.empty(),

@@ -27,6 +27,13 @@ extension Thought {
         entity.id = self.id
         entity.userId = self.userId
         entity.content = self.content
+
+        // Encode attributed content if present (iOS 15+)
+        if let attributedContent = self.attributedContent {
+            let nsAttributed = NSAttributedString(attributedContent)
+            entity.attributedContentData = try? NSKeyedArchiver.archivedData(withRootObject: nsAttributed, requiringSecureCoding: true)
+        }
+
         entity.status = self.status.rawValue
         entity.createdAt = self.createdAt
         entity.updatedAt = self.updatedAt
@@ -122,10 +129,20 @@ extension Thought {
             relatedThoughtIds = []
         }
 
+        // Decode attributed content if available (iOS 15+)
+        let attributedContent: AttributedString?
+        if let data = entity.attributedContentData,
+           let nsAttributed = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSAttributedString.self, from: data) {
+            attributedContent = try? AttributedString(nsAttributed)
+        } else {
+            attributedContent = nil
+        }
+
         return Thought(
             id: entity.id,
             userId: entity.userId,
             content: entity.content,
+            attributedContent: attributedContent,
             tags: tags,
             status: status,
             context: context,

@@ -110,6 +110,17 @@ struct CaptureScreen: View {
 
                 Spacer()
 
+                // Rich text toggle (iOS 15+)
+                Button {
+                    viewModel.toggleRichText()
+                } label: {
+                    Image(systemName: viewModel.richTextEnabled ? "textformat" : "textformat.alt")
+                }
+                .buttonStyle(.bordered)
+                .disabled(viewModel.isCapturing)
+                .accessibilityLabel(viewModel.richTextEnabled ? "Disable rich text" : "Enable rich text")
+                .accessibilityHint("Double tap to toggle formatting")
+
                 Button {
                     viewModel.toggleVoiceInput()
                 } label: {
@@ -127,8 +138,56 @@ struct CaptureScreen: View {
                 VoiceInputPlaceholder {
                     viewModel.toggleVoiceInput()
                 }
+            } else if viewModel.richTextEnabled {
+                // Rich text input (iOS 15+)
+                VStack(spacing: 8) {
+                    TextEditor(text: Binding(
+                        get: { AttributedString(viewModel.thoughtContent) },
+                        set: { newValue in
+                            viewModel.thoughtContent = String(newValue.characters)
+                            viewModel.syncAttributedContent()
+                        }
+                    ))
+                    .focused($isTextFieldFocused)
+                    .frame(minHeight: 120)
+                    .padding(8)
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(10)
+                    .accessibilityIdentifier("captureThoughtTextField")
+                    .accessibilityHint("Enter formatted thought content")
+                    .onChange(of: viewModel.thoughtContent) { oldValue, newValue in
+                        // Skip if too short
+                        guard newValue.count > 10 else { return }
+
+                        // Detect large paste operation
+                        let changeSize = abs(newValue.count - oldValue.count)
+                        if changeSize > 50 {
+                            viewModel.classifyThoughtImmediately()
+                        } else {
+                            viewModel.classifyThought()
+                        }
+
+                        viewModel.checkForSimilarThoughts()
+                    }
+
+                    // Formatting toolbar (iOS 26+)
+                    if #available(iOS 26.0, *), let attributedBinding = Binding(
+                        get: { viewModel.attributedThoughtContent ?? AttributedString() },
+                        set: { viewModel.attributedThoughtContent = $0 }
+                    ) {
+                        FormattingToolbar(attributedText: attributedBinding)
+                    }
+                }
+
+                // Character count
+                HStack {
+                    Spacer()
+                    Text("\(viewModel.characterCount) / 5000")
+                        .font(.caption)
+                        .foregroundColor(viewModel.isOverLimit ? .red : .secondary)
+                }
             } else {
-                // Text input
+                // Plain text input
                 TextEditor(text: $viewModel.thoughtContent)
                     .focused($isTextFieldFocused)
                     .frame(minHeight: 120)

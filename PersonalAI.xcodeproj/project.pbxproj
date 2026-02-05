@@ -86,6 +86,11 @@
 		A1A6326A2F33A8B900DA552B /* ConversationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632692F33A8B900DA552B /* ConversationScreen.swift */; };
 		A1A6326B2F33A8B900DA552B /* AppleIntelligenceRequiredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632682F33A8B900DA552B /* AppleIntelligenceRequiredView.swift */; };
 		A1A6326D2F33A8CF00DA552B /* ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A6326C2F33A8CF00DA552B /* ConversationViewModel.swift */; };
+		A1A632722F33BFAC00DA552B /* ThoughtConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632712F33BFAC00DA552B /* ThoughtConversation.swift */; };
+		A1A632732F33BFAC00DA552B /* SquirrelPersona.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632702F33BFAC00DA552B /* SquirrelPersona.swift */; };
+		A1A632752F33BFD500DA552B /* ThoughtConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632742F33BFD500DA552B /* ThoughtConversationViewModel.swift */; };
+		A1A632782F33BFE700DA552B /* PersonalizationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632762F33BFE700DA552B /* PersonalizationScreen.swift */; };
+		A1A632792F33BFE700DA552B /* ThoughtConversationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632772F33BFE700DA552B /* ThoughtConversationScreen.swift */; };
 		ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */; };
 /* End PBXBuildFile section */
 
@@ -170,6 +175,11 @@
 		A1A632682F33A8B900DA552B /* AppleIntelligenceRequiredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntelligenceRequiredView.swift; sourceTree = "<group>"; };
 		A1A632692F33A8B900DA552B /* ConversationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationScreen.swift; sourceTree = "<group>"; };
 		A1A6326C2F33A8CF00DA552B /* ConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewModel.swift; sourceTree = "<group>"; };
+		A1A632702F33BFAC00DA552B /* SquirrelPersona.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquirrelPersona.swift; sourceTree = "<group>"; };
+		A1A632712F33BFAC00DA552B /* ThoughtConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtConversation.swift; sourceTree = "<group>"; };
+		A1A632742F33BFD500DA552B /* ThoughtConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtConversationViewModel.swift; sourceTree = "<group>"; };
+		A1A632762F33BFE700DA552B /* PersonalizationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalizationScreen.swift; sourceTree = "<group>"; };
+		A1A632772F33BFE700DA552B /* ThoughtConversationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtConversationScreen.swift; sourceTree = "<group>"; };
 		A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsAnalyzer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -247,6 +257,8 @@
 		A0800000000000000000010 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				A1A632702F33BFAC00DA552B /* SquirrelPersona.swift */,
+				A1A632712F33BFAC00DA552B /* ThoughtConversation.swift */,
 				A0000001000000000000022 /* Thought.swift */,
 				A0000001000000000000024 /* Classification.swift */,
 				A0000001000000000000026 /* Context.swift */,
@@ -415,6 +427,8 @@
 		A0800000000000000000041 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				A1A632762F33BFE700DA552B /* PersonalizationScreen.swift */,
+				A1A632772F33BFE700DA552B /* ThoughtConversationScreen.swift */,
 				A1A632682F33A8B900DA552B /* AppleIntelligenceRequiredView.swift */,
 				A1A632692F33A8B900DA552B /* ConversationScreen.swift */,
 				A0000001000000000000202 /* BrowseScreen.swift */,
@@ -445,6 +459,7 @@
 		A0800000000000000000043 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				A1A632742F33BFD500DA552B /* ThoughtConversationViewModel.swift */,
 				A1A6326C2F33A8CF00DA552B /* ConversationViewModel.swift */,
 				A0000001000000000000242 /* BrowseViewModel.swift */,
 				A0000001000000000000244 /* CaptureViewModel.swift */,
@@ -569,11 +584,14 @@
 				A0000001000000000000079 /* SyncQueueEntity.swift in Sources */,
 				A0000001000000000000091 /* ThoughtRepository.swift in Sources */,
 				A0000001000000000000093 /* TaskRepository.swift in Sources */,
+				A1A632722F33BFAC00DA552B /* ThoughtConversation.swift in Sources */,
+				A1A632732F33BFAC00DA552B /* SquirrelPersona.swift in Sources */,
 				A0000001000000000000095 /* FineTuningRepository.swift in Sources */,
 				A0000001000000000000097 /* SyncRepository.swift in Sources */,
 				A0000001000000000000111 /* ServiceProtocols.swift in Sources */,
 				A0000001000000000000113 /* ServiceError.swift in Sources */,
 				A0000001000000000000115 /* ServiceConfiguration.swift in Sources */,
+				A1A632752F33BFD500DA552B /* ThoughtConversationViewModel.swift in Sources */,
 				A0000001000000000000117 /* ServiceContainer.swift in Sources */,
 				A0000001000000000000119 /* PermissionCoordinator.swift in Sources */,
 				A0000001000000000000131 /* LocationService.swift in Sources */,
@@ -602,6 +620,8 @@
 				A0000001000000000000203 /* CaptureScreen.swift in Sources */,
 				A0000001000000000000205 /* DetailScreen.swift in Sources */,
 				A0000001000000000000207 /* SearchScreen.swift in Sources */,
+				A1A632782F33BFE700DA552B /* PersonalizationScreen.swift in Sources */,
+				A1A632792F33BFE700DA552B /* ThoughtConversationScreen.swift in Sources */,
 				A0000001000000000000209 /* SettingsScreen.swift in Sources */,
 				A00000010000000000000254 /* InsightsScreen.swift in Sources */,
 				A1803E282F327EC60071D950 /* AIInsightsView.swift in Sources */,
@@ -663,7 +683,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = B4J94SF44Q;
+				DEVELOPMENT_TEAM = 2773DJ42YU;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -730,7 +750,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = B4J94SF44Q;
+				DEVELOPMENT_TEAM = 2773DJ42YU;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -761,9 +781,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = PersonalAI.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B4J94SF44Q;
+				DEVELOPMENT_TEAM = 2773DJ42YU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "PersonalAI needs access to calendar events to provide context-aware features.";
@@ -787,6 +808,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personalai.PersonalAI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -804,9 +826,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = PersonalAI.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B4J94SF44Q;
+				DEVELOPMENT_TEAM = 2773DJ42YU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "PersonalAI needs access to calendar events to provide context-aware features.";
@@ -830,6 +853,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personalai.PersonalAI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;

@@ -33,6 +33,18 @@ struct ConversationMessage: Identifiable, Codable, Sendable, Equatable {
         self.citations = citations
         self.suggestedQuestions = suggestedQuestions
     }
+
+    /// Create a copy with updated content (for streaming)
+    func settingContent(_ newContent: String) -> ConversationMessage {
+        ConversationMessage(
+            id: id,
+            role: role,
+            content: newContent,
+            timestamp: timestamp,
+            citations: citations,
+            suggestedQuestions: suggestedQuestions
+        )
+    }
 }
 
 /// Role of a message in the conversation

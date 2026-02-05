@@ -229,17 +229,9 @@ struct InsightsScreen: View {
             }
         }
         .padding()
-        .background(
-            LinearGradient(
-                colors: [Color.purple.opacity(0.05), Color.blue.opacity(0.05)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
-        .cornerRadius(12)
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.purple.opacity(0.2), lineWidth: 1)
+        .glassEffect(
+            .regular.tint(.purple.opacity(0.4)),
+            in: RoundedRectangle(cornerRadius: 12)
         )
     }
 
@@ -329,9 +321,10 @@ struct InsightsScreen: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+        .glassEffect(
+            .regular.tint(.orange.opacity(0.3)),
+            in: RoundedRectangle(cornerRadius: 12)
+        )
     }
 
     // MARK: - Chart 2: Sentiment Trends
@@ -392,9 +385,10 @@ struct InsightsScreen: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+        .glassEffect(
+            .regular.tint(.blue.opacity(0.3)),
+            in: RoundedRectangle(cornerRadius: 12)
+        )
     }
 
     // MARK: - Chart 3: Type Distribution
@@ -439,9 +433,10 @@ struct InsightsScreen: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+        .glassEffect(
+            .regular.tint(.green.opacity(0.3)),
+            in: RoundedRectangle(cornerRadius: 12)
+        )
     }
 
     // MARK: - Chart 4: Energy & Mood Correlation
@@ -516,9 +511,10 @@ struct InsightsScreen: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+        .glassEffect(
+            .regular.tint(.green.opacity(0.3)),
+            in: RoundedRectangle(cornerRadius: 12)
+        )
     }
 
     private func moodColor(for valence: Double?) -> Color {

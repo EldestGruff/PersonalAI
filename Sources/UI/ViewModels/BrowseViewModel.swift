@@ -515,6 +515,7 @@ final class BrowseViewModel {
                             id: thought.id,
                             userId: thought.userId,
                             content: thought.content,
+                    attributedContent: nil,
                             tags: updatedTags,
                             status: thought.status,
                             context: thought.context,

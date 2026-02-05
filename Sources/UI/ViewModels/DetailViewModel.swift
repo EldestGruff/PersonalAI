@@ -196,6 +196,7 @@ final class DetailViewModel {
                     id: thought.id,
                     userId: thought.userId,
                     content: trimmedContent,
+                    attributedContent: nil,
                     tags: editedTags,
                     status: thought.status,
                     context: thought.context,

@@ -24,6 +24,7 @@ struct PersistenceController: Sendable {
                 id: UUID(),
                 userId: UUID(),
                 content: "Sample thought for preview",
+                    attributedContent: nil,
                 tags: ["preview", "sample"],
                 status: .active,
                 context: Context(

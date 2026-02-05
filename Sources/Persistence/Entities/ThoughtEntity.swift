@@ -40,6 +40,10 @@ public final class ThoughtEntity: NSManagedObject {
     /// Thought content
     @NSManaged public var content: String
 
+    /// Rich text content with formatting (iOS 15+, optional)
+    /// Stored as Data (serialized AttributedString)
+    @NSManaged public var attributedContentData: Data?
+
     /// Tags stored as JSON array
     @NSManaged public var tagsJSON: Data
 
