@@ -9,6 +9,8 @@ import SwiftUI
 
 struct PersonalizationScreen: View {
     @ObservedObject private var personaService = PersonaService.shared
+    @State private var themeEngine = ThemeEngine.shared
+    @State private var personalityEngine = PersonalityEngine.shared
     @State private var showCreatePersona = false
     @State private var showPersonaDetail: SquirrelPersona?
     @State private var showDeleteConfirmation = false
@@ -19,6 +21,9 @@ struct PersonalizationScreen: View {
             VStack(spacing: 20) {
                 // Header
                 headerView
+
+                // Live Preview
+                livePreviewSection
 
                 // Theme Selection
                 ThemeSectionView()
@@ -142,6 +147,74 @@ struct PersonalizationScreen: View {
                 .multilineTextAlignment(.center)
         }
         .padding()
+    }
+
+    // MARK: - Live Preview
+
+    private var livePreviewSection: some View {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(alignment: .leading, spacing: 12) {
+            Text("Live Preview")
+                .font(.headline)
+                .padding(.horizontal)
+
+            VStack(alignment: .leading, spacing: 16) {
+                // Theme colors preview
+                HStack(spacing: 12) {
+                    VStack(spacing: 8) {
+                        Circle()
+                            .fill(theme.primaryColor)
+                            .frame(width: 40, height: 40)
+                        Text("Primary")
+                            .font(.caption2)
+                    }
+
+                    VStack(spacing: 8) {
+                        Circle()
+                            .fill(theme.accentColor)
+                            .frame(width: 40, height: 40)
+                        Text("Accent")
+                            .font(.caption2)
+                    }
+
+                    VStack(spacing: 8) {
+                        Circle()
+                            .fill(theme.backgroundColor)
+                            .frame(width: 40, height: 40)
+                            .overlay(Circle().stroke(Color.gray, lineWidth: 1))
+                        Text("Background")
+                            .font(.caption2)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+
+                // Sample message in current style
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Sample Messages:")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+
+                    Text(personalityEngine.thoughtSaved())
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(theme.surfaceColor)
+                        .foregroundColor(theme.textColor)
+                        .cornerRadius(theme.cornerRadius)
+
+                    Text(personalityEngine.classificationSuggestion(type: "Reminder"))
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(theme.surfaceColor)
+                        .foregroundColor(theme.textColor)
+                        .cornerRadius(theme.cornerRadius)
+                }
+            }
+            .padding()
+            .background(Color(.systemBackground))
+            .cornerRadius(12)
+            .padding(.horizontal)
+        }
     }
 
 }
