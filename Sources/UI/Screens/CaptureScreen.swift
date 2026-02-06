@@ -22,6 +22,7 @@ import SwiftUI
 struct CaptureScreen: View {
     @State var viewModel: CaptureViewModel
     @State private var showPaywall = false
+    @State private var themeEngine = ThemeEngine.shared
     @Environment(\.dismiss) private var dismiss
     @SwiftUI.FocusState private var isTextFieldFocused: Bool
 
@@ -30,6 +31,7 @@ struct CaptureScreen: View {
     }
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
@@ -81,6 +83,7 @@ struct CaptureScreen: View {
                     }
                     .disabled(!viewModel.isValid || viewModel.isCapturing)
                     .fontWeight(.semibold)
+                    .foregroundColor(viewModel.isValid && !viewModel.isCapturing ? theme.accentColor : .gray)
                     .accessibilityIdentifier("captureThoughtButton")
                 }
             }
@@ -329,14 +332,18 @@ struct CaptureScreen: View {
     // MARK: - Classification Section
 
     private var classificationSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("Classification")
                     .font(.headline)
+                    .foregroundColor(theme.textColor)
 
                 if viewModel.isClassificationLoading {
                     ProgressView()
                         .scaleEffect(0.8)
+                        .tint(theme.accentColor)
                 }
             }
 
@@ -349,18 +356,22 @@ struct CaptureScreen: View {
                         HStack(spacing: 4) {
                             Image(systemName: "info.circle")
                                 .font(.caption)
+                                .foregroundColor(theme.accentColor)
                             Text("Low confidence (\(Int(classification.confidence * 100))%) - you can edit type if needed")
                                 .font(.caption)
+                                .foregroundColor(theme.secondaryTextColor)
                         }
-                        .foregroundColor(.secondary)
                     }
                 }
             } else if let error = viewModel.classificationError {
                 Text(error)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
             }
         }
+        .padding()
+        .background(theme.surfaceColor.opacity(0.5))
+        .cornerRadius(theme.cornerRadius)
     }
 
     // MARK: - Subscription Error Banner

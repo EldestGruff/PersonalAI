@@ -26,8 +26,10 @@ struct BrowseScreen: View {
     @State private var showFilterSheet = false
     @State private var thoughtToDelete: Thought?
     @State private var bulkTagInput: String = ""
+    @State private var themeEngine = ThemeEngine.shared
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
         NavigationStack {
             ZStack {
                 // Main content
@@ -339,7 +341,7 @@ struct BrowseScreen: View {
         EmptyStateView(
             icon: "brain.head.profile",
             title: "No Thoughts Yet",
-            message: "Capture your first thought to get started. Thoughts are automatically organized and enriched with context.",
+            message: PersonalityEngine.shared.noThoughtsYet(),
             actionTitle: "Capture Thought"
         ) {
             showCaptureSheet = true
@@ -349,7 +351,9 @@ struct BrowseScreen: View {
     // MARK: - Floating Action Button
 
     private var floatingActionButton: some View {
-        Button {
+        let theme = themeEngine.getCurrentTheme()
+
+        return Button {
             showCaptureSheet = true
         } label: {
             Image(systemName: "plus")
@@ -357,9 +361,9 @@ struct BrowseScreen: View {
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
                 .frame(width: 56, height: 56)
-                .background(Color.blue)
+                .background(theme.accentColor)
                 .clipShape(Circle())
-                .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
+                .shadow(color: .black.opacity(0.2), radius: theme.shadowRadius, y: 2)
         }
         .padding()
         .accessibilityLabel("Add new thought")
