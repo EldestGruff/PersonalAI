@@ -19,7 +19,6 @@ enum FrameworkType: String, Sendable, CaseIterable {
     case coreMotion = "Core Motion"
     case eventKit = "EventKit"
     case contacts = "Contacts"
-    case speech = "Speech"
     case network = "Network"
     case foundationModels = "Foundation Models"
 
@@ -32,7 +31,6 @@ enum FrameworkType: String, Sendable, CaseIterable {
         case .healthKit: return "Health"
         case .coreLocation: return "Privacy/Location"
         case .contacts: return "Privacy/Contacts"
-        case .speech: return "Privacy/SpeechRecognition"
         default: return nil
         }
     }

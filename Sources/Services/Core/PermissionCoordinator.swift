@@ -30,9 +30,6 @@ struct PermissionSummary: Sendable, Equatable {
     /// Contacts permission status
     let contacts: PermissionLevel
 
-    /// Speech recognition permission status
-    let speech: PermissionLevel
-
     /// When this summary was captured
     let timestamp: Date
 
@@ -44,18 +41,17 @@ struct PermissionSummary: Sendable, Equatable {
         healthKit == .authorized &&
         motion == .authorized &&
         eventKit == .authorized &&
-        contacts == .authorized &&
-        speech == .authorized
+        contacts == .authorized
     }
 
     /// Whether any permission is explicitly denied
     var anyDenied: Bool {
-        [location, healthKit, motion, eventKit, contacts, speech].contains(.denied)
+        [location, healthKit, motion, eventKit, contacts].contains(.denied)
     }
 
     /// Whether any permission is restricted
     var anyRestricted: Bool {
-        [location, healthKit, motion, eventKit, contacts, speech].contains(.restricted)
+        [location, healthKit, motion, eventKit, contacts].contains(.restricted)
     }
 
     /// Frameworks that haven't been asked for permission yet
@@ -66,7 +62,6 @@ struct PermissionSummary: Sendable, Equatable {
         if motion == .notDetermined { pending.append(.coreMotion) }
         if eventKit == .notDetermined { pending.append(.eventKit) }
         if contacts == .notDetermined { pending.append(.contacts) }
-        if speech == .notDetermined { pending.append(.speech) }
         return pending
     }
 
@@ -78,7 +73,6 @@ struct PermissionSummary: Sendable, Equatable {
         if motion == .denied { denied.append(.coreMotion) }
         if eventKit == .denied { denied.append(.eventKit) }
         if contacts == .denied { denied.append(.contacts) }
-        if speech == .denied { denied.append(.speech) }
         return denied
     }
 
@@ -90,7 +84,6 @@ struct PermissionSummary: Sendable, Equatable {
         case .coreMotion: return motion
         case .eventKit: return eventKit
         case .contacts: return contacts
-        case .speech: return speech
         case .network: return .authorized // Network doesn't need permission
         case .foundationModels: return .authorized // Foundation Models is on-device, no permission needed
         }
@@ -106,7 +99,6 @@ struct PermissionSummary: Sendable, Equatable {
             motion: level,
             eventKit: level,
             contacts: level,
-            speech: level,
             timestamp: Date()
         )
     }
@@ -170,7 +162,6 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
     private let motionService: any FrameworkServiceProtocol
     private let eventKitService: any FrameworkServiceProtocol
     private let contactsService: any FrameworkServiceProtocol
-    private let speechService: any FrameworkServiceProtocol
 
     // MARK: - State
 
@@ -184,15 +175,13 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
         healthKitService: any FrameworkServiceProtocol,
         motionService: any FrameworkServiceProtocol,
         eventKitService: any FrameworkServiceProtocol,
-        contactsService: any FrameworkServiceProtocol,
-        speechService: any FrameworkServiceProtocol
+        contactsService: any FrameworkServiceProtocol
     ) {
         self.locationService = locationService
         self.healthKitService = healthKitService
         self.motionService = motionService
         self.eventKitService = eventKitService
         self.contactsService = contactsService
-        self.speechService = speechService
     }
 
     // MARK: - Current Status
@@ -216,9 +205,6 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
         let eventKitPerm = await eventKitService.permissionStatus
         NSLog("🎤 [PermissionCoordinator] refreshStatus() - Getting contacts permission")
         let contactsPerm = await contactsService.permissionStatus
-        NSLog("🎤 [PermissionCoordinator] refreshStatus() - Getting speech permission")
-        let speechPerm = await speechService.permissionStatus
-        NSLog("🎤 [PermissionCoordinator] refreshStatus() - Got speech permission: \(speechPerm)")
 
         let summary = PermissionSummary(
             location: locationPerm,
@@ -226,7 +212,6 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
             motion: motionPerm,
             eventKit: eventKitPerm,
             contacts: contactsPerm,
-            speech: speechPerm,
             timestamp: Date()
         )
 
@@ -251,9 +236,6 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
         case .coreMotion: service = motionService
         case .eventKit: service = eventKitService
         case .contacts: service = contactsService
-        case .speech:
-            NSLog("🎤 [PermissionCoordinator] requestPermission() - Using speechService")
-            service = speechService
         case .network:
             NSLog("🎤 [PermissionCoordinator] requestPermission() - EXIT (network, no permission needed)")
             return .authorized // Network doesn't need permission
@@ -289,8 +271,7 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
             .healthKit,
             .coreMotion,
             .eventKit,
-            .contacts,
-            .speech
+            .contacts
         ]
 
         for framework in orderedFrameworks {

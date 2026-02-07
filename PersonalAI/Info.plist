@@ -10,13 +10,6 @@
 	</array>
 
 	<!-- Privacy Descriptions -->
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>STASH uses speech recognition to capture your thoughts hands-free when you prefer to speak instead of type.</string>
-
-	<key>NSMicrophoneUsageDescription</key>
-	<string>STASH needs microphone access to record your voice when using speech-to-text for capturing thoughts.</string>
-
-	<!-- Additional privacy descriptions for enabled capabilities -->
 	<key>NSHealthShareUsageDescription</key>
 	<string>STASH can connect health insights with your thoughts to provide personalized context and understanding.</string>
 

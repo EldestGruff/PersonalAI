@@ -239,14 +239,6 @@ struct SettingsScreen: View {
             )
 
             PermissionRow(
-                icon: "mic.fill",
-                label: "Speech Recognition",
-                description: "Voice input for thoughts",
-                authorized: viewModel.speechAuthorized,
-                action: viewModel.requestSpeechPermission
-            )
-
-            PermissionRow(
                 icon: "person.crop.circle.fill",
                 label: "Contacts",
                 description: "Entity linking and mentions",

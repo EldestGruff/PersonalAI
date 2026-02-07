@@ -31,9 +31,6 @@ final class SettingsViewModel {
     /// Whether EventKit (Calendar/Reminders) is authorized
     var eventKitAuthorized: Bool = false
 
-    /// Whether Speech Recognition is authorized
-    var speechAuthorized: Bool = false
-
     /// Whether Contacts is authorized
     var contactsAuthorized: Bool = false
 
@@ -161,7 +158,6 @@ final class SettingsViewModel {
         healthKitAuthorized = summary.healthKit.allowsAccess
         locationAuthorized = summary.location.allowsAccess
         eventKitAuthorized = summary.eventKit.allowsAccess
-        speechAuthorized = summary.speech.allowsAccess
         contactsAuthorized = summary.contacts.allowsAccess
     }
 
@@ -248,18 +244,17 @@ final class SettingsViewModel {
         healthKitAuthorized &&
         locationAuthorized &&
         eventKitAuthorized &&
-        speechAuthorized &&
         contactsAuthorized
     }
 
     /// Number of permissions granted
     var grantedPermissionCount: Int {
-        [healthKitAuthorized, locationAuthorized, eventKitAuthorized, speechAuthorized, contactsAuthorized]
+        [healthKitAuthorized, locationAuthorized, eventKitAuthorized, contactsAuthorized]
             .filter { $0 }.count
     }
 
     /// Total number of permissions
-    var totalPermissionCount: Int { 5 }
+    var totalPermissionCount: Int { 4 }
 
     /// Formatted sync interval for display
     var syncIntervalFormatted: String {

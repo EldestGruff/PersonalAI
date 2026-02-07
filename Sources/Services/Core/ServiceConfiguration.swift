@@ -49,9 +49,6 @@ struct ServiceConfiguration: Sendable {
         /// Maximum time for network requests
         let networkRequest: TimeInterval
 
-        /// Maximum time for speech recognition
-        let speechRecognition: TimeInterval
-
         /// Maximum time for geocoding operations
         let geocoding: TimeInterval
 
@@ -60,14 +57,12 @@ struct ServiceConfiguration: Sendable {
             classification: TimeInterval = 0.2,
             frameworkOperation: TimeInterval = 0.1,
             networkRequest: TimeInterval = 30.0,
-            speechRecognition: TimeInterval = 60.0,
             geocoding: TimeInterval = 5.0
         ) {
             self.contextGathering = contextGathering
             self.classification = classification
             self.frameworkOperation = frameworkOperation
             self.networkRequest = networkRequest
-            self.speechRecognition = speechRecognition
             self.geocoding = geocoding
         }
     }
@@ -166,9 +161,6 @@ struct ServiceConfiguration: Sendable {
         /// Whether to sync data to backend (when available)
         let enableSync: Bool
 
-        /// Whether to enable speech-to-text capture
-        let enableSpeechCapture: Bool
-
         /// Whether to create system reminders via EventKit
         let enableSystemReminders: Bool
 
@@ -180,7 +172,6 @@ struct ServiceConfiguration: Sendable {
             enableClassification: Bool = true,
             enableFineTuningTracking: Bool = true,
             enableSync: Bool = true,
-            enableSpeechCapture: Bool = true,
             enableSystemReminders: Bool = true,
             enableCalendarEvents: Bool = true
         ) {
@@ -188,7 +179,6 @@ struct ServiceConfiguration: Sendable {
             self.enableClassification = enableClassification
             self.enableFineTuningTracking = enableFineTuningTracking
             self.enableSync = enableSync
-            self.enableSpeechCapture = enableSpeechCapture
             self.enableSystemReminders = enableSystemReminders
             self.enableCalendarEvents = enableCalendarEvents
         }
@@ -268,7 +258,6 @@ extension ServiceConfiguration {
             classification: 2.0,
             frameworkOperation: 1.0,
             networkRequest: 5.0,
-            speechRecognition: 5.0,
             geocoding: 2.0
         ),
         retryPolicy: RetryPolicy(
@@ -282,7 +271,6 @@ extension ServiceConfiguration {
             enableClassification: false,
             enableFineTuningTracking: false,
             enableSync: false,
-            enableSpeechCapture: false,
             enableSystemReminders: false,
             enableCalendarEvents: false
         ),
@@ -300,7 +288,6 @@ extension ServiceConfiguration {
             enableClassification: false,
             enableFineTuningTracking: false,
             enableSync: false,
-            enableSpeechCapture: false,
             enableSystemReminders: false,
             enableCalendarEvents: false
         ),

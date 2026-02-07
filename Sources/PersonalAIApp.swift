@@ -125,8 +125,7 @@ extension PermissionCoordinator {
             healthKitService: HealthKitService(),
             motionService: MotionService(),
             eventKitService: EventKitService(),
-            contactsService: ContactsService(),
-            speechService: SpeechService()
+            contactsService: ContactsService()
         )
     }()
 }
