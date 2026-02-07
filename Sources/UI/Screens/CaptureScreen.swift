@@ -449,26 +449,30 @@ struct VoiceInputView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            // Microphone animation with stop button
-            ZStack {
-                Circle()
-                    .fill(isListening ? Color.red.opacity(0.2) : Color.blue.opacity(0.2))
-                    .frame(width: 100, height: 100)
-                    .scaleEffect(isListening ? 1.2 : 1.0)
-                    .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: isListening)
-
-                Image(systemName: isListening ? "mic.fill" : "mic.slash.fill")
-                    .font(.system(size: 48))
-                    .foregroundColor(isListening ? .red : .blue)
-            }
-            .onTapGesture {
+            // Microphone animation with start/stop toggle
+            Button(action: {
                 if isListening {
                     stopListening()
+                } else {
+                    restartListening()
+                }
+            }) {
+                ZStack {
+                    Circle()
+                        .fill(isListening ? Color.red.opacity(0.2) : Color.blue.opacity(0.2))
+                        .frame(width: 100, height: 100)
+                        .scaleEffect(isListening ? 1.2 : 1.0)
+                        .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: isListening)
+
+                    Image(systemName: isListening ? "mic.fill" : "mic.slash.fill")
+                        .font(.system(size: 48))
+                        .foregroundColor(isListening ? .red : .blue)
                 }
             }
+            .buttonStyle(.plain)
 
             // Status text
-            Text(isListening ? "Tap to stop" : "Recording stopped")
+            Text(isListening ? "Tap to stop recording" : (transcribedText.isEmpty ? "Tap to start recording" : "Tap to record more"))
                 .font(.headline)
                 .foregroundColor(isListening ? .red : .secondary)
 
@@ -499,14 +503,6 @@ struct VoiceInputView: View {
                     Label("Cancel", systemImage: "xmark.circle")
                 }
                 .buttonStyle(.bordered)
-
-                if isListening {
-                    Button(action: stopListening) {
-                        Label("Stop", systemImage: "stop.circle.fill")
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.red)
-                }
 
                 if !transcribedText.isEmpty && !isListening {
                     Button(action: {
@@ -593,6 +589,18 @@ struct VoiceInputView: View {
 
         isListening = false
         print("🎤 VoiceInputView - Listening stopped, isListening = false")
+    }
+
+    private func restartListening() {
+        print("🎤 VoiceInputView - restartListening() called")
+
+        // Clear any errors
+        errorMessage = nil
+
+        // Start listening in a task
+        _Concurrency.Task {
+            await startListening()
+        }
     }
 }
 
