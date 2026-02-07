@@ -204,19 +204,36 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
 
     /// Refreshes and returns the current permission status
     func refreshStatus() async -> PermissionSummary {
+        NSLog("🎤 [PermissionCoordinator] refreshStatus() - ENTER")
+
+        NSLog("🎤 [PermissionCoordinator] refreshStatus() - Getting location permission")
+        let locationPerm = await locationService.permissionStatus
+        NSLog("🎤 [PermissionCoordinator] refreshStatus() - Getting healthKit permission")
+        let healthKitPerm = await healthKitService.permissionStatus
+        NSLog("🎤 [PermissionCoordinator] refreshStatus() - Getting motion permission")
+        let motionPerm = await motionService.permissionStatus
+        NSLog("🎤 [PermissionCoordinator] refreshStatus() - Getting eventKit permission")
+        let eventKitPerm = await eventKitService.permissionStatus
+        NSLog("🎤 [PermissionCoordinator] refreshStatus() - Getting contacts permission")
+        let contactsPerm = await contactsService.permissionStatus
+        NSLog("🎤 [PermissionCoordinator] refreshStatus() - Getting speech permission")
+        let speechPerm = await speechService.permissionStatus
+        NSLog("🎤 [PermissionCoordinator] refreshStatus() - Got speech permission: \(speechPerm)")
+
         let summary = PermissionSummary(
-            location: await locationService.permissionStatus,
-            healthKit: await healthKitService.permissionStatus,
-            motion: await motionService.permissionStatus,
-            eventKit: await eventKitService.permissionStatus,
-            contacts: await contactsService.permissionStatus,
-            speech: await speechService.permissionStatus,
+            location: locationPerm,
+            healthKit: healthKitPerm,
+            motion: motionPerm,
+            eventKit: eventKitPerm,
+            contacts: contactsPerm,
+            speech: speechPerm,
             timestamp: Date()
         )
 
         cachedSummary = summary
         continuation?.yield(summary)
 
+        NSLog("🎤 [PermissionCoordinator] refreshStatus() - EXIT")
         return summary
     }
 
@@ -224,6 +241,8 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
 
     /// Requests permission for a specific framework
     func requestPermission(for framework: FrameworkType) async -> PermissionLevel {
+        NSLog("🎤 [PermissionCoordinator] requestPermission(for: \(framework)) - ENTER")
+
         let service: any FrameworkServiceProtocol
 
         switch framework {
@@ -232,16 +251,26 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
         case .coreMotion: service = motionService
         case .eventKit: service = eventKitService
         case .contacts: service = contactsService
-        case .speech: service = speechService
-        case .network: return .authorized // Network doesn't need permission
-        case .foundationModels: return .authorized // Foundation Models is on-device, no permission needed
+        case .speech:
+            NSLog("🎤 [PermissionCoordinator] requestPermission() - Using speechService")
+            service = speechService
+        case .network:
+            NSLog("🎤 [PermissionCoordinator] requestPermission() - EXIT (network, no permission needed)")
+            return .authorized // Network doesn't need permission
+        case .foundationModels:
+            NSLog("🎤 [PermissionCoordinator] requestPermission() - EXIT (foundationModels, no permission needed)")
+            return .authorized // Foundation Models is on-device, no permission needed
         }
 
+        NSLog("🎤 [PermissionCoordinator] requestPermission() - About to call service.requestPermission()")
         let result = await service.requestPermission()
+        NSLog("🎤 [PermissionCoordinator] requestPermission() - Got result: \(result)")
 
         // Refresh the full summary after any change
+        NSLog("🎤 [PermissionCoordinator] requestPermission() - Refreshing status")
         _ = await refreshStatus()
 
+        NSLog("🎤 [PermissionCoordinator] requestPermission() - EXIT with result: \(result)")
         return result
     }
 

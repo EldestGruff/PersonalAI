@@ -193,9 +193,13 @@ final class SettingsViewModel {
 
     /// Requests Speech permission
     func requestSpeechPermission() {
+        NSLog("🎤 [SettingsViewModel] requestSpeechPermission() - ENTER")
         requestPermission { [weak self] in
-            _ = await self?.speechService.requestPermission()
+            NSLog("🎤 [SettingsViewModel] requestSpeechPermission() - About to call speechService.requestPermission()")
+            let result = await self?.speechService.requestPermission()
+            NSLog("🎤 [SettingsViewModel] requestSpeechPermission() - Got result: \(String(describing: result))")
         }
+        NSLog("🎤 [SettingsViewModel] requestSpeechPermission() - EXIT (task started)")
     }
 
     /// Requests Contacts permission

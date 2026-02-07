@@ -137,10 +137,16 @@ struct CaptureScreen: View {
             }
 
             if viewModel.voiceInputMode {
-                // Voice input placeholder
-                VoiceInputPlaceholder {
-                    viewModel.toggleVoiceInput()
-                }
+                // Voice input with live transcription
+                VoiceInputView(
+                    onCancel: {
+                        viewModel.toggleVoiceInput()
+                    },
+                    onTranscription: { text in
+                        viewModel.thoughtContent = text
+                        viewModel.toggleVoiceInput()
+                    }
+                )
             } else if viewModel.richTextEnabled {
                 // Rich text input (iOS 15+)
                 VStack(spacing: 8) {
@@ -428,33 +434,133 @@ struct CaptureScreen: View {
     }
 }
 
-// MARK: - Voice Input Placeholder
+// MARK: - Voice Input
 
-/// Placeholder for voice input (Phase 3A simplified version)
-struct VoiceInputPlaceholder: View {
+/// Live voice input using SpeechService
+struct VoiceInputView: View {
     let onCancel: () -> Void
+    let onTranscription: (String) -> Void
+
+    @State private var transcribedText: String = ""
+    @State private var isListening: Bool = false
+    @State private var errorMessage: String?
+    @State private var speechService: SpeechService?
+    @State private var transcriptionTask: Task<Void, Never>?
 
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "mic.fill")
-                .font(.system(size: 48))
-                .foregroundColor(.blue)
-                .accessibilityHidden(true)
+        VStack(spacing: 20) {
+            // Microphone animation
+            ZStack {
+                Circle()
+                    .fill(isListening ? Color.red.opacity(0.2) : Color.blue.opacity(0.2))
+                    .frame(width: 100, height: 100)
+                    .scaleEffect(isListening ? 1.2 : 1.0)
+                    .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: isListening)
 
-            Text("Voice input will be available in a future update")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-
-            Button("Use Text Input") {
-                onCancel()
+                Image(systemName: isListening ? "mic.fill" : "mic.slash.fill")
+                    .font(.system(size: 48))
+                    .foregroundColor(isListening ? .red : .blue)
             }
-            .buttonStyle(.bordered)
+
+            // Status text
+            Text(isListening ? "Listening..." : "Tap to start")
+                .font(.headline)
+                .foregroundColor(isListening ? .red : .primary)
+
+            // Transcribed text
+            if !transcribedText.isEmpty {
+                ScrollView {
+                    Text(transcribedText)
+                        .font(.body)
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(8)
+                }
+                .frame(maxHeight: 150)
+            }
+
+            // Error message
+            if let error = errorMessage {
+                Text(error)
+                    .font(.caption)
+                    .foregroundColor(.red)
+                    .multilineTextAlignment(.center)
+            }
+
+            // Controls
+            HStack(spacing: 16) {
+                Button(action: onCancel) {
+                    Label("Cancel", systemImage: "xmark.circle")
+                }
+                .buttonStyle(.bordered)
+
+                if !transcribedText.isEmpty {
+                    Button(action: {
+                        onTranscription(transcribedText)
+                    }) {
+                        Label("Use Text", systemImage: "checkmark.circle")
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            }
         }
         .frame(maxWidth: .infinity)
         .padding(32)
         .background(Color.gray.opacity(0.1))
         .cornerRadius(10)
+        .task {
+            await startListening()
+        }
+        .onDisappear {
+            transcriptionTask?.cancel()
+        }
+    }
+
+    private func startListening() async {
+        print("🎤 VoiceInputView - startListening() called")
+
+        // Initialize speech service
+        let service = SpeechService()
+        self.speechService = service
+
+        // Request permission
+        print("🎤 VoiceInputView - Requesting speech permission")
+        let permissionLevel = await service.requestPermission()
+
+        guard permissionLevel == .authorized else {
+            print("🎤 VoiceInputView - Permission denied: \(permissionLevel)")
+            errorMessage = "Speech recognition permission denied. Please enable in Settings."
+            return
+        }
+
+        print("🎤 VoiceInputView - Permission granted, starting transcription")
+
+        // Start transcription
+        do {
+            isListening = true
+            let stream = try await service.startLiveTranscription()
+
+            print("🎤 VoiceInputView - Got transcription stream, starting to consume")
+            transcriptionTask = Task {
+                do {
+                    for try await text in stream {
+                        print("🎤 VoiceInputView - Received transcription: '\(text.prefix(50))...'")
+                        transcribedText = text
+                    }
+                    print("🎤 VoiceInputView - Stream finished")
+                    isListening = false
+                } catch {
+                    print("🎤 VoiceInputView - Stream error: \(error)")
+                    errorMessage = "Transcription error: \(error.localizedDescription)"
+                    isListening = false
+                }
+            }
+        } catch {
+            print("🎤 VoiceInputView - Failed to start transcription: \(error)")
+            errorMessage = "Failed to start speech recognition: \(error.localizedDescription)"
+            isListening = false
+        }
     }
 }
 
