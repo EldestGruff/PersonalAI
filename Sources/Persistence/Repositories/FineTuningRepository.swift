@@ -1,6 +1,6 @@
 //
 //  FineTuningRepository.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Repository for FineTuningData CRUD operations
 //  Thread-safe actor-based repository

@@ -1,6 +1,6 @@
 //
 //  HealthKitService.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: HealthKit Framework Integration
 //  Wrapper around HealthKit for reading health data

@@ -1,6 +1,6 @@
 //
 //  TagFrequencyChart.swift
-//  PersonalAI
+//  STASH
 //
 //  Issue #18: Swift Charts - Tag Frequency Visualization
 //  Horizontal bar chart showing most common tags

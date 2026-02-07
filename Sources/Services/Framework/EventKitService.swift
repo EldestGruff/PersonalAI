@@ -1,6 +1,6 @@
 //
 //  EventKitService.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: EventKit Framework Integration
 //  Wrapper around EventKit for calendar and reminder integration

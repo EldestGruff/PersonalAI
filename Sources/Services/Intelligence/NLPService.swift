@@ -1,6 +1,6 @@
 //
 //  NLPService.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Natural Language Processing Service
 //  Wrapper around Natural Language framework for text analysis

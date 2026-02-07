@@ -1,6 +1,6 @@
 //
 //  Classification.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 1: Data Models & Persistence
 //  ML classification results for thoughts

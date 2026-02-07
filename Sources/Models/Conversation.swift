@@ -1,6 +1,6 @@
 //
 //  Conversation.swift
-//  PersonalAI
+//  STASH
 //
 //  Conversational AI data models for thought exploration
 //

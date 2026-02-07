@@ -1,6 +1,6 @@
 //
 //  ThoughtTypeEnum.swift
-//  PersonalAI
+//  STASH
 //
 //  App Intents enum for thought classification types
 //

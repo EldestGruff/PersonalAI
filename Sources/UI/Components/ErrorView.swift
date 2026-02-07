@@ -1,6 +1,6 @@
 //
 //  ErrorView.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Error Display Components
 //  User-friendly error display views

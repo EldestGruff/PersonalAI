@@ -1,6 +1,6 @@
 //
 //  ArcadeTheme.swift
-//  PersonalAI
+//  STASH
 //
 //  Arcade theme: Neon colors, retro-inspired, energetic
 //

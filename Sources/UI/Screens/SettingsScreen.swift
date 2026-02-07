@@ -1,6 +1,6 @@
 //
 //  SettingsScreen.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Settings Screen
 //  App configuration and permissions

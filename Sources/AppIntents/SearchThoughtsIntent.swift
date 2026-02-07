@@ -1,6 +1,6 @@
 //
 //  SearchThoughtsIntent.swift
-//  PersonalAI
+//  STASH
 //
 //  App Intent for searching thoughts via Siri and Shortcuts
 //  "Hey Siri, search my thoughts about meetings"

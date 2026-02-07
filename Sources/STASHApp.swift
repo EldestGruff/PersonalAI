@@ -1,6 +1,6 @@
 //
-//  PersonalAIApp.swift
-//  PersonalAI
+//  STASHApp.swift
+//  STASH
 //
 //  Phase 3A Spec 3: App Entry Point
 //  Main app structure with TabView navigation
@@ -11,7 +11,7 @@ import AppIntents
 import FoundationModels
 
 @main
-struct PersonalAIApp: App {
+struct STASHApp: App {
     // MARK: - Persistence
 
     let persistenceController = PersistenceController.shared

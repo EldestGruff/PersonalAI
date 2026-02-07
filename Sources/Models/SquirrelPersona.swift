@@ -1,6 +1,6 @@
 //
 //  SquirrelPersona.swift
-//  PersonalAI
+//  STASH
 //
 //  Squirrel-Sona personality system for customizable AI companions
 //

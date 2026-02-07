@@ -1,6 +1,6 @@
 //
 //  ReviewIntent.swift
-//  PersonalAI
+//  STASH
 //
 //  App Intent for reviewing thoughts from a time period
 //  "Hey Siri, review my thoughts from today"

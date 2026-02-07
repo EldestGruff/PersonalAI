@@ -1,10 +1,10 @@
-# PersonalAI
+# STASH
 
 A context-aware thought capture and intelligent organization system for iOS.
 
 ## Overview
 
-PersonalAI helps you capture thoughts, ideas, tasks, and reminders while automatically gathering context from your device to provide intelligent classification and organization. The app learns from your feedback to continuously improve its understanding of your workflow.
+STASH helps you capture thoughts, ideas, tasks, and reminders while automatically gathering context from your device to provide intelligent classification and organization. The app learns from your feedback to continuously improve its understanding of your workflow.
 
 ## Current Status: Phase 3A Complete ✅
 
@@ -71,7 +71,7 @@ PersonalAI helps you capture thoughts, ideas, tasks, and reminders while automat
 ## Project Structure
 
 ```
-PersonalAI/
+STASH/
 ├── Sources/
 │   ├── Models/              # Data models (Thought, Classification, Context, etc.)
 │   ├── Services/            # Business logic layer
@@ -83,7 +83,7 @@ PersonalAI/
 │   │   ├── Screens/         # Main app screens
 │   │   ├── Components/      # Reusable UI components
 │   │   └── ViewModels/      # Screen view models
-│   └── PersonalAIApp.swift  # App entry point
+│   └── STASHApp.swift  # App entry point
 ├── Tests/                   # Unit and integration tests
 ├── docs/                    # Documentation
 │   ├── planning/            # Product planning and strategy
@@ -101,7 +101,7 @@ PersonalAI/
 
 ### Setup
 1. Clone the repository
-2. Open `PersonalAI.xcodeproj` in Xcode
+2. Open `STASH.xcodeproj` in Xcode
 3. Select a simulator or connected device
 4. Build and run (⌘R)
 

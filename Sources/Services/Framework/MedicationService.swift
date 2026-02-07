@@ -1,6 +1,6 @@
 //
 //  MedicationService.swift
-//  PersonalAI
+//  STASH
 //
 //  HealthKit Medications API integration for medication tracking
 //  Provides opt-in medication correlation with thoughts and mood

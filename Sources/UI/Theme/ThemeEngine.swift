@@ -1,6 +1,6 @@
 //
 //  ThemeEngine.swift
-//  PersonalAI
+//  STASH
 //
 //  Central theme management and application system
 //

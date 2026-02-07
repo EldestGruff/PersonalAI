@@ -1,6 +1,6 @@
 //
 //  HealthCorrelationChart.swift
-//  PersonalAI
+//  STASH
 //
 //  Issue #18: Swift Charts - Health Data Correlation
 //  Scatter plots showing relationships between health metrics and thoughts

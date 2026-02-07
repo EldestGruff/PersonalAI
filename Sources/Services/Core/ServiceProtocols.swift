@@ -1,6 +1,6 @@
 //
 //  ServiceProtocols.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Service Protocol Hierarchy
 //  Base protocols for all services with lifecycle, health, and observability

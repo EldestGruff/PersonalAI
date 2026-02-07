@@ -1,6 +1,6 @@
 //
 //  InsightsGenerationService.swift
-//  PersonalAI
+//  STASH
 //
 //  AI-powered insights generation using Apple Foundation Models
 //  Analyzes patterns across health, time, mood, and productivity

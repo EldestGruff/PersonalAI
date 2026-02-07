@@ -1,6 +1,6 @@
 //
 //  ThoughtRowView.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Thought Row Component
 //  List row for displaying a thought summary

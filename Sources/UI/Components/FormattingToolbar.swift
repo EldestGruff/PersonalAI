@@ -1,6 +1,6 @@
 //
 //  FormattingToolbar.swift
-//  PersonalAI
+//  STASH
 //
 //  Rich text formatting toolbar for iOS 26+
 //  Provides bold, italic, highlight, link, and list formatting options

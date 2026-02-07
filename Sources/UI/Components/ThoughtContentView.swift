@@ -1,6 +1,6 @@
 //
 //  ThoughtContentView.swift
-//  PersonalAI
+//  STASH
 //
 //  Reusable component for rendering thought content
 //  Supports both plain text and rich text (AttributedString)

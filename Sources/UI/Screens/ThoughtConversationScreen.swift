@@ -1,6 +1,6 @@
 //
 //  ThoughtConversationScreen.swift
-//  PersonalAI
+//  STASH
 //
 //  Companion conversation screen for thought-specific chats
 //

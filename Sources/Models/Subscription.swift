@@ -1,6 +1,6 @@
 //
 //  Subscription.swift
-//  PersonalAI
+//  STASH
 //
 //  Subscription models and entitlements for StoreKit 2
 //

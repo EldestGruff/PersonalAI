@@ -1,6 +1,6 @@
 //
 //  DarkModeTheme.swift
-//  PersonalAI
+//  STASH
 //
 //  Dark Mode theme: High contrast, battery-friendly, eye-strain reduction
 //

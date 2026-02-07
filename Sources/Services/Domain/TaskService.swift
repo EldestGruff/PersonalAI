@@ -1,6 +1,6 @@
 //
 //  TaskService.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Task Domain Service
 //  Business logic for task management

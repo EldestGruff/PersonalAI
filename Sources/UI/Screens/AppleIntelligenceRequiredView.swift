@@ -1,6 +1,6 @@
 //
 //  AppleIntelligenceRequiredView.swift
-//  PersonalAI
+//  STASH
 //
 //  Screen shown when Apple Intelligence is not available
 //  iOS 26+ requirement

@@ -1,6 +1,6 @@
 //
 //  ConversationService.swift
-//  PersonalAI
+//  STASH
 //
 //  Conversational AI service for exploring thoughts using Foundation Models
 //

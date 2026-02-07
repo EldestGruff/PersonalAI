@@ -1,6 +1,6 @@
 //
 //  ClassificationBadge.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Classification Badge Component
 //  Displays AI classification results

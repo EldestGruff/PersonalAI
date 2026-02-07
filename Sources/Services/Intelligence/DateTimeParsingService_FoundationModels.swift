@@ -1,6 +1,6 @@
 //
 //  DateTimeParsingService_FoundationModels.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 4: Intelligence & Automation
 //  Natural language date and time parsing using Apple's Foundation Models (iOS 26)

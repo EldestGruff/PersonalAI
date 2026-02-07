@@ -88,7 +88,7 @@ git push -u origin main
 - [ ] Go to repo → Projects tab
 - [ ] Click "New project"
 - [ ] Select "Board" template
-- [ ] Name: "PersonalAI Development"
+- [ ] Name: "STASH Development"
 - [ ] Click "Create project"
 
 ### Customize Columns
@@ -225,7 +225,7 @@ git push -u origin main
 
 ### Project Board
 - [ ] Go to repo → Projects tab
-- [ ] Open "PersonalAI Development" board
+- [ ] Open "STASH Development" board
 - [ ] See 4 columns with appropriate issues
 - [ ] Drag an issue between columns → works
 

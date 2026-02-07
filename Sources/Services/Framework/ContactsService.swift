@@ -1,6 +1,6 @@
 //
 //  ContactsService.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Contacts Framework Integration
 //  Wrapper around Contacts framework for entity linking

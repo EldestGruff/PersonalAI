@@ -1,6 +1,6 @@
 //
 //  BrowseScreen.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Browse & List Screen
 //  Main screen for viewing and managing thoughts

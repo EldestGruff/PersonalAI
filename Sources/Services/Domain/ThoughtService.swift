@@ -1,6 +1,6 @@
 //
 //  ThoughtService.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Thought Domain Service
 //  Business logic for thought management

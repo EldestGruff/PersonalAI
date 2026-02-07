@@ -1,6 +1,6 @@
 //
 //  ServiceConfiguration.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Centralized Service Configuration
 //  Single source of truth for timeouts, limits, and feature flags

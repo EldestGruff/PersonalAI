@@ -1,6 +1,6 @@
 //
 //  CompanionConversationService.swift
-//  PersonalAI
+//  STASH
 //
 //  AI service for thought-specific companion conversations
 //

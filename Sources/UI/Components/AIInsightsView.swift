@@ -1,6 +1,6 @@
 //
 //  AIInsightsView.swift
-//  PersonalAI
+//  STASH
 //
 //  AI-powered insights display component
 //  Shows patterns, recommendations, achievements, and anomalies

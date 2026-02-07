@@ -1,6 +1,6 @@
 //
 //  MotionService.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Core Motion Framework Integration
 //  Wrapper around CoreMotion for activity and step data

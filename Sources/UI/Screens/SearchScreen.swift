@@ -1,6 +1,6 @@
 //
 //  SearchScreen.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Search Screen
 //  Full-text search for thoughts

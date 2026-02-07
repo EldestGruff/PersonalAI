@@ -1,6 +1,6 @@
 //
 //  DetailViewModel.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Thought Detail ViewModel
 //  Manages state for viewing and interacting with a thought

@@ -1,6 +1,6 @@
 //
 //  ServiceError.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Unified Error Hierarchy
 //  All service errors derive from this hierarchy for consistent handling

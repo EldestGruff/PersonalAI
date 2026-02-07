@@ -1,6 +1,6 @@
 //
 //  BrowseViewModel.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Browse & List ViewModel
 //  Manages state for browsing and filtering thoughts

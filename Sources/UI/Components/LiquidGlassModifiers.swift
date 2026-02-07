@@ -1,6 +1,6 @@
 //
 //  LiquidGlassModifiers.swift
-//  PersonalAI
+//  STASH
 //
 //  iOS 26 Liquid Glass design system integration
 //

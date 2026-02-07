@@ -1,6 +1,6 @@
 //
 //  LocationService.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Location Framework Integration
 //  Wrapper around CoreLocation for getting current location

@@ -1,6 +1,6 @@
 //
 //  TagInputView.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Tag Input Component
 //  Reusable tag input with flow layout

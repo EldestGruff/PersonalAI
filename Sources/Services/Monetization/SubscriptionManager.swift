@@ -1,6 +1,6 @@
 //
 //  SubscriptionManager.swift
-//  PersonalAI
+//  STASH
 //
 //  StoreKit 2 subscription management
 //

@@ -1,6 +1,6 @@
 //
 //  FlowLayout.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Flow Layout
 //  Wrapping layout for tags and chips

@@ -1,6 +1,6 @@
 //
 //  StreakVisualization.swift
-//  PersonalAI
+//  STASH
 //
 //  Issue #18: Swift Charts - Streak Gamification
 //  Shows capture consistency and streaks

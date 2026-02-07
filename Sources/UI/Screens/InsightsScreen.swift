@@ -1,6 +1,6 @@
 //
 //  InsightsScreen.swift
-//  PersonalAI
+//  STASH
 //
 //  Analytics and insights visualization with Swift Charts
 //

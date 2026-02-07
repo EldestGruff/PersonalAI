@@ -1,6 +1,6 @@
 //
 //  PersonalizationScreen.swift
-//  PersonalAI
+//  STASH
 //
 //  Squirrel-Sona persona management screen
 //

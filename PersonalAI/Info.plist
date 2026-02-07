@@ -24,5 +24,11 @@
 
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>STASH can attach location context to your thoughts, helping you remember where ideas occurred.</string>
+
+	<!-- Bundle display names -->
+	<key>CFBundleDisplayName</key>
+	<string>STASH</string>
+	<key>CFBundleName</key>
+	<string>STASH</string>
 </dict>
 </plist>

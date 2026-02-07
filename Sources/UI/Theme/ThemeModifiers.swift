@@ -1,6 +1,6 @@
 //
 //  ThemeModifiers.swift
-//  PersonalAI
+//  STASH
 //
 //  SwiftUI view modifiers for applying themes
 //

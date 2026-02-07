@@ -1,6 +1,6 @@
 //
 //  FineTuningData.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 1: Data Models & Persistence
 //  Behavioral learning and fine-tuning data

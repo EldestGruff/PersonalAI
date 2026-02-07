@@ -1,6 +1,6 @@
 //
 //  ContextService.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Context Gathering Service
 //  Orchestrates parallel context gathering from multiple sources

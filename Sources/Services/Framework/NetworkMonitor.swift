@@ -1,6 +1,6 @@
 //
 //  NetworkMonitor.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Network Connectivity Monitoring
 //  Wrapper around NWPathMonitor for observing network state

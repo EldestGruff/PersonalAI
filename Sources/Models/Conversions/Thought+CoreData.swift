@@ -1,6 +1,6 @@
 //
 //  Thought+CoreData.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 1: Data Models & Persistence
 //  Bidirectional conversion between Thought and ThoughtEntity

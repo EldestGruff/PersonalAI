@@ -1,6 +1,6 @@
 //
 //  ModelError.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 1: Data Models & Persistence
 //  Error types for model validation and conversion

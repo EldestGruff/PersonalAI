@@ -1,6 +1,6 @@
 //
 //  Thought.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 1: Data Models & Persistence
 //  Core domain model for user thoughts

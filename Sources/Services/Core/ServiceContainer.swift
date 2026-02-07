@@ -1,6 +1,6 @@
 //
 //  ServiceContainer.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Dependency Injection Container
 //  Lightweight DI for service registration and resolution

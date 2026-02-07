@@ -1,6 +1,6 @@
 //
 //  ChartDataService.swift
-//  PersonalAI
+//  STASH
 //
 //  Issue #18: Swift Charts - Data Aggregation Service
 //  Actor-based service for chart data with caching and performance optimization

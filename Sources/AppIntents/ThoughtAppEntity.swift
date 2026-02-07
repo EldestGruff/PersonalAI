@@ -1,6 +1,6 @@
 //
 //  ThoughtAppEntity.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 2: iOS 26 Modernization - App Intents
 //  App Entity for thoughts - enables Spotlight, Siri, and Shortcuts integration

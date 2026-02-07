@@ -1,6 +1,6 @@
 //
 //  ConversationScreen.swift
-//  PersonalAI
+//  STASH
 //
 //  Chat interface for conversational thought exploration
 //

@@ -1,6 +1,6 @@
 //
 //  ThoughtConversation.swift
-//  PersonalAI
+//  STASH
 //
 //  Thought-specific conversation models for companion mode
 //

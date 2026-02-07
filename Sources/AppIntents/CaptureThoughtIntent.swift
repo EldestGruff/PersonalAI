@@ -1,6 +1,6 @@
 //
 //  CaptureThoughtIntent.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 2: iOS 26 Modernization - App Intents
 //  Siri and Shortcuts intent for capturing thoughts

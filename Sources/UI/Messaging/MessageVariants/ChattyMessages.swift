@@ -1,6 +1,6 @@
 //
 //  ChattyMessages.swift
-//  PersonalAI
+//  STASH
 //
 //  Chatty communication style: Conversational, friendly, emoji-rich
 //

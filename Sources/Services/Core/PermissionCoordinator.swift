@@ -1,6 +1,6 @@
 //
 //  PermissionCoordinator.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Centralized Permission Management
 //  Coordinates permission requests across all frameworks

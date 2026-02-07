@@ -1,6 +1,6 @@
 //
 //  ClassificationService.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Classification Service
 //  On-device ML classification for thoughts

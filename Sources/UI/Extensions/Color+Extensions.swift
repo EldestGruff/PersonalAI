@@ -1,6 +1,6 @@
 //
 //  Color+Extensions.swift
-//  PersonalAI
+//  STASH
 //
 //  Extensions for Color type
 //

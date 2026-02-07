@@ -1,6 +1,6 @@
 //
 //  MinimalistTheme.swift
-//  PersonalAI
+//  STASH
 //
 //  Minimalist theme: Clean lines, monochromatic, low distraction
 //

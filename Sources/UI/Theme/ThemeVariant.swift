@@ -1,6 +1,6 @@
 //
 //  ThemeVariant.swift
-//  PersonalAI
+//  STASH
 //
 //  Protocol defining visual theme variants for squirrel-sona customization
 //

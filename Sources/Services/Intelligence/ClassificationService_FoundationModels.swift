@@ -1,6 +1,6 @@
 //
 //  ClassificationService_FoundationModels.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 4: Intelligence & Automation
 //  AI-powered thought classification using Apple's Foundation Models (iOS 26)

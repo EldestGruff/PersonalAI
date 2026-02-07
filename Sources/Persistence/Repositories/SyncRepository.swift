@@ -1,6 +1,6 @@
 //
 //  SyncRepository.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Repository for SyncQueueItem CRUD operations
 //  Thread-safe actor-based repository

@@ -1,6 +1,6 @@
 //
 //  SmartInsightsService.swift
-//  PersonalAI
+//  STASH
 //
 //  Smart thought resurfacing and pattern detection.
 //  Prevents notes from disappearing into the void by proactively surfacing related content.

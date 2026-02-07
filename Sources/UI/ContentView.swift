@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Content View (Legacy)
 //  This file is kept for backwards compatibility.

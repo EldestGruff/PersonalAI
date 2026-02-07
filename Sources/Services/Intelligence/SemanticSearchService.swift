@@ -1,6 +1,6 @@
 //
 //  SemanticSearchService.swift
-//  PersonalAI
+//  STASH
 //
 //  Semantic search using iOS 26 NLEmbedding for meaning-based search.
 //  Searches by concept similarity rather than keyword matching.

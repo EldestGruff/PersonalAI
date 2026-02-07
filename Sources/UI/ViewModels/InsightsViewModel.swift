@@ -1,6 +1,6 @@
 //
 //  InsightsViewModel.swift
-//  PersonalAI
+//  STASH
 //
 //  Aggregates thought data for Swift Charts visualization
 //

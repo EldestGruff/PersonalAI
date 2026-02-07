@@ -1,6 +1,6 @@
 //
 //  Context.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 1: Data Models & Persistence
 //  Situational context captured when a thought is created

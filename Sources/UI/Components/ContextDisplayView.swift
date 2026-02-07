@@ -1,6 +1,6 @@
 //
 //  ContextDisplayView.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Context Display Component
 //  Shows captured context information

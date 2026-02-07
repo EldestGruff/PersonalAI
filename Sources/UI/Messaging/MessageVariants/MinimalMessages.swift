@@ -1,6 +1,6 @@
 //
 //  MinimalMessages.swift
-//  PersonalAI
+//  STASH
 //
 //  Minimal communication style: Terse, action-focused, no emoji
 //

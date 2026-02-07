@@ -1,6 +1,6 @@
 //
 //  ChartDataModels.swift
-//  PersonalAI
+//  STASH
 //
 //  Issue #18: Swift Charts - Data Models
 //  Chart data structures for insights and trends

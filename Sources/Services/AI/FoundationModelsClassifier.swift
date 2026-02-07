@@ -1,6 +1,6 @@
 //
 //  FoundationModelsClassifier.swift
-//  PersonalAI
+//  STASH
 //
 //  Foundation Models integration for on-device AI classification
 //  iOS 26+ with Apple Intelligence

@@ -1,6 +1,6 @@
 //
 //  SyncService.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Sync Queue Service
 //  Offline-first synchronization with backend

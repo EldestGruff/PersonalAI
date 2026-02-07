@@ -1,6 +1,6 @@
 //
 //  SettingsViewModel.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Settings ViewModel
 //  Manages app configuration and permission states

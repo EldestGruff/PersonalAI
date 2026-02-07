@@ -1,6 +1,6 @@
 //
 //  SyncQueueEntity.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 1: Data Models & Persistence
 //  Core Data entity for SyncQueue

@@ -1,6 +1,6 @@
 //
 //  MessageStyle.swift
-//  PersonalAI
+//  STASH
 //
 //  Communication style definitions for squirrel-sona messaging
 //

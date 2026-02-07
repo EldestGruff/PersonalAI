@@ -1,6 +1,6 @@
 //
 //  ThoughtConversationViewModel.swift
-//  PersonalAI
+//  STASH
 //
 //  ViewModel for thought-specific companion conversations
 //

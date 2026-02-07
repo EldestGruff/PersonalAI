@@ -1,6 +1,6 @@
 //
 //  Task.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 1: Data Models & Persistence
 //  Task model derived from thoughts

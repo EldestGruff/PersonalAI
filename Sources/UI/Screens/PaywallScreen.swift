@@ -1,6 +1,6 @@
 //
 //  PaywallScreen.swift
-//  PersonalAI
+//  STASH
 //
 //  Subscription paywall with StoreKit 2 integration
 //

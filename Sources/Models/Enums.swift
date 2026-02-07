@@ -1,6 +1,6 @@
 //
 //  Enums.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 1: Data Models & Persistence
 //  Shared enumerations used across multiple models

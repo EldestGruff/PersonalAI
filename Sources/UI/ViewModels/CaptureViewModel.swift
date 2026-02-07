@@ -1,6 +1,6 @@
 //
 //  CaptureViewModel.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Thought Capture ViewModel
 //  Manages state for the thought capture flow

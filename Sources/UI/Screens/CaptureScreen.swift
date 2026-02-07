@@ -1,6 +1,6 @@
 //
 //  CaptureScreen.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Thought Capture Screen
 //  Main screen for capturing new thoughts

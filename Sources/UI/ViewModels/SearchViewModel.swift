@@ -1,6 +1,6 @@
 //
 //  SearchViewModel.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Search ViewModel
 //  Manages state for full-text search with pagination

@@ -1,6 +1,6 @@
 //
 //  DetailScreen.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: Thought Detail Screen
 //  Detailed view of a single thought

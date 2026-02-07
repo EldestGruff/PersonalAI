@@ -1,6 +1,6 @@
 //
 //  CaptureHeatmapChart.swift
-//  PersonalAI
+//  STASH
 //
 //  Issue #18: Swift Charts - Capture Pattern Visualization
 //  Shows when thoughts are captured (time of day, day of week)

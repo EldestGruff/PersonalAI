@@ -1,6 +1,6 @@
 //
 //  ConversationViewModel.swift
-//  PersonalAI
+//  STASH
 //
 //  View model for conversational thought exploration
 //

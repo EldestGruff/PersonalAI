@@ -1,6 +1,6 @@
 //
 //  AppError.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 3: User-Friendly Error Handling
 //  Localized error types for UI display

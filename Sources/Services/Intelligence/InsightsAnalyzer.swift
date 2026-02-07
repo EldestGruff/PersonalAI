@@ -1,6 +1,6 @@
 //
 //  InsightsAnalyzer.swift
-//  PersonalAI
+//  STASH
 //
 //  AI-powered insights generator using Foundation Models tool calling
 //

@@ -1,6 +1,6 @@
 //
 //  PersistenceController.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 1: Core Data Stack Manager
 //  Manages NSPersistentContainer lifecycle and provides contexts

@@ -1,6 +1,6 @@
 //
 //  PersonalityEngine.swift
-//  PersonalAI
+//  STASH
 //
 //  Central message variant selector based on user's communication style preference
 //

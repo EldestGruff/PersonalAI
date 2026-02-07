@@ -1,6 +1,6 @@
 # iOS 26 Quick Start Implementation Guide
 
-**Concrete steps to implement the highest ROI iOS 26 features in PersonalAI**
+**Concrete steps to implement the highest ROI iOS 26 features in STASH**
 
 ---
 
@@ -81,7 +81,7 @@
 **Validation:**
 ```bash
 # Build and check warnings
-xcodebuild -scheme PersonalAI -destination 'platform=iOS Simulator,name=iPhone 15 Pro'
+xcodebuild -scheme STASH -destination 'platform=iOS Simulator,name=iPhone 15 Pro'
 # Look for privacy-related warnings
 ```
 
@@ -204,7 +204,7 @@ extension ClassificationService {
 
 ```bash
 # Command line
-xcodebuild test -scheme PersonalAI -destination 'platform=iOS Simulator,name=iPhone 15 Pro'
+xcodebuild test -scheme STASH -destination 'platform=iOS Simulator,name=iPhone 15 Pro'
 
 # Or in Xcode: Cmd+U
 ```
@@ -269,11 +269,11 @@ After:
 
 **Step 3: Inject into SwiftUI environment**
 
-In `PersonalAIApp.swift`:
+In `STASHApp.swift`:
 
 ```swift
 @main
-struct PersonalAIApp: App {
+struct STASHApp: App {
     @State private var themeEngine = ThemeEngine.shared
 
     var body: some Scene {
@@ -424,7 +424,7 @@ import AppIntents
 
 struct CaptureThoughtIntent: AppIntent {
     static var title: LocalizedStringResource = "Capture Thought"
-    static var description = IntentDescription("Quickly capture a thought in PersonalAI")
+    static var description = IntentDescription("Quickly capture a thought in STASH")
 
     @Parameter(title: "Content")
     var content: String
@@ -454,7 +454,7 @@ struct CaptureThoughtIntent: AppIntent {
 ```swift
 import AppIntents
 
-struct PersonalAIAppShortcuts: AppShortcutsProvider {
+struct STASHAppShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: CaptureThoughtIntent(),
@@ -472,16 +472,16 @@ struct PersonalAIAppShortcuts: AppShortcutsProvider {
 
 **Step 4: Register in app**
 
-`PersonalAIApp.swift`:
+`STASHApp.swift`:
 
 ```swift
 import AppIntents
 
 @main
-struct PersonalAIApp: App {
+struct STASHApp: App {
     init() {
         // Register app intents
-        PersonalAIAppShortcuts.updateAppShortcutParameters()
+        STASHAppShortcuts.updateAppShortcutParameters()
     }
 
     var body: some Scene {
@@ -495,7 +495,7 @@ struct PersonalAIApp: App {
 **Step 5: Test with Siri**
 
 1. Build and run app
-2. Say "Hey Siri, capture a thought in PersonalAI"
+2. Say "Hey Siri, capture a thought in STASH"
 3. Siri should prompt for content
 4. Verify thought is saved
 
@@ -912,7 +912,7 @@ struct CheckThoughtUsageIntent: AppIntent {
 **Step 2: Add to shortcuts**
 
 ```swift
-extension PersonalAIAppShortcuts {
+extension STASHAppShortcuts {
     static var subscriptionShortcuts: [AppShortcut] {
         [
             AppShortcut(
@@ -947,11 +947,11 @@ extension PersonalAIAppShortcuts {
 
 ```bash
 # Unit tests
-xcodebuild test -scheme PersonalAI -destination 'platform=iOS Simulator,name=iPhone 15 Pro'
+xcodebuild test -scheme STASH -destination 'platform=iOS Simulator,name=iPhone 15 Pro'
 
 # Check code coverage
 xcodebuild test \
-  -scheme PersonalAI \
+  -scheme STASH \
   -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
   -enableCodeCoverage YES
 ```
@@ -962,7 +962,7 @@ xcodebuild test \
 2. Open Shortcuts app
 3. Look for PersonalAI actions
 4. Test with Siri:
-   - "Hey Siri, capture a thought in PersonalAI"
+   - "Hey Siri, capture a thought in STASH"
    - "Hey Siri, check my subscription status"
    - "Hey Siri, show my sentiment this week"
 
@@ -1024,7 +1024,7 @@ Choose one path based on priorities:
 **Solution:** Ensure all preview data is wrapped in `#if DEBUG` and dependencies are mockable
 
 ### Issue: App Intents not appearing
-**Solution:** Clean build folder, ensure `PersonalAIAppShortcuts.updateAppShortcutParameters()` is called in init
+**Solution:** Clean build folder, ensure `STASHAppShortcuts.updateAppShortcutParameters()` is called in init
 
 ### Issue: Swift Testing tests not running
 **Solution:** Ensure test target uses "Swift Testing" framework, not XCTest

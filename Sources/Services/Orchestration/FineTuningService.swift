@@ -1,6 +1,6 @@
 //
 //  FineTuningService.swift
-//  PersonalAI
+//  STASH
 //
 //  Phase 3A Spec 2: Fine-Tuning Data Service
 //  Tracks user interactions for behavioral learning
