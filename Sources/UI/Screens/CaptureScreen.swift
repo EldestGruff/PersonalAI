@@ -445,7 +445,7 @@ struct VoiceInputView: View {
     @State private var isListening: Bool = false
     @State private var errorMessage: String?
     @State private var speechService: SpeechService?
-    @State private var transcriptionTask: Task<Void, Never>?
+    @State private var transcriptionTask: _Concurrency.Task<Void, Never>?
 
     var body: some View {
         VStack(spacing: 20) {
@@ -542,7 +542,7 @@ struct VoiceInputView: View {
             let stream = try await service.startLiveTranscription()
 
             print("🎤 VoiceInputView - Got transcription stream, starting to consume")
-            transcriptionTask = Task {
+            transcriptionTask = _Concurrency.Task {
                 do {
                     for try await text in stream {
                         print("🎤 VoiceInputView - Received transcription: '\(text.prefix(50))...'")
