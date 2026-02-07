@@ -6,14 +6,6 @@
 	<key>aps-environment</key>
 	<string>development</string>
 
-	<!-- Background Modes -->
-	<key>com.apple.developer.background-modes</key>
-	<array>
-		<string>fetch</string>
-		<string>processing</string>
-		<string>remote-notification</string>
-	</array>
-
 	<!-- HealthKit -->
 	<key>com.apple.developer.healthkit</key>
 	<true/>
