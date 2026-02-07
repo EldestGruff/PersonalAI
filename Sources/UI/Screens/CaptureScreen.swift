@@ -449,7 +449,7 @@ struct VoiceInputView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            // Microphone animation
+            // Microphone animation with stop button
             ZStack {
                 Circle()
                     .fill(isListening ? Color.red.opacity(0.2) : Color.blue.opacity(0.2))
@@ -461,11 +461,16 @@ struct VoiceInputView: View {
                     .font(.system(size: 48))
                     .foregroundColor(isListening ? .red : .blue)
             }
+            .onTapGesture {
+                if isListening {
+                    stopListening()
+                }
+            }
 
             // Status text
-            Text(isListening ? "Listening..." : "Tap to start")
+            Text(isListening ? "Tap to stop" : "Recording stopped")
                 .font(.headline)
-                .foregroundColor(isListening ? .red : .primary)
+                .foregroundColor(isListening ? .red : .secondary)
 
             // Transcribed text
             if !transcribedText.isEmpty {
@@ -495,7 +500,15 @@ struct VoiceInputView: View {
                 }
                 .buttonStyle(.bordered)
 
-                if !transcribedText.isEmpty {
+                if isListening {
+                    Button(action: stopListening) {
+                        Label("Stop", systemImage: "stop.circle.fill")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.red)
+                }
+
+                if !transcribedText.isEmpty && !isListening {
                     Button(action: {
                         onTranscription(transcribedText)
                     }) {
@@ -513,7 +526,7 @@ struct VoiceInputView: View {
             await startListening()
         }
         .onDisappear {
-            transcriptionTask?.cancel()
+            stopListening()
         }
     }
 
@@ -561,6 +574,25 @@ struct VoiceInputView: View {
             errorMessage = "Failed to start speech recognition: \(error.localizedDescription)"
             isListening = false
         }
+    }
+
+    private func stopListening() {
+        print("🎤 VoiceInputView - stopListening() called manually")
+
+        // Cancel the transcription task
+        transcriptionTask?.cancel()
+        transcriptionTask = nil
+
+        // Stop the speech service
+        if let service = speechService {
+            _Concurrency.Task {
+                await service.stopLiveTranscription()
+                print("🎤 VoiceInputView - Speech service stopped")
+            }
+        }
+
+        isListening = false
+        print("🎤 VoiceInputView - Listening stopped, isListening = false")
     }
 }
 
