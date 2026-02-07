@@ -230,44 +230,41 @@ actor SpeechService: SpeechServiceProtocol {
         // Capture recognizer for use in closure (avoid actor isolation in closure)
         let capturedRecognizer = recognizer
 
-        // Create the async stream
-        return AsyncThrowingStream<String, Error> { continuation in
-            // Use unstructured task to properly isolate actor access
-            Task { [weak self] in
-                guard let self else {
+        // Create the async stream using the Continuation-based approach
+        // This avoids actor isolation issues by setting up the continuation synchronously
+        let (stream, continuation) = AsyncThrowingStream<String, Error>.makeStream()
+
+        // Set up termination handler FIRST (before any actor state access)
+        continuation.onTermination = { [weak self] _ in
+            guard let self else { return }
+            _Concurrency.Task {
+                await self.stopLiveTranscription()
+            }
+        }
+
+        // Start recognition task
+        // The continuation is NOT actor-isolated, so we can use it freely in callbacks
+        let recognitionTask = capturedRecognizer.recognitionTask(with: request) { result, error in
+            if let error {
+                continuation.finish(throwing: error)
+                return
+            }
+
+            if let result {
+                let transcription = result.bestTranscription.formattedString
+                continuation.yield(transcription)
+
+                if result.isFinal {
                     continuation.finish()
-                    return
-                }
-
-                await self.setLiveTranscriptionContinuation(continuation)
-
-                // Start recognition
-                let recognitionTask = capturedRecognizer.recognitionTask(with: request) { result, error in
-                    if let error {
-                        continuation.finish(throwing: error)
-                        return
-                    }
-
-                    if let result {
-                        let transcription = result.bestTranscription.formattedString
-                        continuation.yield(transcription)
-
-                        if result.isFinal {
-                            continuation.finish()
-                        }
-                    }
-                }
-
-                await self.setRecognitionTask(recognitionTask)
-
-                continuation.onTermination = { [weak self] _ in
-                    guard let self else { return }
-                    Task {
-                        await self.stopLiveTranscription()
-                    }
                 }
             }
         }
+
+        // Store in actor-isolated state
+        self.liveTranscriptionContinuation = continuation
+        self.recognitionTask = recognitionTask
+
+        return stream
         #else
         throw ServiceError.frameworkUnavailable(
             framework: .speech,
@@ -297,16 +294,6 @@ actor SpeechService: SpeechServiceProtocol {
         #endif
     }
 
-    #if os(iOS) || os(watchOS)
-    // Helper methods for actor-isolated property access
-    private func setLiveTranscriptionContinuation(_ continuation: AsyncThrowingStream<String, Error>.Continuation) {
-        self.liveTranscriptionContinuation = continuation
-    }
-
-    private func setRecognitionTask(_ task: SFSpeechRecognitionTask) {
-        self.recognitionTask = task
-    }
-    #endif
 
     // MARK: - Helpers
 
