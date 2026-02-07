@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+		<string>remote-notification</string>
+	</array>
+
+	<!-- Privacy Descriptions -->
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>STASH uses speech recognition to capture your thoughts hands-free when you prefer to speak instead of type.</string>
+
+	<key>NSMicrophoneUsageDescription</key>
+	<string>STASH needs microphone access to record your voice when using speech-to-text for capturing thoughts.</string>
+
+	<!-- Additional privacy descriptions for enabled capabilities -->
+	<key>NSHealthShareUsageDescription</key>
+	<string>STASH can connect health insights with your thoughts to provide personalized context and understanding.</string>
+
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>STASH can log thoughts related to your health data to help you track wellness insights.</string>
+
+	<key>NSContactsUsageDescription</key>
+	<string>STASH can reference contacts in your thoughts and help you remember important interactions.</string>
+
+	<key>NSCalendarsUsageDescription</key>
+	<string>STASH can connect thoughts to calendar events and help you plan around your schedule.</string>
+
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>STASH can attach location context to your thoughts, helping you remember where ideas occurred.</string>
+</dict>
+</plist>
