@@ -58,14 +58,14 @@
 	<!-- Uncomment after developer enrollment approved
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
-		<string>iCloud.com.personalai.PersonalAI</string>
+		<string>iCloud.com.withershins.stash</string>
 	</array>
 	<key>com.apple.developer.ubiquity-container-identifiers</key>
 	<array>
-		<string>iCloud.com.personalai.PersonalAI</string>
+		<string>iCloud.com.withershins.stash</string>
 	</array>
 	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
-	<string>$(TeamIdentifierPrefix)com.personalai.PersonalAI</string>
+	<string>$(TeamIdentifierPrefix)com.withershins.stash</string>
 	<key>com.apple.developer.icloud-services</key>
 	<array>
 		<string>CloudDocuments</string>
@@ -76,7 +76,7 @@
 	<!-- Uncomment after developer enrollment approved
 	<key>com.apple.developer.in-app-payments</key>
 	<array>
-		<string>merchant.com.personalai.PersonalAI</string>
+		<string>merchant.com.withershins.stash</string>
 	</array>
 	-->
 
@@ -84,7 +84,7 @@
 	<!-- Uncomment after developer enrollment approved
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.personalai.PersonalAI</string>
+		<string>group.com.withershins.stash</string>
 	</array>
 	-->
 

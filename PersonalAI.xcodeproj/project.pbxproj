@@ -91,10 +91,10 @@
 		A1A632752F33BFD500DA552B /* ThoughtConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632742F33BFD500DA552B /* ThoughtConversationViewModel.swift */; };
 		A1A632782F33BFE700DA552B /* PersonalizationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632762F33BFE700DA552B /* PersonalizationScreen.swift */; };
 		A1A632792F33BFE700DA552B /* ThoughtConversationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632772F33BFE700DA552B /* ThoughtConversationScreen.swift */; };
-		ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */; };
 		A1B632832F3510000071D950 /* ThoughtContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B632862F3510000071D953 /* ThoughtContentView.swift */; };
 		A1B632842F3510000071D951 /* FormattingToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B632872F3510000071D954 /* FormattingToolbar.swift */; };
 		A1B632852F3510000071D952 /* LiquidGlassModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B632882F3510000071D955 /* LiquidGlassModifiers.swift */; };
+		ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -183,10 +183,10 @@
 		A1A632742F33BFD500DA552B /* ThoughtConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtConversationViewModel.swift; sourceTree = "<group>"; };
 		A1A632762F33BFE700DA552B /* PersonalizationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalizationScreen.swift; sourceTree = "<group>"; };
 		A1A632772F33BFE700DA552B /* ThoughtConversationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtConversationScreen.swift; sourceTree = "<group>"; };
-		A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsAnalyzer.swift; sourceTree = "<group>"; };
 		A1B632862F3510000071D953 /* ThoughtContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtContentView.swift; sourceTree = "<group>"; };
 		A1B632872F3510000071D954 /* FormattingToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattingToolbar.swift; sourceTree = "<group>"; };
 		A1B632882F3510000071D955 /* LiquidGlassModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassModifiers.swift; sourceTree = "<group>"; };
+		A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsAnalyzer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -817,9 +817,10 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2773DJ42YU;
+				DEVELOPMENT_TEAM = 3RJ4WFRA6W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = S.T.A.S.H.;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "PersonalAI needs access to calendar events to provide context-aware features.";
 				INFOPLIST_KEY_NSContactsUsageDescription = "PersonalAI needs access to contacts to provide context-aware features.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "PersonalAI needs access to health data to provide health-related insights.";
@@ -839,7 +840,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.personalai.PersonalAI;
+				PRODUCT_BUNDLE_IDENTIFIER = com.withershins.stash;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -862,9 +863,10 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2773DJ42YU;
+				DEVELOPMENT_TEAM = 3RJ4WFRA6W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = S.T.A.S.H.;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "PersonalAI needs access to calendar events to provide context-aware features.";
 				INFOPLIST_KEY_NSContactsUsageDescription = "PersonalAI needs access to contacts to provide context-aware features.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "PersonalAI needs access to health data to provide health-related insights.";
@@ -884,7 +886,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.personalai.PersonalAI;
+				PRODUCT_BUNDLE_IDENTIFIER = com.withershins.stash;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
