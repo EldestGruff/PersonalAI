@@ -168,6 +168,7 @@
 		A0000001000000000000250 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		A0000001000000000000252 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
 		A1000000000000000000001 /* PersonalAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PersonalAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A11AA0202F36C5430088EB2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Info.plist; path = PersonalAI/Info.plist; sourceTree = "<group>"; };
 		A1803D472F25BDFD0071D950 /* DateTimeParsingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeParsingService.swift; sourceTree = "<group>"; };
 		A1803D4A2F25BDFD0071D952 /* DateTimeParsingService_FoundationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeParsingService_FoundationModels.swift; sourceTree = "<group>"; };
 		A1803D4C2F25BDFD0071D954 /* ClassificationService_FoundationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationService_FoundationModels.swift; sourceTree = "<group>"; };
@@ -246,6 +247,7 @@
 		A0800000000000000000001 = {
 			isa = PBXGroup;
 			children = (
+				A11AA0202F36C5430088EB2E /* Info.plist */,
 				A0800000000000000000002 /* Sources */,
 				A0800000000000000000003 /* Products */,
 				A1803D4E2F270E6C0071D950 /* Assets */,
@@ -820,6 +822,7 @@
 				DEVELOPMENT_TEAM = 3RJ4WFRA6W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PersonalAI/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = S.T.A.S.H.;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "PersonalAI needs access to calendar events to provide context-aware features.";
 				INFOPLIST_KEY_NSContactsUsageDescription = "PersonalAI needs access to contacts to provide context-aware features.";
@@ -866,6 +869,7 @@
 				DEVELOPMENT_TEAM = 3RJ4WFRA6W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PersonalAI/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = S.T.A.S.H.;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "PersonalAI needs access to calendar events to provide context-aware features.";
 				INFOPLIST_KEY_NSContactsUsageDescription = "PersonalAI needs access to contacts to provide context-aware features.";

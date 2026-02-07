@@ -233,7 +233,7 @@ actor SpeechService: SpeechServiceProtocol {
         // Create the async stream
         return AsyncThrowingStream<String, Error> { continuation in
             // Use unstructured task to properly isolate actor access
-            Task { [weak self] in
+            let isolatedTask = Task { @MainActor [weak self] in
                 guard let self = self else {
                     continuation.finish()
                     return
@@ -242,7 +242,7 @@ actor SpeechService: SpeechServiceProtocol {
                 await self.setLiveTranscriptionContinuation(continuation)
 
                 // Start recognition
-                let task = capturedRecognizer.recognitionTask(with: request) { result, error in
+                let recognitionTask = capturedRecognizer.recognitionTask(with: request) { result, error in
                     if let error = error {
                         continuation.finish(throwing: error)
                         return
@@ -258,7 +258,7 @@ actor SpeechService: SpeechServiceProtocol {
                     }
                 }
 
-                await self.setRecognitionTask(task)
+                await self.setRecognitionTask(recognitionTask)
 
                 continuation.onTermination = { [weak self] _ in
                     guard let self = self else { return }
@@ -267,6 +267,7 @@ actor SpeechService: SpeechServiceProtocol {
                     }
                 }
             }
+            _ = isolatedTask
         }
         #else
         throw ServiceError.frameworkUnavailable(
