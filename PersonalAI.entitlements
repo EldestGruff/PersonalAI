@@ -51,10 +51,6 @@
 	<key>com.apple.developer.siri</key>
 	<true/>
 
-	<!-- Speech Recognition -->
-	<key>com.apple.developer.speech-recognition</key>
-	<true/>
-
 	<!-- App Groups -->
 	<key>com.apple.security.application-groups</key>
 	<array>
