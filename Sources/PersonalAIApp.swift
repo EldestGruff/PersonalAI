@@ -103,7 +103,6 @@ struct MainTabView: View {
                     healthKitService: HealthKitService(),
                     locationService: LocationService(),
                     eventKitService: EventKitService(),
-                    speechService: SpeechService(),
                     contactsService: ContactsService(),
                     thoughtService: ThoughtService.shared,
                     permissionCoordinator: PermissionCoordinator.shared

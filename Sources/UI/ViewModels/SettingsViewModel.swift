@@ -115,7 +115,6 @@ final class SettingsViewModel {
     private let healthKitService: HealthKitService
     private let locationService: LocationService
     private let eventKitService: EventKitService
-    private let speechService: SpeechService
     private let contactsService: ContactsService
     private let thoughtService: ThoughtService
     private let permissionCoordinator: PermissionCoordinator
@@ -126,7 +125,6 @@ final class SettingsViewModel {
         healthKitService: HealthKitService,
         locationService: LocationService,
         eventKitService: EventKitService,
-        speechService: SpeechService,
         contactsService: ContactsService,
         thoughtService: ThoughtService,
         permissionCoordinator: PermissionCoordinator
@@ -134,7 +132,6 @@ final class SettingsViewModel {
         self.healthKitService = healthKitService
         self.locationService = locationService
         self.eventKitService = eventKitService
-        self.speechService = speechService
         self.contactsService = contactsService
         self.thoughtService = thoughtService
         self.permissionCoordinator = permissionCoordinator
@@ -189,17 +186,6 @@ final class SettingsViewModel {
         requestPermission { [weak self] in
             _ = await self?.eventKitService.requestPermission()
         }
-    }
-
-    /// Requests Speech permission
-    func requestSpeechPermission() {
-        NSLog("🎤 [SettingsViewModel] requestSpeechPermission() - ENTER")
-        requestPermission { [weak self] in
-            NSLog("🎤 [SettingsViewModel] requestSpeechPermission() - About to call speechService.requestPermission()")
-            let result = await self?.speechService.requestPermission()
-            NSLog("🎤 [SettingsViewModel] requestSpeechPermission() - Got result: \(String(describing: result))")
-        }
-        NSLog("🎤 [SettingsViewModel] requestSpeechPermission() - EXIT (task started)")
     }
 
     /// Requests Contacts permission

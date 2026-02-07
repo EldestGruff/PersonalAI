@@ -38,9 +38,6 @@ final class CaptureViewModel {
     /// Tags selected for this thought
     var selectedTags: [String] = []
 
-    /// Whether voice input mode is active
-    var voiceInputMode: Bool = false
-
     // MARK: - Processing State
 
     /// Whether a capture operation is in progress
@@ -168,11 +165,6 @@ final class CaptureViewModel {
     }
 
     // MARK: - Input Actions
-
-    /// Toggles between text and voice input modes
-    func toggleVoiceInput() {
-        voiceInputMode.toggle()
-    }
 
     /// Toggles rich text formatting mode
     func toggleRichText() {
@@ -439,7 +431,6 @@ final class CaptureViewModel {
     func resetForm() {
         thoughtContent = ""
         selectedTags = []
-        voiceInputMode = false
         context = nil
         classification = nil
         contextError = nil
@@ -447,12 +438,6 @@ final class CaptureViewModel {
         captureSucceeded = false
     }
 
-    /// Updates content from voice transcription
-    func updateFromTranscription(_ text: String) {
-        thoughtContent = text
-        voiceInputMode = false
-        classifyThoughtImmediately()  // Immediate classification for voice input
-    }
 
     // MARK: - Auto-Creation
 
