@@ -143,8 +143,11 @@ struct CaptureScreen: View {
                         viewModel.toggleVoiceInput()
                     },
                     onTranscription: { text in
+                        print("🎤 CaptureScreen - Setting thoughtContent to: '\(text.prefix(50))...'")
                         viewModel.thoughtContent = text
+                        print("🎤 CaptureScreen - thoughtContent set, isValid: \(viewModel.isValid)")
                         viewModel.toggleVoiceInput()
+                        print("🎤 CaptureScreen - Toggled voice input, voiceInputMode: \(viewModel.voiceInputMode)")
                     }
                 )
             } else if viewModel.richTextEnabled {
