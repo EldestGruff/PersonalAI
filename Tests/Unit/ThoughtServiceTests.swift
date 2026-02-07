@@ -1,6 +1,6 @@
 //
 //  ThoughtServiceTests.swift
-//  PersonalAITests
+//  STASHTests
 //
 //  Issue #6: Unit tests for ThoughtService
 //  Tests CRUD operations, validation, search, and batch operations
@@ -8,7 +8,7 @@
 
 import Testing
 import Foundation
-@testable import PersonalAI
+@testable import STASH
 
 @Suite("ThoughtService Tests")
 struct ThoughtServiceTests {

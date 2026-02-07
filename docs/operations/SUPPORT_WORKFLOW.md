@@ -40,7 +40,7 @@ Button("Help & Feedback") {
     """
 
     let email = "support@yourapp.com"
-    let subject = "PersonalAI Support Request"
+    let subject = "STASH Support Request"
     let urlString = "mailto:\(email)?subject=\(subject)&body=\(body)".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
 
     if let url = URL(string: urlString ?? "") {
@@ -166,7 +166,7 @@ I'll get back to you within [24/48] hours with an update.
 
 Best,
 [Your Name]
-PersonalAI Support
+STASH Support
 ```
 
 ### Bug Report Acknowledgment
@@ -197,7 +197,7 @@ I can't promise when (or if) this will be built, but I review these regularly an
 
 You can follow progress on our public roadmap: [link]
 
-Thanks for helping shape the future of PersonalAI!
+Thanks for helping shape the future of STASH!
 
 Best,
 [Your Name]

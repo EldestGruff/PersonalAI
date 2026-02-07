@@ -1,10 +1,10 @@
-# Operations Overview: Running PersonalAI as a Software Product
+# Operations Overview: Running STASH as a Software Product
 
 **Last Updated:** 2026-01-20
 
 ## Purpose
 
-This document outlines the operational infrastructure needed to run PersonalAI as a sustainable software product. Focus is on processes, tools, and workflows that enable solo (or small team) maintenance without dropping the ball on customer commitments.
+This document outlines the operational infrastructure needed to run STASH as a sustainable software product. Focus is on processes, tools, and workflows that enable solo (or small team) maintenance without dropping the ball on customer commitments.
 
 ---
 

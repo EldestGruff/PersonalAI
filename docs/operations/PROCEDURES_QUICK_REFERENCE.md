@@ -56,7 +56,7 @@ Each procedure is:
 **Every morning (or when you start work):**
 
 1. **Check support email** (5 min)
-   - Open Gmail → "PersonalAI Support" label (or your label)
+   - Open Gmail → "STASH Support" label (or your label)
    - Triage new emails (see [Support Email Triage](#support-email-triage))
 
 2. **Check GitHub Issues** (5 min)
@@ -65,7 +65,7 @@ Each procedure is:
    - Triage any new issues (see [Creating a New Issue](#creating-a-new-issue))
 
 3. **Check Project Board** (5 min)
-   - Go to repo → Projects → PersonalAI Development
+   - Go to repo → Projects → STASH Development
    - Review "🚧 In Progress" - continue where you left off
    - Check "📝 To Do" - today's priorities
 
@@ -494,7 +494,7 @@ git commit -m "Resolve calendar bug (resolves #8)"
 
 1. **Go to App Store Connect**
    - appstoreconnect.apple.com
-   - My Apps → PersonalAI
+   - My Apps → STASH
 
 2. **Create new version**
    - Click "+ Version" under iOS App
@@ -701,7 +701,7 @@ git commit -m "Resolve calendar bug (resolves #8)"
    Could you help me with a few more details?
 
    - iOS version? (Settings → General → About)
-   - App version? (Settings → About in PersonalAI)
+   - App version? (Settings → About in STASH)
    - Device model?
    - [Specific question about the issue]
    - Can you share a screenshot?

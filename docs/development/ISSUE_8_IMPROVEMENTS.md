@@ -2,7 +2,7 @@
 
 **Date:** February 1, 2026
 **Status:** Complete
-**Issue:** https://github.com/EldestGruff/PersonalAI/issues/8
+**Issue:** https://github.com/EldestGruff/STASH/issues/8
 
 ---
 

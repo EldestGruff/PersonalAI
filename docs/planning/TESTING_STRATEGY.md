@@ -4,7 +4,7 @@
 
 ## Overview
 
-This document outlines the testing strategy for PersonalAI, covering unit tests, integration tests, UI tests, beta testing, and quality assurance processes.
+This document outlines the testing strategy for STASH, covering unit tests, integration tests, UI tests, beta testing, and quality assurance processes.
 
 ---
 
@@ -373,7 +373,7 @@ jobs:
       - name: Run tests
         run: |
           xcodebuild test \
-            -scheme PersonalAI \
+            -scheme STASH \
             -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.0' \
             -enableCodeCoverage YES
       - name: Upload coverage

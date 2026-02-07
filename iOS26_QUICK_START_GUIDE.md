@@ -96,7 +96,7 @@ xcodebuild -scheme STASH -destination 'platform=iOS Simulator,name=iPhone 15 Pro
 ```bash
 # If not already created
 # File → New → Target → Unit Testing Bundle
-# Name: PersonalAITests
+# Name: STASHTests
 # Testing Framework: Swift Testing
 ```
 
@@ -106,7 +106,7 @@ Create `/Tests/ThoughtTests.swift`:
 
 ```swift
 import Testing
-@testable import PersonalAI
+@testable import STASH
 
 @Suite("Thought Model Tests")
 struct ThoughtTests {
@@ -171,7 +171,7 @@ Create `/Tests/TestHelpers.swift`:
 ```swift
 import Foundation
 import CoreData
-@testable import PersonalAI
+@testable import STASH
 
 extension PersistenceService {
     static var preview: PersistenceService {
@@ -960,7 +960,7 @@ xcodebuild test \
 
 1. Build and run app
 2. Open Shortcuts app
-3. Look for PersonalAI actions
+3. Look for STASH actions
 4. Test with Siri:
    - "Hey Siri, capture a thought in STASH"
    - "Hey Siri, check my subscription status"

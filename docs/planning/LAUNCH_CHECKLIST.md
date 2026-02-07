@@ -1,7 +1,7 @@
-# Launch Checklist: PersonalAI Go-to-Market
+# Launch Checklist: STASH Go-to-Market
 
 **Last Updated**: 2026-01-30
-**Purpose**: Step-by-step guide to launch PersonalAI successfully
+**Purpose**: Step-by-step guide to launch STASH successfully
 
 ## Launch Timeline Overview
 
@@ -140,12 +140,12 @@ T+1 month: Growth & Iteration
 **Tools**: Use Framer, Webflow, or hand-code with Tailwind CSS
 
 - [ ] SEO optimization
-  - Title tag: "PersonalAI – Your thoughts, organized automatically"
+  - Title tag: "STASH – Your thoughts, organized automatically"
   - Meta description: Benefits + CTA
   - OpenGraph tags for social sharing
 
 #### Social Media Prep
-- [ ] Create Twitter/X account (@PersonalAI_app or similar)
+- [ ] Create Twitter/X account (@STASH_app or similar)
 - [ ] Create threads (draft 3-5):
   - Problem/solution thread
   - Behind-the-scenes build thread
@@ -202,7 +202,7 @@ T+1 month: Growth & Iteration
 - [ ] Push notification certificates configured
 
 #### App Information
-- [ ] **App Name**: "PersonalAI" (check availability)
+- [ ] **App Name**: "STASH" (check availability)
   - Alternatives: "Personal AI", "MindAI", "ThoughtAI"
 - [ ] **Subtitle** (80 chars): "Voice capture, AI classification, health context—your private thought companion"
 - [ ] **Primary Category**: Productivity
@@ -225,7 +225,7 @@ Test with App Store optimization tools (AppTweak, Sensor Tower)
 ```markdown
 Stop losing your best ideas to disorganization.
 
-PersonalAI is your intelligent thought companion. Capture ideas, tasks, and notes instantly—AI handles the rest.
+STASH is your intelligent thought companion. Capture ideas, tasks, and notes instantly—AI handles the rest.
 
 🎤 VOICE-FIRST CAPTURE
 "Hey Siri, capture a thought" and you're done. No app opening, no typing, no manual filing.
@@ -316,7 +316,7 @@ Support: support@personalai.app
 - [ ] Allow family sharing (builds goodwill)
 
 #### App Review Information
-- [ ] Demo account (if needed for review): Not required for PersonalAI
+- [ ] Demo account (if needed for review): Not required for STASH
 - [ ] Notes for reviewer:
   - Explain Siri integration requires device
   - Clarify AI classification uses OpenAI API
@@ -348,7 +348,7 @@ Support: support@personalai.app
 
 #### Content Creation
 - [ ] Write launch announcement blog post
-  - Why I built PersonalAI (founder story)
+  - Why I built STASH (founder story)
   - Problem/solution narrative
   - Key features + screenshots
   - Launch date + CTA
@@ -452,7 +452,7 @@ Support: support@personalai.app
   - Feedback summary
   - Roadmap preview
 - [ ] Share user testimonials (ask for permission)
-- [ ] Create "How to use PersonalAI" video tutorials
+- [ ] Create "How to use STASH" video tutorials
 
 #### Optimization
 - [ ] A/B test onboarding flow (if needed)

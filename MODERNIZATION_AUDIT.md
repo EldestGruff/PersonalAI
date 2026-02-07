@@ -1,6 +1,6 @@
-# iOS 26 Modernization Audit - PersonalAI
+# iOS 26 Modernization Audit - STASH
 
-Comprehensive audit of ALL iOS 26 platform capabilities, hardware features, and modern frameworks that could enhance PersonalAI.
+Comprehensive audit of ALL iOS 26 platform capabilities, hardware features, and modern frameworks that could enhance STASH.
 
 **Goal:** Make this app leverage cutting-edge iOS 26 technology - not just AI/ML, but everything the platform and hardware offer.
 

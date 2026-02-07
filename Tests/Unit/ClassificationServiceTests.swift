@@ -1,6 +1,6 @@
 //
 //  ClassificationServiceTests.swift
-//  PersonalAITests
+//  STASHTests
 //
 //  Issue #6: Unit tests for ClassificationService
 //  Tests type classification, sentiment analysis, and tag generation
@@ -8,7 +8,7 @@
 
 import Testing
 import Foundation
-@testable import PersonalAI
+@testable import STASH
 
 @Suite("ClassificationService Tests")
 struct ClassificationServiceTests {

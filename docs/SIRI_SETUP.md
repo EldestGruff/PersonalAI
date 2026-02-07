@@ -1,6 +1,6 @@
 # Siri Integration Setup Guide
 
-This guide explains how to enable and test Siri functionality for the PersonalAI app.
+This guide explains how to enable and test Siri functionality for the STASH app.
 
 ## Current Status
 
@@ -20,8 +20,8 @@ The following steps must be completed in Xcode to enable Siri:
 ### 1. Add Siri Capability in Xcode
 
 **In Xcode:**
-1. Open `PersonalAI.xcodeproj`
-2. Select the **PersonalAI** target
+1. Open `STASH.xcodeproj`
+2. Select the **STASH** target
 3. Go to **Signing & Capabilities** tab
 4. Click **+ Capability**
 5. Add **Siri**
@@ -55,7 +55,7 @@ If you don't see these messages, the intents won't be discoverable by Siri.
 If this is the first time using Siri with the app:
 
 1. Open **Settings** → **Siri & Search**
-2. Find **PersonalAI** in the app list
+2. Find **STASH** in the app list
 3. Enable:
    - ✅ Learn from this App
    - ✅ Show App in Search
@@ -65,18 +65,18 @@ If this is the first time using Siri with the app:
 
 ### Test 1: Voice Capture
 ```
-"Hey Siri, capture a thought in PersonalAI"
+"Hey Siri, capture a thought in STASH"
 ```
 
 Siri should respond with a prompt to speak your thought, then confirm capture.
 
 **Variations to try:**
-- "Save a note in PersonalAI"
-- "Remember something in PersonalAI"
+- "Save a note in STASH"
+- "Remember something in STASH"
 
 ### Test 2: Search
 ```
-"Hey Siri, search PersonalAI for work thoughts"
+"Hey Siri, search STASH for work thoughts"
 ```
 
 Siri should return matching thoughts from your database.
@@ -94,7 +94,7 @@ After installing the app on device:
 
 1. Open the **Shortcuts** app
 2. Tap **+** to create new shortcut
-3. Search for **"PersonalAI"**
+3. Search for **"STASH"**
 4. You should see:
    - Capture Thought
    - Search Thoughts
@@ -109,7 +109,7 @@ You can create custom shortcuts combining these with other actions.
 - Ensure Siri capability is added in Xcode
 - Rebuild and reinstall the app
 - Wait 60 seconds after installation
-- Check Settings → Siri & Search → PersonalAI is enabled
+- Check Settings → Siri & Search → STASH is enabled
 
 ### "Siri says it can't do that"
 **Solution:**
@@ -129,16 +129,16 @@ You can create custom shortcuts combining these with other actions.
 - Custom phrases are defined in `ThoughtAppShortcuts`
 - Siri learns from actual usage patterns
 - Try the exact phrases first:
-  - "Capture a thought in PersonalAI"
-  - "Save a note in PersonalAI"
-  - "Remember something in PersonalAI"
+  - "Capture a thought in STASH"
+  - "Save a note in STASH"
+  - "Remember something in STASH"
 
 ## Advanced: Custom Shortcuts
 
 ### Create Morning Routine Shortcut
 1. Open Shortcuts app
 2. Create new shortcut
-3. Add **Review Thoughts** (from PersonalAI)
+3. Add **Review Thoughts** (from STASH)
    - Date Range: Yesterday
    - Type Filter: Reminder
 4. Add **Speak Text** (from Shortcuts)
@@ -160,13 +160,13 @@ xcrun devicectl device info appintents --device <device-id>
 ```
 
 ### View Siri Suggestions
-Settings → Siri & Search → PersonalAI should show:
+Settings → Siri & Search → STASH should show:
 - Suggested shortcuts based on usage
 - App capabilities that Siri can perform
 
 ## iOS 26 Specific Notes
 
-PersonalAI uses the modern AppIntents framework (iOS 16+):
+STASH uses the modern AppIntents framework (iOS 16+):
 - ✅ No INIntent subclasses needed
 - ✅ No Intents extension required
 - ✅ Native Swift implementation
@@ -191,7 +191,7 @@ Once Siri is working:
 - `Sources/AppIntents/CaptureThoughtIntent.swift` - Voice capture
 - `Sources/AppIntents/SearchThoughtsIntent.swift` - Search
 - `Sources/AppIntents/ReviewIntent.swift` - Review with filters
-- `Sources/PersonalAIApp.swift` - App shortcuts registration
+- `Sources/STASHApp.swift` - App shortcuts registration
 
 **Documentation:**
 - `docs/APP_INTENTS.md` - Complete API reference

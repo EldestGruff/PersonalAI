@@ -2,7 +2,7 @@
 
 ## Current Status
 
-The Siri capability is **temporarily disabled** in `PersonalAI.entitlements` to allow development builds while waiting for Apple Developer Program enrollment to complete.
+The Siri capability is **temporarily disabled** in `STASH.entitlements` to allow development builds while waiting for Apple Developer Program enrollment to complete.
 
 ## Why is Siri Disabled?
 
@@ -10,7 +10,7 @@ Personal development teams (free Apple ID) **cannot** use the Siri capability. Y
 
 **Error message without enrollment:**
 ```
-Cannot create a iOS App Development provisioning profile for "com.personalai.PersonalAI".
+Cannot create a iOS App Development provisioning profile for "com.personalai.STASH".
 Personal development teams do not support the Siri capability.
 ```
 
@@ -39,7 +39,7 @@ Once your Apple Developer enrollment is approved:
 
 1. **Uncomment the Siri entitlement:**
 
-   Edit `PersonalAI.entitlements`:
+   Edit `STASH.entitlements`:
    ```xml
    <key>com.apple.developer.siri</key>
    <true/>
@@ -48,10 +48,10 @@ Once your Apple Developer enrollment is approved:
 2. **Update Bundle Identifier (if needed):**
 
    In Xcode:
-   - Select the PersonalAI target
+   - Select the STASH target
    - Go to Signing & Capabilities
    - Ensure your Team is selected
-   - Bundle ID: `com.personalai.PersonalAI`
+   - Bundle ID: `com.personalai.STASH`
 
 3. **Verify Siri capability:**
 

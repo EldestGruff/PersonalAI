@@ -4,7 +4,7 @@
 
 ## Overview
 
-This document outlines the backend infrastructure strategy for PersonalAI, focusing on sustainability, scalability, and developer experience.
+This document outlines the backend infrastructure strategy for STASH, focusing on sustainability, scalability, and developer experience.
 
 ---
 

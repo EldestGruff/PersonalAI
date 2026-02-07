@@ -19,7 +19,7 @@
 
 ### Step 3: Name and Configure
 
-1. **Project name:** "PersonalAI Development"
+1. **Project name:** "STASH Development"
 2. **Description:** "Bug tracking, feature planning, and development workflow"
 3. **Visibility:** Private (or Public if you want community visibility)
 4. Click "Create project"
@@ -176,7 +176,7 @@ New issues automatically added to Backlog
 1. Open any issue
 2. Right sidebar → "Projects"
 3. Click "Add to project"
-4. Select "PersonalAI Development"
+4. Select "STASH Development"
 5. Issue appears in Backlog
 
 ---

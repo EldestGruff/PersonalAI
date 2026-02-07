@@ -326,7 +326,7 @@ HKSamplePredicate.stateOfMind(_:)
 - State of Mind is sensitive data - handle with care
 - Follow HealthKit privacy guidelines
 
-### Use Cases for PersonalAI
+### Use Cases for STASH
 1. **Correlation Analysis:**
    - Link thoughts to state of mind data
    - Identify patterns between thought types and emotional states
@@ -348,7 +348,7 @@ HKSamplePredicate.stateOfMind(_:)
 
 ---
 
-## 4. Implementation Recommendations for PersonalAI
+## 4. Implementation Recommendations for STASH
 
 ### Foundation Models Integration
 
@@ -673,7 +673,7 @@ actor InsightsService {
 ## 10. Competitive Advantage Summary
 
 ### Unique Position
-**PersonalAI is positioned to be the FIRST app combining:**
+**STASH is positioned to be the FIRST app combining:**
 1. On-device Foundation Models (zero cost, 100% private)
 2. HealthKit State of Mind integration
 3. AI-powered insights generation

@@ -1,6 +1,6 @@
 # Planning Documentation Index
 
-This directory contains comprehensive planning and strategy documents for the PersonalAI project.
+This directory contains comprehensive planning and strategy documents for the STASH project.
 
 ## Documents
 

@@ -1,10 +1,10 @@
-# PersonalAI Development Roadmap
+# STASH Development Roadmap
 
 **Last Updated:** 2026-01-20
 
 ## Executive Summary
 
-PersonalAI is a thought-capture and context-aware system currently in Phase 3A development. This roadmap outlines the strategic direction for future development, backend infrastructure, and sustainable maintenance.
+STASH is a thought-capture and context-aware system currently in Phase 3A development. This roadmap outlines the strategic direction for future development, backend infrastructure, and sustainable maintenance.
 
 ---
 

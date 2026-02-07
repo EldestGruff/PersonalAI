@@ -36,7 +36,7 @@
 - Connected ideas
 
 ### GitHub Issue:
-**[#21: AI Insights - Conversational Pattern Analysis](https://github.com/EldestGruff/PersonalAI/issues/21)**
+**[#21: AI Insights - Conversational Pattern Analysis](https://github.com/EldestGruff/STASH/issues/21)**
 
 **Status:** Not started
 **Priority:** HIGH
@@ -56,7 +56,7 @@
 - Context combination triggers
 
 ### GitHub Issue:
-**[#22: Contextual Thought Resurfacing](https://github.com/EldestGruff/PersonalAI/issues/22)**
+**[#22: Contextual Thought Resurfacing](https://github.com/EldestGruff/STASH/issues/22)**
 
 **Status:** Not started
 **Priority:** MEDIUM (depends on Phase 2)
@@ -125,5 +125,5 @@ TOTAL SMART RESURFACING:         ███████░░░░░░░░�
 ---
 
 **For the latest status, always check:**
-- [GitHub Issues](https://github.com/EldestGruff/PersonalAI/issues)
-- [Project Board](https://github.com/EldestGruff/PersonalAI/projects) (if configured)
+- [GitHub Issues](https://github.com/EldestGruff/STASH/issues)
+- [Project Board](https://github.com/EldestGruff/STASH/projects) (if configured)

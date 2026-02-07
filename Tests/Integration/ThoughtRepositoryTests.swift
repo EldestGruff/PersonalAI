@@ -1,6 +1,6 @@
 //
 //  ThoughtRepositoryTests.swift
-//  PersonalAITests
+//  STASHTests
 //
 //  Phase 3A Spec 1: Data Models & Persistence
 //  Integration tests for ThoughtRepository
@@ -8,7 +8,7 @@
 
 import Testing
 import CoreData
-@testable import PersonalAI
+@testable import STASH
 
 @Suite("Thought Repository Tests")
 @MainActor

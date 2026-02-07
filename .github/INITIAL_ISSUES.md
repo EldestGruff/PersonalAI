@@ -184,7 +184,7 @@ These are your known bugs and planned features from Phase 3A completion.
 - **Use Case:**
   ```
   I have multiple calendars (Work, Personal, Family) and multiple reminder lists.
-  When PersonalAI creates an event or reminder, it currently goes to the default
+  When STASH creates an event or reminder, it currently goes to the default
   calendar/list.
 
   I want work-related thoughts to create events in my Work calendar, and personal

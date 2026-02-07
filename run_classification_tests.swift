@@ -2,7 +2,7 @@
 
 //
 //  run_classification_tests.swift
-//  PersonalAI
+//  STASH
 //
 //  Quick runner for Foundation Models classification tests
 //  Usage: swift run_classification_tests.swift
@@ -17,7 +17,7 @@ print("""
 This script tests edge cases from Issue #8.
 
 To run the full test suite:
-1. Open PersonalAI.xcodeproj in Xcode
+1. Open STASH.xcodeproj in Xcode
 2. Navigate to Tests/FoundationModelsClassificationTests.swift
 3. Add this to a test target or create a playground
 4. Run: FoundationModelsClassificationTests.runTests()

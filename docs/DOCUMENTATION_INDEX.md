@@ -1,4 +1,4 @@
-# PersonalAI Documentation Index
+# STASH Documentation Index
 
 **Complete guide to all documentation in this project**
 

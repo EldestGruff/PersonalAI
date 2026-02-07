@@ -112,7 +112,7 @@ git checkout -b release/v1.2.0
 ```bash
 # Run tests from command line
 xcodebuild test \
-  -scheme PersonalAI \
+  -scheme STASH \
   -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
   -enableCodeCoverage YES
 ```
@@ -172,7 +172,7 @@ xcodebuild test \
 
 **In Xcode:**
 1. Select project in navigator
-2. Select target "PersonalAI"
+2. Select target "STASH"
 3. General tab
 4. Update "Version" (e.g., 1.2.0)
 5. Update "Build" (increment by 1)
@@ -180,8 +180,8 @@ xcodebuild test \
 **Verify in code:**
 ```bash
 # Check Info.plist values
-/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" PersonalAI/Info.plist
-/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" PersonalAI/Info.plist
+/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" STASH/Info.plist
+/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" STASH/Info.plist
 ```
 
 ### 4. Update Release Notes
@@ -191,7 +191,7 @@ Create `CHANGELOG.md` in repo root (if not exists):
 ```markdown
 # Changelog
 
-All notable changes to PersonalAI will be documented in this file.
+All notable changes to STASH will be documented in this file.
 
 ## [1.2.0] - 2026-02-15
 
@@ -234,7 +234,7 @@ IMPROVEMENTS
 • Faster performance when browsing thoughts
 • Better energy level calculations
 
-As always, thanks for using PersonalAI! Questions or feedback? Tap Help in Settings.
+As always, thanks for using STASH! Questions or feedback? Tap Help in Settings.
 ```
 
 **Tips for good release notes:**
@@ -273,7 +273,7 @@ As always, thanks for using PersonalAI! Questions or feedback? Tap Help in Setti
 
 **Verify upload:**
 1. Go to App Store Connect (appstoreconnect.apple.com)
-2. My Apps → PersonalAI
+2. My Apps → STASH
 3. TestFlight tab
 4. Should see new build processing
 
@@ -466,7 +466,7 @@ As always, thanks for using PersonalAI! Questions or feedback? Tap Help in Setti
 ### Beta Testers
 Email:
 ```
-Subject: PersonalAI 1.2.0 is Now Live!
+Subject: STASH 1.2.0 is Now Live!
 
 Hi [Name],
 
@@ -532,7 +532,7 @@ platform :ios do
   desc "Push a new beta build to TestFlight"
   lane :beta do
     increment_build_number
-    build_app(scheme: "PersonalAI")
+    build_app(scheme: "STASH")
     upload_to_testflight
     commit_version_bump(message: "Version bump for TestFlight")
     push_to_git_remote
@@ -541,7 +541,7 @@ platform :ios do
   desc "Push a new release to App Store"
   lane :release do
     increment_build_number
-    build_app(scheme: "PersonalAI")
+    build_app(scheme: "STASH")
     upload_to_app_store
     commit_version_bump(message: "Version bump for App Store")
     push_to_git_remote

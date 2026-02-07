@@ -50,7 +50,7 @@ In the meantime, if you have any additional details that might help (screenshots
 
 Best,
 Andy
-PersonalAI Developer
+STASH Developer
 ```
 
 ---
@@ -65,7 +65,7 @@ PersonalAI Developer
 ```
 Hi [Name],
 
-Thanks for reporting this bug! I really appreciate you taking the time to help improve PersonalAI.
+Thanks for reporting this bug! I really appreciate you taking the time to help improve STASH.
 
 I've filed this as issue #[number] in my bug tracker and I'm investigating it now.
 
@@ -110,7 +110,7 @@ To update:
 What was fixed:
 [Brief description of the fix]
 
-Thanks again for reporting this - it really helps make PersonalAI better for everyone.
+Thanks again for reporting this - it really helps make STASH better for everyone.
 
 If you run into any other issues, don't hesitate to reach out!
 
@@ -130,7 +130,7 @@ Andy
 ```
 Hi [Name],
 
-Great suggestion! I really appreciate you sharing your ideas for PersonalAI.
+Great suggestion! I really appreciate you sharing your ideas for STASH.
 
 I've added this to my feature request backlog. I can't promise when (or if) this will be built, but I review feature requests regularly when planning new updates.
 
@@ -145,7 +145,7 @@ I've thought about this carefully, and I've decided not to pursue this right now
 
 You can follow the public roadmap here: [link to GitHub project or ROADMAP.md]
 
-Thanks for helping shape the future of PersonalAI!
+Thanks for helping shape the future of STASH!
 
 Best,
 Andy
@@ -201,7 +201,7 @@ Thanks for the report! I've tried to reproduce this issue on my test devices, bu
 Could you help me out with a few more details?
 
 - What version of iOS are you running? (Settings → General → About → Software Version)
-- What version of PersonalAI? (Settings → About in the app)
+- What version of STASH? (Settings → About in the app)
 - Which device? (iPhone model)
 - [Specific question about the issue]
 - [Another specific question]
@@ -229,7 +229,7 @@ Andy
 ```
 Hi [Name],
 
-It looks like this might be related to permissions. PersonalAI needs certain permissions for some features to work:
+It looks like this might be related to permissions. STASH needs certain permissions for some features to work:
 
 - **Location** ("When in Use") - For context gathering
 - **HealthKit** - For energy tracking (sleep, activity, HRV)
@@ -241,9 +241,9 @@ The app is designed to work even without permissions (features gracefully degrad
 
 To check/grant permissions:
 1. Open iPhone Settings
-2. Scroll to "PersonalAI"
+2. Scroll to "STASH"
 3. Check that [specific permission] is enabled
-4. Return to PersonalAI and try again
+4. Return to STASH and try again
 
 If you've already granted permission and it's still not working, let me know and I'll investigate further!
 
@@ -263,10 +263,10 @@ Andy
 ```
 Hi [Name],
 
-Thanks for reaching out! Unfortunately, this is outside the scope of what I can help with for PersonalAI.
+Thanks for reaching out! Unfortunately, this is outside the scope of what I can help with for STASH.
 
 [If it's an iOS system issue:]
-This looks like an iOS system issue rather than something specific to PersonalAI. I'd recommend:
+This looks like an iOS system issue rather than something specific to STASH. I'd recommend:
 - Checking Apple's support site: https://support.apple.com
 - Contacting Apple Support directly
 
@@ -276,7 +276,7 @@ This seems to be related to [other app], which I don't have control over. You mi
 [If it's a hardware issue:]
 This sounds like a hardware issue with your device. Apple Support would be the best resource for this.
 
-If there's anything specific to PersonalAI I can help with, please let me know!
+If there's anything specific to STASH I can help with, please let me know!
 
 Best,
 Andy
@@ -294,11 +294,11 @@ Andy
 ```
 Hi [Name],
 
-Thank you so much for the kind words! It really means a lot to hear that PersonalAI is helping you [specific benefit they mentioned].
+Thank you so much for the kind words! It really means a lot to hear that STASH is helping you [specific benefit they mentioned].
 
 Feedback like this is what keeps me motivated to keep improving the app. If you have any suggestions for how to make it even better, I'm all ears!
 
-If you're enjoying the app, I'd be incredibly grateful if you could leave a review on the App Store. It helps other people discover PersonalAI:
+If you're enjoying the app, I'd be incredibly grateful if you could leave a review on the App Store. It helps other people discover STASH:
 [Link to App Store review page]
 
 Thanks again for your support!
@@ -319,13 +319,13 @@ Andy
 ```
 Hi [Name],
 
-I'm sorry to hear PersonalAI didn't meet your needs.
+I'm sorry to hear STASH didn't meet your needs.
 
 Refunds are handled directly by Apple, not by me as the developer. Here's how to request a refund:
 
 1. Go to: https://reportaproblem.apple.com
 2. Sign in with your Apple ID
-3. Find PersonalAI in your purchase history
+3. Find STASH in your purchase history
 4. Click "Report a Problem"
 5. Select "I'd like to request a refund"
 6. Submit your request
@@ -350,7 +350,7 @@ Andy
 ```
 Hi [Name],
 
-Thanks for beta testing PersonalAI! Your feedback has been incredibly valuable.
+Thanks for beta testing STASH! Your feedback has been incredibly valuable.
 
 Version [X.X.X] is now live on the App Store with [features/fixes you helped test].
 
@@ -358,7 +358,7 @@ Specific changes based on your feedback:
 - [Change 1]
 - [Change 2]
 
-I really appreciate you taking the time to help make PersonalAI better. If you'd like to continue beta testing future releases, you're welcome to stay on the TestFlight beta!
+I really appreciate you taking the time to help make STASH better. If you'd like to continue beta testing future releases, you're welcome to stay on the TestFlight beta!
 
 Best,
 Andy
@@ -408,7 +408,7 @@ Best,
 Andy
 
 ---
-PersonalAI - Context-aware thought capture
+STASH - Context-aware thought capture
 Support: support@yourapp.com
 Roadmap: https://github.com/yourusername/personal-ai-ios
 ```
@@ -417,7 +417,7 @@ Or shorter:
 ```
 Best,
 Andy
-PersonalAI Support
+STASH Support
 ```
 
 ---

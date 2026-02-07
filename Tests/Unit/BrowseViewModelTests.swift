@@ -1,6 +1,6 @@
 //
 //  BrowseViewModelTests.swift
-//  PersonalAITests
+//  STASHTests
 //
 //  Issue #6: Unit tests for BrowseViewModel
 //  Tests filtering, sorting, search, and bulk actions
@@ -8,7 +8,7 @@
 
 import Testing
 import Foundation
-@testable import PersonalAI
+@testable import STASH
 
 @Suite("BrowseViewModel Tests")
 struct BrowseViewModelTests {

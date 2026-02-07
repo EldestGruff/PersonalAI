@@ -169,7 +169,7 @@ enum IntentError: Error, CustomLocalizedStringResourceConvertible {
     var localizedStringResource: LocalizedStringResource {
         switch self {
         case .serviceUnavailable:
-            return "PersonalAI services are not available"
+            return "STASH services are not available"
         case .invalidInput:
             return "The content provided is invalid"
         case .saveFailed:

@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-PersonalAI will use **Apple's Foundation Models framework exclusively** for all AI features. This eliminates OpenAI API costs entirely, provides 100% on-device privacy, and enables offline functionality.
+STASH will use **Apple's Foundation Models framework exclusively** for all AI features. This eliminates OpenAI API costs entirely, provides 100% on-device privacy, and enables offline functionality.
 
 **Key Decision**: No OpenAI fallback. iOS 26+ only.
 
@@ -464,7 +464,7 @@ struct InsightsView: View {
 **Check at App Launch**:
 ```swift
 @main
-struct PersonalAIApp: App {
+struct STASHApp: App {
     @State private var showAppleIntelligenceRequired = false
 
     var body: some Scene {
@@ -491,7 +491,7 @@ struct AppleIntelligenceRequiredView: View {
             Text("Apple Intelligence Required")
                 .font(.title.bold())
 
-            Text("PersonalAI uses on-device AI to classify and organize your thoughts.")
+            Text("STASH uses on-device AI to classify and organize your thoughts.")
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
 
@@ -610,7 +610,7 @@ let response = try await session.respond(
 
 ## Migration from OpenAI (N/A)
 
-Since PersonalAI is being built fresh with Foundation Models from day one, there's no migration needed. All AI features are designed around the `@Generable` pattern and tool calling from the start.
+Since STASH is being built fresh with Foundation Models from day one, there's no migration needed. All AI features are designed around the `@Generable` pattern and tool calling from the start.
 
 ---
 
@@ -618,7 +618,7 @@ Since PersonalAI is being built fresh with Foundation Models from day one, there
 
 ### App Description Addition
 ```
-Powered by Apple Intelligence, PersonalAI runs 100% on your device.
+Powered by Apple Intelligence, STASH runs 100% on your device.
 No cloud servers. No data sharing. Complete privacy.
 
 Requires:

@@ -62,7 +62,7 @@ struct PersistenceController: Sendable {
     /// Initializes the persistence controller
     /// - Parameter inMemory: If true, creates an in-memory store (useful for testing and previews)
     init(inMemory: Bool = false) {
-        container = NSPersistentContainer(name: "PersonalAI")
+        container = NSPersistentContainer(name: "STASH")
 
         if inMemory {
             container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")

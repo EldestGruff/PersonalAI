@@ -1,13 +1,13 @@
 //
 //  ThoughtModelTests.swift
-//  PersonalAITests
+//  STASHTests
 //
 //  Phase 3A Spec 1: Data Models & Persistence
 //  Unit tests for Thought model validation using Swift Testing
 //
 
 import Testing
-@testable import PersonalAI
+@testable import STASH
 
 @Suite("Thought Model Tests")
 struct ThoughtModelTests {

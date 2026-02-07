@@ -1,13 +1,13 @@
 //
 //  TaskModelTests.swift
-//  PersonalAITests
+//  STASHTests
 //
 //  Phase 3A Spec 1: Data Models & Persistence
 //  Unit tests for Task model validation using Swift Testing
 //
 
 import Testing
-@testable import PersonalAI
+@testable import STASH
 
 @Suite("Task Model Tests")
 struct TaskModelTests {

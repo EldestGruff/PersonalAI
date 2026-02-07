@@ -110,7 +110,7 @@ jobs:
       - name: Run tests
         run: |
           xcodebuild test \
-            -scheme PersonalAI \
+            -scheme STASH \
             -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.2' \
             -enableCodeCoverage YES \
             | xcpretty && exit ${PIPESTATUS[0]}
@@ -166,7 +166,7 @@ git push
 
 **Add to README.md:**
 ```markdown
-# PersonalAI
+# STASH
 
 ![Tests](https://github.com/yourusername/personal-ai-ios/actions/workflows/test.yml/badge.svg)
 
@@ -229,7 +229,7 @@ fastlane match init
 # Enter private GitHub repo URL (create a new private repo for certs)
 
 # Generate certificates
-fastlane match appstore --app_identifier com.yourname.PersonalAI
+fastlane match appstore --app_identifier com.yourname.STASH
 ```
 
 **Option B: Manual (Simpler for solo dev)**
@@ -248,7 +248,7 @@ fastlane init
 **Follow prompts:**
 - Choose option 2: "Automate beta distribution to TestFlight"
 - Enter Apple ID
-- Enter app identifier: com.yourname.PersonalAI
+- Enter app identifier: com.yourname.STASH
 
 **Edit `fastlane/Fastfile`:**
 
@@ -259,7 +259,7 @@ platform :ios do
   desc "Push a new beta build to TestFlight"
   lane :beta do
     # Increment build number
-    increment_build_number(xcodeproj: "PersonalAI.xcodeproj")
+    increment_build_number(xcodeproj: "STASH.xcodeproj")
 
     # Set up code signing
     setup_ci if ENV['CI']
@@ -267,16 +267,16 @@ platform :ios do
     match(
       type: "appstore",
       readonly: true,
-      app_identifier: "com.yourname.PersonalAI"
+      app_identifier: "com.yourname.STASH"
     )
 
     # Build app
     build_app(
-      scheme: "PersonalAI",
+      scheme: "STASH",
       export_method: "app-store",
       export_options: {
         provisioningProfiles: {
-          "com.yourname.PersonalAI" => "match AppStore com.yourname.PersonalAI"
+          "com.yourname.STASH" => "match AppStore com.yourname.STASH"
         }
       }
     )
@@ -290,7 +290,7 @@ platform :ios do
     # Commit version bump
     commit_version_bump(
       message: "Bump build number",
-      xcodeproj: "PersonalAI.xcodeproj"
+      xcodeproj: "STASH.xcodeproj"
     )
 
     push_to_git_remote
@@ -593,7 +593,7 @@ jobs:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
-      - run: xcodebuild test -scheme PersonalAI -destination 'platform=iOS Simulator,name=iPhone 15 Pro'
+      - run: xcodebuild test -scheme STASH -destination 'platform=iOS Simulator,name=iPhone 15 Pro'
 ```
 
 ### PR Checks
@@ -606,7 +606,7 @@ jobs:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
-      - run: xcodebuild test -scheme PersonalAI -destination 'platform=iOS Simulator,name=iPhone 15 Pro'
+      - run: xcodebuild test -scheme STASH -destination 'platform=iOS Simulator,name=iPhone 15 Pro'
 
   lint:
     runs-on: macos-14

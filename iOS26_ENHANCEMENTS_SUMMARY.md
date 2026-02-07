@@ -1,6 +1,6 @@
 # iOS 26 Enhancement Opportunities - Executive Summary
 
-**Quick reference for iOS 26 features that can enhance PersonalAI's open issues**
+**Quick reference for iOS 26 features that can enhance STASH's open issues**
 
 ---
 

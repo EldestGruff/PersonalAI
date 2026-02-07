@@ -75,7 +75,7 @@ body:
     id: app-version
     attributes:
       label: App Version
-      description: What version of PersonalAI? (Found in Settings → About)
+      description: What version of STASH? (Found in Settings → About)
       placeholder: "1.0.0 (123)"
     validations:
       required: true
@@ -274,7 +274,7 @@ Labels help categorize and filter issues. Create these labels in your repo:
 
 1. Go to your repo → Projects → New Project
 2. Choose "Board" template
-3. Name it "PersonalAI Development"
+3. Name it "STASH Development"
 4. Create columns:
    - **Backlog** - Ideas, low priority
    - **To Do** - Planned for upcoming work

@@ -39,20 +39,20 @@
 **How to Add:**
 
 #### Option A: Drag and Drop (Easiest)
-1. Open `PersonalAI.xcodeproj` in Xcode
+1. Open `STASH.xcodeproj` in Xcode
 2. Open Finder to `/Users/andy/Dev/personal-ai-ios/Sources/Services/Intelligence/`
 3. Drag both `.swift` files into Xcode's Project Navigator
-4. Ensure "PersonalAI" target is checked
+4. Ensure "STASH" target is checked
 5. Click "Finish"
 
 #### Option B: Add Files Menu
-1. Open `PersonalAI.xcodeproj` in Xcode
+1. Open `STASH.xcodeproj` in Xcode
 2. Right-click on `Sources/Services/Intelligence/` in Project Navigator
-3. Select "Add Files to PersonalAI..."
+3. Select "Add Files to STASH..."
 4. Select both:
    - `SemanticSearchService.swift`
    - `SmartInsightsService.swift`
-5. Ensure "PersonalAI" target is checked
+5. Ensure "STASH" target is checked
 6. Click "Add"
 
 #### Option C: Run Helper Script
@@ -302,7 +302,7 @@ Sources/UI/Screens/SearchScreen.swift          (Already done) ✅
 
 **YOU:** Add the two service files to Xcode (5 minutes)
 
-1. Open `PersonalAI.xcodeproj`
+1. Open `STASH.xcodeproj`
 2. Drag `SemanticSearchService.swift` and `SmartInsightsService.swift` into Xcode
 3. Build (⌘B)
 4. Test the Related Thoughts feature!

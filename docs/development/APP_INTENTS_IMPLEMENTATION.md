@@ -1,4 +1,4 @@
-# App Intents Implementation - PersonalAI
+# App Intents Implementation - STASH
 
 **Date:** February 1, 2026
 **Status:** Complete - Ready for Xcode Integration
@@ -18,8 +18,8 @@ Implemented complete Siri and Shortcuts integration using iOS 26 App Intents fra
 
 **Voice Commands:**
 - "Hey Siri, capture a thought"
-- "Hey Siri, add a thought to PersonalAI"
-- "Hey Siri, save a note in PersonalAI"
+- "Hey Siri, add a thought to STASH"
+- "Hey Siri, save a note in STASH"
 
 **Features:**
 - Voice dictation support
@@ -98,9 +98,9 @@ App Intents enum for thought classification types.
 
 ### Step 1: Add Files to Xcode Project
 
-1. Open `PersonalAI.xcodeproj` in Xcode
+1. Open `STASH.xcodeproj` in Xcode
 2. Right-click on `Sources` folder in Project Navigator
-3. Choose "Add Files to 'PersonalAI'..."
+3. Choose "Add Files to 'STASH'..."
 4. Navigate to `Sources/AppIntents/` directory
 5. Select all `.swift` files:
    - `ThoughtEntity.swift`
@@ -108,7 +108,7 @@ App Intents enum for thought classification types.
    - `CaptureThoughtIntent.swift`
    - `SearchThoughtsIntent.swift`
    - `ReviewIntent.swift`
-6. Ensure "PersonalAI" target is checked
+6. Ensure "STASH" target is checked
 7. Click "Add"
 
 ### Step 2: Verify Build
@@ -121,7 +121,7 @@ App Intents enum for thought classification types.
 
 1. Open Shortcuts app on device
 2. Create new shortcut
-3. Add "PersonalAI" actions
+3. Add "STASH" actions
 4. You should see:
    - Capture Thought
    - Search Thoughts
@@ -139,10 +139,10 @@ App Intents enum for thought classification types.
 ## Siri Phrases
 
 ### Capture Intent
-- "Capture a thought in PersonalAI"
-- "Add a thought to PersonalAI"
-- "Create a note in PersonalAI"
-- "Quick capture in PersonalAI"
+- "Capture a thought in STASH"
+- "Add a thought to STASH"
+- "Create a note in STASH"
+- "Quick capture in STASH"
 
 ### Search Intent
 - "Search thoughts for [query]"
@@ -365,4 +365,4 @@ App Intents implementation is **complete and ready for integration**. Once added
 4. **Create sample shortcuts**
 5. **Move to Swift Charts** (next Phase 2 item)
 
-When ready, this feature will be a **major differentiator** for PersonalAI - seamless Siri integration with on-device AI.
+When ready, this feature will be a **major differentiator** for STASH - seamless Siri integration with on-device AI.

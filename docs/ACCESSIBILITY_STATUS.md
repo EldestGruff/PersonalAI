@@ -6,7 +6,7 @@
 
 ## Executive Summary
 
-Comprehensive accessibility implementation completed across PersonalAI iOS app, achieving significant improvements in VoiceOver support, UI testing infrastructure, and WCAG 2.1 compliance.
+Comprehensive accessibility implementation completed across STASH iOS app, achieving significant improvements in VoiceOver support, UI testing infrastructure, and WCAG 2.1 compliance.
 
 ### Key Metrics
 
@@ -406,7 +406,7 @@ Section("Sort Order") {
 - **Apple HIG**: [Accessibility Guidelines](https://developer.apple.com/design/human-interface-guidelines/accessibility)
 - **WCAG 2.1**: [Level AA Standards](https://www.w3.org/WAI/WCAG21/quickref/)
 - **SwiftUI Accessibility**: [Apple Documentation](https://developer.apple.com/documentation/swiftui/view-accessibility)
-- **Issue #19**: [GitHub Issue](https://github.com/EldestGruff/PersonalAI/issues/19)
+- **Issue #19**: [GitHub Issue](https://github.com/EldestGruff/STASH/issues/19)
 
 ---
 

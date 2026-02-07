@@ -1,6 +1,6 @@
 //
 //  CaptureViewModelTests.swift
-//  PersonalAITests
+//  STASHTests
 //
 //  Issue #6: Unit tests for CaptureViewModel
 //  Tests input validation, tag management, and thought capture flow
@@ -8,7 +8,7 @@
 
 import Testing
 import Foundation
-@testable import PersonalAI
+@testable import STASH
 
 @Suite("CaptureViewModel Tests")
 struct CaptureViewModelTests {

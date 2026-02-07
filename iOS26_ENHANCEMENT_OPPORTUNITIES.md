@@ -1,6 +1,6 @@
 # iOS 26 Enhancement Opportunities Analysis
 
-**PersonalAI (STASH) - Open GitHub Issues**
+**STASH - Open GitHub Issues**
 **Analysis Date:** February 1, 2026
 **Purpose:** Identify specific iOS 26 APIs and features that can modernize and enhance each open issue
 
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-This document analyzes all 13 open GitHub issues for PersonalAI and identifies concrete iOS 26 enhancement opportunities for each. Key findings:
+This document analyzes all 13 open GitHub issues for STASH and identifies concrete iOS 26 enhancement opportunities for each. Key findings:
 
 - **4 issues already implemented** with iOS 26 features (#18, #20 partial, #8, charts)
 - **9 issues can be significantly enhanced** with iOS 26 APIs
@@ -40,7 +40,7 @@ struct CheckSubscriptionStatusIntent: AppIntent {
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let status = await SubscriptionManager.shared.subscriptionStatus
-        return .result(dialog: "Your PersonalAI Pro subscription is \(status)")
+        return .result(dialog: "Your STASH Pro subscription is \(status)")
     }
 }
 
@@ -56,7 +56,7 @@ struct ViewUsageIntent: AppIntent {
 ```
 
 **User Benefits:**
-- "Hey Siri, check my PersonalAI subscription"
+- "Hey Siri, check my STASH subscription"
 - "Hey Siri, how many thoughts do I have left?"
 - Shortcuts automation: "If approaching limit, remind me to upgrade"
 
@@ -91,7 +91,7 @@ let activity = try Activity<TrialCountdownAttributes>.request(
 **Dynamic Island Display:**
 - **Compact:** "6d left" with sparkle icon
 - **Minimal:** Small pill with countdown
-- **Expanded:** "6 days remaining in PersonalAI Pro trial"
+- **Expanded:** "6 days remaining in STASH Pro trial"
 
 **User Benefits:**
 - Constant visibility of trial status
@@ -125,7 +125,7 @@ struct ThoughtCaptureFocusFilter: SetFocusFilterIntent {
 ```swift
 // Tests/SubscriptionTests.swift
 import Testing
-@testable import PersonalAI
+@testable import STASH
 
 @Suite("Subscription Manager Tests")
 struct SubscriptionTests {
@@ -193,7 +193,7 @@ struct SubscriptionTests {
 #if DEBUG
 import AccessibilityInsights
 
-extension PersonalAIApp {
+extension STASHApp {
     func enableAccessibilityAudit() {
         AccessibilityInsights.enable()
         // Automatic detection of:
@@ -219,7 +219,7 @@ extension PersonalAIApp {
 ```swift
 import Testing
 import SwiftUI
-@testable import PersonalAI
+@testable import STASH
 
 @Suite("Accessibility Tests")
 struct AccessibilityTests {
@@ -1193,7 +1193,7 @@ class ThemeEngine {
 **Implementation:**
 ```swift
 import Testing
-@testable import PersonalAI
+@testable import STASH
 
 @Suite("Theme System Tests")
 struct ThemeTests {
@@ -1343,7 +1343,7 @@ Create basic infrastructure for #13, #18, #20 to build on:
 
 ```swift
 // Sources/AppIntents/AppIntentsProvider.swift
-struct PersonalAIAppShortcuts: AppShortcutsProvider {
+struct STASHAppShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: CaptureThoughtIntent(),
@@ -1456,7 +1456,7 @@ extension ClassificationService {
 **Implementation:**
 ```swift
 import Testing
-@testable import PersonalAI
+@testable import STASH
 
 @Suite("Classification Tests")
 struct ClassificationTests {
@@ -1847,7 +1847,7 @@ struct MedicationWidget: Widget {
 **Implementation:**
 ```swift
 import Testing
-@testable import PersonalAI
+@testable import STASH
 
 @Suite("CaptureViewModel Tests")
 struct CaptureViewModelTests {
@@ -2013,7 +2013,7 @@ extension ClassificationService {
 
 # Run tests with coverage
 xcodebuild test \
-  -scheme PersonalAI \
+  -scheme STASH \
   -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
   -enableCodeCoverage YES
 
@@ -2038,12 +2038,12 @@ jobs:
       - name: Run tests
         run: |
           xcodebuild test \
-            -scheme PersonalAI \
+            -scheme STASH \
             -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
             -enableCodeCoverage YES
       - name: Check coverage
         run: |
-          COVERAGE=$(xcrun xccov view --report coverage.xcresult | grep "PersonalAI" | awk '{print $4}')
+          COVERAGE=$(xcrun xccov view --report coverage.xcresult | grep "STASH" | awk '{print $4}')
           if (( $(echo "$COVERAGE < 70.0" | bc -l) )); then
             echo "Coverage $COVERAGE% is below 70% threshold"
             exit 1

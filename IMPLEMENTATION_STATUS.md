@@ -40,12 +40,12 @@ All code implementation for Siri and Shortcuts integration is **complete**. The 
 
 ### ✅ Integration Points
 
-**PersonalAIApp.swift** (Sources/PersonalAIApp.swift:1-110)
+**STASHApp.swift** (Sources/STASHApp.swift:1-110)
 - AppIntents framework import added
 - ThoughtAppShortcuts.updateAppShortcutParameters() registration in init()
 - Ensures shortcuts are discoverable by system
 
-**PersonalAI.entitlements**
+**STASH.entitlements**
 - `com.apple.developer.siri` entitlement added
 - Required for Siri integration
 - Triggers provisioning profile requirement
@@ -106,8 +106,8 @@ No code changes needed - this is a standard Apple Developer workflow.
 ### 1. Regenerate Provisioning Profile (One-time, in Xcode)
 
 **Steps:**
-1. Open PersonalAI.xcodeproj in Xcode
-2. Select PersonalAI target
+1. Open STASH.xcodeproj in Xcode
+2. Select STASH target
 3. Go to Signing & Capabilities tab
 4. Select your Team/Apple ID under "Signing"
 5. Xcode downloads new profile with Siri capability
@@ -125,9 +125,9 @@ Siri integration **does not work** in iOS Simulator. Must test on real iPhone/iP
 **Initial Testing:**
 1. Build and install app on device
 2. Wait 60 seconds for iOS to index intents
-3. Open Shortcuts app → verify PersonalAI intents appear
+3. Open Shortcuts app → verify STASH intents appear
 4. Settings → Siri & Search → enable "Learn from this App"
-5. Try: "Hey Siri, capture a thought in PersonalAI"
+5. Try: "Hey Siri, capture a thought in STASH"
 
 ### 3. Verify Metadata Extraction (Build Log)
 
@@ -165,8 +165,8 @@ None of these are code issues - they're platform requirements.
 - SIRI_CHECKLIST.md (130 lines)
 
 ### Modified Files
-- Sources/PersonalAIApp.swift (added AppIntents import and registration)
-- PersonalAI.entitlements (added Siri entitlement)
+- Sources/STASHApp.swift (added AppIntents import and registration)
+- STASH.entitlements (added Siri entitlement)
 
 ### Total Lines of Code
 - **727 lines** of Swift code for App Intents

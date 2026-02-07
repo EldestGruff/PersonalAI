@@ -7,7 +7,7 @@
 
 **For** knowledge workers, ADHD individuals, and health-conscious users
 **Who** struggle with organizing thoughts and turning ideas into action
-**PersonalAI is** an intelligent thought companion
+**STASH is** an intelligent thought companion
 **That** automatically classifies, enriches with context, and creates actionable items
 **Unlike** Apple Notes (manual organization) or Notion (overwhelming complexity)
 **We** combine AI automation, health awareness, and privacy in a mobile-first experience
@@ -37,7 +37,7 @@
 - "I can't remember what I was thinking when I wrote this"
 - "I don't trust Notion with my private thoughts"
 
-**How PersonalAI Helps**:
+**How STASH Helps**:
 - Voice capture thoughts in seconds
 - AI automatically categorizes (note/idea/task)
 - Context captured without effort (location, energy level)
@@ -76,7 +76,7 @@
 - "I can't tell if I'm actually energized or just anxious"
 - "Manually tagging everything is impossible for me"
 
-**How PersonalAI Helps**:
+**How STASH Helps**:
 - Fastest capture: Siri → done (no app opening)
 - Zero organization required (AI does it)
 - Energy level tracking helps identify productive times
@@ -118,7 +118,7 @@
 - "I journal manually but want insights"
 - "I'm tired of cloud apps having my personal data"
 
-**How PersonalAI Helps**:
+**How STASH Helps**:
 - Integrates Apple Health data (energy, activity, sleep)
 - Correlates mental patterns with physical state
 - Charts show when you're most productive
@@ -356,10 +356,10 @@
 ## Elevator Pitch Variations
 
 ### 30-second pitch:
-"PersonalAI is like Apple Notes, but intelligent. You capture thoughts with your voice, and AI automatically figures out if it's a task, idea, or journal entry. It adds context like your location and energy level, so you can find things later and see patterns. Everything stays private on your device. Perfect for anyone who has ideas they don't want to lose."
+"STASH is like Apple Notes, but intelligent. You capture thoughts with your voice, and AI automatically figures out if it's a task, idea, or journal entry. It adds context like your location and energy level, so you can find things later and see patterns. Everything stays private on your device. Perfect for anyone who has ideas they don't want to lose."
 
 ### 60-second pitch:
-"PersonalAI solves the problem of having great thoughts but losing them to disorganization. You know that feeling when you jot down 'dentist appointment Tuesday' in your notes app, and then never create the calendar event? Or when you have 500 notes with no way to find anything?
+"STASH solves the problem of having great thoughts but losing them to disorganization. You know that feeling when you jot down 'dentist appointment Tuesday' in your notes app, and then never create the calendar event? Or when you have 500 notes with no way to find anything?
 
 We use AI to automatically classify your thoughts—is this a task, idea, event, question, or note? Then we enrich it with context: where were you, what was your energy level, what time of day? All the metadata you'd manually add if you had time.
 
@@ -372,13 +372,13 @@ It's for anyone who thinks a lot but struggles with execution—ADHD folks, know
 ## Positioning Against Competitors
 
 ### vs. Apple Notes:
-"Apple Notes is great for simple lists, but PersonalAI understands your thoughts. It knows when something is a task vs. an idea, adds context automatically, and helps you see patterns over time. Think 'smart notes' vs. 'digital sticky notes.'"
+"Apple Notes is great for simple lists, but STASH understands your thoughts. It knows when something is a task vs. an idea, adds context automatically, and helps you see patterns over time. Think 'smart notes' vs. 'digital sticky notes.'"
 
 ### vs. Notion:
-"Notion is powerful but complex—it's a Ferrari when you need a bicycle. PersonalAI is mobile-first, private by design, and requires zero setup. Capture a thought in 3 seconds instead of navigating databases."
+"Notion is powerful but complex—it's a Ferrari when you need a bicycle. STASH is mobile-first, private by design, and requires zero setup. Capture a thought in 3 seconds instead of navigating databases."
 
 ### vs. Day One:
-"Day One is beautiful for journaling, but PersonalAI is a complete thought system. It handles tasks, ideas, and events—not just reflection. Plus, health context beyond just location and weather."
+"Day One is beautiful for journaling, but STASH is a complete thought system. It handles tasks, ideas, and events—not just reflection. Plus, health context beyond just location and weather."
 
 ---
 
@@ -415,7 +415,7 @@ Modern life generates more thoughts than we can process. Apps either require man
 What if your thoughts organized themselves? What if you could see patterns in your mental state like you track your fitness? What if "capture" meant truly done, not "capture then file later"?
 
 ### The Solution (Hero):
-PersonalAI is your intelligent thought companion. It listens, understands, enriches, and organizes—all privately on your device. You think, we handle the rest.
+STASH is your intelligent thought companion. It listens, understands, enriches, and organizes—all privately on your device. You think, we handle the rest.
 
 ### The Outcome (Happy Ending):
 You stop losing ideas. You act on what matters. You understand your mental patterns. You reclaim time spent organizing. You think more, manage less.
@@ -454,7 +454,7 @@ Why quick capture beats elaborate systems for most people
 - Emphasize privacy and local-first
 
 ### Week 0 (Launch):
-- Product Hunt: "PersonalAI – Your thoughts, organized automatically"
+- Product Hunt: "STASH – Your thoughts, organized automatically"
 - Reddit: Authentic post in r/ADHD, r/productivity
 - Twitter thread: Problem → Solution → Demo → Try it
 

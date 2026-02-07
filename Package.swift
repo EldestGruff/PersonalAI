@@ -4,30 +4,30 @@
 import PackageDescription
 
 let package = Package(
-    name: "PersonalAI",
+    name: "STASH",
     platforms: [
         .iOS(.v18),
         .macOS(.v15)
     ],
     products: [
         .library(
-            name: "PersonalAI",
-            targets: ["PersonalAI"]
+            name: "STASH",
+            targets: ["STASH"]
         )
     ],
     dependencies: [],
     targets: [
         .target(
-            name: "PersonalAI",
+            name: "STASH",
             dependencies: [],
             path: "Sources",
             resources: [
-                .process("Persistence/CoreDataStack/PersonalAI.xcdatamodeld")
+                .process("Persistence/CoreDataStack/STASH.xcdatamodeld")
             ]
         ),
         .testTarget(
-            name: "PersonalAITests",
-            dependencies: ["PersonalAI"],
+            name: "STASHTests",
+            dependencies: ["STASH"],
             path: "Tests"
         )
     ]

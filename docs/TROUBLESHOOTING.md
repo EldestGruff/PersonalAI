@@ -28,7 +28,7 @@ This resets the Core Data store with the new schema.
 1. Close Xcode
 2. Delete derived data:
    ```bash
-   rm -rf ~/Library/Developer/Xcode/DerivedData/PersonalAI-*
+   rm -rf ~/Library/Developer/Xcode/DerivedData/STASH-*
    ```
 3. Reopen Xcode and rebuild
 
@@ -49,11 +49,11 @@ If you still see the error after deleting the app:
 
 1. **Check Console Logs:**
    - Open Console.app
-   - Filter for "PersonalAI"
+   - Filter for "STASH"
    - Look for the actual error message
 
 2. **Check HealthKit Authorization:**
-   - Settings → Privacy & Security → Health → PersonalAI
+   - Settings → Privacy & Security → Health → STASH
    - Ensure all permissions are granted
 
 3. **Report the Issue:**

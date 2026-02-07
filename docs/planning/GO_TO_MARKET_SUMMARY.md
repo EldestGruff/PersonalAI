@@ -1,11 +1,11 @@
 # Go-to-Market Strategy Summary
 
 **Last Updated**: 2026-01-30
-**Purpose**: Executive overview of PersonalAI's launch strategy
+**Purpose**: Executive overview of STASH's launch strategy
 
 ## Quick Reference
 
-This document provides a high-level summary of PersonalAI's go-to-market strategy. For detailed information, see the individual documents linked below.
+This document provides a high-level summary of STASH's go-to-market strategy. For detailed information, see the individual documents linked below.
 
 ---
 
@@ -343,7 +343,7 @@ All strategy documents in `docs/planning/`:
 
 ## Final Thoughts
 
-**PersonalAI has strong fundamentals**:
+**STASH has strong fundamentals**:
 - ✅ Clear differentiation (health context, privacy, AI automation)
 - ✅ Underserved target market (ADHD users, knowledge workers)
 - ✅ Exceptional unit economics (99% gross margins)

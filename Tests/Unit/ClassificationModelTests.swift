@@ -1,13 +1,13 @@
 //
 //  ClassificationModelTests.swift
-//  PersonalAITests
+//  STASHTests
 //
 //  Phase 3A Spec 1: Data Models & Persistence
 //  Unit tests for Classification model validation using Swift Testing
 //
 
 import Testing
-@testable import PersonalAI
+@testable import STASH
 
 @Suite("Classification Model Tests")
 struct ClassificationModelTests {

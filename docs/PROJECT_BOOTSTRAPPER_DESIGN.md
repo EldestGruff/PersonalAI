@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Last Updated:** 2026-02-01
-**Purpose:** Design specification for an agent system that initializes new software projects based on established patterns from PersonalAI
+**Purpose:** Design specification for an agent system that initializes new software projects based on established patterns from STASH
 
 ---
 
@@ -25,7 +25,7 @@
 
 ## Executive Summary
 
-The Project Bootstrapper is an AI agent system that transforms PersonalAI's organizational excellence into a reusable framework for initializing new software projects. Instead of starting from scratch, developers answer targeted questions and receive a fully-configured project with:
+The Project Bootstrapper is an AI agent system that transforms STASH's organizational excellence into a reusable framework for initializing new software projects. Instead of starting from scratch, developers answer targeted questions and receive a fully-configured project with:
 
 - Tailored directory structure
 - Comprehensive documentation
@@ -34,7 +34,7 @@ The Project Bootstrapper is an AI agent system that transforms PersonalAI's orga
 - Architecture guidelines adapted to their stack
 - Best practices for their platform
 
-**Key Innovation:** The agent doesn't just copy templates—it adapts PersonalAI's patterns to different project types, languages, and platforms while preserving the underlying organizational philosophy.
+**Key Innovation:** The agent doesn't just copy templates—it adapts STASH's patterns to different project types, languages, and platforms while preserving the underlying organizational philosophy.
 
 ---
 
@@ -44,7 +44,7 @@ The Project Bootstrapper is an AI agent system that transforms PersonalAI's orga
 Interview the user to understand project context, constraints, and goals.
 
 ### 2. Pattern Recognition & Adaptation
-Analyze PersonalAI patterns and adapt them to the target project type.
+Analyze STASH patterns and adapt them to the target project type.
 
 ### 3. Repository Initialization
 Create GitHub repository with proper configuration and structure.
@@ -185,11 +185,11 @@ Provide basic automation configuration for the chosen platform.
 
 ### Adaptation Rules
 
-The agent analyzes PersonalAI patterns and adapts them using these principles:
+The agent analyzes STASH patterns and adapts them using these principles:
 
 #### 1. Directory Structure Mapping
 
-**PersonalAI Pattern:**
+**STASH Pattern:**
 ```
 Sources/
   ├── Models/
@@ -248,7 +248,7 @@ pkg/
 
 #### 2. Documentation Structure Preservation
 
-**PersonalAI's 3-tier docs structure is universal:**
+**STASH's 3-tier docs structure is universal:**
 ```
 docs/
   ├── planning/        → Roadmap, strategy, requests
@@ -274,7 +274,7 @@ docs/
 
 #### 3. Issue Template Adaptation
 
-**PersonalAI Templates (iOS app):**
+**STASH Templates (iOS app):**
 - Bug Report (iOS version, device, permissions)
 - Feature Request (use case driven)
 - Support Question
@@ -296,7 +296,7 @@ docs/
 
 #### 4. Architecture Principles Translation
 
-**PersonalAI Principles:**
+**STASH Principles:**
 1. Protocol-oriented design
 2. Dependency injection
 3. Fail-soft error handling
@@ -479,7 +479,7 @@ gh repo create {{github_username}}/{{project-name}} \
 ```bash
 git init
 git add .
-git commit -m "Initial commit: Project bootstrapped with PersonalAI patterns"
+git commit -m "Initial commit: Project bootstrapped with STASH patterns"
 git branch -M main
 git push -u origin main
 ```
@@ -487,7 +487,7 @@ git push -u origin main
 ### GitHub Configuration
 
 **Labels Setup:**
-Adapt PersonalAI's label system:
+Adapt STASH's label system:
 
 ```bash
 # Type labels (universal)
@@ -582,7 +582,7 @@ gh project create "{{PROJECT_NAME}} Development" \
 
 #### 2. docs/DOCUMENTATION_INDEX.md
 
-Adapted from PersonalAI's structure:
+Adapted from STASH's structure:
 - Quick navigation
 - Document categories
 - Learning paths
@@ -621,7 +621,7 @@ Adapted from PersonalAI's structure:
 
 #### 4. docs/development/ARCHITECTURE.md
 
-**Adapts PersonalAI's "Architecture as Protocol":**
+**Adapts STASH's "Architecture as Protocol":**
 - Core architectural principles
 - Pattern explanations specific to the stack
 - Example implementations
@@ -644,7 +644,7 @@ Adapted from PersonalAI's structure:
 
 #### 5. docs/operations/GITHUB_ISSUES_SETUP.md
 
-Direct adaptation from PersonalAI with platform-specific examples.
+Direct adaptation from STASH with platform-specific examples.
 
 ---
 
@@ -1255,7 +1255,7 @@ Agent: "Your project is ready!
 
 #### 2. Pattern Analyzer
 ```
-├── PersonalAIPatternExtractor
+├── STASHPatternExtractor
 │   ├── extractDirectoryPatterns()
 │   ├── extractDocPatterns()
 │   └── extractIssuePatterns()
@@ -1407,7 +1407,7 @@ Features: ["Workout logging", "Progress tracking", "AI insights"]
 ```markdown
 # FitTrack Architecture
 
-## Principles (from PersonalAI)
+## Principles (from STASH)
 
 1. Protocol-Oriented Design
    - All services defined by protocols
@@ -1453,7 +1453,7 @@ Features: ["User authentication", "Task CRUD", "Team collaboration"]
 ```markdown
 # TaskAPI Architecture
 
-## Principles (adapted from PersonalAI)
+## Principles (adapted from STASH)
 
 1. Interface-Based Design
    - All services implement interfaces
@@ -1500,7 +1500,7 @@ Features: ["Canvas drawing", "Real-time sync", "User presence"]
 ```markdown
 # CollabBoard Architecture
 
-## Principles (adapted from PersonalAI)
+## Principles (adapted from STASH)
 
 1. Component-Based Design
    - Reusable UI components
@@ -1584,15 +1584,15 @@ Features: ["Canvas drawing", "Real-time sync", "User presence"]
 ### Phase 3 Features
 
 1. **Live Project Analysis**
-   - Analyze existing PersonalAI commits
+   - Analyze existing STASH commits
    - Extract actual patterns vs. documented patterns
 
 2. **Pattern Suggestions**
    - AI suggests improvements to generated structure
-   - Learn from successful PersonalAI patterns
+   - Learn from successful STASH patterns
 
 3. **Continuous Sync**
-   - Update generated projects when PersonalAI evolves
+   - Update generated projects when STASH evolves
    - Pull new best practices
 
 ---
@@ -1635,10 +1635,10 @@ Features: ["Canvas drawing", "Real-time sync", "User presence"]
 **iOS:**
 ```bash
 # Build
-xcodebuild -scheme PersonalAI -destination 'platform=iOS Simulator,name=iPhone 15'
+xcodebuild -scheme STASH -destination 'platform=iOS Simulator,name=iPhone 15'
 
 # Test
-xcodebuild test -scheme PersonalAI
+xcodebuild test -scheme STASH
 
 # Lint
 swiftlint lint --strict
@@ -1704,7 +1704,7 @@ area-*: "#5319e7" → "#c5def5" (spectrum)
 
 ## Conclusion
 
-The Project Bootstrapper transforms PersonalAI's organizational excellence into a reusable asset. By intelligently adapting patterns to different platforms, languages, and team sizes, it enables developers to start new projects with:
+The Project Bootstrapper transforms STASH's organizational excellence into a reusable asset. By intelligently adapting patterns to different platforms, languages, and team sizes, it enables developers to start new projects with:
 
 - **Proven organizational structure** from a real production project
 - **Tailored documentation** that matches their tech stack

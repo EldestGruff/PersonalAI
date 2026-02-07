@@ -82,14 +82,14 @@ Set up monitoring so you know when your app is broken before customers tell you.
 1. Go to [firebase.google.com](https://firebase.google.com)
 2. Click "Get started"
 3. Click "Add project"
-4. Name it "PersonalAI"
+4. Name it "STASH"
 5. Disable Google Analytics (you won't need it yet)
 6. Create project
 
 ### Step 2: Add iOS App to Firebase
 
 1. In Firebase console, click iOS icon
-2. Enter your bundle ID: `com.yourname.PersonalAI`
+2. Enter your bundle ID: `com.yourname.STASH`
 3. Download `GoogleService-Info.plist`
 4. Drag `GoogleService-Info.plist` into Xcode project root
 5. Make sure "Copy items if needed" is checked
@@ -108,7 +108,7 @@ Set up monitoring so you know when your app is broken before customers tell you.
 
 ### Step 4: Initialize Firebase in App
 
-**Edit `PersonalAIApp.swift`:**
+**Edit `STASHApp.swift`:**
 
 ```swift
 import SwiftUI
@@ -116,7 +116,7 @@ import FirebaseCore
 import FirebaseCrashlytics
 
 @main
-struct PersonalAIApp: App {
+struct STASHApp: App {
     init() {
         // Configure Firebase
         FirebaseApp.configure()
@@ -143,7 +143,7 @@ struct PersonalAIApp: App {
 **Automatic symbolication (recommended):**
 
 1. In Xcode, select project in navigator
-2. Select "PersonalAI" target
+2. Select "STASH" target
 3. Build Phases tab
 4. Click "+" → "New Run Script Phase"
 5. Name it "Firebase Crashlytics"
@@ -241,7 +241,7 @@ Crashlytics.crashlytics().setCustomValue(energyLevel, forKey: "current_energy")
 import Sentry
 
 @main
-struct PersonalAIApp: App {
+struct STASHApp: App {
     init() {
         SentrySDK.start { options in
             options.dsn = "YOUR_DSN_HERE"
@@ -325,7 +325,7 @@ class MetricKitManager: NSObject, MXMetricManagerSubscriber {
 
 ```swift
 @main
-struct PersonalAIApp: App {
+struct STASHApp: App {
     init() {
         // Initialize MetricKit
         _ = MetricKitManager.shared
@@ -357,7 +357,7 @@ struct PersonalAIApp: App {
 ### How to Access
 
 1. Go to [appstoreconnect.apple.com](https://appstoreconnect.apple.com)
-2. My Apps → PersonalAI
+2. My Apps → STASH
 3. **App Analytics** tab → Usage, retention, etc.
 4. **TestFlight** tab → Beta metrics
 5. **Activity** tab → Crashes
@@ -396,7 +396,7 @@ struct PersonalAIApp: App {
 
 **Create weekly digest email to yourself:**
 
-**Subject:** PersonalAI Weekly Metrics
+**Subject:** STASH Weekly Metrics
 
 **Body:**
 - Crash-free rate: X%
@@ -423,7 +423,7 @@ struct PersonalAIApp: App {
 import os.log
 
 // Create logger
-let logger = Logger(subsystem: "com.yourname.PersonalAI", category: "ContextService")
+let logger = Logger(subsystem: "com.yourname.STASH", category: "ContextService")
 
 // Log messages
 logger.debug("Starting context gather")

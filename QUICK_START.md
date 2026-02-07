@@ -1,4 +1,4 @@
-# PersonalAI Quick Start Guide
+# STASH Quick Start Guide
 
 **Fast navigation to what you need right now**
 
@@ -13,7 +13,7 @@
 → **USE THIS DAILY**
 
 **📊 Your GitHub Project Board**
-→ `https://github.com/EldestGruff/PersonalAI/projects`
+→ `https://github.com/EldestGruff/STASH/projects`
 → See what's in progress, what's next
 
 **📝 [CHANGELOG.md](./CHANGELOG.md)**
@@ -58,7 +58,7 @@
 ## 📂 Documentation Map
 
 ```
-PersonalAI/
+STASH/
 │
 ├── QUICK_START.md ← You are here!
 ├── README.md ← Project overview
@@ -154,9 +154,9 @@ PersonalAI/
 ## 📊 Your Tools
 
 ### GitHub
-- **Issues:** `https://github.com/EldestGruff/PersonalAI/issues`
-- **Project Board:** `https://github.com/EldestGruff/PersonalAI/projects`
-- **Repo:** `https://github.com/EldestGruff/PersonalAI`
+- **Issues:** `https://github.com/EldestGruff/STASH/issues`
+- **Project Board:** `https://github.com/EldestGruff/STASH/projects`
+- **Repo:** `https://github.com/EldestGruff/STASH`
 
 ### Gmail
 - Support label/folder

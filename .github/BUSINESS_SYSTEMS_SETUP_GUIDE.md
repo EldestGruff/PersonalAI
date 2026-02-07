@@ -74,7 +74,7 @@ Follow instructions in `.github/PROJECT_BOARD_SETUP.md`:
 
 1. Go to GitHub repo → Projects → New project
 2. Select "Board" template
-3. Name it "PersonalAI Development"
+3. Name it "STASH Development"
 4. Customize columns:
    - 📋 Backlog
    - 📝 To Do
@@ -155,7 +155,7 @@ git push
 
 **Option A: Use personal Gmail (Quick start)**
 - Use your existing Gmail
-- Create label: "PersonalAI Support"
+- Create label: "STASH Support"
 - Set up filters to auto-label
 
 **Option B: Custom domain (Professional, but costs $)**

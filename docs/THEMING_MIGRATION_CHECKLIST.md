@@ -125,7 +125,7 @@ Already using solid colors - no changes needed:
 
 ### Required Color Sets (Minimum)
 
-Create these `.colorset` files in `PersonalAI.xcassets/Colors/`:
+Create these `.colorset` files in `STASH.xcassets/Colors/`:
 
 1. **ClassificationBackground.colorset**
    - Light: `rgba(139, 92, 246, 0.15)` (purple)

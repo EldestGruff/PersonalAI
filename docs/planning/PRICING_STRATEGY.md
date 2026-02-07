@@ -41,7 +41,7 @@
 
 ## Pricing Tiers
 
-### Free Tier: "PersonalAI Starter"
+### Free Tier: "STASH Starter"
 **Price**: $0
 
 **Includes**:
@@ -70,7 +70,7 @@
 
 ---
 
-### Premium Tier: "PersonalAI Pro"
+### Premium Tier: "STASH Pro"
 **Price**: $3.99/month or $39.99/year (17% savings)
 
 **Includes Everything in Free, Plus**:
@@ -94,7 +94,7 @@
 
 ---
 
-### Future Tier: "PersonalAI Plus" (Phase 2, 6-12 months)
+### Future Tier: "STASH Plus" (Phase 2, 6-12 months)
 **Price**: $7.99/month or $79.99/year
 
 **Includes Everything in Pro, Plus**:
@@ -126,7 +126,7 @@
 
 ### Price Presentation on App Store
 ```
-PersonalAI Pro
+STASH Pro
 $39.99 per year (Save 17%)
   or $3.99 per month
 
@@ -167,8 +167,8 @@ Pro becomes the "obvious" choice between extremes
 
 ### Hard Limits (Blockers)
 1. **50 thoughts reached**: "You've reached your monthly limit. Upgrade for unlimited thoughts."
-2. **Insights locked**: Tap on Charts → "Unlock insights with PersonalAI Pro"
-3. **Export locked**: "Export requires PersonalAI Pro"
+2. **Insights locked**: Tap on Charts → "Unlock insights with STASH Pro"
+3. **Export locked**: "Export requires STASH Pro"
 
 ### Soft Prompts (Encouragement)
 1. **After 10 thoughts**: "You're off to a great start! See your patterns with Pro insights."
@@ -357,7 +357,7 @@ At $39.99/year ($27.99 after App Store cut, $2.33/mo effective):
 
 ### ADHD Coach Partnerships
 - Offer 50% affiliate commission on annual subscriptions
-- Coaches recommend PersonalAI to clients
+- Coaches recommend STASH to clients
 - Recurring revenue share incentivizes promotion
 
 ---
@@ -389,7 +389,7 @@ Free Tier:
 • Context enrichment
 • Basic search
 
-PersonalAI Pro – $39.99/year:
+STASH Pro – $39.99/year:
 • Unlimited thoughts
 • AI auto-tagging
 • Charts and insights
@@ -404,7 +404,7 @@ Start Free Trial – 7 Days
 ```
 You've reached your 50 thoughts this month! 🎉
 
-Upgrade to PersonalAI Pro for:
+Upgrade to STASH Pro for:
 ✓ Unlimited thoughts
 ✓ Insights and charts
 ✓ AI auto-tagging
@@ -417,24 +417,24 @@ $39.99/year or $3.99/month
 ```
 
 ### Email Drip (Trial Users)
-**Subject**: Your PersonalAI insights are waiting 📊
+**Subject**: Your STASH insights are waiting 📊
 
 "Hi [Name],
 
 You've captured [X] thoughts this week—that's amazing! You're building a habit that will pay dividends.
 
-Your trial includes full access to PersonalAI Pro insights. Here's what we've learned about your thought patterns:
+Your trial includes full access to STASH Pro insights. Here's what we've learned about your thought patterns:
 
 • You're most active [time of day]
 • [X]% of your thoughts are [type]
 • Your average energy level when capturing is [level]
 
-After your trial ends in [X] days, these insights require PersonalAI Pro ($39.99/year or $3.99/month).
+After your trial ends in [X] days, these insights require STASH Pro ($39.99/year or $3.99/month).
 
 [View Your Insights]
 
 Keep capturing,
-The PersonalAI Team"
+The STASH Team"
 
 ---
 

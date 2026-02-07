@@ -4,7 +4,7 @@
 //
 //  Phase 3A Spec 3: Content View (Legacy)
 //  This file is kept for backwards compatibility.
-//  The main app now uses MainTabView from PersonalAIApp.swift
+//  The main app now uses MainTabView from STASHApp.swift
 //
 
 import SwiftUI

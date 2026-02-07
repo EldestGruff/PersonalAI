@@ -1,12 +1,12 @@
 //
 //  FoundationModelsClassificationTests.swift
-//  PersonalAI
+//  STASH
 //
 //  Tests for Issue #8: Foundation Models edge cases and refinements
 //
 
 import Foundation
-@testable import PersonalAI
+@testable import STASH
 
 /// Manual test runner for Foundation Models classification edge cases
 /// Run this to evaluate classification quality for Issue #8

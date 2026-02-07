@@ -30,7 +30,7 @@ struct AppleIntelligenceRequiredView: View {
                         .font(.title.bold())
                         .multilineTextAlignment(.center)
 
-                    Text("PersonalAI uses on-device AI to classify and organize your thoughts privately.")
+                    Text("STASH uses on-device AI to classify and organize your thoughts privately.")
                         .font(.body)
                         .multilineTextAlignment(.center)
                         .foregroundStyle(.secondary)

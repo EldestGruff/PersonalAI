@@ -1,6 +1,6 @@
 # Siri Integration Checklist
 
-Quick reference for enabling Siri functionality in PersonalAI.
+Quick reference for enabling Siri functionality in STASH.
 
 ## ✅ Code Complete (Already Done)
 
@@ -9,8 +9,8 @@ Quick reference for enabling Siri functionality in PersonalAI.
 - [x] CaptureThoughtIntent.swift implemented
 - [x] SearchThoughtsIntent.swift implemented
 - [x] ReviewIntent.swift implemented
-- [x] AppShortcutsProvider registered in PersonalAIApp.swift
-- [x] Siri entitlement added to PersonalAI.entitlements
+- [x] AppShortcutsProvider registered in STASHApp.swift
+- [x] Siri entitlement added to STASH.entitlements
 - [x] All code implementation complete
 
 ## ⚠️ Manual Xcode Configuration Required
@@ -20,8 +20,8 @@ Quick reference for enabling Siri functionality in PersonalAI.
 
 The Siri entitlement has been added, but your provisioning profile needs to be regenerated:
 
-- [ ] Open PersonalAI.xcodeproj in Xcode
-- [ ] Select PersonalAI target
+- [ ] Open STASH.xcodeproj in Xcode
+- [ ] Select STASH target
 - [ ] Click "Signing & Capabilities" tab
 - [ ] You'll see "Siri" capability listed (already added via entitlements)
 - [ ] Under "Signing", select your Team/Apple ID
@@ -54,7 +54,7 @@ The Siri entitlement has been added, but your provisioning profile needs to be r
 **Location:** iOS Settings on device**
 
 - [ ] Open Settings → Siri & Search
-- [ ] Scroll to find "PersonalAI"
+- [ ] Scroll to find "STASH"
 - [ ] Enable "Learn from this App"
 - [ ] Enable "Show App in Search"
 - [ ] Enable "Show Siri Suggestions"
@@ -64,7 +64,7 @@ The Siri entitlement has been added, but your provisioning profile needs to be r
 ### Test 1: Shortcuts App
 - [ ] Open Shortcuts app on device
 - [ ] Tap "+" to create new shortcut
-- [ ] Search for "PersonalAI"
+- [ ] Search for "STASH"
 - [ ] Verify these intents appear:
   - Capture Thought
   - Search Thoughts
@@ -73,9 +73,9 @@ The Siri entitlement has been added, but your provisioning profile needs to be r
 ### Test 2: Voice Commands
 Try each of these with Siri:
 
-- [ ] "Hey Siri, capture a thought in PersonalAI"
-- [ ] "Hey Siri, save a note in PersonalAI"
-- [ ] "Hey Siri, search PersonalAI for work"
+- [ ] "Hey Siri, capture a thought in STASH"
+- [ ] "Hey Siri, save a note in STASH"
+- [ ] "Hey Siri, search STASH for work"
 - [ ] "Hey Siri, review my thoughts from today"
 
 ### Test 3: Spotlight Search
@@ -92,7 +92,7 @@ Try each of these with Siri:
 2. Rebuild app completely
 3. Reinstall on device
 4. Wait 60 seconds
-5. Verify Settings → Siri & Search → PersonalAI is ON
+5. Verify Settings → Siri & Search → STASH is ON
 
 ### Shortcuts app shows no intents:
 1. Check build log for metadata extraction
@@ -121,10 +121,10 @@ Try each of these with Siri:
 ## ✅ When Complete
 
 You'll know Siri integration is working when:
-- Siri responds to "capture a thought in PersonalAI"
-- Shortcuts app shows PersonalAI intents
+- Siri responds to "capture a thought in STASH"
+- Shortcuts app shows STASH intents
 - Spotlight search finds your thoughts
-- Settings shows PersonalAI under Siri & Search
+- Settings shows STASH under Siri & Search
 
 ---
 

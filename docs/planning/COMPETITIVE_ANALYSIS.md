@@ -1,11 +1,11 @@
-# Competitive Analysis: PersonalAI
+# Competitive Analysis: STASH
 
 **Last Updated**: 2026-01-30
 **Purpose**: Understand competitive landscape and identify differentiation opportunities
 
 ## Executive Summary
 
-PersonalAI enters a crowded note-taking and thought management space but with unique AI-powered classification and health context integration. Key differentiators are privacy-first local-only processing, intelligent automation, and iOS ecosystem integration.
+STASH enters a crowded note-taking and thought management space but with unique AI-powered classification and health context integration. Key differentiators are privacy-first local-only processing, intelligent automation, and iOS ecosystem integration.
 
 ## Market Overview
 
@@ -226,7 +226,7 @@ PersonalAI enters a crowded note-taking and thought management space but with un
 
 ## Competitive Positioning Matrix
 
-| Feature | PersonalAI | Apple Notes | Notion | Day One | Bear | Obsidian |
+| Feature | STASH | Apple Notes | Notion | Day One | Bear | Obsidian |
 |---------|-----------|-------------|--------|---------|------|----------|
 | **AI Classification** | ✅ Auto | ❌ | 🔶 Paid AI | ❌ | ❌ | 🔶 Plugins |
 | **Local-First Privacy** | ✅ | ✅ | ❌ Cloud | 🔶 Encrypted | ✅ | ✅ |
@@ -293,7 +293,7 @@ PersonalAI enters a crowded note-taking and thought management space but with un
 
 **For**: Knowledge workers, ADHD individuals, health-conscious users
 **Who**: Want to capture thoughts quickly without manual organization
-**PersonalAI is**: An intelligent thought companion
+**STASH is**: An intelligent thought companion
 **That**: Automatically classifies, enriches with context, and creates actionable items
 **Unlike**: Apple Notes (dumb), Notion (complex), Day One (journaling-only)
 **Our app**: Combines AI intelligence, health awareness, and privacy in one mobile-first experience
@@ -332,7 +332,7 @@ PersonalAI enters a crowded note-taking and thought management space but with un
 ### Network Effects (Future)
 1. **Shared Vocabularies**: Teams could share classification models
 2. **Template Marketplace**: Community-contributed thought templates
-3. **Integration Ecosystem**: Third-party apps integrate with PersonalAI
+3. **Integration Ecosystem**: Third-party apps integrate with STASH
 
 ---
 

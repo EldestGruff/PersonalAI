@@ -1,6 +1,6 @@
 # iOS 26 + Foundation Models Development Skill
 
-Expert-level iOS 26 development skill covering modern Apple Intelligence features, built from real-world experience developing PersonalAI.
+Expert-level iOS 26 development skill covering modern Apple Intelligence features, built from real-world experience developing STASH.
 
 ## What This Skill Covers
 
@@ -73,7 +73,7 @@ Activate the skill in Claude Code by referencing iOS 26 concepts:
 
 ## Real-World Examples
 
-This skill was built from actual code in the PersonalAI project:
+This skill was built from actual code in the STASH project:
 
 - **Foundation Models Classification**: Real sentiment analysis and tag suggestion
 - **HealthKit Integration**: Actual State of Mind context gathering
@@ -133,7 +133,7 @@ This skill will evolve as we discover more patterns and best practices. Future a
 
 ## Credits
 
-Built by Claude and Andy while developing PersonalAI - a context-aware thought capture app using iOS 26's newest features.
+Built by Claude and Andy while developing STASH - a context-aware thought capture app using iOS 26's newest features.
 
 ## Version History
 

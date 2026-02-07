@@ -176,7 +176,7 @@ struct SettingsScreen: View {
             Text("Subscription")
         } footer: {
             if subscriptionManager.status.tier == .pro {
-                Text("You have unlimited access to all features. Thank you for supporting PersonalAI!")
+                Text("You have unlimited access to all features. Thank you for supporting STASH!")
             } else {
                 Text("Upgrade to Pro for unlimited thoughts, advanced analytics, and export features.")
             }

@@ -278,7 +278,7 @@ If adding custom icons:
 Recommended Xcode Asset Catalog organization:
 
 ```
-PersonalAI.xcassets/
+STASH.xcassets/
 ├── Colors/
 │   ├── Brand/
 │   │   ├── Primary.colorset

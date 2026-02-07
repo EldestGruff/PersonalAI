@@ -1,6 +1,6 @@
 # Operations Documentation Index
 
-**Running PersonalAI as a sustainable software product**
+**Running STASH as a sustainable software product**
 
 This directory contains practical guides for the operational side of shipping and maintaining an iOS app as a solo developer or small team.
 

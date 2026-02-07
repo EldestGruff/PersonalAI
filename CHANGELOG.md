@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to PersonalAI will be documented in this file.
+All notable changes to STASH will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -145,7 +145,7 @@ All permissions are optional with fail-soft behavior:
 ### For TestFlight Beta
 
 ```
-Thanks for testing PersonalAI!
+Thanks for testing STASH!
 
 **What's New:**
 - [Feature highlights]

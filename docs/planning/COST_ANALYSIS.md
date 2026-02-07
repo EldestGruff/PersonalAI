@@ -20,7 +20,7 @@
 
 ### ~~OpenAI API Costs~~ Foundation Models (iOS 26+)
 
-**UPDATED**: PersonalAI uses Apple's Foundation Models framework exclusively.
+**UPDATED**: STASH uses Apple's Foundation Models framework exclusively.
 
 **Model**: On-device 3B parameter LLM (Apple Intelligence)
 
@@ -567,7 +567,7 @@ Annual Run Rate: $54,960/year
 
 ## Bottom Line
 
-**PersonalAI has exceptional unit economics**:
+**STASH has exceptional unit economics**:
 - 99% gross margins (SaaS-like)
 - Low variable costs ($0.027/user/month)
 - Break-even at 150-400 users (achievable in 3-6 months)

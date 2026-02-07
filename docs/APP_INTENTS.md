@@ -1,10 +1,10 @@
 # App Intents - Siri & Shortcuts Integration
 
-PersonalAI App Intents enable Siri voice control, Shortcuts automation, and Spotlight search integration.
+STASH App Intents enable Siri voice control, Shortcuts automation, and Spotlight search integration.
 
 ## Overview
 
-App Intents make PersonalAI a first-class citizen in the iOS ecosystem:
+App Intents make STASH a first-class citizen in the iOS ecosystem:
 
 - **Siri**: Hands-free voice capture and search
 - **Shortcuts**: Powerful automation workflows
@@ -24,7 +24,7 @@ Located in `Sources/AppIntents/`:
 
 ### Enable Siri Access
 
-1. Settings → Siri & Search → PersonalAI
+1. Settings → Siri & Search → STASH
 2. Enable "Use with Siri"
 3. Enable "Show in Search"
 4. Enable "Suggest Shortcuts"
@@ -58,7 +58,7 @@ Quick capture with voice or text input.
 
 **Siri Phrases:**
 - "Capture a thought"
-- "Save a note in PersonalAI"
+- "Save a note in STASH"
 - "Remember this"
 
 **Parameters:**
@@ -126,7 +126,7 @@ Open app with filtered view.
 Morning Review:
 1. Review Intent (reminders, today, hide completed)
 2. If count > 0: Show notification
-3. Open PersonalAI
+3. Open STASH
 ```
 
 ### Voice Journal
@@ -152,16 +152,16 @@ Weekly Summary:
 
 ### Siri Not Finding Intent
 
-1. Settings → Siri & Search → PersonalAI → Enable all
+1. Settings → Siri & Search → STASH → Enable all
 2. Rebuild app with AppIntents metadata
-3. Try exact phrase: "Capture a thought in PersonalAI"
+3. Try exact phrase: "Capture a thought in STASH"
 
 ### Shortcuts Not Appearing
 
-1. Launch PersonalAI at least once
+1. Launch STASH at least once
 2. Wait a few minutes for indexing
 3. Force quit Shortcuts app and reopen
-4. Check Shortcuts → Apps → PersonalAI
+4. Check Shortcuts → Apps → STASH
 
 ### Spotlight Not Finding Thoughts
 
@@ -216,7 +216,7 @@ ReviewIntent
 
 **Related:**
 - [iOS 26 Modernization Plan](../MODERNIZATION_AUDIT.md)
-- [Issue #17](https://github.com/EldestGruff/PersonalAI/issues/17)
+- [Issue #17](https://github.com/EldestGruff/STASH/issues/17)
 - Sources: `Sources/AppIntents/`
 
 **Status**: Implementation complete, awaiting device testing

@@ -1,6 +1,6 @@
 # Feature Roadmap
 
-This document tracks planned features and enhancements for PersonalAI.
+This document tracks planned features and enhancements for STASH.
 
 ## Reminders & Calendar
 
