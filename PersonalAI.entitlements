@@ -2,63 +2,37 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- HealthKit - Basic (Supported on Personal Team) -->
-	<key>com.apple.developer.healthkit</key>
-	<true/>
-	<key>com.apple.developer.healthkit.background-delivery</key>
-	<true/>
+	<!-- Push Notifications -->
+	<key>aps-environment</key>
+	<string>development</string>
 
-	<!-- Location Services (Supported on Personal Team) -->
-	<key>com.apple.security.personal-information.location</key>
-	<true/>
-
-	<!-- Calendars & Reminders (Supported on Personal Team) -->
-	<key>com.apple.security.personal-information.calendars</key>
-	<true/>
-
-	<!-- Contacts (Supported on Personal Team) -->
-	<key>com.apple.security.personal-information.addressbook</key>
-	<true/>
-
-	<!-- Speech Recognition - REQUIRES PAID PROGRAM -->
-	<!-- Commenting out for Personal Team - uncomment after enrollment
-	<key>com.apple.developer.speech-recognition</key>
-	<true/>
-	-->
-
-	<!-- Background Modes - REQUIRES PAID PROGRAM -->
-	<!-- Commenting out for Personal Team - uncomment after enrollment
+	<!-- Background Modes -->
 	<key>com.apple.developer.background-modes</key>
 	<array>
 		<string>fetch</string>
 		<string>processing</string>
+		<string>remote-notification</string>
 	</array>
-	-->
 
-	<!--
-	==================================================================================
-	CAPABILITIES BELOW REQUIRE PAID APPLE DEVELOPER PROGRAM
-	These are disabled for now - uncomment when your developer enrollment is approved
-	==================================================================================
-	-->
-
-	<!-- Push Notifications (Requires Paid Program) -->
-	<!-- Uncomment after developer enrollment approved
-	<key>aps-environment</key>
-	<string>development</string>
-	-->
-
-	<!-- Siri & App Intents (Requires Paid Program) -->
-	<!-- Uncomment after developer enrollment approved
-	<key>com.apple.developer.siri</key>
+	<!-- HealthKit -->
+	<key>com.apple.developer.healthkit</key>
 	<true/>
-	-->
+	<key>com.apple.developer.healthkit.access</key>
+	<array>
+		<string>health-records</string>
+	</array>
+	<key>com.apple.developer.healthkit.background-delivery</key>
+	<true/>
 
-	<!-- iCloud (Requires Paid Program) -->
-	<!-- Uncomment after developer enrollment approved
+	<!-- iCloud -->
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
 		<string>iCloud.com.withershins.stash</string>
+	</array>
+	<key>com.apple.developer.icloud-services</key>
+	<array>
+		<string>CloudKit</string>
+		<string>CloudDocuments</string>
 	</array>
 	<key>com.apple.developer.ubiquity-container-identifiers</key>
 	<array>
@@ -66,34 +40,33 @@
 	</array>
 	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
 	<string>$(TeamIdentifierPrefix)com.withershins.stash</string>
-	<key>com.apple.developer.icloud-services</key>
-	<array>
-		<string>CloudDocuments</string>
-	</array>
-	-->
 
-	<!-- In-App Purchase (Requires Paid Program) -->
-	<!-- Uncomment after developer enrollment approved
+	<!-- In-App Payments -->
 	<key>com.apple.developer.in-app-payments</key>
 	<array>
 		<string>merchant.com.withershins.stash</string>
 	</array>
-	-->
 
-	<!-- App Groups (Requires Paid Program) -->
-	<!-- Uncomment after developer enrollment approved
+	<!-- Siri -->
+	<key>com.apple.developer.siri</key>
+	<true/>
+
+	<!-- Speech Recognition -->
+	<key>com.apple.developer.speech-recognition</key>
+	<true/>
+
+	<!-- App Groups -->
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.com.withershins.stash</string>
 	</array>
-	-->
 
-	<!-- HealthKit Access - Verifiable Health Records (Requires Paid Program) -->
-	<!-- Uncomment after developer enrollment approved
-	<key>com.apple.developer.healthkit.access</key>
-	<array>
-		<string>health-records</string>
-	</array>
-	-->
+	<!-- Personal Information Access -->
+	<key>com.apple.security.personal-information.addressbook</key>
+	<true/>
+	<key>com.apple.security.personal-information.calendars</key>
+	<true/>
+	<key>com.apple.security.personal-information.location</key>
+	<true/>
 </dict>
 </plist>
