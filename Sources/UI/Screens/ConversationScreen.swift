@@ -12,6 +12,7 @@ struct ConversationScreen: View {
     @State private var viewModel: ConversationViewModel
     @State private var inputText = ""
     @FocusState private var isInputFocused: Bool
+    @Environment(\.themeEngine) private var themeEngine
 
     init(thoughtService: ThoughtServiceProtocol) {
         _viewModel = State(initialValue: ConversationViewModel(thoughtService: thoughtService))
@@ -86,30 +87,33 @@ struct ConversationScreen: View {
     // MARK: - Header
 
     private var headerView: some View {
-        VStack(spacing: 12) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(spacing: 12) {
             Image(systemName: "brain.head.profile")
                 .font(.system(size: 48))
-                .foregroundStyle(.purple.gradient)
+                .foregroundStyle(theme.accentColor.gradient)
 
             Text("Chat with Your Thoughts")
                 .font(.title2.bold())
+                .foregroundColor(theme.textColor)
 
             Text("Ask me anything about your captured thoughts")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
                 .multilineTextAlignment(.center)
 
             if viewModel.thoughtCount > 0 {
                 HStack(spacing: 4) {
                     Image(systemName: "lightbulb.fill")
-                        .foregroundStyle(.yellow)
+                        .foregroundStyle(theme.warningColor)
                     Text("\(viewModel.thoughtCount) thoughts available")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(theme.secondaryTextColor)
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(Color(.secondarySystemBackground))
+                .background(theme.surfaceColor)
                 .cornerRadius(12)
             }
 
@@ -125,10 +129,12 @@ struct ConversationScreen: View {
     // MARK: - Starter Questions
 
     private var starterQuestionsView: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(alignment: .leading, spacing: 12) {
             Text("Try asking:")
                 .font(.caption.bold())
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
 
             ForEach(viewModel.starterQuestions, id: \.self) { question in
                 Button {
@@ -144,30 +150,35 @@ struct ConversationScreen: View {
                         Image(systemName: "arrow.up.circle.fill")
                             .font(.caption)
                     }
+                    .foregroundColor(theme.textColor)
                     .padding(12)
                     .frame(maxWidth: .infinity)
-                    .background(Color(.tertiarySystemBackground))
+                    .background(theme.inputBackgroundColor)
                     .cornerRadius(12)
                 }
                 .buttonStyle(.plain)
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(theme.surfaceColor)
         .cornerRadius(16)
     }
 
     // MARK: - Input Bar
 
     private var inputBar: some View {
-        VStack(spacing: 0) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(spacing: 0) {
             Divider()
+                .background(theme.dividerColor)
 
             HStack(alignment: .bottom, spacing: 12) {
                 TextField("Ask about your thoughts...", text: $inputText, axis: .vertical)
                     .textFieldStyle(.plain)
+                    .foregroundColor(theme.textColor)
                     .padding(12)
-                    .background(Color(.secondarySystemBackground))
+                    .background(theme.inputBackgroundColor)
                     .cornerRadius(20)
                     .focused($isInputFocused)
                     .lineLimit(1...5)
@@ -181,7 +192,7 @@ struct ConversationScreen: View {
                 } label: {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.system(size: 32))
-                        .foregroundStyle(canSend ? .blue : .gray)
+                        .foregroundStyle(canSend ? theme.primaryColor : theme.secondaryTextColor)
                 }
                 .disabled(!canSend)
             }
@@ -214,8 +225,11 @@ struct ConversationScreen: View {
 
 struct MessageBubbleView: View {
     let message: ConversationMessage
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         HStack(alignment: .top, spacing: 12) {
             if message.role == .user {
                 Spacer()
@@ -229,10 +243,10 @@ struct MessageBubbleView: View {
                     .font(.body)
                     .padding(12)
                     .glassEffect(
-                        .regular.tint((message.role == .user ? Color.accentColor : Color.purple).opacity(0.5)),
+                        .regular.tint((message.role == .user ? theme.primaryColor : theme.accentColor).opacity(0.5)),
                         in: RoundedRectangle(cornerRadius: 16)
                     )
-                    .foregroundColor(textColor)
+                    .foregroundColor(message.role == .user ? .white : theme.textColor)
 
                 // Citations
                 if let citations = message.citations, !citations.isEmpty {
@@ -247,7 +261,7 @@ struct MessageBubbleView: View {
                 // Timestamp
                 Text(message.timestamp, style: .time)
                     .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(theme.secondaryTextColor)
             }
             .frame(maxWidth: message.role == .user ? 280 : .infinity, alignment: message.role == .user ? .trailing : .leading)
 
@@ -260,25 +274,19 @@ struct MessageBubbleView: View {
     }
 
     private var roleIcon: some View {
-        Group {
+        let theme = themeEngine.getCurrentTheme()
+
+        return Group {
             if message.role == .user {
                 Image(systemName: "person.circle.fill")
                     .font(.title2)
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(theme.primaryColor)
             } else {
                 Image(systemName: "brain.head.profile")
                     .font(.title2)
-                    .foregroundStyle(.purple)
+                    .foregroundStyle(theme.accentColor)
             }
         }
-    }
-
-    private var backgroundColor: Color {
-        message.role == .user ? .blue : Color(.secondarySystemBackground)
-    }
-
-    private var textColor: Color {
-        message.role == .user ? .white : .primary
     }
 }
 
@@ -286,8 +294,11 @@ struct MessageBubbleView: View {
 
 struct CitationsView: View {
     let citations: [ThoughtCitation]
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Image(systemName: "link")
@@ -295,7 +306,7 @@ struct CitationsView: View {
                 Text("\(citations.count) related thought\(citations.count == 1 ? "" : "s")")
                     .font(.caption.bold())
             }
-            .foregroundStyle(.secondary)
+            .foregroundStyle(theme.secondaryTextColor)
 
             ForEach(citations.prefix(3)) { citation in
                 NavigationLink {
@@ -312,16 +323,16 @@ struct CitationsView: View {
                                     .font(.caption2)
                             }
                         }
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(theme.secondaryTextColor)
 
                         Text(citation.excerpt)
                             .font(.caption)
                             .lineLimit(2)
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(theme.textColor)
                     }
                     .padding(8)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(.tertiarySystemBackground))
+                    .background(theme.inputBackgroundColor)
                     .cornerRadius(8)
                 }
             }
@@ -331,10 +342,11 @@ struct CitationsView: View {
                     // TODO: Show all citations
                 }
                 .font(.caption)
+                .foregroundColor(theme.primaryColor)
             }
         }
         .padding(12)
-        .background(Color(.tertiarySystemBackground))
+        .background(theme.surfaceColor)
         .cornerRadius(12)
     }
 }
@@ -343,15 +355,19 @@ struct CitationsView: View {
 
 struct SuggestedQuestionsView: View {
     let questions: [String]
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Image(systemName: "lightbulb.fill")
                     .font(.caption)
-                    .foregroundStyle(.yellow)
+                    .foregroundStyle(theme.warningColor)
                 Text("Ask me:")
                     .font(.caption.bold())
+                    .foregroundColor(theme.textColor)
             }
 
             ForEach(questions, id: \.self) { question in
@@ -361,19 +377,21 @@ struct SuggestedQuestionsView: View {
                     HStack {
                         Text(question)
                             .font(.caption)
+                            .foregroundColor(theme.textColor)
                         Spacer()
                         Image(systemName: "arrow.up.circle")
                             .font(.caption)
+                            .foregroundColor(theme.primaryColor)
                     }
                     .padding(8)
-                    .background(Color(.tertiarySystemBackground))
+                    .background(theme.inputBackgroundColor)
                     .cornerRadius(8)
                 }
                 .buttonStyle(.plain)
             }
         }
         .padding(12)
-        .background(Color(.tertiarySystemBackground).opacity(0.5))
+        .background(theme.surfaceColor.opacity(0.5))
         .cornerRadius(12)
     }
 }
@@ -381,16 +399,20 @@ struct SuggestedQuestionsView: View {
 // MARK: - Loading Message View
 
 struct LoadingMessageView: View {
+    @Environment(\.themeEngine) private var themeEngine
+
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         HStack(spacing: 12) {
             Image(systemName: "brain.head.profile")
                 .font(.title2)
-                .foregroundStyle(.purple)
+                .foregroundStyle(theme.accentColor)
 
             HStack(spacing: 4) {
                 ForEach(0..<3) { index in
                     Circle()
-                        .fill(.gray)
+                        .fill(theme.secondaryTextColor)
                         .frame(width: 8, height: 8)
                         .scaleEffect(1.0)
                         .animation(
@@ -402,7 +424,7 @@ struct LoadingMessageView: View {
                 }
             }
             .padding(12)
-            .background(Color(.secondarySystemBackground))
+            .background(theme.surfaceColor)
             .cornerRadius(16)
 
             Spacer()
@@ -415,23 +437,27 @@ struct LoadingMessageView: View {
 struct ErrorMessageView: View {
     let error: Error
     let onRetry: () -> Void
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.title2)
-                .foregroundStyle(.orange)
+                .foregroundStyle(theme.warningColor)
 
             Text(error.localizedDescription)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
                 .multilineTextAlignment(.center)
 
             Button("Try Again", action: onRetry)
                 .buttonStyle(.bordered)
+                .tint(theme.primaryColor)
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(theme.surfaceColor)
         .cornerRadius(12)
     }
 }
