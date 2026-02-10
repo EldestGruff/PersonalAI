@@ -17,58 +17,39 @@ struct PersonalizationScreen: View {
     @State private var personaToDelete: SquirrelPersona?
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                // Header
-                headerView
+        let theme = themeEngine.getCurrentTheme()
 
-                // Live Preview
-                livePreviewSection
+        ZStack {
+            // Theme background
+            theme.backgroundColor
+                .ignoresSafeArea()
 
-                // Theme Selection
-                ThemeSectionView()
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Header
+                    headerView
 
-                // Communication Style
-                CommunicationStyleSectionView()
+                    // Live Preview
+                    livePreviewSection
 
-                // Built-in personas
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Built-in Personas")
-                        .font(.headline)
-                        .padding(.horizontal)
+                    // Theme Selection
+                    ThemeSectionView()
 
-                    LazyVGrid(columns: [
-                        GridItem(.flexible()),
-                        GridItem(.flexible())
-                    ], spacing: 16) {
-                        ForEach(SquirrelPersona.builtIn) { persona in
-                            PersonaCard(
-                                persona: persona,
-                                isDefault: persona.id == personaService.defaultPersonaId,
-                                onTap: {
-                                    showPersonaDetail = persona
-                                },
-                                onSetDefault: {
-                                    personaService.setDefaultPersona(persona)
-                                }
-                            )
-                        }
-                    }
-                    .padding(.horizontal)
-                }
+                    // Communication Style
+                    CommunicationStyleSectionView()
 
-                // Custom personas
-                if !personaService.customPersonas.isEmpty {
+                    // Built-in personas
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Custom Personas")
+                        Text("Built-in Personas")
                             .font(.headline)
+                            .foregroundColor(theme.textColor)
                             .padding(.horizontal)
 
                         LazyVGrid(columns: [
                             GridItem(.flexible()),
                             GridItem(.flexible())
                         ], spacing: 16) {
-                            ForEach(personaService.customPersonas) { persona in
+                            ForEach(SquirrelPersona.builtIn) { persona in
                                 PersonaCard(
                                     persona: persona,
                                     isDefault: persona.id == personaService.defaultPersonaId,
@@ -77,38 +58,69 @@ struct PersonalizationScreen: View {
                                     },
                                     onSetDefault: {
                                         personaService.setDefaultPersona(persona)
-                                    },
-                                    onDelete: {
-                                        personaToDelete = persona
-                                        showDeleteConfirmation = true
                                     }
                                 )
                             }
                         }
                         .padding(.horizontal)
                     }
-                }
 
-                // Create custom persona button
-                Button {
-                    showCreatePersona = true
-                } label: {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                        Text("Create Custom Persona")
+                    // Custom personas
+                    if !personaService.customPersonas.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Custom Personas")
+                                .font(.headline)
+                                .foregroundColor(theme.textColor)
+                                .padding(.horizontal)
+
+                            LazyVGrid(columns: [
+                                GridItem(.flexible()),
+                                GridItem(.flexible())
+                            ], spacing: 16) {
+                                ForEach(personaService.customPersonas) { persona in
+                                    PersonaCard(
+                                        persona: persona,
+                                        isDefault: persona.id == personaService.defaultPersonaId,
+                                        onTap: {
+                                            showPersonaDetail = persona
+                                        },
+                                        onSetDefault: {
+                                            personaService.setDefaultPersona(persona)
+                                        },
+                                        onDelete: {
+                                            personaToDelete = persona
+                                            showDeleteConfirmation = true
+                                        }
+                                    )
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
+
+                    // Create custom persona button
+                    Button {
+                        showCreatePersona = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                            Text("Create Custom Persona")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(theme.primaryColor)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                    }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
+                .padding(.vertical)
             }
-            .padding(.vertical)
         }
         .navigationTitle("Squirrel-Sona")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(theme.surfaceColor, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         .sheet(isPresented: $showCreatePersona) {
             CreatePersonaSheet()
         }
@@ -134,16 +146,19 @@ struct PersonalizationScreen: View {
     // MARK: - Header
 
     private var headerView: some View {
-        VStack(spacing: 12) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(spacing: 12) {
             Text("🐿️")
                 .font(.system(size: 64))
 
             Text("Squirrel-Sona")
                 .font(.title.bold())
+                .foregroundColor(theme.textColor)
 
             Text("Customize your AI companion's personality")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundColor(theme.secondaryTextColor)
                 .multilineTextAlignment(.center)
         }
         .padding()
@@ -193,7 +208,7 @@ struct PersonalizationScreen: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Sample Messages:")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.secondaryTextColor)
 
                     Text(personalityEngine.thoughtSaved())
                         .padding()
@@ -211,7 +226,7 @@ struct PersonalizationScreen: View {
                 }
             }
             .padding()
-            .background(Color(.systemBackground))
+            .background(theme.surfaceColor)
             .cornerRadius(12)
             .padding(.horizontal)
         }
@@ -225,9 +240,12 @@ struct ThemeSectionView: View {
     @State private var themeEngine = ThemeEngine.shared
 
     var body: some View {
+        let currentTheme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 12) {
             Text("Visual Theme")
                 .font(.headline)
+                .foregroundColor(currentTheme.textColor)
                 .padding(.horizontal)
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -236,6 +254,7 @@ struct ThemeSectionView: View {
                         ThemePreviewCard(
                             themeType: themeType,
                             isSelected: themeEngine.currentTheme == themeType,
+                            currentTheme: currentTheme,
                             onTap: {
                                 withAnimation {
                                     themeEngine.setTheme(themeType)
@@ -254,11 +273,15 @@ struct ThemeSectionView: View {
 
 struct CommunicationStyleSectionView: View {
     @State private var personalityEngine = PersonalityEngine.shared
+    @State private var themeEngine = ThemeEngine.shared
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 12) {
             Text("Communication Style")
                 .font(.headline)
+                .foregroundColor(theme.textColor)
                 .padding(.horizontal)
 
             HStack(spacing: 16) {
@@ -266,6 +289,7 @@ struct CommunicationStyleSectionView: View {
                     CommunicationStyleCard(
                         style: style,
                         isSelected: personalityEngine.currentStyle == style,
+                        theme: theme,
                         onTap: {
                             personalityEngine.setStyle(style)
                         }
@@ -282,7 +306,13 @@ struct CommunicationStyleSectionView: View {
 struct ThemePreviewCard: View {
     let themeType: ThemeType
     let isSelected: Bool
+    let currentTheme: any ThemeVariant  // The currently active theme (for selection UI)
     let onTap: () -> Void
+
+    // The theme being previewed (from the themeType parameter)
+    private var previewTheme: any ThemeVariant {
+        themeType.theme
+    }
 
     var body: some View {
         Button {
@@ -294,7 +324,7 @@ struct ThemePreviewCard: View {
 
                 Text(themeType.displayName)
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(previewTheme.textColor)
 
                 if isSelected {
                     HStack(spacing: 4) {
@@ -303,16 +333,16 @@ struct ThemePreviewCard: View {
                         Text("Selected")
                             .font(.caption)
                     }
-                    .foregroundColor(.blue)
+                    .foregroundColor(currentTheme.primaryColor)
                 }
             }
             .frame(width: 140, height: 140)
             .padding()
-            .background(Color(.secondarySystemBackground))
+            .background(previewTheme.surfaceColor)
             .cornerRadius(16)
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
-                    .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 3)
+                    .stroke(isSelected ? currentTheme.primaryColor : Color.clear, lineWidth: 3)
             )
         }
         .buttonStyle(.plain)
@@ -324,6 +354,7 @@ struct ThemePreviewCard: View {
 struct CommunicationStyleCard: View {
     let style: MessageStyle
     let isSelected: Bool
+    let theme: any ThemeVariant
     let onTap: () -> Void
 
     var body: some View {
@@ -336,11 +367,11 @@ struct CommunicationStyleCard: View {
 
                 Text(style.displayName)
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(theme.textColor)
 
                 Text(style.description)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
 
@@ -351,17 +382,17 @@ struct CommunicationStyleCard: View {
                         Text("Active")
                             .font(.caption)
                     }
-                    .foregroundColor(.blue)
+                    .foregroundColor(theme.primaryColor)
                 }
             }
             .frame(maxWidth: .infinity)
             .frame(height: 160)
             .padding()
-            .background(Color(.secondarySystemBackground))
+            .background(theme.surfaceColor)
             .cornerRadius(16)
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
-                    .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 3)
+                    .stroke(isSelected ? theme.primaryColor : Color.clear, lineWidth: 3)
             )
         }
         .buttonStyle(.plain)
@@ -377,7 +408,11 @@ struct PersonaCard: View {
     let onSetDefault: () -> Void
     var onDelete: (() -> Void)?
 
+    @State private var themeEngine = ThemeEngine.shared
+
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         Button {
             onTap()
         } label: {
@@ -386,14 +421,14 @@ struct PersonaCard: View {
                 Text(persona.emoji)
                     .font(.system(size: 48))
                     .padding()
-                    .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? Color.blue.opacity(0.2))
+                    .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? theme.primaryColor.opacity(0.2))
                     .cornerRadius(20)
 
                 // Name
                 Text(persona.name)
                     .font(.headline)
                     .multilineTextAlignment(.center)
-                    .foregroundColor(.primary)
+                    .foregroundColor(theme.textColor)
                     .lineLimit(2)
 
                 // Default indicator
@@ -404,10 +439,10 @@ struct PersonaCard: View {
                         Text("Default")
                             .font(.caption)
                     }
-                    .foregroundColor(.yellow)
+                    .foregroundColor(theme.warningColor)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(Color.yellow.opacity(0.15))
+                    .background(theme.warningColor.opacity(0.15))
                     .cornerRadius(8)
                 }
 
@@ -416,7 +451,7 @@ struct PersonaCard: View {
             .frame(maxWidth: .infinity)
             .frame(height: 180)
             .padding()
-            .background(Color(.secondarySystemBackground))
+            .background(theme.surfaceColor)
             .cornerRadius(16)
         }
         .buttonStyle(.plain)
@@ -443,62 +478,78 @@ struct PersonaCard: View {
 struct PersonaDetailSheet: View {
     let persona: SquirrelPersona
     @Environment(\.dismiss) private var dismiss
+    @State private var themeEngine = ThemeEngine.shared
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Emoji
-                    Text(persona.emoji)
-                        .font(.system(size: 80))
-                        .padding()
-                        .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? Color.blue.opacity(0.2))
-                        .cornerRadius(30)
+            ZStack {
+                // Theme background
+                theme.backgroundColor
+                    .ignoresSafeArea()
 
-                    // Name
-                    Text(persona.name)
-                        .font(.title.bold())
-
-                    // System prompt
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Personality")
-                            .font(.headline)
-
-                        Text(persona.systemPrompt)
-                            .font(.body)
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Emoji
+                        Text(persona.emoji)
+                            .font(.system(size: 80))
                             .padding()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color(.secondarySystemBackground))
-                            .cornerRadius(12)
-                    }
+                            .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? theme.primaryColor.opacity(0.2))
+                            .cornerRadius(30)
 
-                    // Metadata
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text("Type")
-                                .foregroundColor(.secondary)
-                            Spacer()
-                            Text(persona.isCustom ? "Custom" : "Built-in")
+                        // Name
+                        Text(persona.name)
+                            .font(.title.bold())
+                            .foregroundColor(theme.textColor)
+
+                        // System prompt
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Personality")
+                                .font(.headline)
+                                .foregroundColor(theme.textColor)
+
+                            Text(persona.systemPrompt)
+                                .font(.body)
+                                .foregroundColor(theme.textColor)
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(theme.surfaceColor)
+                                .cornerRadius(12)
                         }
 
-                        if persona.isCustom {
+                        // Metadata
+                        VStack(alignment: .leading, spacing: 8) {
                             HStack {
-                                Text("Created")
-                                    .foregroundColor(.secondary)
+                                Text("Type")
+                                    .foregroundColor(theme.secondaryTextColor)
                                 Spacer()
-                                Text(persona.createdAt, style: .date)
+                                Text(persona.isCustom ? "Custom" : "Built-in")
+                                    .foregroundColor(theme.textColor)
+                            }
+
+                            if persona.isCustom {
+                                HStack {
+                                    Text("Created")
+                                        .foregroundColor(theme.secondaryTextColor)
+                                    Spacer()
+                                    Text(persona.createdAt, style: .date)
+                                        .foregroundColor(theme.textColor)
+                                }
                             }
                         }
+                        .font(.subheadline)
+                        .padding()
+                        .background(theme.surfaceColor)
+                        .cornerRadius(12)
                     }
-                    .font(.subheadline)
                     .padding()
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(12)
                 }
-                .padding()
             }
             .navigationTitle("Persona Details")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(theme.surfaceColor, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") {
@@ -515,6 +566,7 @@ struct PersonaDetailSheet: View {
 struct CreatePersonaSheet: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var personaService = PersonaService.shared
+    @State private var themeEngine = ThemeEngine.shared
 
     @State private var name = ""
     @State private var emoji = "🐿️"
@@ -526,6 +578,8 @@ struct CreatePersonaSheet: View {
     ]
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         NavigationStack {
             Form {
                 Section {
@@ -576,8 +630,12 @@ struct CreatePersonaSheet: View {
                     Text("Describe how this persona should behave and respond. Be specific about tone, approach, and conversation style.")
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(theme.backgroundColor)
             .navigationTitle("Create Persona")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(theme.surfaceColor, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {

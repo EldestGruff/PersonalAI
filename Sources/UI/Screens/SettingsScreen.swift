@@ -20,39 +20,49 @@ import SwiftUI
 struct SettingsScreen: View {
     @State var viewModel: SettingsViewModel
     @Environment(\.scenePhase) private var scenePhase
+    @State private var themeEngine = ThemeEngine.shared
 
     @State private var subscriptionManager = SubscriptionManager.shared
     @State private var showPaywall = false
     @State private var thoughtUsage: SubscriptionUsage?
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
         NavigationStack {
-            Form {
-                // Subscription section
-                subscriptionSection
+            ZStack {
+                theme.backgroundColor
+                    .ignoresSafeArea()
 
-                // Permissions section
-                permissionsSection
+                Form {
+                    // Subscription section
+                    subscriptionSection
 
-                // Personalization section
-                personalizationSection
+                    // Permissions section
+                    permissionsSection
 
-                // Features section
-                featuresSection
+                    // Personalization section
+                    personalizationSection
 
-                // Calendar settings section
-                calendarSettingsSection
+                    // Features section
+                    featuresSection
 
-                // Sync section
-                syncSection
+                    // Calendar settings section
+                    calendarSettingsSection
 
-                // Stats section
-                statsSection
+                    // Sync section
+                    syncSection
 
-                // About section
-                aboutSection
+                    // Stats section
+                    statsSection
+
+                    // About section
+                    aboutSection
+                }
+                .scrollContentBackground(.hidden)
             }
             .navigationTitle("Settings")
+            .toolbarBackground(theme.surfaceColor, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .sheet(isPresented: $showPaywall) {
                 PaywallScreen()
             }
@@ -78,26 +88,28 @@ struct SettingsScreen: View {
     // MARK: - Subscription Section
 
     private var subscriptionSection: some View {
-        Section {
+        let theme = themeEngine.getCurrentTheme()
+        return Section {
             VStack(alignment: .leading, spacing: 12) {
                 // Current tier badge
                 HStack {
                     Image(systemName: subscriptionManager.status.tier == .pro ? "crown.fill" : "person.circle.fill")
-                        .foregroundStyle(subscriptionManager.status.tier == .pro ? .yellow : .blue)
+                        .foregroundStyle(subscriptionManager.status.tier == .pro ? theme.warningColor : theme.primaryColor)
                         .font(.title2)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(subscriptionManager.status.tier.displayName)
                             .font(.headline)
+                            .foregroundStyle(theme.textColor)
 
                         if subscriptionManager.status.tier == .free {
                             Text("50 thoughts per month")
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(theme.secondaryTextColor)
                         } else {
                             Text("Unlimited thoughts")
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(theme.secondaryTextColor)
                         }
                     }
 
@@ -105,7 +117,7 @@ struct SettingsScreen: View {
 
                     if subscriptionManager.status.tier == .pro {
                         Image(systemName: "checkmark.seal.fill")
-                            .foregroundStyle(.green)
+                            .foregroundStyle(theme.successColor)
                             .font(.title3)
                     }
                 }
@@ -115,15 +127,17 @@ struct SettingsScreen: View {
                     let remaining = usage.remainingThoughts(for: subscriptionManager.entitlements) ?? 0
 
                     Divider()
+                        .background(theme.dividerColor)
 
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("This Month")
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(theme.secondaryTextColor)
                             Text("\(usage.thoughtsThisMonth) / 50 thoughts")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
+                                .foregroundStyle(theme.textColor)
                         }
 
                         Spacer()
@@ -131,17 +145,18 @@ struct SettingsScreen: View {
                         VStack(alignment: .trailing, spacing: 4) {
                             Text("Remaining")
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(theme.secondaryTextColor)
                             Text("\(remaining)")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
-                                .foregroundStyle(remaining < 10 ? .orange : .primary)
+                                .foregroundStyle(remaining < 10 ? theme.warningColor : theme.textColor)
                         }
                     }
                 }
 
                 // Action buttons
                 Divider()
+                    .background(theme.dividerColor)
 
                 if subscriptionManager.status.tier == .free {
                     Button {
@@ -153,10 +168,11 @@ struct SettingsScreen: View {
                             Spacer()
                             Text("$4.99/mo")
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(theme.secondaryTextColor)
                         }
                     }
                     .buttonStyle(.borderedProminent)
+                    .tint(theme.primaryColor)
                 } else {
                     Button {
                         _Concurrency.Task {
@@ -169,51 +185,62 @@ struct SettingsScreen: View {
                         }
                     }
                     .buttonStyle(.bordered)
+                    .tint(theme.primaryColor)
                 }
             }
             .padding(.vertical, 8)
         } header: {
             Text("Subscription")
+                .foregroundStyle(theme.secondaryTextColor)
         } footer: {
             if subscriptionManager.status.tier == .pro {
                 Text("You have unlimited access to all features. Thank you for supporting STASH!")
+                    .foregroundStyle(theme.secondaryTextColor)
             } else {
                 Text("Upgrade to Pro for unlimited thoughts, advanced analytics, and export features.")
+                    .foregroundStyle(theme.secondaryTextColor)
             }
         }
+        .listRowBackground(theme.surfaceColor)
     }
 
     // MARK: - Personalization Section
 
     private var personalizationSection: some View {
-        Section {
+        let theme = themeEngine.getCurrentTheme()
+        return Section {
             NavigationLink {
                 PersonalizationScreen()
             } label: {
                 HStack(spacing: 12) {
-                    Text("🐿️")
+                    Text("\u{1F43F}\u{FE0F}")
                         .font(.title2)
                         .frame(width: 32)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Squirrel-Sona")
+                            .foregroundStyle(theme.textColor)
                         Text("Customize your AI companion")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(theme.secondaryTextColor)
                     }
                 }
             }
         } header: {
             Text("AI Companion")
+                .foregroundStyle(theme.secondaryTextColor)
         } footer: {
             Text("Choose from built-in personas or create your own custom AI companion personality.")
+                .foregroundStyle(theme.secondaryTextColor)
         }
+        .listRowBackground(theme.surfaceColor)
     }
 
     // MARK: - Permissions Section
 
     private var permissionsSection: some View {
-        Section {
+        let theme = themeEngine.getCurrentTheme()
+        return Section {
             PermissionRow(
                 icon: "heart.fill",
                 label: "Health Data",
@@ -252,6 +279,7 @@ struct SettingsScreen: View {
                 } label: {
                     HStack {
                         Text("Enable All Permissions")
+                            .foregroundStyle(theme.primaryColor)
                         Spacer()
                         if viewModel.isRequestingPermission {
                             ProgressView()
@@ -267,67 +295,84 @@ struct SettingsScreen: View {
                 Spacer()
                 Text("\(viewModel.grantedPermissionCount)/\(viewModel.totalPermissionCount)")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
             }
+            .foregroundStyle(theme.secondaryTextColor)
         } footer: {
             Text("Permissions enhance context gathering. The app works offline without any permissions, but context will be limited.")
+                .foregroundStyle(theme.secondaryTextColor)
         }
+        .listRowBackground(theme.surfaceColor)
     }
 
     // MARK: - Features Section
 
     private var featuresSection: some View {
-        Section("Features") {
+        let theme = themeEngine.getCurrentTheme()
+        return Section {
             Toggle(isOn: $viewModel.enableClassification) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Auto-Classification")
+                        .foregroundStyle(theme.textColor)
                     Text("Automatically classify thoughts using AI")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.secondaryTextColor)
                 }
             }
+            .tint(theme.primaryColor)
             .accessibilityIdentifier("autoClassificationToggle")
 
             Toggle(isOn: $viewModel.enableContextEnrichment) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Context Enrichment")
+                        .foregroundStyle(theme.textColor)
                     Text("Gather context like location and energy")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.secondaryTextColor)
                 }
             }
+            .tint(theme.primaryColor)
             .accessibilityIdentifier("contextEnrichmentToggle")
 
             Toggle(isOn: $viewModel.enableAutoTags) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Auto-Tagging")
+                        .foregroundStyle(theme.textColor)
                     Text("Suggest tags based on classification")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.secondaryTextColor)
                 }
             }
+            .tint(theme.primaryColor)
             .accessibilityIdentifier("autoTaggingToggle")
 
             Toggle(isOn: $viewModel.autoCreateReminders) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Auto-Create Reminders")
+                        .foregroundStyle(theme.textColor)
                     Text("Automatically create reminders/events from classified thoughts")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.secondaryTextColor)
                 }
             }
+            .tint(theme.primaryColor)
             .accessibilityIdentifier("autoCreateRemindersToggle")
+        } header: {
+            Text("Features")
+                .foregroundStyle(theme.secondaryTextColor)
         }
+        .listRowBackground(theme.surfaceColor)
     }
 
     // MARK: - Calendar Settings Section
 
     private var calendarSettingsSection: some View {
-        Section {
+        let theme = themeEngine.getCurrentTheme()
+        return Section {
             if !viewModel.eventKitAuthorized {
                 Text("Enable Calendar & Reminders permission to select calendars")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
             } else {
                 // Calendar picker for events
                 Picker("Default Calendar", selection: Binding(
@@ -352,6 +397,8 @@ struct SettingsScreen: View {
                         .tag(calendar.id)
                     }
                 }
+                .foregroundStyle(theme.textColor)
+                .tint(theme.primaryColor)
 
                 // Reminder list picker
                 Picker("Default Reminder List", selection: Binding(
@@ -376,31 +423,40 @@ struct SettingsScreen: View {
                         .tag(calendar.id)
                     }
                 }
+                .foregroundStyle(theme.textColor)
+                .tint(theme.primaryColor)
             }
         } header: {
             Text("Calendar & Reminders")
+                .foregroundStyle(theme.secondaryTextColor)
         } footer: {
             Text("Choose which calendar and reminder list to use when creating events and reminders from tasks.")
+                .foregroundStyle(theme.secondaryTextColor)
         }
+        .listRowBackground(theme.surfaceColor)
     }
 
     // MARK: - Sync Section
 
     private var syncSection: some View {
-        Section {
+        let theme = themeEngine.getCurrentTheme()
+        return Section {
             Toggle(isOn: $viewModel.autoSyncEnabled) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Auto-Sync")
+                        .foregroundStyle(theme.textColor)
                     Text("Sync thoughts to cloud automatically")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.secondaryTextColor)
                 }
             }
+            .tint(theme.primaryColor)
             .accessibilityIdentifier("autoSyncToggle")
 
             if viewModel.autoSyncEnabled {
                 HStack {
                     Text("Sync Interval")
+                        .foregroundStyle(theme.textColor)
                     Spacer()
                     Picker("", selection: $viewModel.syncInterval) {
                         Text("5 min").tag(TimeInterval(300))
@@ -409,13 +465,17 @@ struct SettingsScreen: View {
                         Text("1 hour").tag(TimeInterval(3600))
                     }
                     .pickerStyle(.menu)
+                    .tint(theme.primaryColor)
                 }
             }
         } header: {
             Text("Sync")
+                .foregroundStyle(theme.secondaryTextColor)
         } footer: {
             Text("Note: Cloud sync is not implemented in Phase 3A. This setting will take effect in future updates.")
+                .foregroundStyle(theme.secondaryTextColor)
         }
+        .listRowBackground(theme.surfaceColor)
     }
 
     // MARK: - Helper Functions
@@ -436,7 +496,8 @@ struct SettingsScreen: View {
     // MARK: - Stats Section
 
     private var statsSection: some View {
-        Section("Your Stats") {
+        let theme = themeEngine.getCurrentTheme()
+        return Section {
             if viewModel.isLoadingStats {
                 HStack {
                     Spacer()
@@ -448,33 +509,45 @@ struct SettingsScreen: View {
                 StatRow(label: "This Week", value: "\(viewModel.thisWeekCount)")
                 StatRow(label: "Today", value: "\(viewModel.todayCount)")
             }
+        } header: {
+            Text("Your Stats")
+                .foregroundStyle(theme.secondaryTextColor)
         }
+        .listRowBackground(theme.surfaceColor)
     }
 
     // MARK: - About Section
 
     private var aboutSection: some View {
-        Section("About") {
+        let theme = themeEngine.getCurrentTheme()
+        return Section {
             HStack {
                 Text("Version")
+                    .foregroundStyle(theme.textColor)
                 Spacer()
                 Text("3.0.0-alpha (Phase 3A)")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
             }
 
             HStack {
                 Text("Build")
+                    .foregroundStyle(theme.textColor)
                 Spacer()
                 Text("Spec 3 - UI & ViewModels")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
             }
 
             NavigationLink {
                 PrivacyInfoView()
             } label: {
                 Text("Privacy Information")
+                    .foregroundStyle(theme.textColor)
             }
+        } header: {
+            Text("About")
+                .foregroundStyle(theme.secondaryTextColor)
         }
+        .listRowBackground(theme.surfaceColor)
     }
 }
 
@@ -487,20 +560,23 @@ struct PermissionRow: View {
     let description: String
     let authorized: Bool
     let action: () -> Void
+    @State private var themeEngine = ThemeEngine.shared
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.title3)
-                .foregroundColor(authorized ? .green : .secondary)
+                .foregroundColor(authorized ? theme.successColor : theme.secondaryTextColor)
                 .frame(width: 32)
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(label)
+                    .foregroundStyle(theme.textColor)
                 Text(description)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
             }
             .accessibilityElement(children: .combine)
             .accessibilityLabel("\(label). \(description)")
@@ -509,7 +585,7 @@ struct PermissionRow: View {
 
             if authorized {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
+                    .foregroundColor(theme.successColor)
                     .accessibilityLabel("Authorized")
                 // Still allow re-requesting even when authorized
                 // (some frameworks like EventKit have multiple sub-permissions)
@@ -518,7 +594,7 @@ struct PermissionRow: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.mini)
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.secondaryTextColor)
                 .accessibilityIdentifier("\(permissionIdentifier)RerequestButton")
             } else {
                 Button("Enable") {
@@ -526,6 +602,7 @@ struct PermissionRow: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
+                .tint(theme.primaryColor)
                 .accessibilityIdentifier("\(permissionIdentifier)EnableButton")
             }
         }
@@ -545,14 +622,17 @@ struct PermissionRow: View {
 struct StatRow: View {
     let label: String
     let value: String
+    @State private var themeEngine = ThemeEngine.shared
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
         HStack {
             Text(label)
+                .foregroundStyle(theme.textColor)
             Spacer()
             Text(value)
                 .font(.headline)
-                .foregroundColor(.blue)
+                .foregroundColor(theme.primaryColor)
         }
     }
 }
@@ -561,43 +641,63 @@ struct StatRow: View {
 
 /// Privacy information screen.
 struct PrivacyInfoView: View {
+    @State private var themeEngine = ThemeEngine.shared
+
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("Privacy Information")
-                    .font(.title)
-                    .fontWeight(.bold)
+        let theme = themeEngine.getCurrentTheme()
+        ZStack {
+            theme.backgroundColor
+                .ignoresSafeArea()
 
-                Text("Personal AI is designed with privacy first.")
-                    .font(.headline)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("Privacy Information")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundStyle(theme.textColor)
 
-                Group {
-                    Text("Data Storage")
+                    Text("Personal AI is designed with privacy first.")
                         .font(.headline)
-                    Text("All your thoughts are stored locally on your device using Core Data. No data is sent to external servers in Phase 3A.")
-                }
+                        .foregroundStyle(theme.textColor)
 
-                Group {
-                    Text("Permissions")
-                        .font(.headline)
-                    Text("Permissions are used solely to enrich context. Location data, health data, and other information is never shared and only used to provide context for your thoughts.")
-                }
+                    Group {
+                        Text("Data Storage")
+                            .font(.headline)
+                            .foregroundStyle(theme.textColor)
+                        Text("All your thoughts are stored locally on your device using Core Data. No data is sent to external servers in Phase 3A.")
+                            .foregroundStyle(theme.secondaryTextColor)
+                    }
 
-                Group {
-                    Text("Classification")
-                        .font(.headline)
-                    Text("All classification is done on-device using Apple's Natural Language framework. No thought content is sent to external AI services.")
-                }
+                    Group {
+                        Text("Permissions")
+                            .font(.headline)
+                            .foregroundStyle(theme.textColor)
+                        Text("Permissions are used solely to enrich context. Location data, health data, and other information is never shared and only used to provide context for your thoughts.")
+                            .foregroundStyle(theme.secondaryTextColor)
+                    }
 
-                Group {
-                    Text("Future Updates")
-                        .font(.headline)
-                    Text("Cloud sync (Phase 4+) will use end-to-end encryption. You will always have full control over what data is synced.")
+                    Group {
+                        Text("Classification")
+                            .font(.headline)
+                            .foregroundStyle(theme.textColor)
+                        Text("All classification is done on-device using Apple's Natural Language framework. No thought content is sent to external AI services.")
+                            .foregroundStyle(theme.secondaryTextColor)
+                    }
+
+                    Group {
+                        Text("Future Updates")
+                            .font(.headline)
+                            .foregroundStyle(theme.textColor)
+                        Text("Cloud sync (Phase 4+) will use end-to-end encryption. You will always have full control over what data is synced.")
+                            .foregroundStyle(theme.secondaryTextColor)
+                    }
                 }
+                .padding()
             }
-            .padding()
         }
         .navigationTitle("Privacy")
+        .toolbarBackground(theme.surfaceColor, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif

@@ -15,6 +15,7 @@ struct ThoughtConversationScreen: View {
     @State private var showConversationPicker = false
     @State private var showDeleteConfirmation = false
     @State private var conversationToDelete: ThoughtConversation?
+    @State private var themeEngine = ThemeEngine.shared
 
     init(thought: Thought) {
         _viewModel = State(initialValue: ThoughtConversationViewModel(
@@ -24,58 +25,67 @@ struct ThoughtConversationScreen: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Collapsed thought header
-            thoughtHeaderView
+        let theme = themeEngine.getCurrentTheme()
+        ZStack {
+            // Theme background
+            theme.backgroundColor
+                .ignoresSafeArea()
 
-            // Conversation picker (if multiple exist)
-            if viewModel.hasMultipleConversations {
-                conversationPickerView
-            }
+            VStack(spacing: 0) {
+                // Collapsed thought header
+                thoughtHeaderView
 
-            // Messages
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 16) {
-                        // Messages
-                        ForEach(viewModel.messages) { message in
-                            CompanionMessageBubbleView(
-                                message: message,
-                                persona: viewModel.selectedPersona
-                            )
-                            .id(message.id)
-                        }
+                // Conversation picker (if multiple exist)
+                if viewModel.hasMultipleConversations {
+                    conversationPickerView
+                }
 
-                        // Loading indicator
-                        if viewModel.isLoading {
-                            CompanionLoadingView(persona: viewModel.selectedPersona)
-                        }
+                // Messages
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            // Messages
+                            ForEach(viewModel.messages) { message in
+                                CompanionMessageBubbleView(
+                                    message: message,
+                                    persona: viewModel.selectedPersona
+                                )
+                                .id(message.id)
+                            }
 
-                        // Error message
-                        if let error = viewModel.error {
-                            ErrorMessageView(error: error) {
-                                _Concurrency.Task {
-                                    await viewModel.retry()
+                            // Loading indicator
+                            if viewModel.isLoading {
+                                CompanionLoadingView(persona: viewModel.selectedPersona)
+                            }
+
+                            // Error message
+                            if let error = viewModel.error {
+                                ErrorMessageView(error: error) {
+                                    _Concurrency.Task {
+                                        await viewModel.retry()
+                                    }
                                 }
                             }
                         }
+                        .padding()
                     }
-                    .padding()
-                }
-                .onChange(of: viewModel.messages.count) { _, _ in
-                    if let lastMessage = viewModel.messages.last {
-                        withAnimation {
-                            proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                    .onChange(of: viewModel.messages.count) { _, _ in
+                        if let lastMessage = viewModel.messages.last {
+                            withAnimation {
+                                proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                            }
                         }
                     }
                 }
-            }
 
-            // Input bar
-            inputBarView
+                // Input bar
+                inputBarView
+            }
         }
         .navigationTitle("Companion Chat")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(theme.surfaceColor, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack(spacing: 12) {
@@ -86,7 +96,7 @@ struct ThoughtConversationScreen: View {
                         }
                     } label: {
                         Image(systemName: viewModel.isPrivate ? "lock.fill" : "globe")
-                            .foregroundColor(viewModel.isPrivate ? .orange : .blue)
+                            .foregroundColor(viewModel.isPrivate ? theme.warningColor : theme.primaryColor)
                     }
                     .accessibilityLabel(viewModel.isPrivate ? "Private mode" : "Connected mode")
 
@@ -180,17 +190,18 @@ struct ThoughtConversationScreen: View {
     // MARK: - Thought Header
 
     private var thoughtHeaderView: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let theme = themeEngine.getCurrentTheme()
+        return VStack(alignment: .leading, spacing: 8) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Exploring:")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(theme.secondaryTextColor)
 
                     Text(viewModel.thought.content)
                         .font(.subheadline)
                         .lineLimit(2)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(theme.textColor)
 
                     if !viewModel.thought.tags.isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
@@ -200,8 +211,8 @@ struct ThoughtConversationScreen: View {
                                         .font(.caption2)
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 4)
-                                        .background(Color.blue.opacity(0.1))
-                                        .foregroundColor(.blue)
+                                        .background(theme.tagBackgroundColor)
+                                        .foregroundColor(theme.tagTextColor)
                                         .cornerRadius(8)
                                 }
                             }
@@ -215,22 +226,23 @@ struct ThoughtConversationScreen: View {
                 VStack(spacing: 4) {
                     Image(systemName: viewModel.isPrivate ? "lock.fill" : "globe")
                         .font(.title3)
-                        .foregroundColor(viewModel.isPrivate ? .orange : .blue)
+                        .foregroundColor(viewModel.isPrivate ? theme.warningColor : theme.primaryColor)
 
                     Text(viewModel.isPrivate ? "Private" : "Connected")
                         .font(.caption2)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(theme.secondaryTextColor)
                 }
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(theme.surfaceColor)
     }
 
     // MARK: - Conversation Picker
 
     private var conversationPickerView: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+        let theme = themeEngine.getCurrentTheme()
+        return ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
                 ForEach(viewModel.allConversations.sorted(by: { $0.lastActivityTime > $1.lastActivityTime })) { conversation in
                     Button {
@@ -243,24 +255,25 @@ struct ThoughtConversationScreen: View {
                                 Text(conversation.title)
                                     .font(.caption)
                                     .fontWeight(.medium)
+                                    .foregroundStyle(theme.textColor)
 
                                 if conversation.id == viewModel.currentConversation?.id {
                                     Image(systemName: "checkmark.circle.fill")
                                         .font(.caption2)
-                                        .foregroundColor(.green)
+                                        .foregroundColor(theme.successColor)
                                 }
                             }
 
                             Text("\(conversation.messageCount) messages")
                                 .font(.caption2)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(theme.secondaryTextColor)
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                         .background(
                             conversation.id == viewModel.currentConversation?.id
-                                ? Color.blue.opacity(0.15)
-                                : Color(.tertiarySystemBackground)
+                                ? theme.primaryColor.opacity(0.15)
+                                : theme.surfaceColor
                         )
                         .cornerRadius(10)
                     }
@@ -275,21 +288,23 @@ struct ThoughtConversationScreen: View {
     // MARK: - Input Bar
 
     private var inputBarView: some View {
-        VStack(spacing: 0) {
+        let theme = themeEngine.getCurrentTheme()
+        return VStack(spacing: 0) {
             Divider()
+                .background(theme.dividerColor)
 
             HStack(alignment: .bottom, spacing: 12) {
                 // Persona indicator
                 Text(viewModel.selectedPersona.emoji)
                     .font(.title2)
                     .padding(8)
-                    .background(Color(hex: viewModel.selectedPersona.colorHex)?.opacity(0.2) ?? Color.blue.opacity(0.2))
+                    .background(Color(hex: viewModel.selectedPersona.colorHex)?.opacity(0.2) ?? theme.primaryColor.opacity(0.2))
                     .cornerRadius(10)
 
                 TextField("Chat with \(viewModel.selectedPersona.name)...", text: $viewModel.inputText, axis: .vertical)
                     .textFieldStyle(.plain)
                     .padding(12)
-                    .background(Color(.secondarySystemBackground))
+                    .background(theme.inputBackgroundColor)
                     .cornerRadius(20)
                     .focused($isInputFocused)
                     .lineLimit(1...5)
@@ -303,13 +318,13 @@ struct ThoughtConversationScreen: View {
                 } label: {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.system(size: 32))
-                        .foregroundStyle(canSend ? .blue : .gray)
+                        .foregroundStyle(canSend ? theme.primaryColor : theme.secondaryTextColor)
                 }
                 .disabled(!canSend)
             }
             .padding()
         }
-        .background(.ultraThinMaterial)
+        .background(theme.surfaceColor)
     }
 
     // MARK: - Helpers
@@ -337,8 +352,10 @@ struct ThoughtConversationScreen: View {
 struct CompanionMessageBubbleView: View {
     let message: ConversationMessage
     let persona: SquirrelPersona
+    @State private var themeEngine = ThemeEngine.shared
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
         HStack(alignment: .top, spacing: 12) {
             if message.role == .user {
                 Spacer()
@@ -352,7 +369,7 @@ struct CompanionMessageBubbleView: View {
                     .font(.body)
                     .padding(12)
                     .glassEffect(
-                        .regular.tint((message.role == .user ? Color.accentColor : Color(hex: persona.colorHex) ?? Color.purple).opacity(0.5)),
+                        .regular.tint((message.role == .user ? theme.primaryColor : Color(hex: persona.colorHex) ?? theme.accentColor).opacity(0.5)),
                         in: RoundedRectangle(cornerRadius: 16)
                     )
                     .foregroundColor(textColor)
@@ -370,7 +387,7 @@ struct CompanionMessageBubbleView: View {
                 // Timestamp
                 Text(message.timestamp, style: .time)
                     .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(theme.secondaryTextColor)
             }
             .frame(maxWidth: message.role == .user ? 280 : .infinity, alignment: message.role == .user ? .trailing : .leading)
 
@@ -383,27 +400,30 @@ struct CompanionMessageBubbleView: View {
     }
 
     private var roleIcon: some View {
-        Group {
+        let theme = themeEngine.getCurrentTheme()
+        return Group {
             if message.role == .user {
                 Image(systemName: "person.circle.fill")
                     .font(.title2)
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(theme.primaryColor)
             } else {
                 Text(persona.emoji)
                     .font(.title2)
                     .padding(6)
-                    .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? Color.purple.opacity(0.2))
+                    .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? theme.accentColor.opacity(0.2))
                     .cornerRadius(10)
             }
         }
     }
 
     private var backgroundColor: Color {
-        message.role == .user ? .blue : Color(.secondarySystemBackground)
+        let theme = themeEngine.getCurrentTheme()
+        return message.role == .user ? theme.primaryColor : theme.surfaceColor
     }
 
     private var textColor: Color {
-        message.role == .user ? .white : .primary
+        let theme = themeEngine.getCurrentTheme()
+        return message.role == .user ? .white : theme.textColor
     }
 }
 
@@ -411,19 +431,21 @@ struct CompanionMessageBubbleView: View {
 
 struct CompanionLoadingView: View {
     let persona: SquirrelPersona
+    @State private var themeEngine = ThemeEngine.shared
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
         HStack(spacing: 12) {
             Text(persona.emoji)
                 .font(.title2)
                 .padding(6)
-                .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? Color.purple.opacity(0.2))
+                .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? theme.accentColor.opacity(0.2))
                 .cornerRadius(10)
 
             HStack(spacing: 4) {
                 ForEach(0..<3) { index in
                     Circle()
-                        .fill(.gray)
+                        .fill(theme.secondaryTextColor)
                         .frame(width: 8, height: 8)
                         .scaleEffect(1.0)
                         .animation(
@@ -435,7 +457,7 @@ struct CompanionLoadingView: View {
                 }
             }
             .padding(12)
-            .background(Color(.secondarySystemBackground))
+            .background(theme.surfaceColor)
             .cornerRadius(16)
 
             Spacer()
@@ -449,50 +471,18 @@ struct PersonaPickerSheet: View {
     let selectedPersona: SquirrelPersona
     let onSelect: (SquirrelPersona) -> Void
     @Environment(\.dismiss) private var dismiss
+    @State private var themeEngine = ThemeEngine.shared
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
         NavigationStack {
-            List {
-                Section {
-                    ForEach(SquirrelPersona.builtIn) { persona in
-                        Button {
-                            onSelect(persona)
-                        } label: {
-                            HStack(spacing: 12) {
-                                Text(persona.emoji)
-                                    .font(.title2)
-                                    .padding(8)
-                                    .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? Color.blue.opacity(0.2))
-                                    .cornerRadius(10)
+            ZStack {
+                theme.backgroundColor
+                    .ignoresSafeArea()
 
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(persona.name)
-                                        .font(.headline)
-                                        .foregroundColor(.primary)
-
-                                    Text(extractFirstLine(persona.systemPrompt))
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                        .lineLimit(2)
-                                }
-
-                                Spacer()
-
-                                if persona.id == selectedPersona.id {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.green)
-                                }
-                            }
-                        }
-                    }
-                } header: {
-                    Text("Built-in Personas")
-                }
-
-                let customPersonas = PersonaService.shared.customPersonas
-                if !customPersonas.isEmpty {
+                List {
                     Section {
-                        ForEach(customPersonas) { persona in
+                        ForEach(SquirrelPersona.builtIn) { persona in
                             Button {
                                 onSelect(persona)
                             } label: {
@@ -500,17 +490,17 @@ struct PersonaPickerSheet: View {
                                     Text(persona.emoji)
                                         .font(.title2)
                                         .padding(8)
-                                        .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? Color.blue.opacity(0.2))
+                                        .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? theme.primaryColor.opacity(0.2))
                                         .cornerRadius(10)
 
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text(persona.name)
                                             .font(.headline)
-                                            .foregroundColor(.primary)
+                                            .foregroundColor(theme.textColor)
 
                                         Text(extractFirstLine(persona.systemPrompt))
                                             .font(.caption)
-                                            .foregroundColor(.secondary)
+                                            .foregroundColor(theme.secondaryTextColor)
                                             .lineLimit(2)
                                     }
 
@@ -518,23 +508,70 @@ struct PersonaPickerSheet: View {
 
                                     if persona.id == selectedPersona.id {
                                         Image(systemName: "checkmark.circle.fill")
-                                            .foregroundColor(.green)
+                                            .foregroundColor(theme.successColor)
                                     }
                                 }
                             }
                         }
                     } header: {
-                        Text("Custom Personas")
+                        Text("Built-in Personas")
+                            .foregroundStyle(theme.secondaryTextColor)
+                    }
+                    .listRowBackground(theme.surfaceColor)
+
+                    let customPersonas = PersonaService.shared.customPersonas
+                    if !customPersonas.isEmpty {
+                        Section {
+                            ForEach(customPersonas) { persona in
+                                Button {
+                                    onSelect(persona)
+                                } label: {
+                                    HStack(spacing: 12) {
+                                        Text(persona.emoji)
+                                            .font(.title2)
+                                            .padding(8)
+                                            .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? theme.primaryColor.opacity(0.2))
+                                            .cornerRadius(10)
+
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(persona.name)
+                                                .font(.headline)
+                                                .foregroundColor(theme.textColor)
+
+                                            Text(extractFirstLine(persona.systemPrompt))
+                                                .font(.caption)
+                                                .foregroundColor(theme.secondaryTextColor)
+                                                .lineLimit(2)
+                                        }
+
+                                        Spacer()
+
+                                        if persona.id == selectedPersona.id {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .foregroundColor(theme.successColor)
+                                        }
+                                    }
+                                }
+                            }
+                        } header: {
+                            Text("Custom Personas")
+                                .foregroundStyle(theme.secondaryTextColor)
+                        }
+                        .listRowBackground(theme.surfaceColor)
                     }
                 }
+                .scrollContentBackground(.hidden)
             }
             .navigationTitle("Choose Persona")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(theme.surfaceColor, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .foregroundStyle(theme.primaryColor)
                 }
             }
         }
@@ -552,66 +589,78 @@ struct ConversationPickerSheet: View {
     let currentConversation: ThoughtConversation?
     let onSelect: (ThoughtConversation) -> Void
     @Environment(\.dismiss) private var dismiss
+    @State private var themeEngine = ThemeEngine.shared
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
         NavigationStack {
-            List {
-                ForEach(conversations.sorted(by: { $0.lastActivityTime > $1.lastActivityTime })) { conversation in
-                    Button {
-                        onSelect(conversation)
-                    } label: {
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                Text(conversation.title)
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
+            ZStack {
+                theme.backgroundColor
+                    .ignoresSafeArea()
 
-                                Spacer()
+                List {
+                    ForEach(conversations.sorted(by: { $0.lastActivityTime > $1.lastActivityTime })) { conversation in
+                        Button {
+                            onSelect(conversation)
+                        } label: {
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    Text(conversation.title)
+                                        .font(.headline)
+                                        .foregroundColor(theme.textColor)
 
-                                if conversation.id == currentConversation?.id {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.green)
+                                    Spacer()
+
+                                    if conversation.id == currentConversation?.id {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundColor(theme.successColor)
+                                    }
+                                }
+
+                                HStack(spacing: 12) {
+                                    Text(conversation.privacyDescription)
+                                        .font(.caption)
+                                        .foregroundColor(theme.secondaryTextColor)
+
+                                    Text("\u{2022}")
+                                        .foregroundColor(theme.secondaryTextColor)
+
+                                    Text("\(conversation.messageCount) messages")
+                                        .font(.caption)
+                                        .foregroundColor(theme.secondaryTextColor)
+
+                                    Text("\u{2022}")
+                                        .foregroundColor(theme.secondaryTextColor)
+
+                                    Text(conversation.lastActivityTime, style: .relative)
+                                        .font(.caption)
+                                        .foregroundColor(theme.secondaryTextColor)
+                                }
+
+                                if let lastMessage = conversation.lastMessage {
+                                    Text(lastMessage.content)
+                                        .font(.caption)
+                                        .foregroundColor(theme.secondaryTextColor)
+                                        .lineLimit(2)
                                 }
                             }
-
-                            HStack(spacing: 12) {
-                                Text(conversation.privacyDescription)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-
-                                Text("•")
-                                    .foregroundColor(.secondary)
-
-                                Text("\(conversation.messageCount) messages")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-
-                                Text("•")
-                                    .foregroundColor(.secondary)
-
-                                Text(conversation.lastActivityTime, style: .relative)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-
-                            if let lastMessage = conversation.lastMessage {
-                                Text(lastMessage.content)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                    .lineLimit(2)
-                            }
+                            .padding(.vertical, 4)
                         }
-                        .padding(.vertical, 4)
                     }
+                    .listRowBackground(theme.surfaceColor)
                 }
+                .scrollContentBackground(.hidden)
             }
             .navigationTitle("Conversations")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(theme.surfaceColor, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .foregroundStyle(theme.primaryColor)
                 }
             }
         }

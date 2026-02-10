@@ -12,6 +12,7 @@ struct InsightsScreen: View {
 
     @State private var viewModel: InsightsViewModel
     @State private var selectedSection: InsightSection = .overview
+    @State private var themeEngine = ThemeEngine.shared
 
     enum InsightSection: String, CaseIterable, Identifiable {
         case overview = "Overview"
@@ -36,37 +37,47 @@ struct InsightsScreen: View {
     }
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Date range picker
-                    dateRangePicker
+            ZStack {
+                // Theme background
+                theme.backgroundColor
+                    .ignoresSafeArea()
 
-                    // Section picker
-                    sectionPicker
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Date range picker
+                        dateRangePicker
 
-                    if viewModel.isLoading {
-                        ProgressView("Loading insights...")
-                            .padding()
-                    } else if let error = viewModel.error {
-                        errorView(error)
-                    } else {
-                        // Content based on selected section
-                        switch selectedSection {
-                        case .overview:
-                            overviewSection
-                        case .mood:
-                            moodSection
-                        case .patterns:
-                            patternsSection
-                        case .health:
-                            healthSection
+                        // Section picker
+                        sectionPicker
+
+                        if viewModel.isLoading {
+                            ProgressView("Loading insights...")
+                                .foregroundStyle(theme.secondaryTextColor)
+                                .padding()
+                        } else if let error = viewModel.error {
+                            errorView(error)
+                        } else {
+                            // Content based on selected section
+                            switch selectedSection {
+                            case .overview:
+                                overviewSection
+                            case .mood:
+                                moodSection
+                            case .patterns:
+                                patternsSection
+                            case .health:
+                                healthSection
+                            }
                         }
                     }
+                    .padding()
                 }
-                .padding()
             }
             .navigationTitle("Insights")
+            .toolbarBackground(theme.surfaceColor, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .task {
                 await viewModel.loadInsights()
             }
@@ -81,18 +92,21 @@ struct InsightsScreen: View {
     // MARK: - Date Range Picker
 
     private var dateRangePicker: some View {
-        Picker("Date Range", selection: $viewModel.dateRange) {
+        let theme = themeEngine.getCurrentTheme()
+        return Picker("Date Range", selection: $viewModel.dateRange) {
             ForEach(InsightsViewModel.DateRange.allCases, id: \.self) { range in
                 Text(range.rawValue).tag(range)
             }
         }
         .pickerStyle(.segmented)
+        .tint(theme.primaryColor)
     }
 
     // MARK: - Section Picker
 
     private var sectionPicker: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+        let theme = themeEngine.getCurrentTheme()
+        return ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
                 ForEach(InsightSection.allCases) { section in
                     Button {
@@ -111,13 +125,13 @@ struct InsightsScreen: View {
                         .padding(.vertical, 8)
                         .background(
                             selectedSection == section
-                                ? Color.accentColor
-                                : Color(.secondarySystemBackground)
+                                ? theme.primaryColor
+                                : theme.surfaceColor
                         )
                         .foregroundStyle(
                             selectedSection == section
                                 ? .white
-                                : .primary
+                                : theme.textColor
                         )
                         .cornerRadius(20)
                     }
@@ -188,14 +202,16 @@ struct InsightsScreen: View {
 
     @available(iOS 26.0, *)
     private var aiInsightsCard: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        let theme = themeEngine.getCurrentTheme()
+        return VStack(alignment: .leading, spacing: 16) {
             // Header
             HStack {
                 Image(systemName: "sparkles")
                     .font(.title3)
-                    .foregroundStyle(.purple)
+                    .foregroundStyle(theme.primaryColor)
                 Text("AI Insights")
                     .font(.headline)
+                    .foregroundStyle(theme.textColor)
                 Spacer()
                 if viewModel.isLoadingInsights {
                     ProgressView()
@@ -230,14 +246,15 @@ struct InsightsScreen: View {
         }
         .padding()
         .glassEffect(
-            .regular.tint(.purple.opacity(0.4)),
+            .regular.tint(theme.primaryColor.opacity(0.4)),
             in: RoundedRectangle(cornerRadius: 12)
         )
     }
 
     @available(iOS 26.0, *)
     private func legacyInsightsView(_ insights: AIInsightsResponse) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let theme = themeEngine.getCurrentTheme()
+        return VStack(alignment: .leading, spacing: 8) {
             // Overall pattern badge
             HStack {
                 Text(insights.overallPattern.capitalized)
@@ -251,20 +268,22 @@ struct InsightsScreen: View {
 
                 Text("Confidence: \(Int(insights.confidence * 100))%")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(theme.secondaryTextColor)
             }
 
             Divider()
+                .background(theme.dividerColor)
 
             // Insights list
             ForEach(Array(insights.insights.enumerated()), id: \.offset) { index, insight in
                 HStack(alignment: .top, spacing: 8) {
                     Image(systemName: "\(index + 1).circle.fill")
-                        .foregroundStyle(.purple)
+                        .foregroundStyle(theme.primaryColor)
                         .font(.caption)
 
                     Text(insight)
                         .font(.subheadline)
+                        .foregroundStyle(theme.textColor)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.vertical, 2)
@@ -273,26 +292,29 @@ struct InsightsScreen: View {
     }
 
     private func patternColor(for pattern: String) -> Color {
+        let theme = themeEngine.getCurrentTheme()
         switch pattern.lowercased() {
-        case "productive": return .green
-        case "balanced": return .blue
-        case "stressed": return .orange
-        case "creative": return .purple
-        case "scattered": return .yellow
-        default: return .gray
+        case "productive": return theme.successColor
+        case "balanced": return theme.primaryColor
+        case "stressed": return theme.warningColor
+        case "creative": return theme.accentColor
+        case "scattered": return theme.warningColor
+        default: return theme.secondaryTextColor
         }
     }
 
     // MARK: - Chart 1: Thought Count Over Time
 
     private var thoughtCountChart: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let theme = themeEngine.getCurrentTheme()
+        return VStack(alignment: .leading, spacing: 8) {
             Text("Thought Activity")
                 .font(.headline)
+                .foregroundStyle(theme.textColor)
 
             Text("Daily thought count over time")
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
 
             if viewModel.thoughtCountData.isEmpty {
                 emptyChartView(icon: "chart.bar", message: "No thought data available")
@@ -302,7 +324,7 @@ struct InsightsScreen: View {
                         x: .value("Date", dataPoint.date, unit: .day),
                         y: .value("Count", dataPoint.count)
                     )
-                    .foregroundStyle(Color.accentColor.gradient)
+                    .foregroundStyle(theme.primaryColor.gradient)
                 }
                 .frame(height: 200)
                 .chartXAxis {
@@ -322,7 +344,7 @@ struct InsightsScreen: View {
         }
         .padding()
         .glassEffect(
-            .regular.tint(.orange.opacity(0.3)),
+            .regular.tint(theme.warningColor.opacity(0.3)),
             in: RoundedRectangle(cornerRadius: 12)
         )
     }
@@ -330,13 +352,15 @@ struct InsightsScreen: View {
     // MARK: - Chart 2: Sentiment Trends
 
     private var sentimentTrendChart: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let theme = themeEngine.getCurrentTheme()
+        return VStack(alignment: .leading, spacing: 8) {
             Text("Sentiment & Mood Trends")
                 .font(.headline)
+                .foregroundStyle(theme.textColor)
 
             Text("AI sentiment vs. State of Mind valence")
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
 
             if viewModel.sentimentData.isEmpty {
                 emptyChartView(icon: "waveform.path.ecg", message: "No sentiment data available")
@@ -378,15 +402,15 @@ struct InsightsScreen: View {
                 }
                 .chartYScale(domain: -1.0...1.0)
                 .chartForegroundStyleScale([
-                    "AI Sentiment": Color.blue,
-                    "State of Mind": Color.purple
+                    "AI Sentiment": theme.primaryColor,
+                    "State of Mind": theme.accentColor
                 ])
                 .chartLegend(position: .bottom, alignment: .leading)
             }
         }
         .padding()
         .glassEffect(
-            .regular.tint(.blue.opacity(0.3)),
+            .regular.tint(theme.primaryColor.opacity(0.3)),
             in: RoundedRectangle(cornerRadius: 12)
         )
     }
@@ -394,13 +418,15 @@ struct InsightsScreen: View {
     // MARK: - Chart 3: Type Distribution
 
     private var typeDistributionChart: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let theme = themeEngine.getCurrentTheme()
+        return VStack(alignment: .leading, spacing: 8) {
             Text("Thought Types")
                 .font(.headline)
+                .foregroundStyle(theme.textColor)
 
             Text("Distribution by classification")
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
 
             if viewModel.typeDistributionData.isEmpty {
                 emptyChartView(icon: "square.stack.3d.up", message: "No type data available")
@@ -414,7 +440,7 @@ struct InsightsScreen: View {
                     .annotation(position: .trailing) {
                         Text("\(dataPoint.count)")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(theme.secondaryTextColor)
                     }
                 }
                 .frame(height: 200)
@@ -434,7 +460,7 @@ struct InsightsScreen: View {
         }
         .padding()
         .glassEffect(
-            .regular.tint(.green.opacity(0.3)),
+            .regular.tint(theme.successColor.opacity(0.3)),
             in: RoundedRectangle(cornerRadius: 12)
         )
     }
@@ -442,13 +468,15 @@ struct InsightsScreen: View {
     // MARK: - Chart 4: Energy & Mood Correlation
 
     private var energyCorrelationChart: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let theme = themeEngine.getCurrentTheme()
+        return VStack(alignment: .leading, spacing: 8) {
             Text("Energy & Emotional State")
                 .font(.headline)
+                .foregroundStyle(theme.textColor)
 
             Text("Thought patterns by energy level")
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
 
             if viewModel.energyCorrelationData.isEmpty {
                 emptyChartView(icon: "bolt.heart", message: "No energy data available")
@@ -484,27 +512,29 @@ struct InsightsScreen: View {
                 HStack(spacing: 12) {
                     Label("Thought Count", systemImage: "chart.bar.fill")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(theme.secondaryTextColor)
 
                     Spacer()
 
                     HStack(spacing: 4) {
                         Text("Mood:")
                             .font(.caption2)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(theme.secondaryTextColor)
                         Text("negative")
                             .font(.caption2)
-                            .foregroundStyle(.red)
+                            .foregroundStyle(theme.errorColor)
                         Text("-")
                             .font(.caption2)
+                            .foregroundStyle(theme.secondaryTextColor)
                         Text("neutral")
                             .font(.caption2)
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(theme.secondaryTextColor)
                         Text("-")
                             .font(.caption2)
+                            .foregroundStyle(theme.secondaryTextColor)
                         Text("positive")
                             .font(.caption2)
-                            .foregroundStyle(.green)
+                            .foregroundStyle(theme.successColor)
                     }
                 }
                 .padding(.top, 4)
@@ -512,20 +542,21 @@ struct InsightsScreen: View {
         }
         .padding()
         .glassEffect(
-            .regular.tint(.green.opacity(0.3)),
+            .regular.tint(theme.successColor.opacity(0.3)),
             in: RoundedRectangle(cornerRadius: 12)
         )
     }
 
     private func moodColor(for valence: Double?) -> Color {
-        guard let valence = valence else { return Color.accentColor }
+        let theme = themeEngine.getCurrentTheme()
+        guard let valence = valence else { return theme.primaryColor }
         // valence is -1.0 to 1.0
         if valence > 0.3 {
-            return .green
+            return theme.successColor
         } else if valence < -0.3 {
-            return .red
+            return theme.errorColor
         } else {
-            return .gray
+            return theme.secondaryTextColor
         }
     }
 
@@ -540,18 +571,19 @@ struct InsightsScreen: View {
     // MARK: - Empty Chart View
 
     private func emptyChartView(icon: String, message: String) -> some View {
-        VStack(spacing: 8) {
+        let theme = themeEngine.getCurrentTheme()
+        return VStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.title)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(theme.secondaryTextColor.opacity(0.5))
 
             Text(message)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
 
             Text("Capture some thoughts to see your data here")
                 .font(.caption)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(theme.secondaryTextColor.opacity(0.7))
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
@@ -561,17 +593,19 @@ struct InsightsScreen: View {
     // MARK: - Error View
 
     private func errorView(_ error: Error) -> some View {
-        VStack(spacing: 12) {
+        let theme = themeEngine.getCurrentTheme()
+        return VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.largeTitle)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.warningColor)
 
             Text("Unable to load insights")
                 .font(.headline)
+                .foregroundStyle(theme.textColor)
 
             Text(error.localizedDescription)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
                 .multilineTextAlignment(.center)
 
             Button("Try Again") {
@@ -580,6 +614,7 @@ struct InsightsScreen: View {
                 }
             }
             .buttonStyle(.borderedProminent)
+            .tint(theme.primaryColor)
         }
         .padding()
     }
