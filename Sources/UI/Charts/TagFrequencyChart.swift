@@ -14,6 +14,7 @@ struct TagFrequencyChart: View {
     let data: [TagPopularity]
     let maxToShow: Int
     @Binding var selectedTag: String?
+    @Environment(\.themeEngine) private var themeEngine
 
     init(data: [TagPopularity], maxToShow: Int = 10, selectedTag: Binding<String?> = .constant(nil)) {
         self.data = data
@@ -22,17 +23,20 @@ struct TagFrequencyChart: View {
     }
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 12) {
             // Header
             HStack {
                 Label("Top Tags", systemImage: "tag.fill")
                     .font(.headline)
+                    .foregroundColor(theme.textColor)
 
                 Spacer()
 
                 Text("\(data.count) unique")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(theme.secondaryTextColor)
             }
             .accessibilityElement(children: .combine)
             .accessibilityLabel("Top Tags section with \(data.count) unique tags")
@@ -44,30 +48,33 @@ struct TagFrequencyChart: View {
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(theme.surfaceColor)
         .cornerRadius(12)
     }
 
     private var chartView: some View {
-        Chart(Array(data.prefix(maxToShow))) { tag in
+        let theme = themeEngine.getCurrentTheme()
+
+        return Chart(Array(data.prefix(maxToShow))) { tag in
             BarMark(
                 x: .value("Count", tag.count),
                 y: .value("Tag", tag.tag)
             )
             .foregroundStyle(
                 selectedTag == tag.tag
-                    ? Color.accentColor.gradient
-                    : Color.accentColor.opacity(0.7).gradient
+                    ? theme.primaryColor.gradient
+                    : theme.primaryColor.opacity(0.7).gradient
             )
             .annotation(position: .trailing, spacing: 8) {
                 HStack(spacing: 4) {
                     Text("\(tag.count)")
                         .font(.caption)
                         .fontWeight(.medium)
+                        .foregroundColor(theme.textColor)
 
                     Text("(\(Int(tag.percentage * 100))%)")
                         .font(.caption2)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(theme.secondaryTextColor)
                 }
             }
         }
@@ -77,7 +84,7 @@ struct TagFrequencyChart: View {
                     if let tag = value.as(String.self) {
                         Text("#\(tag)")
                             .font(.caption)
-                            .foregroundColor(selectedTag == tag ? .accentColor : .primary)
+                            .foregroundColor(selectedTag == tag ? theme.primaryColor : theme.textColor)
                     }
                 }
             }
@@ -93,18 +100,20 @@ struct TagFrequencyChart: View {
     }
 
     private var emptyState: some View {
-        VStack(spacing: 8) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(spacing: 8) {
             Image(systemName: "tag.slash")
                 .font(.title)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(theme.secondaryTextColor.opacity(0.6))
 
             Text("No tags yet")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
 
             Text("Add tags to your thoughts to see patterns")
                 .font(.caption)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(theme.secondaryTextColor.opacity(0.8))
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)

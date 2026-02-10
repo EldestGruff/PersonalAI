@@ -14,32 +14,39 @@ struct CaptureHeatmapChart: View {
     let data: CaptureHeatmapResult
     @State private var selectedHour: Int?
     @State private var selectedDay: Int?
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 20) {
             // Header
             Label("Capture Patterns", systemImage: "clock.fill")
                 .font(.headline)
+                .foregroundColor(theme.textColor)
                 .accessibilityAddTraits(.isHeader)
 
             // Hour of day distribution
             hourOfDaySection
 
             Divider()
+                .background(theme.dividerColor)
 
             // Day of week distribution
             dayOfWeekSection
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(theme.surfaceColor)
         .cornerRadius(12)
     }
 
     private var hourOfDaySection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(alignment: .leading, spacing: 8) {
             Text("By Hour of Day")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
 
             Chart(data.hourOfDayDistribution) { point in
                 BarMark(
@@ -50,10 +57,10 @@ struct CaptureHeatmapChart: View {
                 .opacity(selectedHour == nil || selectedHour == point.hour ? 1.0 : 0.3)
             }
             .chartForegroundStyleScale([
-                "Night": Color.blue.opacity(0.7),
-                "Morning": Color.orange.opacity(0.7),
-                "Afternoon": Color.yellow.opacity(0.7),
-                "Evening": Color.purple.opacity(0.7)
+                "Night": theme.infoColor.opacity(0.7),
+                "Morning": theme.warningColor.opacity(0.7),
+                "Afternoon": theme.successColor.opacity(0.7),
+                "Evening": theme.accentColor.opacity(0.7)
             ])
             .chartXAxis {
                 AxisMarks(values: [0, 6, 12, 18, 24]) { value in
@@ -84,16 +91,18 @@ struct CaptureHeatmapChart: View {
                     Text("Most active at \(formatHour(peakHour.hour)) with \(peakHour.count) thoughts")
                         .font(.caption)
                 }
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
             }
         }
     }
 
     private var dayOfWeekSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(alignment: .leading, spacing: 8) {
             Text("By Day of Week")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
 
             Chart(data.dayOfWeekDistribution) { point in
                 BarMark(
@@ -111,7 +120,7 @@ struct CaptureHeatmapChart: View {
                     if point.count > 0 {
                         Text("\(point.count)")
                             .font(.caption2)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(theme.secondaryTextColor)
                     }
                 }
             }
@@ -143,7 +152,7 @@ struct CaptureHeatmapChart: View {
                     Text("\(peakDay.dayName) is your most active day with \(peakDay.count) thoughts")
                         .font(.caption)
                 }
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
             }
         }
     }
@@ -166,13 +175,14 @@ struct CaptureHeatmapChart: View {
     }
 
     private func intensityColor(count: Int, max: Int) -> Color {
+        let theme = themeEngine.getCurrentTheme()
         let intensity = Double(count) / Double(max)
 
         switch intensity {
-        case 0.75...1.0: return Color.accentColor
-        case 0.5..<0.75: return Color.accentColor.opacity(0.7)
-        case 0.25..<0.5: return Color.accentColor.opacity(0.5)
-        default: return Color.accentColor.opacity(0.3)
+        case 0.75...1.0: return theme.primaryColor
+        case 0.5..<0.75: return theme.primaryColor.opacity(0.7)
+        case 0.25..<0.5: return theme.primaryColor.opacity(0.5)
+        default: return theme.primaryColor.opacity(0.3)
         }
     }
 

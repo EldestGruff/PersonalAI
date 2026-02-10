@@ -13,6 +13,7 @@ import Charts
 struct HealthCorrelationChart: View {
     let data: HealthCorrelationData
     @State private var selectedMetric: HealthMetric = .sleepVsSentiment
+    @Environment(\.themeEngine) private var themeEngine
 
     enum HealthMetric: String, CaseIterable, Identifiable {
         case sleepVsSentiment = "Sleep"
@@ -80,11 +81,14 @@ struct HealthCorrelationChart: View {
     }
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 12) {
             // Header
             HStack {
                 Label("Health Correlations", systemImage: "heart.text.square.fill")
                     .font(.headline)
+                    .foregroundColor(theme.textColor)
 
                 Spacer()
 
@@ -120,7 +124,7 @@ struct HealthCorrelationChart: View {
             // Description for selected metric
             Text(selectedMetric.description)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
                 .padding(.bottom, 4)
 
             if hasData {
@@ -137,11 +141,11 @@ struct HealthCorrelationChart: View {
                     HStack(alignment: .top, spacing: 6) {
                         Image(systemName: "lightbulb.fill")
                             .font(.caption)
-                            .foregroundStyle(.yellow)
+                            .foregroundStyle(theme.warningColor)
 
                         Text(currentInsight)
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(theme.secondaryTextColor)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     .padding(.top, 8)
@@ -151,7 +155,7 @@ struct HealthCorrelationChart: View {
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(theme.surfaceColor)
         .cornerRadius(12)
     }
 
@@ -162,8 +166,11 @@ struct HealthCorrelationChart: View {
         let isSelected: Bool
         let hasData: Bool
         let action: () -> Void
+        @Environment(\.themeEngine) private var themeEngine
 
         var body: some View {
+            let theme = themeEngine.getCurrentTheme()
+
             Button(action: action) {
                 HStack(spacing: 4) {
                     Image(systemName: metric.icon)
@@ -174,12 +181,12 @@ struct HealthCorrelationChart: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(isSelected ? Color.accentColor : Color(.tertiarySystemBackground))
-                .foregroundStyle(isSelected ? Color.white : (hasData ? Color.primary : Color.gray))
+                .background(isSelected ? theme.primaryColor : theme.inputBackgroundColor)
+                .foregroundStyle(isSelected ? Color.white : (hasData ? theme.textColor : theme.secondaryTextColor))
                 .cornerRadius(16)
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(hasData ? Color.clear : Color.gray.opacity(0.3), lineWidth: 1)
+                        .stroke(hasData ? Color.clear : theme.secondaryTextColor.opacity(0.3), lineWidth: 1)
                 )
             }
             .buttonStyle(.plain)
@@ -214,15 +221,19 @@ struct HealthCorrelationChart: View {
         let title: String
         let value: String
         let icon: String
+        @Environment(\.themeEngine) private var themeEngine
 
         var body: some View {
+            let theme = themeEngine.getCurrentTheme()
+
             HStack(spacing: 4) {
                 Image(systemName: icon)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(theme.secondaryTextColor)
                 VStack(alignment: .leading, spacing: 0) {
                     Text(title)
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(theme.secondaryTextColor.opacity(0.8))
                     Text(value)
+                        .foregroundColor(theme.textColor)
                         .fontWeight(.medium)
                 }
             }
@@ -320,18 +331,20 @@ struct HealthCorrelationChart: View {
     }
 
     private var emptyState: some View {
-        VStack(spacing: 12) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(spacing: 12) {
             Image(systemName: "chart.xyaxis.line")
                 .font(.largeTitle)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(theme.secondaryTextColor.opacity(0.6))
 
             Text("Not enough data")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
 
             Text("Capture more thoughts with HealthKit data to see correlations")
                 .font(.caption)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(theme.secondaryTextColor.opacity(0.8))
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
@@ -428,12 +441,14 @@ struct HealthCorrelationChart: View {
     }
 
     private var chartColor: Color {
+        let theme = themeEngine.getCurrentTheme()
+
         switch selectedMetric {
-        case .sleepVsSentiment: return .indigo
-        case .stepsVsVolume: return .green
-        case .hrvVsSentiment: return .orange
-        case .workoutsVsVolume: return .pink
-        case .restingHRVsSentiment: return .red
+        case .sleepVsSentiment: return theme.infoColor
+        case .stepsVsVolume: return theme.successColor
+        case .hrvVsSentiment: return theme.warningColor
+        case .workoutsVsVolume: return theme.accentColor
+        case .restingHRVsSentiment: return theme.errorColor
         }
     }
 
@@ -491,8 +506,11 @@ struct HealthCorrelationChart: View {
 struct CorrelationBadge: View {
     let value: Double
     let strength: String
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         HStack(spacing: 4) {
             Circle()
                 .fill(strengthColor)
@@ -501,6 +519,7 @@ struct CorrelationBadge: View {
             Text(strength)
                 .font(.caption2)
                 .fontWeight(.medium)
+                .foregroundColor(theme.textColor)
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
@@ -509,12 +528,13 @@ struct CorrelationBadge: View {
     }
 
     private var strengthColor: Color {
+        let theme = themeEngine.getCurrentTheme()
         let abs = Swift.abs(value)
         switch abs {
-        case 0.7...1.0: return .green
-        case 0.4..<0.7: return .orange
-        case 0.2..<0.4: return .yellow
-        default: return .gray
+        case 0.7...1.0: return theme.successColor
+        case 0.4..<0.7: return theme.warningColor
+        case 0.2..<0.4: return theme.warningColor.opacity(0.7)
+        default: return theme.secondaryTextColor
         }
     }
 }
