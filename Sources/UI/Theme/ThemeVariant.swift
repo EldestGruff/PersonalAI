@@ -62,6 +62,7 @@ protocol ThemeVariant {
 
     /// Structural colors
     var dividerColor: Color { get }
+    var shadowColor: Color { get }
 
     // MARK: - Typography
 
@@ -153,6 +154,9 @@ extension ThemeVariant {
 
     /// Divider/separator color - defaults to subtle secondary text
     var dividerColor: Color { secondaryTextColor.opacity(0.2) }
+
+    /// Shadow color - defaults to subtle black for depth
+    var shadowColor: Color { Color.black.opacity(0.1) }
 
     // MARK: - Typography Defaults
 

@@ -16,24 +16,28 @@ import SwiftUI
 /// and activity in a readable format.
 struct ContextDisplayView: View {
     let context: Context
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 10) {
             // Header
             HStack {
                 Image(systemName: "brain.head.profile")
-                    .foregroundColor(.teal)
+                    .foregroundColor(theme.primaryColor)
                     .accessibilityHidden(true)
 
                 Text("Context")
                     .font(.caption)
                     .fontWeight(.semibold)
+                    .foregroundColor(theme.textColor)
 
                 Spacer()
 
                 Text(context.timestamp.formatted(date: .abbreviated, time: .shortened))
                     .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
             }
 
             // Context items
@@ -91,7 +95,7 @@ struct ContextDisplayView: View {
             }
         }
         .padding(12)
-        .background(Color.teal.opacity(0.05))
+        .background(theme.primaryColor.opacity(0.1))
         .cornerRadius(10)
     }
 }
@@ -103,22 +107,26 @@ struct ContextItem: View {
     let icon: String
     let label: String
     let value: String
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         HStack(spacing: 6) {
             Image(systemName: icon)
                 .font(.caption)
-                .foregroundColor(.teal)
+                .foregroundColor(theme.primaryColor)
                 .frame(width: 16)
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(label)
                     .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
 
                 Text(value)
                     .font(.caption)
+                    .foregroundColor(theme.textColor)
                     .lineLimit(1)
             }
 
@@ -134,13 +142,16 @@ struct ContextItem: View {
 /// A compact context summary for list views.
 struct ContextCompactView: View {
     let context: Context
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         HStack(spacing: 8) {
             // Time of day icon
             Image(systemName: context.timeOfDay.icon)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.secondaryTextColor)
 
             // Location if available
             if let location = context.location, let name = location.name {
@@ -150,13 +161,13 @@ struct ContextCompactView: View {
                     Text(name)
                         .font(.caption)
                 }
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.secondaryTextColor)
             }
 
             // Energy
             Image(systemName: context.energy.icon)
                 .font(.caption)
-                .foregroundColor(context.energy.color)
+                .foregroundColor(context.energy.color(theme: theme))
         }
     }
 }
@@ -191,12 +202,12 @@ extension EnergyLevel {
         }
     }
 
-    var color: Color {
+    func color(theme: any ThemeVariant) -> Color {
         switch self {
-        case .low: return .red
-        case .medium: return .orange
-        case .high: return .green
-        case .peak: return .mint
+        case .low: return theme.errorColor
+        case .medium: return theme.warningColor
+        case .high: return theme.successColor
+        case .peak: return theme.successColor.opacity(0.8)
         }
     }
 }

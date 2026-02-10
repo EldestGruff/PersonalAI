@@ -36,6 +36,8 @@ struct TagInputView: View {
     /// Whether the input field is focused
     @SwiftUI.FocusState private var isInputFocused: Bool
 
+    @Environment(\.themeEngine) private var themeEngine
+
     init(
         tags: Binding<[String]>,
         onAdd: @escaping (String) -> Void,
@@ -49,6 +51,8 @@ struct TagInputView: View {
     }
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 12) {
             // Existing tags
             if !tags.isEmpty {
@@ -67,11 +71,12 @@ struct TagInputView: View {
             if tags.count < maxTags {
                 HStack(spacing: 8) {
                     Image(systemName: "tag")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.secondaryTextColor)
                         .accessibilityHidden(true)
 
                     TextField("Add tag...", text: $newTagText)
                         .focused($isInputFocused)
+                        .foregroundColor(theme.textColor)
                         #if os(iOS)
                         .textInputAutocapitalization(.never)
                         #endif
@@ -84,7 +89,7 @@ struct TagInputView: View {
                     if !newTagText.isEmpty {
                         Button(action: addTag) {
                             Image(systemName: "plus.circle.fill")
-                                .foregroundColor(.blue)
+                                .foregroundColor(theme.primaryColor)
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel("Add tag")
@@ -92,12 +97,12 @@ struct TagInputView: View {
                     }
                 }
                 .padding(10)
-                .background(Color.gray.opacity(0.1))
+                .background(theme.inputBackgroundColor)
                 .cornerRadius(8)
             } else {
                 Text("Maximum \(maxTags) tags")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
             }
         }
     }
@@ -121,8 +126,11 @@ struct TagChip: View {
     let tag: String
     var isRemovable: Bool = false
     var onRemove: (() -> Void)?
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         HStack(spacing: 4) {
             Text("#\(tag)")
                 .font(.subheadline)
@@ -138,8 +146,8 @@ struct TagChip: View {
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
-        .background(Color.blue.opacity(0.15))
-        .foregroundColor(.blue)
+        .background(theme.tagBackgroundColor)
+        .foregroundColor(theme.tagTextColor)
         .cornerRadius(16)
     }
 }

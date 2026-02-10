@@ -14,8 +14,11 @@ struct AIInsightsView: View {
     let insights: GeneratedInsights
 
     @State private var expandedSections: Set<InsightType> = [.pattern, .recommendation]
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 16) {
             // Summary
             if !insights.summary.isEmpty {
@@ -27,7 +30,7 @@ struct AIInsightsView: View {
                 insightSection(
                     title: "Patterns",
                     icon: "chart.line.uptrend.xyaxis",
-                    color: .blue,
+                    color: theme.infoColor,
                     items: insights.patterns,
                     type: .pattern
                 )
@@ -38,7 +41,7 @@ struct AIInsightsView: View {
                 insightSection(
                     title: "Achievements",
                     icon: "trophy.fill",
-                    color: .yellow,
+                    color: theme.warningColor,
                     items: insights.achievements,
                     type: .achievement
                 )
@@ -49,7 +52,7 @@ struct AIInsightsView: View {
                 insightSection(
                     title: "Recommendations",
                     icon: "lightbulb.fill",
-                    color: .orange,
+                    color: theme.warningColor,
                     items: insights.recommendations,
                     type: .recommendation
                 )
@@ -60,7 +63,7 @@ struct AIInsightsView: View {
                 insightSection(
                     title: "Anomalies",
                     icon: "exclamationmark.triangle.fill",
-                    color: .purple,
+                    color: theme.accentColor,
                     items: insights.anomalies,
                     type: .anomaly
                 )
@@ -74,21 +77,23 @@ struct AIInsightsView: View {
     // MARK: - Summary View
 
     private var summaryView: some View {
-        HStack(alignment: .top, spacing: 12) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return HStack(alignment: .top, spacing: 12) {
             Image(systemName: "quote.opening")
                 .font(.title3)
-                .foregroundStyle(.purple.opacity(0.6))
+                .foregroundStyle(theme.accentColor.opacity(0.6))
 
             Text(insights.summary)
                 .font(.subheadline)
-                .foregroundStyle(.primary)
+                .foregroundStyle(theme.textColor)
                 .italic()
 
             Spacer()
         }
         .padding()
         .glassEffect(
-            .regular.tint(.purple.opacity(0.2)),
+            .regular.tint(theme.accentColor.opacity(0.2)),
             in: RoundedRectangle(cornerRadius: 10)
         )
     }
@@ -102,7 +107,9 @@ struct AIInsightsView: View {
         items: [InsightItem],
         type: InsightType
     ) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(alignment: .leading, spacing: 12) {
             // Section header
             Button {
                 withAnimation(.spring(response: 0.3)) {
@@ -121,17 +128,17 @@ struct AIInsightsView: View {
                     Text(title)
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(theme.textColor)
 
                     Text("(\(items.count))")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(theme.secondaryTextColor)
 
                     Spacer()
 
                     Image(systemName: expandedSections.contains(type) ? "chevron.up" : "chevron.down")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(theme.secondaryTextColor)
                 }
             }
             .buttonStyle(.plain)
@@ -153,13 +160,15 @@ struct AIInsightsView: View {
     // MARK: - Attribution View
 
     private var attributionView: some View {
-        HStack(spacing: 4) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return HStack(spacing: 4) {
             Image(systemName: "apple.logo")
                 .font(.caption2)
             Text("Powered by Apple Intelligence")
                 .font(.caption2)
         }
-        .foregroundStyle(.secondary)
+        .foregroundStyle(theme.secondaryTextColor)
         .frame(maxWidth: .infinity, alignment: .trailing)
         .padding(.top, 8)
     }
@@ -173,8 +182,11 @@ struct InsightItemView: View {
     let accentColor: Color
 
     @State private var isExpanded = false
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 8) {
             // Header
             HStack(alignment: .top, spacing: 10) {
@@ -190,18 +202,19 @@ struct InsightItemView: View {
                         Text(item.title)
                             .font(.subheadline)
                             .fontWeight(.medium)
+                            .foregroundColor(theme.textColor)
 
                         if item.actionable {
                             Image(systemName: "arrow.right.circle.fill")
                                 .font(.caption)
-                                .foregroundStyle(.orange)
+                                .foregroundStyle(theme.warningColor)
                         }
                     }
 
                     // Description
                     Text(item.description)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(theme.secondaryTextColor)
                         .lineLimit(isExpanded ? nil : 2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -221,7 +234,7 @@ struct InsightItemView: View {
                 } label: {
                     Text(isExpanded ? "Show less" : "Show more")
                         .font(.caption2)
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(theme.primaryColor)
                 }
                 .buttonStyle(.plain)
                 .padding(.leading, 34)
@@ -229,7 +242,7 @@ struct InsightItemView: View {
         }
         .padding(12)
         .glassEffect(
-            .regular.tint(.purple.opacity(0.5)),
+            .regular.tint(theme.accentColor.opacity(0.5)),
             in: RoundedRectangle(cornerRadius: 10)
         )
         .accessibilityElement(children: .combine)
@@ -238,19 +251,21 @@ struct InsightItemView: View {
     }
 
     private var confidenceIndicator: some View {
-        VStack(spacing: 2) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(spacing: 2) {
             // Confidence dots
             HStack(spacing: 2) {
                 ForEach(0..<3) { index in
                     Circle()
-                        .fill(index < confidenceLevel ? accentColor : Color.gray.opacity(0.3))
+                        .fill(index < confidenceLevel ? accentColor : theme.secondaryTextColor.opacity(0.3))
                         .frame(width: 4, height: 4)
                 }
             }
 
             Text("\(Int(item.confidence * 100))%")
                 .font(.system(size: 8))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
         }
         .accessibilityLabel("Confidence: \(Int(item.confidence * 100)) percent")
     }
@@ -268,18 +283,23 @@ struct InsightItemView: View {
 
 @available(iOS 26.0, *)
 struct AIInsightsLoadingView: View {
+    @Environment(\.themeEngine) private var themeEngine
+
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(spacing: 16) {
             ProgressView()
                 .scaleEffect(1.2)
+                .tint(theme.primaryColor)
 
             Text("Generating insights...")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
 
             Text("Analyzing your patterns with Apple Intelligence")
                 .font(.caption)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(theme.secondaryTextColor.opacity(0.8))
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 32)
@@ -292,26 +312,30 @@ struct AIInsightsLoadingView: View {
 struct AIInsightsEmptyView: View {
     let minimumThoughts: Int
     let currentThoughts: Int
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(spacing: 12) {
             Image(systemName: "sparkles")
                 .font(.title)
-                .foregroundStyle(.purple.opacity(0.5))
+                .foregroundStyle(theme.accentColor.opacity(0.5))
 
             Text("Need More Data")
                 .font(.headline)
+                .foregroundColor(theme.textColor)
 
             Text("Capture at least \(minimumThoughts) thoughts to unlock AI-powered insights")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
                 .multilineTextAlignment(.center)
 
             // Progress indicator
             HStack(spacing: 4) {
                 ForEach(0..<minimumThoughts, id: \.self) { index in
                     Circle()
-                        .fill(index < currentThoughts ? Color.purple : Color.gray.opacity(0.3))
+                        .fill(index < currentThoughts ? theme.accentColor : theme.secondaryTextColor.opacity(0.3))
                         .frame(width: 8, height: 8)
                 }
             }
@@ -319,7 +343,7 @@ struct AIInsightsEmptyView: View {
 
             Text("\(currentThoughts)/\(minimumThoughts) thoughts captured")
                 .font(.caption)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(theme.secondaryTextColor.opacity(0.8))
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 24)
@@ -330,18 +354,23 @@ struct AIInsightsEmptyView: View {
 
 @available(iOS 26.0, *)
 struct AIInsightsUnavailableView: View {
+    @Environment(\.themeEngine) private var themeEngine
+
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(spacing: 12) {
             Image(systemName: "cpu")
                 .font(.title)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
 
             Text("Apple Intelligence Required")
                 .font(.headline)
+                .foregroundColor(theme.textColor)
 
             Text("AI-powered insights require a device with Apple Intelligence capabilities.")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
@@ -355,23 +384,28 @@ struct AIInsightsUnavailableView: View {
 struct AIInsightsErrorView: View {
     let error: Error
     let onRetry: () -> Void
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(spacing: 12) {
             Image(systemName: "exclamationmark.circle")
                 .font(.title)
-                .foregroundStyle(.orange)
+                .foregroundStyle(theme.warningColor)
 
             Text("Unable to Generate Insights")
                 .font(.headline)
+                .foregroundColor(theme.textColor)
 
             Text(error.localizedDescription)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondaryTextColor)
                 .multilineTextAlignment(.center)
 
             Button("Try Again", action: onRetry)
                 .buttonStyle(.bordered)
+                .tint(theme.primaryColor)
                 .padding(.top, 8)
         }
         .frame(maxWidth: .infinity)

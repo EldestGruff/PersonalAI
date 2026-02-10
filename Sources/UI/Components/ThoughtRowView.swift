@@ -22,14 +22,17 @@ import AppKit
 /// - Timestamp and location
 struct ThoughtRowView: View {
     let thought: Thought
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 8) {
             // Content preview (supports rich text)
             ThoughtContentView(
                 thought: thought,
                 font: .body,
-                color: .primary,
+                color: theme.textColor,
                 lineLimit: 2
             )
 
@@ -44,13 +47,13 @@ struct ThoughtRowView: View {
                     ForEach(thought.tags.prefix(3), id: \.self) { tag in
                         Text("#\(tag)")
                             .font(.caption2)
-                            .foregroundColor(.blue)
+                            .foregroundColor(theme.tagTextColor)
                     }
 
                     if thought.tags.count > 3 {
                         Text("+\(thought.tags.count - 3)")
                             .font(.caption2)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(theme.secondaryTextColor)
                     }
                 }
             }
@@ -65,7 +68,7 @@ struct ThoughtRowView: View {
                     Text(thought.createdAt.formatted(.relative(presentation: .named)))
                         .font(.caption)
                 }
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.secondaryTextColor)
 
                 // Location
                 if let location = thought.context.location, let name = location.name {
@@ -77,7 +80,7 @@ struct ThoughtRowView: View {
                             .font(.caption)
                             .lineLimit(1)
                     }
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
                 }
 
                 Spacer()
@@ -86,7 +89,7 @@ struct ThoughtRowView: View {
                 if thought.status == .archived {
                     Image(systemName: "archivebox.fill")
                         .font(.caption)
-                        .foregroundColor(.orange)
+                        .foregroundColor(theme.warningColor)
                         .accessibilityLabel("Archived")
                 }
             }
@@ -100,14 +103,17 @@ struct ThoughtRowView: View {
 /// A card-style view for displaying a thought (for grid layouts).
 struct ThoughtCardView: View {
     let thought: Thought
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 10) {
             // Content (supports rich text)
             ThoughtContentView(
                 thought: thought,
                 font: .body,
-                color: .primary,
+                color: theme.textColor,
                 lineLimit: 4
             )
 
@@ -117,11 +123,11 @@ struct ThoughtCardView: View {
             if let classification = thought.classification {
                 HStack {
                     Image(systemName: classification.type.icon)
-                        .foregroundColor(classification.type.color)
+                        .foregroundColor(classification.type.color(theme: theme))
                         .accessibilityHidden(true)
                     Text(classification.type.displayName)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.secondaryTextColor)
                 }
             }
 
@@ -133,8 +139,8 @@ struct ThoughtCardView: View {
                             .font(.caption2)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(Color.blue.opacity(0.1))
-                            .foregroundColor(.blue)
+                            .background(theme.tagBackgroundColor)
+                            .foregroundColor(theme.tagTextColor)
                             .cornerRadius(4)
                     }
                 }
@@ -143,17 +149,13 @@ struct ThoughtCardView: View {
             // Timestamp
             Text(thought.createdAt.formatted(date: .abbreviated, time: .omitted))
                 .font(.caption2)
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.secondaryTextColor)
         }
         .padding()
         .frame(minHeight: 150)
-        #if os(iOS)
-        .background(Color(.systemBackground))
-        #else
-        .background(Color(NSColor.windowBackgroundColor))
-        #endif
+        .background(theme.surfaceColor)
         .cornerRadius(12)
-        .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
+        .shadow(color: theme.shadowColor, radius: 4, y: 2)
     }
 }
 

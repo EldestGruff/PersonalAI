@@ -19,24 +19,28 @@ import SwiftUI
 /// - Suggested tags (if available)
 struct ClassificationBadge: View {
     let classification: Classification
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 10) {
             // Header
             HStack {
                 Image(systemName: "sparkles")
-                    .foregroundColor(.purple)
+                    .foregroundColor(theme.accentColor)
                     .accessibilityHidden(true)
 
                 Text("AI Classification")
                     .font(.caption)
                     .fontWeight(.semibold)
+                    .foregroundColor(theme.textColor)
 
                 Spacer()
 
                 Text("\(Int(classification.confidence * 100))%")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
             }
 
             // Type and sentiment
@@ -44,7 +48,7 @@ struct ClassificationBadge: View {
                 // Type
                 Label(classification.type.displayName, systemImage: classification.type.icon)
                     .font(.subheadline)
-                    .foregroundColor(classification.type.color)
+                    .foregroundColor(classification.type.color(theme: theme))
 
                 Spacer()
 
@@ -52,14 +56,14 @@ struct ClassificationBadge: View {
                 HStack(spacing: 4) {
                     Text("Sentiment:")
                         .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.secondaryTextColor)
                     Image(systemName: classification.sentiment.icon)
                         .font(.caption)
                         .accessibilityHidden(true)
                     Text(classification.sentiment.displayName)
                         .font(.caption)
                 }
-                .foregroundColor(classification.sentiment.color)
+                .foregroundColor(classification.sentiment.color(theme: theme))
             }
 
             // Suggested tags
@@ -67,18 +71,18 @@ struct ClassificationBadge: View {
                 HStack(spacing: 6) {
                     Text("Suggested:")
                         .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.secondaryTextColor)
 
                     ForEach(classification.suggestedTags.prefix(3), id: \.self) { tag in
                         Text("#\(tag)")
                             .font(.caption2)
-                            .foregroundColor(.blue)
+                            .foregroundColor(theme.tagTextColor)
                     }
                 }
             }
         }
         .padding(12)
-        .background(Color.purple.opacity(0.05))
+        .background(theme.accentColor.opacity(0.1))
         .cornerRadius(10)
     }
 }
@@ -106,13 +110,13 @@ extension ClassificationType {
         }
     }
 
-    var color: Color {
+    func color(theme: any ThemeVariant) -> Color {
         switch self {
-        case .reminder: return .orange
-        case .event: return .green
-        case .note: return .gray
-        case .question: return .blue
-        case .idea: return .purple
+        case .reminder: return theme.warningColor
+        case .event: return theme.successColor
+        case .note: return theme.secondaryTextColor
+        case .question: return theme.infoColor
+        case .idea: return theme.accentColor
         }
     }
 }
@@ -134,13 +138,13 @@ extension Sentiment {
         }
     }
 
-    var color: Color {
+    func color(theme: any ThemeVariant) -> Color {
         switch self {
-        case .very_positive: return .green
-        case .positive: return .mint
-        case .neutral: return .gray
-        case .negative: return .orange
-        case .very_negative: return .red
+        case .very_positive: return theme.successColor
+        case .positive: return theme.successColor.opacity(0.7)
+        case .neutral: return theme.secondaryTextColor
+        case .negative: return theme.warningColor
+        case .very_negative: return theme.errorColor
         }
     }
 }
@@ -150,8 +154,11 @@ extension Sentiment {
 /// A smaller version of the classification badge for list views.
 struct ClassificationBadgeCompact: View {
     let classification: Classification
+    @Environment(\.themeEngine) private var themeEngine
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         HStack(spacing: 6) {
             Image(systemName: classification.type.icon)
                 .font(.caption)
@@ -162,13 +169,13 @@ struct ClassificationBadgeCompact: View {
 
             Text("•")
                 .font(.caption2)
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.secondaryTextColor)
 
             Text("\(Int(classification.confidence * 100))%")
                 .font(.caption2)
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.secondaryTextColor)
         }
-        .foregroundColor(classification.type.color)
+        .foregroundColor(classification.type.color(theme: theme))
     }
 }
 
