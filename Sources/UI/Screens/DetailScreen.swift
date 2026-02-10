@@ -21,6 +21,7 @@ import SwiftUI
 struct DetailScreen: View {
     @State var viewModel: DetailViewModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.themeEngine) private var themeEngine
     @State private var showDeleteConfirmation = false
     @State private var showEnergyDebug = false
     @State private var energyBreakdown: EnergyBreakdown?
@@ -29,7 +30,13 @@ struct DetailScreen: View {
     @State private var conversationCount: Int = 0
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         ZStack {
+            // Theme background color
+            theme.backgroundColor
+                .ignoresSafeArea()
+
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     // Error banner
@@ -83,6 +90,8 @@ struct DetailScreen: View {
             }
         }
         .navigationTitle("Thought")
+        .toolbarBackground(theme.surfaceColor, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
@@ -151,7 +160,9 @@ struct DetailScreen: View {
 
     @available(iOS 26.0, *)
     private var conversationFloatingButton: some View {
-        VStack {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack {
             Spacer()
             HStack {
                 Spacer()
@@ -160,12 +171,12 @@ struct DetailScreen: View {
                 } label: {
                     ZStack(alignment: .topTrailing) {
                         Circle()
-                            .fill(.blue.gradient)
+                            .fill(theme.primaryColor.gradient)
                             .frame(width: 56, height: 56)
-                            .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+                            .shadow(color: .black.opacity(0.2), radius: theme.shadowRadius, x: 0, y: 4)
 
                         Image(systemName: "bubble.left.and.bubble.right.fill")
-                            .foregroundColor(.white)
+                            .foregroundColor(theme.buttonForegroundColor)
                             .font(.title3)
                             .frame(width: 56, height: 56)
 
@@ -173,9 +184,9 @@ struct DetailScreen: View {
                             Text("\(conversationCount)")
                                 .font(.caption2)
                                 .fontWeight(.bold)
-                                .foregroundColor(.white)
+                                .foregroundColor(theme.buttonForegroundColor)
                                 .padding(6)
-                                .background(Color.red)
+                                .background(theme.errorColor)
                                 .clipShape(Circle())
                                 .offset(x: 4, y: -4)
                         }
@@ -196,19 +207,29 @@ struct DetailScreen: View {
     // MARK: - Content Section
 
     private var contentSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(alignment: .leading, spacing: 12) {
             Text("Content")
                 .font(.headline)
+                .foregroundColor(theme.textColor)
 
             if viewModel.isEditing {
                 TextEditor(text: $viewModel.editedContent)
                     .frame(minHeight: 150)
+                    .scrollContentBackground(.hidden)
                     .padding(8)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
+                    .background(theme.inputBackgroundColor)
+                    .foregroundColor(theme.textColor)
+                    .cornerRadius(theme.cornerRadius)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: theme.cornerRadius)
+                            .stroke(theme.inputBorderColor, lineWidth: theme.borderWidth)
+                    )
             } else {
                 Text(viewModel.thought.content)
                     .font(.body)
+                    .foregroundColor(theme.textColor)
                     .textSelection(.enabled)
             }
         }
@@ -217,9 +238,12 @@ struct DetailScreen: View {
     // MARK: - Tags Section
 
     private var tagsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(alignment: .leading, spacing: 12) {
             Text("Tags")
                 .font(.headline)
+                .foregroundColor(theme.textColor)
 
             if viewModel.isEditing {
                 TagInputView(
@@ -236,9 +260,12 @@ struct DetailScreen: View {
     // MARK: - Classification Section
 
     private var classificationSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(alignment: .leading, spacing: 12) {
             Text("Classification")
                 .font(.headline)
+                .foregroundColor(theme.textColor)
 
             if let classification = viewModel.thought.classification {
                 ClassificationBadge(classification: classification)
@@ -257,21 +284,23 @@ struct DetailScreen: View {
                         .padding(.vertical, 12)
                     }
                     .buttonStyle(.borderedProminent)
+                    .tint(theme.primaryColor)
                     .disabled(viewModel.isCreatingTask)
                     .accessibilityIdentifier(classification.type == .reminder ? "createReminderButton" : "addToCalendarButton")
                     .overlay {
                         if viewModel.isCreatingTask {
                             ProgressView()
+                                .tint(theme.primaryColor)
                         }
                     }
 
                     if viewModel.taskCreated {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.green)
+                                .foregroundColor(theme.successColor)
                             Text(classification.type == .reminder ? "Reminder created!" : "Event added!")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(theme.secondaryTextColor)
                         }
                     }
                 }
@@ -282,10 +311,13 @@ struct DetailScreen: View {
     // MARK: - Context Section
 
     private var contextSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Context")
                     .font(.headline)
+                    .foregroundColor(theme.textColor)
 
                 Spacer()
 
@@ -296,9 +328,10 @@ struct DetailScreen: View {
                     if isRefreshingLocation {
                         ProgressView()
                             .scaleEffect(0.7)
+                            .tint(theme.primaryColor)
                     } else {
                         Image(systemName: "location.circle")
-                            .foregroundColor(.teal)
+                            .foregroundColor(theme.primaryColor)
                             .font(.caption)
                     }
                 }
@@ -314,7 +347,7 @@ struct DetailScreen: View {
                     }
                 } label: {
                     Image(systemName: showEnergyDebug ? "chevron.up.circle.fill" : "info.circle")
-                        .foregroundColor(.teal)
+                        .foregroundColor(theme.primaryColor)
                         .font(.caption)
                 }
                 .accessibilityLabel(showEnergyDebug ? "Hide energy details" : "Show energy details")
@@ -332,6 +365,7 @@ struct DetailScreen: View {
                     ProgressView()
                         .frame(maxWidth: .infinity)
                         .padding()
+                        .tint(theme.primaryColor)
                 }
             }
         }
@@ -376,25 +410,29 @@ struct DetailScreen: View {
     // MARK: - Related Thoughts Section
 
     private var relatedThoughtsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "link")
-                    .foregroundColor(.blue)
+                    .foregroundColor(theme.infoColor)
                 Text("Related Thoughts")
                     .font(.headline)
+                    .foregroundColor(theme.textColor)
 
                 Spacer()
 
                 if viewModel.isLoadingRelated {
                     ProgressView()
                         .scaleEffect(0.7)
+                        .tint(theme.primaryColor)
                 }
             }
 
             if viewModel.relatedThoughts.isEmpty && !viewModel.isLoadingRelated {
                 Text("No related thoughts found")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
             } else {
                 ForEach(viewModel.relatedThoughts) { result in
                     NavigationLink {
@@ -417,15 +455,18 @@ struct DetailScreen: View {
     // MARK: - Feedback Section
 
     private var feedbackSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(alignment: .leading, spacing: 12) {
             Text("Was this classification helpful?")
                 .font(.headline)
+                .foregroundColor(theme.textColor)
 
             HStack(spacing: 16) {
                 FeedbackButton(
                     icon: "hand.thumbsup.fill",
                     label: "Helpful",
-                    color: .green,
+                    color: theme.successColor,
                     isSelected: viewModel.userFeedback?.type == .helpful,
                     identifier: "helpfulFeedbackButton"
                 ) {
@@ -435,7 +476,7 @@ struct DetailScreen: View {
                 FeedbackButton(
                     icon: "hand.raised.fill",
                     label: "Okay",
-                    color: .orange,
+                    color: theme.warningColor,
                     isSelected: viewModel.userFeedback?.type == .partially_helpful,
                     identifier: "partiallyHelpfulFeedbackButton"
                 ) {
@@ -445,7 +486,7 @@ struct DetailScreen: View {
                 FeedbackButton(
                     icon: "hand.thumbsdown.fill",
                     label: "Not Helpful",
-                    color: .red,
+                    color: theme.errorColor,
                     isSelected: viewModel.userFeedback?.type == .not_helpful,
                     identifier: "notHelpfulFeedbackButton"
                 ) {
@@ -456,7 +497,7 @@ struct DetailScreen: View {
             if viewModel.userFeedback != nil {
                 Text("Thanks for your feedback!")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
             }
         }
     }
@@ -464,57 +505,62 @@ struct DetailScreen: View {
     // MARK: - Metadata Section
 
     private var metadataSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(alignment: .leading, spacing: 8) {
             Text("Details")
                 .font(.headline)
+                .foregroundColor(theme.textColor)
 
             HStack {
                 Text("Created")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
                 Spacer()
                 Text(viewModel.createdAtFormatted)
+                    .foregroundColor(theme.textColor)
             }
             .font(.subheadline)
 
             if let updatedAt = viewModel.updatedAtFormatted {
                 HStack {
                     Text("Updated")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.secondaryTextColor)
                     Spacer()
                     Text(updatedAt)
+                        .foregroundColor(theme.textColor)
                 }
                 .font(.subheadline)
             }
 
             HStack {
                 Text("Status")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
                 Spacer()
                 Text(viewModel.thought.status.rawValue.capitalized)
-                    .foregroundColor(statusColor)
+                    .foregroundColor(statusColor(for: theme))
             }
             .font(.subheadline)
 
             HStack {
                 Text("ID")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
                 Spacer()
                 Text(viewModel.thought.id.uuidString.prefix(8) + "...")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
             }
             .font(.subheadline)
         }
         .padding()
-        .background(Color.gray.opacity(0.05))
-        .cornerRadius(10)
+        .background(theme.surfaceColor)
+        .cornerRadius(theme.cornerRadius)
     }
 
-    private var statusColor: Color {
+    private func statusColor(for theme: any ThemeVariant) -> Color {
         switch viewModel.thought.status {
-        case .active: return .green
-        case .archived: return .orange
-        case .completed: return .blue
+        case .active: return theme.successColor
+        case .archived: return theme.warningColor
+        case .completed: return theme.infoColor
         }
     }
 }
@@ -523,6 +569,8 @@ struct DetailScreen: View {
 
 /// A button for providing feedback on classification.
 struct FeedbackButton: View {
+    @Environment(\.themeEngine) private var themeEngine
+
     let icon: String
     let label: String
     let color: Color
@@ -531,6 +579,8 @@ struct FeedbackButton: View {
     let action: () -> Void
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         Button(action: action) {
             VStack(spacing: 4) {
                 Image(systemName: icon)
@@ -538,11 +588,11 @@ struct FeedbackButton: View {
                 Text(label)
                     .font(.caption)
             }
-            .foregroundColor(isSelected ? color : .secondary)
+            .foregroundColor(isSelected ? color : theme.secondaryTextColor)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
-            .background(isSelected ? color.opacity(0.1) : Color.gray.opacity(0.05))
-            .cornerRadius(10)
+            .background(isSelected ? color.opacity(0.1) : theme.surfaceColor)
+            .cornerRadius(theme.cornerRadius)
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .ignore)
@@ -557,14 +607,18 @@ struct FeedbackButton: View {
 
 /// Debug view showing how energy level is calculated.
 struct EnergyBreakdownView: View {
+    @Environment(\.themeEngine) private var themeEngine
+
     let breakdown: EnergyBreakdown
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 10) {
             Text("Energy Calculation")
                 .font(.caption)
                 .fontWeight(.semibold)
-                .foregroundColor(.teal)
+                .foregroundColor(theme.primaryColor)
 
             VStack(spacing: 8) {
                 // Sleep component (40% weight)
@@ -603,39 +657,53 @@ struct EnergyBreakdownView: View {
                     rawValue: nil
                 )
 
-                Divider()
+                ThemedDivider()
 
                 // Total
                 HStack {
                     Text("Total Score")
                         .font(.caption)
                         .fontWeight(.semibold)
+                        .foregroundColor(theme.textColor)
                     Spacer()
                     Text(String(format: "%.2f", breakdown.totalScore))
                         .font(.caption)
                         .fontWeight(.bold)
+                        .foregroundColor(theme.textColor)
                 }
 
                 HStack {
                     Text("Energy Level")
                         .font(.caption)
                         .fontWeight(.semibold)
+                        .foregroundColor(theme.textColor)
                     Spacer()
                     Text(breakdown.level.rawValue.capitalized)
                         .font(.caption)
                         .fontWeight(.bold)
-                        .foregroundColor(breakdown.level.color)
+                        .foregroundColor(energyLevelColor(for: breakdown.level, theme: theme))
                 }
             }
         }
         .padding(12)
-        .background(Color.teal.opacity(0.1))
-        .cornerRadius(10)
+        .background(theme.primaryColor.opacity(0.1))
+        .cornerRadius(theme.cornerRadius)
+    }
+
+    private func energyLevelColor(for level: EnergyLevel, theme: any ThemeVariant) -> Color {
+        switch level {
+        case .low: return theme.errorColor
+        case .medium: return theme.warningColor
+        case .high: return theme.successColor
+        case .peak: return theme.accentColor
+        }
     }
 }
 
 /// A single row in the energy breakdown display.
 struct BreakdownRow: View {
+    @Environment(\.themeEngine) private var themeEngine
+
     let label: String
     let score: Double
     let weight: Double
@@ -643,22 +711,24 @@ struct BreakdownRow: View {
     let rawValue: String?
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(label)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.secondaryTextColor)
                     if let rawValue = rawValue {
                         Text(rawValue)
                             .font(.caption2)
-                            .foregroundColor(.teal)
+                            .foregroundColor(theme.primaryColor)
                     }
                 }
                 Spacer()
                 Text(String(format: "%.0f%%", weight * 100))
                     .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
             }
 
             HStack(spacing: 8) {
@@ -666,12 +736,12 @@ struct BreakdownRow: View {
                 GeometryReader { geometry in
                     ZStack(alignment: .leading) {
                         Rectangle()
-                            .fill(Color.gray.opacity(0.2))
+                            .fill(theme.surfaceColor)
                             .frame(height: 6)
                             .cornerRadius(3)
 
                         Rectangle()
-                            .fill(colorForScore(score))
+                            .fill(colorForScore(score, theme: theme))
                             .frame(width: geometry.size.width * score, height: 6)
                             .cornerRadius(3)
                     }
@@ -682,23 +752,24 @@ struct BreakdownRow: View {
                 Text(String(format: "%.2f", score))
                     .font(.caption2)
                     .fontWeight(.medium)
+                    .foregroundColor(theme.textColor)
                     .frame(width: 35, alignment: .trailing)
 
                 // Contribution value
                 Text(String(format: "= %.2f", contribution))
                     .font(.caption2)
-                    .foregroundColor(.teal)
+                    .foregroundColor(theme.primaryColor)
                     .frame(width: 45, alignment: .trailing)
             }
         }
     }
 
-    private func colorForScore(_ score: Double) -> Color {
+    private func colorForScore(_ score: Double, theme: any ThemeVariant) -> Color {
         switch score {
-        case 0..<0.33: return .red
-        case 0.33..<0.66: return .orange
-        case 0.66..<0.85: return .green
-        default: return .mint
+        case 0..<0.33: return theme.errorColor
+        case 0.33..<0.66: return theme.warningColor
+        case 0.66..<0.85: return theme.successColor
+        default: return theme.accentColor
         }
     }
 }
@@ -771,20 +842,24 @@ struct BreakdownRow: View {
 
 /// A compact row displaying a related thought with relevance scoring
 struct RelatedThoughtRow: View {
+    @Environment(\.themeEngine) private var themeEngine
+
     let result: SearchResult
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 6) {
             Text(result.thought.content)
                 .font(.subheadline)
                 .lineLimit(2)
-                .foregroundColor(.primary)
+                .foregroundColor(theme.textColor)
 
             HStack(spacing: 8) {
                 // Date
                 Text(result.thought.createdAt.formatted(.relative(presentation: .named)))
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
 
                 Spacer()
 
@@ -792,17 +867,17 @@ struct RelatedThoughtRow: View {
                 HStack(spacing: 4) {
                     Image(systemName: result.isHighConfidence ? "checkmark.circle.fill" : "checkmark.circle")
                         .font(.caption2)
-                        .foregroundColor(result.isHighConfidence ? .green : .orange)
+                        .foregroundColor(result.isHighConfidence ? theme.successColor : theme.warningColor)
 
                     Text("\(result.relevancePercentage)% similar")
                         .font(.caption)
-                        .foregroundColor(.blue)
+                        .foregroundColor(theme.infoColor)
                 }
             }
         }
         .padding(.vertical, 6)
         .padding(.horizontal, 12)
-        .background(Color.gray.opacity(0.05))
-        .cornerRadius(8)
+        .background(theme.surfaceColor)
+        .cornerRadius(theme.cornerRadius - 2)
     }
 }

@@ -22,7 +22,7 @@ import SwiftUI
 struct CaptureScreen: View {
     @State var viewModel: CaptureViewModel
     @State private var showPaywall = false
-    @State private var themeEngine = ThemeEngine.shared
+    @Environment(\.themeEngine) var themeEngine
     @Environment(\.dismiss) private var dismiss
     @SwiftUI.FocusState private var isTextFieldFocused: Bool
 
@@ -33,38 +33,46 @@ struct CaptureScreen: View {
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 20) {
-                    // Error banner with upgrade option
-                    if let error = viewModel.error {
-                        subscriptionErrorBanner(error: error)
+            ZStack {
+                // Theme background color
+                theme.backgroundColor
+                    .ignoresSafeArea()
+
+                ScrollView {
+                    VStack(spacing: 20) {
+                        // Error banner with upgrade option
+                        if let error = viewModel.error {
+                            subscriptionErrorBanner(error: error, theme: theme)
+                        }
+
+                        // Content input
+                        contentInputSection(theme: theme)
+
+                        // Tags
+                        tagsSection(theme: theme)
+
+                        // Similar thoughts insight
+                        if viewModel.hasSimilarThoughts {
+                            similarThoughtsInsight(theme: theme)
+                        }
+
+                        // Context & Classification
+                        if viewModel.isContextLoading || viewModel.context != nil {
+                            contextSection(theme: theme)
+                        }
+
+                        if viewModel.isClassificationLoading || viewModel.classification != nil {
+                            classificationSection
+                        }
+
+                        Spacer()
                     }
-
-                    // Content input
-                    contentInputSection
-
-                    // Tags
-                    tagsSection
-
-                    // Similar thoughts insight
-                    if viewModel.hasSimilarThoughts {
-                        similarThoughtsInsight
-                    }
-
-                    // Context & Classification
-                    if viewModel.isContextLoading || viewModel.context != nil {
-                        contextSection
-                    }
-
-                    if viewModel.isClassificationLoading || viewModel.classification != nil {
-                        classificationSection
-                    }
-
-                    Spacer()
+                    .padding()
                 }
-                .padding()
             }
             .navigationTitle("New Thought")
+            .toolbarBackground(theme.surfaceColor, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
@@ -73,6 +81,7 @@ struct CaptureScreen: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .foregroundColor(theme.secondaryTextColor)
                     .disabled(viewModel.isCapturing)
                 }
 
@@ -83,7 +92,7 @@ struct CaptureScreen: View {
                     }
                     .disabled(!viewModel.isValid || viewModel.isCapturing)
                     .fontWeight(.semibold)
-                    .foregroundColor(viewModel.isValid && !viewModel.isCapturing ? theme.accentColor : .gray)
+                    .foregroundColor(viewModel.isValid && !viewModel.isCapturing ? theme.primaryColor : theme.secondaryTextColor)
                     .accessibilityIdentifier("captureThoughtButton")
                 }
             }
@@ -104,12 +113,13 @@ struct CaptureScreen: View {
 
     // MARK: - Content Input Section
 
-    private var contentInputSection: some View {
+    private func contentInputSection(theme: any ThemeVariant) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             // Mode toggle
             HStack {
                 Text("What's on your mind?")
                     .font(.headline)
+                    .foregroundColor(theme.textColor)
 
                 Spacer()
 
@@ -118,8 +128,10 @@ struct CaptureScreen: View {
                     viewModel.toggleRichText()
                 } label: {
                     Image(systemName: viewModel.richTextEnabled ? "textformat" : "textformat.alt")
+                        .foregroundColor(theme.primaryColor)
                 }
                 .buttonStyle(.bordered)
+                .tint(theme.primaryColor)
                 .disabled(viewModel.isCapturing)
                 .accessibilityLabel(viewModel.richTextEnabled ? "Disable rich text" : "Enable rich text")
                 .accessibilityHint("Double tap to toggle formatting")
@@ -137,9 +149,15 @@ struct CaptureScreen: View {
                     ))
                     .focused($isTextFieldFocused)
                     .frame(minHeight: 120)
+                    .scrollContentBackground(.hidden)
                     .padding(8)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
+                    .background(theme.inputBackgroundColor)
+                    .foregroundColor(theme.textColor)
+                    .cornerRadius(theme.cornerRadius)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: theme.cornerRadius)
+                            .stroke(theme.inputBorderColor, lineWidth: theme.borderWidth)
+                    )
                     .accessibilityIdentifier("captureThoughtTextField")
                     .accessibilityHint("Enter formatted thought content")
                     .onChange(of: viewModel.thoughtContent) { oldValue, newValue in
@@ -171,16 +189,22 @@ struct CaptureScreen: View {
                     Spacer()
                     Text("\(viewModel.characterCount) / 5000")
                         .font(.caption)
-                        .foregroundColor(viewModel.isOverLimit ? .red : .secondary)
+                        .foregroundColor(viewModel.isOverLimit ? theme.errorColor : theme.secondaryTextColor)
                 }
             } else {
                 // Plain text input
                 TextEditor(text: $viewModel.thoughtContent)
                     .focused($isTextFieldFocused)
                     .frame(minHeight: 120)
+                    .scrollContentBackground(.hidden)
                     .padding(8)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
+                    .background(theme.inputBackgroundColor)
+                    .foregroundColor(theme.textColor)
+                    .cornerRadius(theme.cornerRadius)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: theme.cornerRadius)
+                            .stroke(theme.inputBorderColor, lineWidth: theme.borderWidth)
+                    )
                     .accessibilityIdentifier("captureThoughtTextField")
                     .accessibilityHint("Enter your thought content. AI will automatically classify and tag it.")
                     .onChange(of: viewModel.thoughtContent) { oldValue, newValue in
@@ -206,7 +230,7 @@ struct CaptureScreen: View {
                     Spacer()
                     Text("\(viewModel.characterCount) / 5000")
                         .font(.caption)
-                        .foregroundColor(viewModel.isOverLimit ? .red : .secondary)
+                        .foregroundColor(viewModel.isOverLimit ? theme.errorColor : theme.secondaryTextColor)
                 }
             }
         }
@@ -214,10 +238,11 @@ struct CaptureScreen: View {
 
     // MARK: - Tags Section
 
-    private var tagsSection: some View {
+    private func tagsSection(theme: any ThemeVariant) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Tags")
                 .font(.headline)
+                .foregroundColor(theme.textColor)
 
             TagInputView(
                 tags: $viewModel.selectedTags,
@@ -229,20 +254,22 @@ struct CaptureScreen: View {
 
     // MARK: - Similar Thoughts Insight
 
-    private var similarThoughtsInsight: some View {
+    private func similarThoughtsInsight(theme: any ThemeVariant) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "lightbulb")
-                    .foregroundColor(.blue)
+                    .foregroundColor(theme.accentColor)
                 Text("You've thought about this before")
                     .font(.subheadline)
                     .fontWeight(.medium)
+                    .foregroundColor(theme.textColor)
 
                 Spacer()
 
                 if viewModel.isCheckingSimilar {
                     ProgressView()
                         .scaleEffect(0.7)
+                        .tint(theme.accentColor)
                 }
             }
 
@@ -260,46 +287,48 @@ struct CaptureScreen: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(result.thought.content)
                             .font(.caption)
-                            .foregroundColor(.primary)
+                            .foregroundColor(theme.textColor)
                             .lineLimit(2)
 
                         HStack {
                             Text(result.thought.createdAt.formatted(.relative(presentation: .named)))
                                 .font(.caption2)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(theme.secondaryTextColor)
 
                             Text("•")
                                 .font(.caption2)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(theme.secondaryTextColor)
 
                             Text("\(result.relevancePercentage)% similar")
                                 .font(.caption2)
-                                .foregroundColor(.blue)
+                                .foregroundColor(theme.primaryColor)
                         }
                     }
                     .padding(8)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.blue.opacity(0.05))
-                    .cornerRadius(6)
+                    .background(theme.surfaceColor)
+                    .cornerRadius(theme.cornerRadius - 4)
                 }
             }
         }
         .padding(12)
-        .background(Color.blue.opacity(0.03))
-        .cornerRadius(12)
+        .background(theme.surfaceColor.opacity(0.6))
+        .cornerRadius(theme.cornerRadius)
     }
 
     // MARK: - Context Section
 
-    private var contextSection: some View {
+    private func contextSection(theme: any ThemeVariant) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("Context")
                     .font(.headline)
+                    .foregroundColor(theme.textColor)
 
                 if viewModel.isContextLoading {
                     ProgressView()
                         .scaleEffect(0.8)
+                        .tint(theme.accentColor)
                 }
             }
 
@@ -308,7 +337,7 @@ struct CaptureScreen: View {
             } else if let error = viewModel.contextError {
                 Text(error)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
             }
         }
     }
@@ -361,7 +390,7 @@ struct CaptureScreen: View {
     // MARK: - Subscription Error Banner
 
     @ViewBuilder
-    private func subscriptionErrorBanner(error: AppError) -> some View {
+    private func subscriptionErrorBanner(error: AppError, theme: any ThemeVariant) -> some View {
         // Check if this is a subscription limit error
         let isSubscriptionError = error.errorDescription?.contains("limit") ?? false
 
@@ -369,17 +398,18 @@ struct CaptureScreen: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 12) {
                     Image(systemName: "crown.fill")
-                        .foregroundStyle(.yellow)
+                        .foregroundStyle(theme.warningColor)
                         .font(.title2)
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Free Tier Limit Reached")
                             .font(.subheadline)
                             .fontWeight(.semibold)
+                            .foregroundColor(theme.textColor)
 
                         Text(error.errorDescription ?? "Upgrade to Pro for unlimited thoughts")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundColor(theme.secondaryTextColor)
                     }
 
                     Spacer()
@@ -395,14 +425,15 @@ struct CaptureScreen: View {
                     .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .tint(theme.primaryColor)
                 .controlSize(.small)
             }
             .padding()
-            .background(Color.yellow.opacity(0.1))
-            .cornerRadius(12)
+            .background(theme.warningColor.opacity(0.1))
+            .cornerRadius(theme.cornerRadius)
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
+                RoundedRectangle(cornerRadius: theme.cornerRadius)
+                    .stroke(theme.warningColor.opacity(0.3), lineWidth: theme.borderWidth)
             )
         } else {
             ErrorBanner(error: error) {

@@ -20,27 +20,38 @@ import SwiftUI
 struct SearchScreen: View {
     @State var viewModel: SearchViewModel
     @SwiftUI.FocusState private var isSearchFocused: Bool
+    @State private var themeEngine = ThemeEngine.shared
 
     init(viewModel: SearchViewModel) {
         self._viewModel = State(initialValue: viewModel)
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                // Search bar
-                searchBar
+        let theme = themeEngine.getCurrentTheme()
 
-                // Content
-                if viewModel.showInitialState {
-                    initialState
-                } else if viewModel.showEmptyState {
-                    emptyState
-                } else {
-                    searchResults
+        NavigationStack {
+            ZStack {
+                // Theme background color
+                theme.backgroundColor
+                    .ignoresSafeArea()
+
+                VStack(spacing: 0) {
+                    // Search bar
+                    searchBar
+
+                    // Content
+                    if viewModel.showInitialState {
+                        initialState
+                    } else if viewModel.showEmptyState {
+                        emptyState
+                    } else {
+                        searchResults
+                    }
                 }
             }
             .navigationTitle("Search")
+            .toolbarBackground(theme.surfaceColor, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
@@ -50,9 +61,11 @@ struct SearchScreen: View {
     // MARK: - Search Bar
 
     private var searchBar: some View {
-        HStack(spacing: 10) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.secondaryTextColor)
                 .accessibilityHidden(true)
 
             TextField("Search thoughts...", text: $viewModel.searchQuery)
@@ -75,7 +88,7 @@ struct SearchScreen: View {
                     viewModel.clearSearch()
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.secondaryTextColor)
                 }
                 .accessibilityLabel("Clear search")
                 .accessibilityHint("Double tap to clear search query")
@@ -88,28 +101,31 @@ struct SearchScreen: View {
             }
         }
         .padding(12)
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(10)
+        .background(theme.inputBackgroundColor)
+        .cornerRadius(theme.cornerRadius)
         .padding()
     }
 
     // MARK: - Initial State
 
     private var initialState: some View {
-        VStack(spacing: 16) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(spacing: 16) {
             Spacer()
 
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 48))
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.secondaryTextColor)
                 .accessibilityHidden(true)
 
             Text("Search Your Thoughts")
                 .font(.headline)
+                .foregroundColor(theme.textColor)
 
             Text("Find thoughts by content, tags, or context")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.secondaryTextColor)
                 .multilineTextAlignment(.center)
 
             // Recent searches could go here in future
@@ -122,26 +138,30 @@ struct SearchScreen: View {
     // MARK: - Empty State
 
     private var emptyState: some View {
-        VStack(spacing: 16) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return VStack(spacing: 16) {
             Spacer()
 
             Image(systemName: "doc.text.magnifyingglass")
                 .font(.system(size: 48))
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.secondaryTextColor)
                 .accessibilityHidden(true)
 
             Text("No Results")
                 .font(.headline)
+                .foregroundColor(theme.textColor)
 
             Text("No thoughts match \"\(viewModel.searchQuery)\"")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.secondaryTextColor)
                 .multilineTextAlignment(.center)
 
             Button("Clear Search") {
                 viewModel.clearSearch()
             }
             .buttonStyle(.bordered)
+            .tint(theme.primaryColor)
 
             Spacer()
         }
@@ -151,7 +171,9 @@ struct SearchScreen: View {
     // MARK: - Search Results
 
     private var searchResults: some View {
-        List {
+        let theme = themeEngine.getCurrentTheme()
+
+        return List {
             // Error if present
             if let error = viewModel.error {
                 Section {
@@ -170,18 +192,18 @@ struct SearchScreen: View {
                 HStack {
                     Text("\(viewModel.searchResults.count) result\(viewModel.searchResults.count == 1 ? "" : "s")")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.secondaryTextColor)
 
                     Spacer()
 
                     if viewModel.isSemanticSearchAvailable {
                         Label("Semantic", systemImage: "brain")
                             .font(.caption)
-                            .foregroundColor(.blue)
+                            .foregroundColor(theme.primaryColor)
                     } else {
                         Label("Keyword", systemImage: "text.magnifyingglass")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(theme.secondaryTextColor)
                     }
                 }
             }
@@ -201,7 +223,8 @@ struct SearchScreen: View {
                     } label: {
                         SearchResultRow(
                             result: result,
-                            searchQuery: viewModel.searchQuery
+                            searchQuery: viewModel.searchQuery,
+                            themeEngine: themeEngine
                         )
                     }
                 }
@@ -219,6 +242,7 @@ struct SearchScreen: View {
                                 ProgressView()
                             } else {
                                 Text("Load More")
+                                    .foregroundColor(theme.primaryColor)
                             }
                             Spacer()
                         }
@@ -227,6 +251,8 @@ struct SearchScreen: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(theme.backgroundColor)
         #if os(iOS)
         .listStyle(.insetGrouped)
         #else
@@ -241,12 +267,15 @@ struct SearchScreen: View {
 struct SearchResultRow: View {
     let result: SearchResult
     let searchQuery: String
+    var themeEngine: ThemeEngine
 
     private var thought: Thought {
         result.thought
     }
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(alignment: .leading, spacing: 8) {
             // Content with highlighted query
             highlightedContent
@@ -262,11 +291,11 @@ struct SearchResultRow: View {
                     HStack(spacing: 4) {
                         Image(systemName: result.isHighConfidence ? "checkmark.circle.fill" : "checkmark.circle")
                             .font(.caption2)
-                            .foregroundColor(result.isHighConfidence ? .green : .orange)
+                            .foregroundColor(result.isHighConfidence ? theme.successColor : theme.warningColor)
 
                         Text("\(result.relevancePercentage)%")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(theme.secondaryTextColor)
                     }
                 }
             }
@@ -275,13 +304,13 @@ struct SearchResultRow: View {
             HStack(spacing: 8) {
                 Text(thought.createdAt.formatted(.relative(presentation: .named)))
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
 
                 if !thought.tags.isEmpty {
                     ForEach(thought.tags.prefix(2), id: \.self) { tag in
                         Text("#\(tag)")
                             .font(.caption2)
-                            .foregroundColor(.blue)
+                            .foregroundColor(theme.tagTextColor)
                     }
                 }
             }
@@ -290,9 +319,12 @@ struct SearchResultRow: View {
     }
 
     private var highlightedContent: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         // Simple highlighting - in production could use AttributedString
-        Text(thought.content)
+        return Text(thought.content)
             .font(.body)
+            .foregroundColor(theme.textColor)
             .lineLimit(3)
     }
 }
@@ -305,4 +337,5 @@ struct SearchResultRow: View {
             thoughtService: ThoughtService.shared
         )
     )
+    .environment(\.themeEngine, ThemeEngine.shared)
 }
