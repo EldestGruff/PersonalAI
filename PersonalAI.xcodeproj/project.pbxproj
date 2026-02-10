@@ -256,7 +256,7 @@
 		A0800000000000000000002 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				A0000001000000000000002 /* PersonalAIApp.swift */,
+				A0000001000000000000002 /* STASHApp.swift */,
 				A0800000000000000000010 /* Models */,
 				A0800000000000000000020 /* Persistence */,
 				A0800000000000000000030 /* Services */,
@@ -270,7 +270,7 @@
 		A0800000000000000000003 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A1000000000000000000001 /* PersonalAI.app */,
+				A1000000000000000000001 /* STASH.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -552,7 +552,7 @@
 					};
 				};
 			};
-			buildConfigurationList = A0300000000000000000001 /* Build configuration list for PBXProject "STASH" */;
+			buildConfigurationList = A0300000000000000000001 /* Build configuration list for PBXProject "PersonalAI" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -589,7 +589,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A0000001000000000000001 /* STASHApp.swift in Sources */,
-				A0000001000000000000005 /* PersonalAI.xcdatamodeld in Sources */,
+				A0000001000000000000005 /* STASH.xcdatamodeld in Sources */,
 				A0000001000000000000011 /* ContentView.swift in Sources */,
 				A0000001000000000000021 /* Thought.swift in Sources */,
 				A0000001000000000000023 /* Classification.swift in Sources */,
@@ -903,7 +903,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A0300000000000000000001 /* Build configuration list for PBXProject "STASH" */ = {
+		A0300000000000000000001 /* Build configuration list for PBXProject "PersonalAI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A0300000000000000000002 /* Debug */,
@@ -927,9 +927,9 @@
 		A0000001000000000000006 /* STASH.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				A0000001000000000000007 /* STASH.xcdatamodel */,
+				A0000001000000000000007 /* PersonalAI.xcdatamodel */,
 			);
-			currentVersion = A0000001000000000000007 /* STASH.xcdatamodel */;
+			currentVersion = A0000001000000000000007 /* PersonalAI.xcdatamodel */;
 			path = STASH.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
