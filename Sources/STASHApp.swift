@@ -16,6 +16,10 @@ struct STASHApp: App {
 
     let persistenceController = PersistenceController.shared
 
+    // MARK: - Theme
+
+    @State private var themeEngine = ThemeEngine.shared
+
     // MARK: - Services (Shared Instances)
 
     // Services are lazily initialized as static properties on their types
@@ -34,6 +38,7 @@ struct STASHApp: App {
         WindowGroup {
             MainTabView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environment(\.themeEngine, themeEngine)
         }
     }
 }
