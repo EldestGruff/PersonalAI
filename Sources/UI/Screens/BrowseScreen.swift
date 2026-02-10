@@ -160,7 +160,9 @@ struct BrowseScreen: View {
     // MARK: - Thought List
 
     private var thoughtList: some View {
-        List {
+        let theme = themeEngine.getCurrentTheme()
+
+        return List {
             // Error banner if present
             if let error = viewModel.error {
                 Section {
@@ -196,7 +198,7 @@ struct BrowseScreen: View {
 
                         Text("\(viewModel.selectedCount) selected")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(theme.secondaryTextColor)
                     }
                 }
             }
@@ -212,7 +214,7 @@ struct BrowseScreen: View {
                             } label: {
                                 Image(systemName: viewModel.isSelected(thought) ? "checkmark.circle.fill" : "circle")
                                     .font(.title2)
-                                    .foregroundColor(viewModel.isSelected(thought) ? .blue : .secondary)
+                                    .foregroundColor(viewModel.isSelected(thought) ? theme.primaryColor : theme.secondaryTextColor)
                             }
                             .buttonStyle(.plain)
                             .accessibilityLabel(viewModel.isSelected(thought) ? "Selected" : "Not selected")
@@ -247,14 +249,14 @@ struct BrowseScreen: View {
                                 } label: {
                                     Label("Unarchive", systemImage: "tray.and.arrow.up")
                                 }
-                                .tint(.blue)
+                                .tint(theme.primaryColor)
                             } else {
                                 Button {
                                     viewModel.archiveThought(thought)
                                 } label: {
                                     Label("Archive", systemImage: "archivebox")
                                 }
-                                .tint(.orange)
+                                .tint(theme.accentColor)
                             }
                         }
                     }
@@ -271,34 +273,36 @@ struct BrowseScreen: View {
     // MARK: - Active Filter Banner (Issue #4)
 
     private var activeFilterBanner: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
                 Text("Filtered:")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.secondaryTextColor)
 
                 if let status = viewModel.filterStatus {
-                    filterChip(status.rawValue.capitalized, color: .blue)
+                    filterChip(status.rawValue.capitalized, chipColor: theme.primaryColor)
                 }
 
                 ForEach(viewModel.selectedFilterTags, id: \.self) { tag in
-                    filterChip("#\(tag)", color: .green)
+                    filterChip("#\(tag)", chipColor: theme.successColor)
                 }
 
                 if viewModel.dateRangeFilter != .all {
-                    filterChip(viewModel.dateRangeFilter.rawValue, color: .orange)
+                    filterChip(viewModel.dateRangeFilter.rawValue, chipColor: theme.warningColor)
                 }
 
                 if let type = viewModel.filterType {
-                    filterChip(type.rawValue.capitalized, color: .purple)
+                    filterChip(type.rawValue.capitalized, chipColor: typeColor(type))
                 }
 
                 if let sentiment = viewModel.filterSentiment {
-                    filterChip(sentimentDisplayName(sentiment), color: .pink)
+                    filterChip(sentimentDisplayName(sentiment), chipColor: theme.infoColor)
                 }
 
                 if !viewModel.searchText.isEmpty {
-                    filterChip("\"\(viewModel.searchText)\"", color: .gray)
+                    filterChip("\"\(viewModel.searchText)\"", chipColor: theme.secondaryTextColor)
                 }
 
                 Spacer()
@@ -307,22 +311,22 @@ struct BrowseScreen: View {
                     viewModel.clearFilters()
                 }
                 .font(.caption)
-                .foregroundColor(.red)
+                .foregroundColor(theme.errorColor)
             }
             .padding(.vertical, 4)
         }
     }
 
-    private func filterChip(_ text: String, color: Color) -> some View {
+    private func filterChip(_ text: String, chipColor: Color) -> some View {
         Text(text)
             .font(.caption)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .glassEffect(
-                .regular.tint(color.opacity(0.4)),
+                .regular.tint(chipColor.opacity(0.4)),
                 in: RoundedRectangle(cornerRadius: 8)
             )
-            .foregroundColor(color)
+            .foregroundColor(chipColor)
     }
 
     private func sentimentDisplayName(_ sentiment: Sentiment) -> String {
@@ -400,7 +404,9 @@ struct BrowseScreen: View {
     // MARK: - Bulk Action Toolbar (Issue #5)
 
     private var bulkActionToolbar: some View {
-        HStack(spacing: 20) {
+        let theme = themeEngine.getCurrentTheme()
+
+        return HStack(spacing: 20) {
             // Archive button
             Button {
                 viewModel.archiveSelected()
@@ -412,6 +418,7 @@ struct BrowseScreen: View {
                         .font(.caption)
                 }
             }
+            .foregroundColor(theme.primaryColor)
             .accessibilityLabel("Archive selected thoughts")
             .accessibilityIdentifier("bulkArchiveButton")
 
@@ -426,6 +433,7 @@ struct BrowseScreen: View {
                         .font(.caption)
                 }
             }
+            .foregroundColor(theme.primaryColor)
             .accessibilityLabel("Add tags to selected thoughts")
             .accessibilityIdentifier("bulkTagButton")
 
@@ -454,7 +462,9 @@ struct BrowseScreen: View {
     // MARK: - Bulk Tag Sheet (Issue #5)
 
     private var bulkTagSheet: some View {
-        NavigationStack {
+        let theme = themeEngine.getCurrentTheme()
+
+        return NavigationStack {
             Form {
                 Section("Add Tags to \(viewModel.selectedCount) Thoughts") {
                     TextField("Enter tag (e.g., work, personal)", text: $bulkTagInput)
@@ -466,7 +476,7 @@ struct BrowseScreen: View {
                     if !bulkTagInput.isEmpty {
                         Text("Will add: #\(bulkTagInput.lowercased().replacingOccurrences(of: " ", with: "-"))")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(theme.secondaryTextColor)
                     }
                 }
 
@@ -481,11 +491,11 @@ struct BrowseScreen: View {
                                 Spacer()
                                 if bulkTagInput == tag {
                                     Image(systemName: "checkmark")
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(theme.primaryColor)
                                 }
                             }
                         }
-                        .foregroundColor(.primary)
+                        .foregroundColor(theme.textColor)
                     }
                 }
             }
@@ -518,7 +528,9 @@ struct BrowseScreen: View {
     // MARK: - Filter Sheet
 
     private var filterSheet: some View {
-        NavigationStack {
+        let theme = themeEngine.getCurrentTheme()
+
+        return NavigationStack {
             Form {
                 // Status filter
                 Section("Status") {
@@ -535,12 +547,12 @@ struct BrowseScreen: View {
                                 Spacer()
                                 if viewModel.filterStatus == status {
                                     Image(systemName: "checkmark")
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(theme.primaryColor)
                                         .accessibilityHidden(true)
                                 }
                             }
                         }
-                        .foregroundColor(.primary)
+                        .foregroundColor(theme.textColor)
                         .accessibilityValue(viewModel.filterStatus == status ? "Selected" : "Not selected")
                         .accessibilityHint("Double tap to \(viewModel.filterStatus == status ? "deselect" : "select") \(status.rawValue) status")
                     }
@@ -562,12 +574,12 @@ struct BrowseScreen: View {
                                 Spacer()
                                 if viewModel.dateRangeFilter == range {
                                     Image(systemName: "checkmark")
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(theme.primaryColor)
                                         .accessibilityHidden(true)
                                 }
                             }
                         }
-                        .foregroundColor(.primary)
+                        .foregroundColor(theme.textColor)
                         .accessibilityValue(viewModel.dateRangeFilter == range ? "Selected" : "Not selected")
                         .accessibilityIdentifier("dateRange_\(range.rawValue)")
                     }
@@ -611,12 +623,12 @@ struct BrowseScreen: View {
                             Spacer()
                             if viewModel.filterType == nil {
                                 Image(systemName: "checkmark")
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(theme.primaryColor)
                                     .accessibilityHidden(true)
                             }
                         }
                     }
-                    .foregroundColor(.primary)
+                    .foregroundColor(theme.textColor)
                     .accessibilityIdentifier("typeFilter_all")
 
                     ForEach(ClassificationType.allCases, id: \.self) { type in
@@ -635,12 +647,12 @@ struct BrowseScreen: View {
                                 Spacer()
                                 if viewModel.filterType == type {
                                     Image(systemName: "checkmark")
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(theme.primaryColor)
                                         .accessibilityHidden(true)
                                 }
                             }
                         }
-                        .foregroundColor(.primary)
+                        .foregroundColor(theme.textColor)
                         .accessibilityValue(viewModel.filterType == type ? "Selected" : "Not selected")
                         .accessibilityIdentifier("typeFilter_\(type.rawValue)")
                     }
@@ -657,12 +669,12 @@ struct BrowseScreen: View {
                             Spacer()
                             if viewModel.filterSentiment == nil {
                                 Image(systemName: "checkmark")
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(theme.primaryColor)
                                     .accessibilityHidden(true)
                             }
                         }
                     }
-                    .foregroundColor(.primary)
+                    .foregroundColor(theme.textColor)
                     .accessibilityIdentifier("sentimentFilter_all")
 
                     ForEach(Sentiment.allCases, id: \.self) { sentiment in
@@ -680,12 +692,12 @@ struct BrowseScreen: View {
                                 Spacer()
                                 if viewModel.filterSentiment == sentiment {
                                     Image(systemName: "checkmark")
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(theme.primaryColor)
                                         .accessibilityHidden(true)
                                 }
                             }
                         }
-                        .foregroundColor(.primary)
+                        .foregroundColor(theme.textColor)
                         .accessibilityValue(viewModel.filterSentiment == sentiment ? "Selected" : "Not selected")
                         .accessibilityIdentifier("sentimentFilter_\(sentiment.rawValue)")
                     }
@@ -704,12 +716,12 @@ struct BrowseScreen: View {
                                     Spacer()
                                     if viewModel.selectedFilterTags.contains(tag) {
                                         Image(systemName: "checkmark")
-                                            .foregroundColor(.blue)
+                                            .foregroundColor(theme.primaryColor)
                                             .accessibilityHidden(true)
                                     }
                                 }
                             }
-                            .foregroundColor(.primary)
+                            .foregroundColor(theme.textColor)
                             .accessibilityValue(viewModel.selectedFilterTags.contains(tag) ? "Selected" : "Not selected")
                             .accessibilityHint("Double tap to \(viewModel.selectedFilterTags.contains(tag) ? "deselect" : "select") tag")
                         }
@@ -728,12 +740,12 @@ struct BrowseScreen: View {
                                 Spacer()
                                 if viewModel.sortBy == field {
                                     Image(systemName: "checkmark")
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(theme.primaryColor)
                                         .accessibilityHidden(true)
                                 }
                             }
                         }
-                        .foregroundColor(.primary)
+                        .foregroundColor(theme.textColor)
                         .accessibilityValue(viewModel.sortBy == field ? "Selected" : "Not selected")
                         .accessibilityHint("Double tap to sort by \(field.rawValue)")
                     }
@@ -754,12 +766,12 @@ struct BrowseScreen: View {
                                 Spacer()
                                 if viewModel.sortOrder == order {
                                     Image(systemName: "checkmark")
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(theme.primaryColor)
                                         .accessibilityHidden(true)
                                 }
                             }
                         }
-                        .foregroundColor(.primary)
+                        .foregroundColor(theme.textColor)
                         .accessibilityValue(viewModel.sortOrder == order ? "Selected" : "Not selected")
                         .accessibilityHint("Double tap to sort in \(order.rawValue) order")
                     }
@@ -801,12 +813,14 @@ struct BrowseScreen: View {
     }
 
     private func typeColor(_ type: ClassificationType) -> Color {
+        let theme = themeEngine.getCurrentTheme()
+
         switch type {
-        case .reminder: return .orange
-        case .event: return .blue
-        case .note: return .gray
-        case .question: return .purple
-        case .idea: return .yellow
+        case .reminder: return theme.warningColor
+        case .event: return theme.primaryColor
+        case .note: return theme.secondaryTextColor
+        case .question: return theme.infoColor
+        case .idea: return theme.accentColor
         }
     }
 
