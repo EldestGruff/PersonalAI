@@ -102,6 +102,8 @@ struct ErrorCard: View {
 
 /// A view displayed when there's no content to show.
 struct EmptyStateView: View {
+    @Environment(\.themeEngine) var themeEngine
+
     let icon: String
     let title: String
     let message: String
@@ -123,23 +125,27 @@ struct EmptyStateView: View {
     }
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(spacing: 16) {
             Image(systemName: icon)
                 .font(.system(size: 48))
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.iconColor)
                 .accessibilityHidden(true)
 
             Text(title)
                 .font(.headline)
+                .foregroundColor(theme.textColor)
 
             Text(message)
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.secondaryTextColor)
                 .multilineTextAlignment(.center)
 
             if let actionTitle = actionTitle, let action = action {
                 Button(actionTitle, action: action)
                     .buttonStyle(.borderedProminent)
+                    .tint(theme.accentColor)
                     .padding(.top, 8)
             }
         }
@@ -151,6 +157,8 @@ struct EmptyStateView: View {
 
 /// A view displayed while content is loading.
 struct LoadingView: View {
+    @Environment(\.themeEngine) var themeEngine
+
     let message: String
 
     init(_ message: String = "Loading...") {
@@ -158,13 +166,16 @@ struct LoadingView: View {
     }
 
     var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
         VStack(spacing: 12) {
             ProgressView()
                 .progressViewStyle(.circular)
+                .tint(theme.primaryColor)
 
             Text(message)
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.secondaryTextColor)
         }
         .padding()
     }

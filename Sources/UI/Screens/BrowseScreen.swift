@@ -32,6 +32,10 @@ struct BrowseScreen: View {
         let theme = themeEngine.getCurrentTheme()
         NavigationStack {
             ZStack {
+                // Theme background color
+                theme.backgroundColor
+                    .ignoresSafeArea()
+
                 // Main content
                 if viewModel.isLoading && viewModel.thoughts.isEmpty {
                     LoadingView("Loading thoughts...")
@@ -61,6 +65,8 @@ struct BrowseScreen: View {
                 }
             }
             .navigationTitle("Thoughts")
+            .toolbarBackground(theme.surfaceColor, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .searchable(
                 text: Binding(
                     get: { viewModel.searchText },
@@ -263,6 +269,8 @@ struct BrowseScreen: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(theme.backgroundColor)
         #if os(iOS)
         .listStyle(.insetGrouped)
         #else
