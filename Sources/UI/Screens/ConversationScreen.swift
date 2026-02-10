@@ -19,50 +19,58 @@ struct ConversationScreen: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Messages list
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 16) {
-                        // Header
-                        headerView
+        let theme = themeEngine.getCurrentTheme()
 
-                        // Messages
-                        ForEach(viewModel.session.messages) { message in
-                            MessageBubbleView(message: message)
-                                .id(message.id)
-                        }
+        ZStack {
+            theme.backgroundColor.ignoresSafeArea()
 
-                        // Loading indicator
-                        if viewModel.session.isLoading {
-                            LoadingMessageView()
-                        }
+            VStack(spacing: 0) {
+                // Messages list
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            // Header
+                            headerView
 
-                        // Error message
-                        if let error = viewModel.session.error {
-                            ErrorMessageView(error: error) {
-                                _Concurrency.Task {
-                                    await viewModel.retry()
+                            // Messages
+                            ForEach(viewModel.session.messages) { message in
+                                MessageBubbleView(message: message)
+                                    .id(message.id)
+                            }
+
+                            // Loading indicator
+                            if viewModel.session.isLoading {
+                                LoadingMessageView()
+                            }
+
+                            // Error message
+                            if let error = viewModel.session.error {
+                                ErrorMessageView(error: error) {
+                                    _Concurrency.Task {
+                                        await viewModel.retry()
+                                    }
                                 }
                             }
                         }
+                        .padding()
                     }
-                    .padding()
-                }
-                .onChange(of: viewModel.session.messages.count) { _, _ in
-                    if let lastMessage = viewModel.session.messages.last {
-                        withAnimation {
-                            proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                    .onChange(of: viewModel.session.messages.count) { _, _ in
+                        if let lastMessage = viewModel.session.messages.last {
+                            withAnimation {
+                                proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                            }
                         }
                     }
                 }
-            }
 
-            // Input bar
-            inputBar
+                // Input bar
+                inputBar
+            }
         }
         .navigationTitle("Chat with Thoughts")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(theme.surfaceColor, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
