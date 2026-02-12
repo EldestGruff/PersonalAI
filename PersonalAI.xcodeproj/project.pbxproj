@@ -93,6 +93,10 @@
 		A1B632832F3510000071D950 /* ThoughtContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B632862F3510000071D953 /* ThoughtContentView.swift */; };
 		A1B632842F3510000071D951 /* FormattingToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B632872F3510000071D954 /* FormattingToolbar.swift */; };
 		A1B632852F3510000071D952 /* LiquidGlassModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B632882F3510000071D955 /* LiquidGlassModifiers.swift */; };
+		A1B77D062F3E3CBD00F8D6B4 /* VoiceCaptureScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D052F3E3CBD00F8D6B4 /* VoiceCaptureScreen.swift */; };
+		A1B77D082F3E3CD600F8D6B4 /* VoiceCaptureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D072F3E3CD600F8D6B4 /* VoiceCaptureViewModel.swift */; };
+		A1B77D0B2F3E3CEA00F8D6B4 /* MedicationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D092F3E3CEA00F8D6B4 /* MedicationService.swift */; };
+		A1B77D0C2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D0A2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift */; };
 		ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */; };
 /* End PBXBuildFile section */
 
@@ -185,6 +189,10 @@
 		A1B632862F3510000071D953 /* ThoughtContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtContentView.swift; sourceTree = "<group>"; };
 		A1B632872F3510000071D954 /* FormattingToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattingToolbar.swift; sourceTree = "<group>"; };
 		A1B632882F3510000071D955 /* LiquidGlassModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassModifiers.swift; sourceTree = "<group>"; };
+		A1B77D052F3E3CBD00F8D6B4 /* VoiceCaptureScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceCaptureScreen.swift; sourceTree = "<group>"; };
+		A1B77D072F3E3CD600F8D6B4 /* VoiceCaptureViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceCaptureViewModel.swift; sourceTree = "<group>"; };
+		A1B77D092F3E3CEA00F8D6B4 /* MedicationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationService.swift; sourceTree = "<group>"; };
+		A1B77D0A2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognitionService.swift; sourceTree = "<group>"; };
 		A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsAnalyzer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -379,6 +387,8 @@
 		A0800000000000000000032 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				A1B77D092F3E3CEA00F8D6B4 /* MedicationService.swift */,
+				A1B77D0A2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift */,
 				A0000001000000000000132 /* LocationService.swift */,
 				A0000001000000000000134 /* HealthKitService.swift */,
 				A0000001000000000000136 /* MotionService.swift */,
@@ -450,6 +460,7 @@
 		A0800000000000000000041 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				A1B77D052F3E3CBD00F8D6B4 /* VoiceCaptureScreen.swift */,
 				A1A632762F33BFE700DA552B /* PersonalizationScreen.swift */,
 				A1A632772F33BFE700DA552B /* ThoughtConversationScreen.swift */,
 				A1A632682F33A8B900DA552B /* AppleIntelligenceRequiredView.swift */,
@@ -485,6 +496,7 @@
 		A0800000000000000000043 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				A1B77D072F3E3CD600F8D6B4 /* VoiceCaptureViewModel.swift */,
 				A1A632742F33BFD500DA552B /* ThoughtConversationViewModel.swift */,
 				A1A6326C2F33A8CF00DA552B /* ConversationViewModel.swift */,
 				A0000001000000000000242 /* BrowseViewModel.swift */,
@@ -622,9 +634,11 @@
 				A0000001000000000000115 /* ServiceConfiguration.swift in Sources */,
 				A1A632752F33BFD500DA552B /* ThoughtConversationViewModel.swift in Sources */,
 				A0000001000000000000117 /* ServiceContainer.swift in Sources */,
+				A1B77D082F3E3CD600F8D6B4 /* VoiceCaptureViewModel.swift in Sources */,
 				A0000001000000000000119 /* PermissionCoordinator.swift in Sources */,
 				A0000001000000000000131 /* LocationService.swift in Sources */,
 				A0000001000000000000133 /* HealthKitService.swift in Sources */,
+				A1B77D062F3E3CBD00F8D6B4 /* VoiceCaptureScreen.swift in Sources */,
 				A1803D482F25BDFD0071D950 /* DateTimeParsingService.swift in Sources */,
 				A1803D492F25BDFD0071D951 /* DateTimeParsingService_FoundationModels.swift in Sources */,
 				A0000001000000000000135 /* MotionService.swift in Sources */,
@@ -653,6 +667,8 @@
 				A0000001000000000000209 /* SettingsScreen.swift in Sources */,
 				A00000010000000000000254 /* InsightsScreen.swift in Sources */,
 				A1803E282F327EC60071D950 /* AIInsightsView.swift in Sources */,
+				A1B77D0B2F3E3CEA00F8D6B4 /* MedicationService.swift in Sources */,
+				A1B77D0C2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift in Sources */,
 				A0000001000000000000221 /* ThoughtRowView.swift in Sources */,
 				A0000001000000000000223 /* ClassificationBadge.swift in Sources */,
 				A0000001000000000000225 /* ContextDisplayView.swift in Sources */,

@@ -64,7 +64,7 @@ struct VoiceCaptureScreen: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") {
-                        Task {
+                        _Concurrency.Task {
                             await viewModel.cancelListening()
                         }
                     }
@@ -85,9 +85,9 @@ struct VoiceCaptureScreen: View {
     // MARK: - Microphone Button
 
     @ViewBuilder
-    private func microphoneButton(theme: any Theme) -> some View {
+    private func microphoneButton(theme: any ThemeVariant) -> some View {
         Button {
-            Task {
+            _Concurrency.Task {
                 await toggleListening()
             }
         } label: {
@@ -117,7 +117,7 @@ struct VoiceCaptureScreen: View {
     // MARK: - Status Text
 
     @ViewBuilder
-    private func statusText(theme: any Theme) -> some View {
+    private func statusText(theme: any ThemeVariant) -> some View {
         Text(statusString)
             .font(.headline)
             .foregroundStyle(theme.textColor.opacity(0.8))
@@ -127,7 +127,7 @@ struct VoiceCaptureScreen: View {
     // MARK: - Transcription View
 
     @ViewBuilder
-    private func transcriptionView(theme: any Theme) -> some View {
+    private func transcriptionView(theme: any ThemeVariant) -> some View {
         ScrollView {
             Text(viewModel.transcribedText.isEmpty ? "Start speaking..." : viewModel.transcribedText)
                 .font(.body)
@@ -148,10 +148,10 @@ struct VoiceCaptureScreen: View {
     // MARK: - Action Buttons
 
     @ViewBuilder
-    private func actionButtons(theme: any Theme) -> some View {
+    private func actionButtons(theme: any ThemeVariant) -> some View {
         HStack(spacing: 16) {
             Button("Cancel") {
-                Task {
+                _Concurrency.Task {
                     await viewModel.cancelListening()
                 }
             }
@@ -161,7 +161,7 @@ struct VoiceCaptureScreen: View {
             Spacer()
 
             Button("Done") {
-                Task {
+                _Concurrency.Task {
                     await viewModel.stopAndSave()
                 }
             }
@@ -205,7 +205,7 @@ struct VoiceCaptureScreen: View {
         }
     }
 
-    private func micColor(theme: any Theme) -> Color {
+    private func micColor(theme: any ThemeVariant) -> Color {
         switch viewModel.captureState {
         case .listening:
             return theme.accentColor

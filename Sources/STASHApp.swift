@@ -48,6 +48,8 @@ struct STASHApp: App {
 /// The main tab-based navigation for the app.
 struct MainTabView: View {
     @State private var selectedTab: Tab = .browse
+    @State private var showVoiceCapture: Bool = false
+    @Environment(\.scenePhase) private var scenePhase
 
     enum Tab: String {
         case browse
@@ -117,6 +119,31 @@ struct MainTabView: View {
                 Label("Settings", systemImage: "gear")
             }
             .tag(Tab.settings)
+        }
+        .fullScreenCover(isPresented: $showVoiceCapture) {
+            VoiceCaptureScreen(
+                viewModel: VoiceCaptureViewModel()
+            )
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                checkForPendingVoiceCapture()
+            }
+        }
+    }
+
+    // MARK: - Deep Navigation
+
+    /// Checks for pending voice capture flag from OpenVoiceCaptureIntent
+    private func checkForPendingVoiceCapture() {
+        let defaults = UserDefaults(suiteName: "group.com.withershins.stash")
+        if defaults?.bool(forKey: "pendingVoiceCapture") == true {
+            // Clear flag immediately
+            defaults?.set(false, forKey: "pendingVoiceCapture")
+            defaults?.synchronize()
+
+            // Present voice capture screen
+            showVoiceCapture = true
         }
     }
 }

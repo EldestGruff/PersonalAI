@@ -106,7 +106,7 @@ actor SpeechRecognitionService: SpeechRecognitionServiceProtocol {
 
         // Request microphone permission
         let micStatus = await withCheckedContinuation { continuation in
-            AVAudioApplication.shared.requestRecordPermission { granted in
+            AVAudioApplication.requestRecordPermission { granted in
                 continuation.resume(returning: granted)
             }
         }
@@ -131,11 +131,11 @@ actor SpeechRecognitionService: SpeechRecognitionServiceProtocol {
     /// - Audio session cannot be configured
     func startListening() async throws -> AsyncStream<TranscriptionUpdate> {
         guard isAvailable else {
-            throw ServiceError.frameworkUnavailable(frameworkType)
+            throw ServiceError.frameworkUnavailable(framework: frameworkType, reason: "Speech recognizer not available for current locale")
         }
 
         guard permissionStatus == .authorized else {
-            throw ServiceError.permissionDenied(frameworkType, permissionStatus)
+            throw ServiceError.permissionDenied(framework: frameworkType, currentLevel: permissionStatus)
         }
 
         // Cancel any existing recognition
@@ -161,7 +161,7 @@ actor SpeechRecognitionService: SpeechRecognitionServiceProtocol {
         let engine = AVAudioEngine()
         self.audioEngine = engine
 
-        let inputNode = engine.inputNode
+        nonisolated(unsafe) let inputNode = engine.inputNode
         let recordingFormat = inputNode.outputFormat(forBus: 0)
 
         // Create async stream
@@ -172,12 +172,12 @@ actor SpeechRecognitionService: SpeechRecognitionServiceProtocol {
             }
 
             // Start recognition task
-            self.recognitionTask = self.recognizer?.recognitionTask(with: request) { result, error in
+            self.recognitionTask = self.recognizer?.recognitionTask(with: request, resultHandler: { result, error in
                 if let result = result {
                     let transcription = result.bestTranscription.formattedString
                     let confidence = result.bestTranscription.segments.first?.confidence ?? 0.0
 
-                    Task {
+                    _Concurrency.Task {
                         await self.updateCurrentTranscript(transcription)
 
                         let update = TranscriptionUpdate(
@@ -198,7 +198,7 @@ actor SpeechRecognitionService: SpeechRecognitionServiceProtocol {
                     print("Recognition error: \(error.localizedDescription)")
                     continuation.finish()
                 }
-            }
+            })
 
             // Start audio engine
             engine.prepare()
@@ -211,7 +211,7 @@ actor SpeechRecognitionService: SpeechRecognitionServiceProtocol {
 
             // Handle cancellation
             continuation.onTermination = { @Sendable _ in
-                Task {
+                _Concurrency.Task {
                     await self.cancelListening()
                 }
             }
@@ -228,7 +228,7 @@ actor SpeechRecognitionService: SpeechRecognitionServiceProtocol {
         recognitionRequest?.endAudio()
 
         // Wait a moment for final result
-        try? await Task.sleep(for: .milliseconds(100))
+        try? await _Concurrency.Task.sleep(nanoseconds: 100_000_000)
 
         // Deactivate audio session
         let audioSession = AVAudioSession.sharedInstance()

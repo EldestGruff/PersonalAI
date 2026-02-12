@@ -55,9 +55,9 @@ final class VoiceCaptureViewModel {
 
     // MARK: - Private State
 
-    private var transcriptionTask: Task<Void, Never>?
-    private var silenceTimer: Task<Void, Never>?
-    private var transcriptBeforePause: String = ""
+    @ObservationIgnored private var transcriptionTask: _Concurrency.Task<Void, Never>?
+    @ObservationIgnored private var silenceTimer: _Concurrency.Task<Void, Never>?
+    @ObservationIgnored private var transcriptBeforePause: String = ""
 
     // MARK: - Initialization
 
@@ -93,7 +93,7 @@ final class VoiceCaptureViewModel {
             let stream = try await speechService.startListening()
 
             // Subscribe to transcription updates
-            transcriptionTask = Task { [weak self] in
+            transcriptionTask = _Concurrency.Task { [weak self] in
                 for await update in stream {
                     await self?.handleTranscriptionUpdate(update)
                 }
@@ -128,7 +128,7 @@ final class VoiceCaptureViewModel {
             let stream = try await speechService.startListening()
 
             // Subscribe to new transcription updates (will append)
-            transcriptionTask = Task { [weak self] in
+            transcriptionTask = _Concurrency.Task { [weak self] in
                 for await update in stream {
                     await self?.handleTranscriptionUpdate(update)
                 }
@@ -223,15 +223,15 @@ final class VoiceCaptureViewModel {
     private func resetSilenceTimer() {
         silenceTimer?.cancel()
 
-        silenceTimer = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(3))
+        silenceTimer = _Concurrency.Task { [weak self] in
+            try? await _Concurrency.Task.sleep(nanoseconds: 3_000_000_000)
 
-            guard !Task.isCancelled else { return }
+            guard !_Concurrency.Task.isCancelled else { return }
 
             // Auto-save if we have text and we're still listening
             if let self = self,
-               await self.captureState == .listening,
-               !await self.transcribedText.isEmpty {
+               self.captureState == .listening,
+               !self.transcribedText.isEmpty {
                 await self.stopAndSave()
             }
         }
