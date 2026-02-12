@@ -57,6 +57,7 @@ final class VoiceCaptureViewModel {
 
     @ObservationIgnored private var transcriptionTask: _Concurrency.Task<Void, Never>?
     @ObservationIgnored private var baseTranscript: String = "" // Accumulated text from all previous recognition sessions
+    @ObservationIgnored private var lastUpdateText: String = "" // Last update received, to detect non-cumulative updates
 
     // MARK: - Initialization
 
@@ -127,6 +128,7 @@ final class VoiceCaptureViewModel {
         // Save current transcript to base before stopping
         if !transcribedText.isEmpty {
             baseTranscript = transcribedText
+            lastUpdateText = "" // Reset for next session
             print("⏸️ Paused - saved to base: '\(baseTranscript.prefix(50))...'")
         }
 
@@ -254,6 +256,7 @@ final class VoiceCaptureViewModel {
 
         transcribedText = ""
         baseTranscript = ""
+        lastUpdateText = ""
         captureState = .idle
         captureSucceeded = true // Dismiss screen
     }
@@ -265,21 +268,49 @@ final class VoiceCaptureViewModel {
         // Move current text to base transcript so it's prepended to all future updates
         if !transcribedText.isEmpty && transcribedText != baseTranscript {
             baseTranscript = transcribedText
+            lastUpdateText = "" // Reset for new session
             print("💾 Saved to base: '\(baseTranscript.prefix(50))...' (length: \(baseTranscript.count))")
         }
     }
 
     /// Handles a transcription update from the speech recognizer
     private func handleTranscriptionUpdate(_ update: TranscriptionUpdate) {
-        // Each update contains cumulative text from current recognition session
-        // Prepend base transcript from all previous sessions
-        if !baseTranscript.isEmpty {
-            transcribedText = baseTranscript + " " + update.text
-            print("📝 Base + Current: '\(baseTranscript.prefix(20))...' + '\(update.text.prefix(20))...' = '\(transcribedText.prefix(40))...'")
+        let newText = update.text
+
+        // Detect if this is a continuation or a fresh start
+        let isContinuation = newText.count > lastUpdateText.count &&
+                             (newText.hasPrefix(lastUpdateText) || lastUpdateText.isEmpty)
+
+        print("📥 Update: '\(newText.prefix(30))...' | Last: '\(lastUpdateText.prefix(30))...' | Continuation: \(isContinuation)")
+
+        if isContinuation {
+            // Normal cumulative update - use it with base prepended
+            if !baseTranscript.isEmpty {
+                transcribedText = baseTranscript + " " + newText
+                print("✅ Cumulative + Base: '\(transcribedText.prefix(50))...'")
+            } else {
+                transcribedText = newText
+                print("✅ Cumulative: '\(transcribedText.prefix(50))...'")
+            }
         } else {
-            transcribedText = update.text
-            print("📝 First session: '\(transcribedText.prefix(40))...'")
+            // Non-cumulative update (recognizer started fresh after pause)
+            // Save what we had and append the new text
+            if !lastUpdateText.isEmpty && !transcribedText.contains(newText) {
+                print("⚠️ Non-cumulative update detected! Appending to preserve text.")
+                transcribedText = transcribedText + " " + newText
+                print("✅ Appended: '\(transcribedText.prefix(50))...'")
+            } else {
+                // First update or new text already included
+                if !baseTranscript.isEmpty {
+                    transcribedText = baseTranscript + " " + newText
+                } else {
+                    transcribedText = newText
+                }
+                print("✅ Set: '\(transcribedText.prefix(50))...'")
+            }
         }
+
+        lastUpdateText = newText
 
         // Note: Removed auto-save timer - users should tap "Done" when finished
         // This prevents losing text when pausing to think
