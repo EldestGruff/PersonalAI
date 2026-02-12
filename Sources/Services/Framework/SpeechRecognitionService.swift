@@ -183,7 +183,7 @@ actor SpeechRecognitionService: SpeechRecognitionServiceProtocol {
                     _Concurrency.Task { [weak self] in
                         guard let self = self else { return }
 
-                        self.updateCurrentTranscript(transcription)
+                        await self.updateCurrentTranscript(transcription)
 
                         let update = TranscriptionUpdate(
                             text: transcription,
