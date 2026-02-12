@@ -28,7 +28,7 @@ enum VoiceCaptureState: Equatable {
 /// Manages real-time speech-to-text capture with:
 /// - Pause/resume functionality
 /// - Real-time transcription display
-/// - 3-second silence auto-save
+/// - Manual save via Done button
 /// - Permission handling
 /// - Context enrichment (background)
 @Observable
@@ -56,7 +56,6 @@ final class VoiceCaptureViewModel {
     // MARK: - Private State
 
     @ObservationIgnored private var transcriptionTask: _Concurrency.Task<Void, Never>?
-    @ObservationIgnored private var silenceTimer: _Concurrency.Task<Void, Never>?
     @ObservationIgnored private var transcriptBeforePause: String = ""
 
     // MARK: - Initialization
@@ -107,10 +106,6 @@ final class VoiceCaptureViewModel {
     func pauseListening() async {
         guard captureState == .listening else { return }
 
-        // Cancel silence timer
-        silenceTimer?.cancel()
-        silenceTimer = nil
-
         // Stop audio engine but keep transcript
         transcriptBeforePause = transcribedText
         _ = await speechService.stopListening()
@@ -150,7 +145,6 @@ final class VoiceCaptureViewModel {
 
         // Cancel ongoing tasks
         transcriptionTask?.cancel()
-        silenceTimer?.cancel()
 
         // Stop speech recognition
         let finalTranscript = await speechService.stopListening()
@@ -194,7 +188,6 @@ final class VoiceCaptureViewModel {
     /// Cancels listening and discards transcript
     func cancelListening() async {
         transcriptionTask?.cancel()
-        silenceTimer?.cancel()
 
         await speechService.cancelListening()
 
@@ -215,32 +208,14 @@ final class VoiceCaptureViewModel {
             transcribedText = update.text
         }
 
-        // Reset silence timer on each update
-        resetSilenceTimer()
+        // Note: Removed auto-save timer - users should tap "Done" when finished
+        // This prevents losing text when pausing to think
     }
 
-    /// Resets the 3-second silence timer
-    private func resetSilenceTimer() {
-        silenceTimer?.cancel()
-
-        silenceTimer = _Concurrency.Task { [weak self] in
-            try? await _Concurrency.Task.sleep(nanoseconds: 3_000_000_000)
-
-            guard !_Concurrency.Task.isCancelled else { return }
-
-            // Auto-save if we have text and we're still listening
-            if let self = self,
-               self.captureState == .listening,
-               !self.transcribedText.isEmpty {
-                await self.stopAndSave()
-            }
-        }
-    }
 
     // MARK: - Cleanup
 
     deinit {
         transcriptionTask?.cancel()
-        silenceTimer?.cancel()
     }
 }

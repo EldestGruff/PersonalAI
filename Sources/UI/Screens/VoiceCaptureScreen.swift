@@ -15,7 +15,7 @@ import SwiftUI
 /// Features:
 /// - Tappable microphone icon (tap to pause/resume)
 /// - Real-time transcription display
-/// - 3-second silence auto-save
+/// - Manual save via Done button
 /// - Cancel/Done buttons
 /// - Permission error handling
 struct VoiceCaptureScreen: View {
