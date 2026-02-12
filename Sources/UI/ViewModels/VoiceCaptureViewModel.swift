@@ -57,6 +57,7 @@ final class VoiceCaptureViewModel {
 
     @ObservationIgnored private var transcriptionTask: _Concurrency.Task<Void, Never>?
     @ObservationIgnored private var savedTranscript: String = "" // Text saved from previous session when paused
+    @ObservationIgnored private var lastUpdate: String = "" // Last update received to detect cumulative vs fresh
 
     // MARK: - Initialization
 
@@ -112,6 +113,7 @@ final class VoiceCaptureViewModel {
 
         // Save current transcript before stopping
         savedTranscript = transcribedText
+        lastUpdate = ""
         _ = await speechService.stopListening()
 
         captureState = .paused
@@ -202,6 +204,7 @@ final class VoiceCaptureViewModel {
 
         transcribedText = ""
         savedTranscript = ""
+        lastUpdate = ""
         captureState = .idle
         captureSucceeded = true // Dismiss screen
     }
@@ -213,6 +216,7 @@ final class VoiceCaptureViewModel {
         if captureState == .listening {
             // Stream ended due to pause - save what we have and transition to paused
             savedTranscript = transcribedText
+            lastUpdate = ""
             captureState = .paused
             print("⏸️ Stream ended - tap mic to continue")
         }
@@ -220,12 +224,24 @@ final class VoiceCaptureViewModel {
 
     /// Handles a transcription update from the speech recognizer
     private func handleTranscriptionUpdate(_ update: TranscriptionUpdate) {
-        // Simple: trust the framework. Prepend saved text if resuming.
-        if !savedTranscript.isEmpty {
-            transcribedText = savedTranscript + " " + update.text
+        let newText = update.text
+
+        // Check if this update builds on the last one (cumulative) or is fresh (non-cumulative)
+        let isCumulative = lastUpdate.isEmpty || (newText.count >= lastUpdate.count && newText.hasPrefix(lastUpdate))
+
+        if isCumulative {
+            // Normal cumulative update - use it
+            if !savedTranscript.isEmpty {
+                transcribedText = savedTranscript + " " + newText
+            } else {
+                transcribedText = newText
+            }
         } else {
-            transcribedText = update.text
+            // Fresh update mid-session - append to preserve previous text
+            transcribedText = transcribedText + " " + newText
         }
+
+        lastUpdate = newText
     }
 
 
