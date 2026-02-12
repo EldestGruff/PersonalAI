@@ -49,9 +49,13 @@ struct OpenVoiceCaptureIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult {
         // Set flag in shared UserDefaults (app group)
-        let defaults = UserDefaults(suiteName: "group.com.withershins.stash")
-        defaults?.set(true, forKey: "pendingVoiceCapture")
-        defaults?.synchronize()
+        if let defaults = UserDefaults(suiteName: "group.com.withershins.stash") {
+            defaults.set(true, forKey: "pendingVoiceCapture")
+            defaults.synchronize()
+            print("✅ Voice capture flag set in app group")
+        } else {
+            print("❌ Failed to access app group UserDefaults")
+        }
 
         // App will check this flag and present VoiceCaptureScreen
         return .result()
