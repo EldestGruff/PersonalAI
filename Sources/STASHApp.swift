@@ -29,7 +29,9 @@ struct STASHApp: App {
 
     init() {
         // Register App Shortcuts for Siri integration
+        print("🎯 Registering \(ThoughtAppShortcuts.appShortcuts.count) App Shortcuts...")
         ThoughtAppShortcuts.updateAppShortcutParameters()
+        print("✅ App Shortcuts registration complete")
     }
 
     // MARK: - Body
