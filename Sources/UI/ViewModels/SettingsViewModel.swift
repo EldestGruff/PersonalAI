@@ -46,7 +46,17 @@ final class SettingsViewModel {
     var enableAutoTags: Bool = true
 
     /// Whether to automatically create reminders/events from classified thoughts
-    var autoCreateReminders: Bool = false
+    ///
+    /// When false (default), a confirmation dialog is shown before creating. Persisted to UserDefaults.
+    var autoCreateReminders: Bool {
+        get { _autoCreateRemindersCache }
+        set {
+            _autoCreateRemindersCache = newValue
+            UserDefaults.standard.set(newValue, forKey: "autoCreateReminders")
+        }
+    }
+
+    private var _autoCreateRemindersCache: Bool = false
 
     /// Whether auto-sync is enabled
     var autoSyncEnabled: Bool = true
@@ -141,6 +151,7 @@ final class SettingsViewModel {
         // Load cached settings from UserDefaults
         _selectedCalendarIdCache = UserDefaults.standard.string(forKey: "selectedCalendarId")
         _selectedReminderListIdCache = UserDefaults.standard.string(forKey: "selectedReminderListId")
+        _autoCreateRemindersCache = UserDefaults.standard.bool(forKey: "autoCreateReminders")
 
         _Concurrency.Task {
             await updatePermissionStatus()

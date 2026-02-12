@@ -95,6 +95,23 @@ final class DetailViewModel {
     /// Whether a task was created successfully
     var taskCreated: Bool = false
 
+    // MARK: - Action Prompt State (#33 & #34)
+
+    /// Whether the action prompt has been permanently dismissed for this thought
+    var actionPromptDismissed: Bool = false
+
+    /// Whether the confirmation sheet is showing before creating
+    var showingConfirmationSheet: Bool = false
+
+    /// Editable title in the confirmation sheet
+    var confirmationTitle: String = ""
+
+    /// Editable date in the confirmation sheet (for events)
+    var confirmationDate: Date = Date()
+
+    /// Event duration in minutes in the confirmation sheet
+    var confirmationDurationMinutes: Int = 60
+
     // MARK: - Error State
 
     /// Current error to display
@@ -135,6 +152,9 @@ final class DetailViewModel {
 
         // Initialize context display
         self.contextDisplay = ContextDisplay(from: thought.context)
+
+        // Load dismissed state (#33)
+        self.actionPromptDismissed = UserDefaults.standard.bool(forKey: "dismissedActionPrompt_\(thought.id.uuidString)")
     }
 
     // MARK: - Feedback Actions
@@ -241,8 +261,43 @@ final class DetailViewModel {
 
     // MARK: - Task Creation Actions
 
+    /// Permanently dismisses the action prompt for this thought (#33)
+    func dismissActionPrompt() {
+        UserDefaults.standard.set(true, forKey: "dismissedActionPrompt_\(thought.id.uuidString)")
+        actionPromptDismissed = true
+    }
+
+    /// Entry point for the action button. Shows confirmation sheet unless auto-create is on (#34)
+    func requestAction() {
+        guard let classification = thought.classification else { return }
+        guard !isCreatingTask else { return }
+
+        let autoCreate = UserDefaults.standard.bool(forKey: "autoCreateReminders")
+
+        if autoCreate {
+            createReminderOrEvent()
+        } else {
+            // Pre-fill confirmation fields
+            confirmationTitle = extractCleanTitle(from: thought.content, parsedDateTime: classification.parsedDateTime)
+            let (startDate, _) = calculateEventTimes(from: classification.parsedDateTime)
+            confirmationDate = startDate
+            confirmationDurationMinutes = 60
+            showingConfirmationSheet = true
+        }
+    }
+
+    /// Creates with the user-edited confirmation sheet values (#34)
+    func confirmCreate() {
+        showingConfirmationSheet = false
+        createReminderOrEvent(
+            titleOverride: confirmationTitle,
+            startDateOverride: confirmationDate,
+            durationOverride: confirmationDurationMinutes
+        )
+    }
+
     /// Creates a reminder or event from the thought
-    func createReminderOrEvent() {
+    func createReminderOrEvent(titleOverride: String? = nil, startDateOverride: Date? = nil, durationOverride: Int? = nil) {
         guard let classification = thought.classification else { return }
         guard !isCreatingTask else { return }
 
@@ -252,9 +307,8 @@ final class DetailViewModel {
 
         _Concurrency.Task {
             do {
-                // Create Task model
-                // Extract a clean title by removing the matched date/time portion
-                let cleanTitle = extractCleanTitle(
+                // Use override title or derive from content
+                let cleanTitle = titleOverride ?? extractCleanTitle(
                     from: thought.content,
                     parsedDateTime: classification.parsedDateTime
                 )
@@ -264,7 +318,7 @@ final class DetailViewModel {
                     userId: thought.userId,
                     sourceThoughtId: thought.id,
                     title: cleanTitle,
-                    description: thought.content,  // Include full thought content as notes/context
+                    description: thought.content,
                     priority: .medium,
                     status: .pending,
                     dueDate: nil,
@@ -283,8 +337,17 @@ final class DetailViewModel {
                     _ = try await taskService.createSystemReminder(for: created)
                     try await fineTuningService.trackReminderCreated(thought.id)
                 } else if classification.type == .event {
-                    // Calculate event start/end times from parsed date/time
-                    let (startDate, endDate) = calculateEventTimes(from: classification.parsedDateTime)
+                    // Use override dates or calculate from parsed date/time
+                    let eventStart: Date
+                    let eventEnd: Date
+                    if let overrideStart = startDateOverride {
+                        eventStart = overrideStart
+                        eventEnd = overrideStart.addingTimeInterval(TimeInterval((durationOverride ?? 60) * 60))
+                    } else {
+                        (eventStart, eventEnd) = calculateEventTimes(from: classification.parsedDateTime)
+                    }
+                    let startDate = eventStart
+                    let endDate = eventEnd
 
                     _ = try await taskService.createCalendarEvent(
                         for: created,

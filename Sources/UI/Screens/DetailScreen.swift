@@ -150,10 +150,72 @@ struct DetailScreen: View {
         } message: {
             Text("This action cannot be undone.")
         }
+        .sheet(isPresented: $viewModel.showingConfirmationSheet) {
+            confirmationSheet
+        }
         .task {
             await viewModel.loadRelatedThoughts()
             await loadConversationCount()
         }
+    }
+
+    // MARK: - Confirmation Sheet (#34)
+
+    private var confirmationSheet: some View {
+        let theme = themeEngine.getCurrentTheme()
+        let isEvent = viewModel.thought.classification?.type == .event
+
+        return NavigationStack {
+            Form {
+                Section {
+                    TextField("Title", text: $viewModel.confirmationTitle)
+                        .foregroundColor(theme.textColor)
+
+                    if isEvent {
+                        DatePicker("Date & Time", selection: $viewModel.confirmationDate)
+                            .foregroundColor(theme.textColor)
+
+                        Stepper("Duration: \(viewModel.confirmationDurationMinutes) min",
+                                value: $viewModel.confirmationDurationMinutes,
+                                in: 15...480, step: 15)
+                            .foregroundColor(theme.textColor)
+                    }
+                }
+
+                Section {
+                    Toggle(isOn: Binding(
+                        get: { UserDefaults.standard.bool(forKey: "autoCreateReminders") },
+                        set: { UserDefaults.standard.set($0, forKey: "autoCreateReminders") }
+                    )) {
+                        Text("Auto-create without asking")
+                            .foregroundColor(theme.textColor)
+                    }
+                    .tint(theme.primaryColor)
+                } footer: {
+                    Text("When on, \(isEvent ? "events" : "reminders") are created immediately without this dialog.")
+                        .foregroundColor(theme.secondaryTextColor)
+                }
+            }
+            .scrollContentBackground(.hidden)
+            .background(theme.backgroundColor)
+            .navigationTitle(isEvent ? "Add to Calendar" : "Create Reminder")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        viewModel.showingConfirmationSheet = false
+                    }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Create") {
+                        viewModel.confirmCreate()
+                    }
+                    .disabled(viewModel.confirmationTitle.isEmpty)
+                    .fontWeight(.semibold)
+                }
+            }
+        }
+        .presentationDetents([.medium])
     }
 
     // MARK: - Conversation Floating Button
@@ -270,38 +332,55 @@ struct DetailScreen: View {
             if let classification = viewModel.thought.classification {
                 ClassificationBadge(classification: classification)
 
-                // Action button for reminder or event types
-                if classification.type == .reminder || classification.type == .event {
-                    Button {
-                        viewModel.createReminderOrEvent()
-                    } label: {
-                        HStack {
-                            Image(systemName: classification.type == .reminder ? "bell.badge.fill" : "calendar.badge.plus")
-                                .accessibilityHidden(true)
-                            Text(classification.type == .reminder ? "Create Reminder" : "Add to Calendar")
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(theme.primaryColor)
-                    .disabled(viewModel.isCreatingTask)
-                    .accessibilityIdentifier(classification.type == .reminder ? "createReminderButton" : "addToCalendarButton")
-                    .overlay {
-                        if viewModel.isCreatingTask {
-                            ProgressView()
-                                .tint(theme.primaryColor)
-                        }
-                    }
+                // Action prompt for reminder or event types
+                if (classification.type == .reminder || classification.type == .event),
+                   !viewModel.actionPromptDismissed,
+                   !viewModel.taskCreated {
+                    VStack(spacing: 8) {
+                        HStack(spacing: 12) {
+                            Button {
+                                viewModel.requestAction()
+                            } label: {
+                                HStack {
+                                    Image(systemName: classification.type == .reminder ? "bell.badge.fill" : "calendar.badge.plus")
+                                        .accessibilityHidden(true)
+                                    Text(classification.type == .reminder ? "Create Reminder" : "Add to Calendar")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(theme.primaryColor)
+                            .disabled(viewModel.isCreatingTask)
+                            .accessibilityIdentifier(classification.type == .reminder ? "createReminderButton" : "addToCalendarButton")
+                            .overlay {
+                                if viewModel.isCreatingTask {
+                                    ProgressView()
+                                        .tint(theme.primaryColor)
+                                }
+                            }
 
-                    if viewModel.taskCreated {
-                        HStack {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(theme.successColor)
-                            Text(classification.type == .reminder ? "Reminder created!" : "Event added!")
-                                .font(.caption)
-                                .foregroundColor(theme.secondaryTextColor)
+                            Button {
+                                viewModel.dismissActionPrompt()
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(theme.secondaryTextColor)
+                                    .font(.title3)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Dismiss this suggestion")
+                            .accessibilityIdentifier("dismissActionPromptButton")
                         }
+                    }
+                }
+
+                if viewModel.taskCreated {
+                    HStack {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(theme.successColor)
+                        Text(classification.type == .reminder ? "Reminder created!" : "Event added!")
+                            .font(.caption)
+                            .foregroundColor(theme.secondaryTextColor)
                     }
                 }
             }
