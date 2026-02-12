@@ -8,8 +8,7 @@
 
 import Foundation
 import CoreLocation
-import MapKit
-import MapKit
+@preconcurrency import MapKit
 
 // MARK: - Location Service Protocol
 
@@ -159,35 +158,32 @@ actor LocationService: LocationServiceProtocol {
     private func performGeocode(latitude: Double, longitude: Double) async -> String? {
         NSLog("📍 LocationService - Starting geocode for lat=%.4f, lon=%.4f", latitude, longitude)
 
+        let location = CLLocation(latitude: latitude, longitude: longitude)
+
         // Use MapKit's reverse geocoding (iOS 26+)
         if #available(iOS 26.0, *) {
-            do {
-                NSLog("📍 LocationService - Using MKReverseGeocodingRequest")
-                let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-                let request = MKReverseGeocodingRequest(coordinate: coordinate)
+            NSLog("📍 LocationService - Using MKReverseGeocodingRequest")
 
-                let result = try await request.result
-
-                if let mapItem = result.mapItems.first {
-                    // Try different name components in order of specificity
-                    let name = mapItem.name
-                        ?? mapItem.placemark.locality
-                        ?? mapItem.placemark.subLocality
-                        ?? mapItem.placemark.thoroughfare
-                        ?? mapItem.placemark.administrativeArea
-                    NSLog("📍 LocationService - MapKit result: %@", name ?? "nil")
-                    return name
-                }
-                NSLog("📍 LocationService - No MapKit results")
-                return nil
-            } catch {
-                NSLog("📍 LocationService - MapKit error: %@", error.localizedDescription)
+            guard let request = MKReverseGeocodingRequest(location: location) else {
+                NSLog("📍 LocationService - Failed to create MKReverseGeocodingRequest")
                 return nil
             }
+
+            let mapItems = try? await request.mapItems
+
+            if let mapItem = mapItems?.first {
+                // Use iOS 26 address API (shortAddress for brief location name, or fullAddress if that's nil)
+                let name = mapItem.name
+                    ?? mapItem.address?.shortAddress
+                    ?? mapItem.address?.fullAddress
+                NSLog("📍 LocationService - MapKit result: %@", name ?? "nil")
+                return name
+            }
+            NSLog("📍 LocationService - No MapKit results")
+            return nil
         } else {
             // Fallback to CLGeocoder for older iOS versions
             let geocoder = CLGeocoder()
-            let location = CLLocation(latitude: latitude, longitude: longitude)
 
             do {
                 NSLog("📍 LocationService - Using CLGeocoder (iOS <26)")

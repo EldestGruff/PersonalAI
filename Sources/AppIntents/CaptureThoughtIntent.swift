@@ -118,8 +118,7 @@ struct CaptureThoughtIntent: AppIntent {
                 parsedDateTime: nil
             )
         } else if autoClassify {
-            // TODO: Auto-classify using AI when ClassificationService is accessible
-            // For now, default to no classification
+            // Classification happens in background via ContextEnrichmentService
             classification = nil
         } else {
             // No classification

@@ -28,6 +28,7 @@ import CoreLocation
 ///
 /// ## What Gets Enriched
 ///
+/// - **Classification:** AI-powered type, tags, and sentiment via Foundation Models
 /// - **Location:** Current location from LocationService
 /// - **Energy:** Latest energy level from HealthKit
 /// - **State of Mind:** Recent mental state from HealthKit
@@ -44,6 +45,7 @@ final class ContextEnrichmentService {
     // MARK: - Dependencies
 
     private let thoughtService: ThoughtService
+    private let classificationService: ClassificationService
     private let locationService: LocationService
     private let healthKitService: HealthKitService
     private let eventKitService: EventKitService
@@ -53,12 +55,14 @@ final class ContextEnrichmentService {
 
     init(
         thoughtService: ThoughtService = .shared,
+        classificationService: ClassificationService = ClassificationService(),
         locationService: LocationService = LocationService(),
         healthKitService: HealthKitService = HealthKitService(),
         eventKitService: EventKitService = EventKitService(),
         motionService: MotionService = MotionService()
     ) {
         self.thoughtService = thoughtService
+        self.classificationService = classificationService
         self.locationService = locationService
         self.healthKitService = healthKitService
         self.eventKitService = eventKitService
@@ -82,27 +86,30 @@ final class ContextEnrichmentService {
             return
         }
 
-        // Gather context data in parallel
+        // Gather context data and classification in parallel
         async let location = fetchLocation()
         async let energy = fetchEnergy()
         async let activity = fetchActivity()
         async let stateOfMind = fetchStateOfMind()
         async let energyBreakdown = fetchEnergyBreakdown()
         async let calendar = fetchCalendar()
+        async let classification = fetchClassification(for: thought)
 
         // Wait for all data
         let enrichedContext = await Context(
             timestamp: thought.context.timestamp,
             location: location,
-            timeOfDay: thought.context.timeOfDay, // Already set
+            timeOfDay: thought.context.timeOfDay,
             energy: energy,
-            focusState: thought.context.focusState, // Keep existing - iOS Focus API not yet integrated
+            focusState: thought.context.focusState,
             calendar: calendar,
             activity: activity,
-            weather: nil, // TODO: Add WeatherService when available
+            weather: nil,
             stateOfMind: stateOfMind,
             energyBreakdown: energyBreakdown
         )
+
+        let resolvedClassification = await classification
 
         // Create updated thought (Thought is immutable)
         let updatedThought = Thought(
@@ -110,12 +117,12 @@ final class ContextEnrichmentService {
             userId: thought.userId,
             content: thought.content,
             attributedContent: thought.attributedContent,
-            tags: thought.tags,
+            tags: resolvedClassification?.suggestedTags ?? thought.tags,
             status: thought.status,
             context: enrichedContext,
             createdAt: thought.createdAt,
             updatedAt: Date(),
-            classification: thought.classification,
+            classification: resolvedClassification ?? thought.classification,
             relatedThoughtIds: thought.relatedThoughtIds,
             taskId: thought.taskId
         )
@@ -182,5 +189,21 @@ final class ContextEnrichmentService {
         }
 
         return await eventKitService.getAvailability()
+    }
+
+    /// Classifies the thought if it hasn't been classified yet.
+    private func fetchClassification(for thought: Thought) async -> Classification? {
+        guard thought.classification == nil else {
+            return nil // Already classified, keep existing
+        }
+
+        do {
+            let result = try await classificationService.classify(thought.content)
+            print("🏷️ Classified thought: type=\(result.type), tags=\(result.suggestedTags)")
+            return result
+        } catch {
+            print("⚠️ Classification failed: \(error.localizedDescription)")
+            return nil
+        }
     }
 }

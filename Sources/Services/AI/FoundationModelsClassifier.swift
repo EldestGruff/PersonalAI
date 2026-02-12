@@ -101,6 +101,9 @@ actor FoundationModelsClassifier {
     /// - Parameter content: The thought content to classify
     /// - Returns: Classification result with type, tags, sentiment, and confidence
     func classify(_ content: String) async throws -> FoundationModelsResult {
+        if session == nil {
+            setupSession()
+        }
         guard let session else {
             throw ClassificationError.notAvailable
         }
