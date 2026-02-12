@@ -9,6 +9,7 @@
 import Foundation
 import CoreLocation
 import MapKit
+import MapKit
 
 // MARK: - Location Service Protocol
 
@@ -158,37 +159,56 @@ actor LocationService: LocationServiceProtocol {
     private func performGeocode(latitude: Double, longitude: Double) async -> String? {
         NSLog("📍 LocationService - Starting geocode for lat=%.4f, lon=%.4f", latitude, longitude)
 
-        // Note: CLGeocoder is deprecated in iOS 26 but remains functional and stable.
-        // The recommended MapKit alternatives (MKReverseGeocodingRequest, MKLocalSearch, MKAddress)
-        // have incomplete APIs - MKMapItem doesn't provide CNPostalAddress (structured data).
-        // See: https://developer.apple.com/forums/thread/795687
-        // Will migrate when MapKit reverse geocoding API provides structured address data.
-        let geocoder = CLGeocoder()
-        let location = CLLocation(latitude: latitude, longitude: longitude)
+        // Use MapKit's reverse geocoding (iOS 26+)
+        if #available(iOS 26.0, *) {
+            do {
+                NSLog("📍 LocationService - Using MKReverseGeocodingRequest")
+                let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                let request = MKReverseGeocodingRequest(coordinate: coordinate)
 
-        do {
-            NSLog("📍 LocationService - Executing CLGeocoder reverseGeocodeLocation")
-            #if compiler(>=6.0)
-            #warning("TODO: Migrate to MKReverseGeocodingRequest when CNPostalAddress support is added")
-            #endif
-            let placemarks = try await geocoder.reverseGeocodeLocation(location)
-            NSLog("📍 LocationService - Got %d placemarks", placemarks.count)
+                let result = try await request.result
 
-            if let placemark = placemarks.first {
-                // Try different name components in order of specificity
-                let name = placemark.name
-                    ?? placemark.locality
-                    ?? placemark.subLocality
-                    ?? placemark.thoroughfare
-                    ?? placemark.administrativeArea
-                NSLog("📍 LocationService - Geocode result: %@", name ?? "nil")
-                return name
+                if let mapItem = result.mapItems.first {
+                    // Try different name components in order of specificity
+                    let name = mapItem.name
+                        ?? mapItem.placemark.locality
+                        ?? mapItem.placemark.subLocality
+                        ?? mapItem.placemark.thoroughfare
+                        ?? mapItem.placemark.administrativeArea
+                    NSLog("📍 LocationService - MapKit result: %@", name ?? "nil")
+                    return name
+                }
+                NSLog("📍 LocationService - No MapKit results")
+                return nil
+            } catch {
+                NSLog("📍 LocationService - MapKit error: %@", error.localizedDescription)
+                return nil
             }
-            NSLog("📍 LocationService - No placemarks returned")
-            return nil
-        } catch {
-            NSLog("📍 LocationService - Geocode error: %@", error.localizedDescription)
-            return nil
+        } else {
+            // Fallback to CLGeocoder for older iOS versions
+            let geocoder = CLGeocoder()
+            let location = CLLocation(latitude: latitude, longitude: longitude)
+
+            do {
+                NSLog("📍 LocationService - Using CLGeocoder (iOS <26)")
+                let placemarks = try await geocoder.reverseGeocodeLocation(location)
+                NSLog("📍 LocationService - Got %d placemarks", placemarks.count)
+
+                if let placemark = placemarks.first {
+                    let name = placemark.name
+                        ?? placemark.locality
+                        ?? placemark.subLocality
+                        ?? placemark.thoroughfare
+                        ?? placemark.administrativeArea
+                    NSLog("📍 LocationService - Geocode result: %@", name ?? "nil")
+                    return name
+                }
+                NSLog("📍 LocationService - No placemarks returned")
+                return nil
+            } catch {
+                NSLog("📍 LocationService - Geocode error: %@", error.localizedDescription)
+                return nil
+            }
         }
     }
 
