@@ -21,6 +21,7 @@ enum FrameworkType: String, Sendable, CaseIterable {
     case contacts = "Contacts"
     case network = "Network"
     case foundationModels = "Foundation Models"
+    case speech = "Speech Recognition"
 
     /// Human-readable name for UI display
     var displayName: String { rawValue }
@@ -31,6 +32,7 @@ enum FrameworkType: String, Sendable, CaseIterable {
         case .healthKit: return "Health"
         case .coreLocation: return "Privacy/Location"
         case .contacts: return "Privacy/Contacts"
+        case .speech: return "Privacy/SpeechRecognition"
         default: return nil
         }
     }

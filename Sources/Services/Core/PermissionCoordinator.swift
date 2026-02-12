@@ -86,6 +86,7 @@ struct PermissionSummary: Sendable, Equatable {
         case .contacts: return contacts
         case .network: return .authorized // Network doesn't need permission
         case .foundationModels: return .authorized // Foundation Models is on-device, no permission needed
+        case .speech: return .notDetermined // Speech permission checked at runtime by SpeechRecognitionService
         }
     }
 
@@ -242,6 +243,11 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
         case .foundationModels:
             NSLog("🎤 [PermissionCoordinator] requestPermission() - EXIT (foundationModels, no permission needed)")
             return .authorized // Foundation Models is on-device, no permission needed
+        case .speech:
+            NSLog("🎤 [PermissionCoordinator] requestPermission() - speech permission handled directly by SpeechRecognitionService")
+            // Speech permissions are handled by SpeechRecognitionService.shared directly,
+            // not through PermissionCoordinator
+            return .notDetermined
         }
 
         NSLog("🎤 [PermissionCoordinator] requestPermission() - About to call service.requestPermission()")
