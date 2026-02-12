@@ -75,25 +75,53 @@ struct BackTapSetupScreen: View {
 
                     Spacer()
 
-                    // Instructions
-                    VStack(alignment: .leading, spacing: 12) {
-                        InstructionRow(
-                            icon: "1.circle.fill",
-                            text: "In Shortcuts app: Tap '+' → Search 'Voice' → Tap 'Voice Capture' → Done",
-                            theme: theme
-                        )
+                    // Detailed Instructions
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Step-by-Step Guide")
+                            .font(.headline)
+                            .foregroundStyle(theme.textColor)
 
-                        InstructionRow(
-                            icon: "2.circle.fill",
-                            text: "In Settings: Choose Double Tap → Scroll to Shortcuts → Select 'Voice Capture'",
-                            theme: theme
-                        )
+                        VStack(alignment: .leading, spacing: 12) {
+                            InstructionRow(
+                                number: "1",
+                                title: "In Shortcuts App:",
+                                steps: [
+                                    "Tap the blue '+' button (top right)",
+                                    "Tap 'Add Action'",
+                                    "Search for 'Voice Capture'",
+                                    "Tap the 'Voice Capture' action",
+                                    "Tap 'Done' to save"
+                                ],
+                                theme: theme
+                            )
 
-                        InstructionRow(
-                            icon: "checkmark.circle.fill",
-                            text: "Test: Double-tap back of phone to start voice capture!",
-                            theme: theme
-                        )
+                            Divider()
+                                .background(theme.textColor.opacity(0.2))
+
+                            InstructionRow(
+                                number: "2",
+                                title: "In Settings:",
+                                steps: [
+                                    "Choose 'Double Tap' (or Triple Tap)",
+                                    "Scroll down to 'Shortcuts' section",
+                                    "Select 'Voice Capture'"
+                                ],
+                                theme: theme
+                            )
+
+                            Divider()
+                                .background(theme.textColor.opacity(0.2))
+
+                            InstructionRow(
+                                number: "✓",
+                                title: "Test It:",
+                                steps: [
+                                    "Double-tap the back of your phone",
+                                    "Voice capture should launch!"
+                                ],
+                                theme: theme
+                            )
+                        }
                     }
                     .padding()
                     .background(theme.surfaceColor)
@@ -194,20 +222,43 @@ struct BackTapSetupScreen: View {
 // MARK: - Instruction Row
 
 struct InstructionRow: View {
-    let icon: String
-    let text: String
+    let number: String
+    let title: String
+    let steps: [String]
     let theme: any ThemeVariant
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            Image(systemName: icon)
-                .foregroundStyle(theme.accentColor)
-                .font(.body)
+            // Number badge
+            Text(number)
+                .font(.headline.bold())
+                .foregroundStyle(.white)
+                .frame(width: 28, height: 28)
+                .background(
+                    Circle()
+                        .fill(theme.accentColor)
+                )
 
-            Text(text)
-                .font(.caption)
-                .foregroundStyle(theme.textColor.opacity(0.8))
-                .fixedSize(horizontal: false, vertical: true)
+            VStack(alignment: .leading, spacing: 6) {
+                // Title
+                Text(title)
+                    .font(.subheadline.bold())
+                    .foregroundStyle(theme.textColor)
+
+                // Steps
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(Array(steps.enumerated()), id: \.offset) { _, step in
+                        HStack(alignment: .top, spacing: 6) {
+                            Text("•")
+                                .foregroundStyle(theme.textColor.opacity(0.6))
+                            Text(step)
+                                .font(.caption)
+                                .foregroundStyle(theme.textColor.opacity(0.8))
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                }
+            }
         }
     }
 }
