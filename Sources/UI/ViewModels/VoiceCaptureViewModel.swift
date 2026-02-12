@@ -56,8 +56,7 @@ final class VoiceCaptureViewModel {
     // MARK: - Private State
 
     @ObservationIgnored private var transcriptionTask: _Concurrency.Task<Void, Never>?
-    @ObservationIgnored private var baseTranscript: String = "" // Accumulated text from all previous recognition sessions
-    @ObservationIgnored private var lastUpdateText: String = "" // Last update received, to detect non-cumulative updates
+    @ObservationIgnored private var savedTranscript: String = "" // Text saved from previous session when paused
 
     // MARK: - Initialization
 
@@ -98,23 +97,9 @@ final class VoiceCaptureViewModel {
                     await self?.handleTranscriptionUpdate(update)
                 }
 
-                // Stream ended (user paused or recognizer finished)
-                // Auto-restart to continue listening
+                // Stream ended - let it end naturally, user can resume manually
                 guard let self = self else { return }
-
-                if await self.captureState == .listening {
-                    print("🎤 Recognition stream ended, auto-restarting...")
-                    // Save current transcript before restarting
-                    await self.saveTranscriptForRestart()
-
-                    // Small delay to prevent rapid restarts
-                    try? await _Concurrency.Task.sleep(nanoseconds: 500_000_000)
-
-                    // Restart recognition if still listening
-                    if await self.captureState == .listening {
-                        await self.restartListening()
-                    }
-                }
+                await self.handleStreamEnded()
             }
         } catch {
             captureState = .error("Failed to start voice recognition: \(error.localizedDescription)")
@@ -125,13 +110,8 @@ final class VoiceCaptureViewModel {
     func pauseListening() async {
         guard captureState == .listening else { return }
 
-        // Save current transcript to base before stopping
-        if !transcribedText.isEmpty {
-            baseTranscript = transcribedText
-            lastUpdateText = "" // Reset for next session
-            print("⏸️ Paused - saved to base: '\(baseTranscript.prefix(50))...'")
-        }
-
+        // Save current transcript before stopping
+        savedTranscript = transcribedText
         _ = await speechService.stopListening()
 
         captureState = .paused
@@ -146,55 +126,21 @@ final class VoiceCaptureViewModel {
 
             let stream = try await speechService.startListening()
 
-            // Subscribe to new transcription updates (will append)
+            // Subscribe to new transcription updates (savedTranscript will be prepended)
             transcriptionTask = _Concurrency.Task { [weak self] in
                 for await update in stream {
                     await self?.handleTranscriptionUpdate(update)
                 }
 
-                // Auto-restart if stream ends while listening
+                // Stream ended naturally
                 guard let self = self else { return }
-                if await self.captureState == .listening {
-                    await self.saveTranscriptForRestart()
-                    try? await _Concurrency.Task.sleep(nanoseconds: 500_000_000)
-                    if await self.captureState == .listening {
-                        await self.restartListening()
-                    }
-                }
+                await self.handleStreamEnded()
             }
         } catch {
             captureState = .error("Failed to resume voice recognition: \(error.localizedDescription)")
         }
     }
 
-    /// Restarts listening without state checks (for auto-restart)
-    private func restartListening() async {
-        print("🔄 Restarting recognition...")
-
-        do {
-            let stream = try await speechService.startListening()
-
-            // Subscribe to new transcription updates (will append)
-            transcriptionTask = _Concurrency.Task { [weak self] in
-                for await update in stream {
-                    await self?.handleTranscriptionUpdate(update)
-                }
-
-                // Auto-restart if stream ends while listening
-                guard let self = self else { return }
-                if await self.captureState == .listening {
-                    await self.saveTranscriptForRestart()
-                    try? await _Concurrency.Task.sleep(nanoseconds: 500_000_000)
-                    if await self.captureState == .listening {
-                        await self.restartListening()
-                    }
-                }
-            }
-        } catch {
-            print("❌ Failed to restart: \(error.localizedDescription)")
-            captureState = .error("Failed to restart voice recognition: \(error.localizedDescription)")
-        }
-    }
 
     /// Stops listening and saves the thought
     func stopAndSave() async {
@@ -255,63 +201,31 @@ final class VoiceCaptureViewModel {
         await speechService.cancelListening()
 
         transcribedText = ""
-        baseTranscript = ""
-        lastUpdateText = ""
+        savedTranscript = ""
         captureState = .idle
         captureSucceeded = true // Dismiss screen
     }
 
     // MARK: - Private Methods
 
-    /// Saves current transcript before restarting recognition
-    private func saveTranscriptForRestart() {
-        // Move current text to base transcript so it's prepended to all future updates
-        if !transcribedText.isEmpty && transcribedText != baseTranscript {
-            baseTranscript = transcribedText
-            lastUpdateText = "" // Reset for new session
-            print("💾 Saved to base: '\(baseTranscript.prefix(50))...' (length: \(baseTranscript.count))")
+    /// Called when the recognition stream ends naturally
+    private func handleStreamEnded() {
+        if captureState == .listening {
+            // Stream ended due to pause - save what we have and transition to paused
+            savedTranscript = transcribedText
+            captureState = .paused
+            print("⏸️ Stream ended - tap mic to continue")
         }
     }
 
     /// Handles a transcription update from the speech recognizer
     private func handleTranscriptionUpdate(_ update: TranscriptionUpdate) {
-        let newText = update.text
-
-        // Detect if this is a continuation or a fresh start
-        let isContinuation = newText.count > lastUpdateText.count &&
-                             (newText.hasPrefix(lastUpdateText) || lastUpdateText.isEmpty)
-
-        print("📥 Update: '\(newText.prefix(30))...' | Last: '\(lastUpdateText.prefix(30))...' | Continuation: \(isContinuation)")
-
-        if isContinuation {
-            // Normal cumulative update - use it with base prepended
-            if !baseTranscript.isEmpty {
-                transcribedText = baseTranscript + " " + newText
-                print("✅ Cumulative + Base: '\(transcribedText.prefix(50))...'")
-            } else {
-                transcribedText = newText
-                print("✅ Cumulative: '\(transcribedText.prefix(50))...'")
-            }
-        } else if !lastUpdateText.isEmpty && !newText.isEmpty {
-            // Non-cumulative update detected - ALWAYS append to preserve previous text
-            print("⚠️ Non-cumulative update! Previous: '\(transcribedText.prefix(30))...' New: '\(newText.prefix(30))...'")
-            transcribedText = transcribedText + " " + newText
-            print("✅ Appended: '\(transcribedText.prefix(50))...'")
+        // Simple: trust the framework. Prepend saved text if resuming.
+        if !savedTranscript.isEmpty {
+            transcribedText = savedTranscript + " " + update.text
         } else {
-            // First update of a session
-            if !baseTranscript.isEmpty {
-                transcribedText = baseTranscript + " " + newText
-                print("✅ First with base: '\(transcribedText.prefix(50))...'")
-            } else {
-                transcribedText = newText
-                print("✅ First: '\(transcribedText.prefix(50))...'")
-            }
+            transcribedText = update.text
         }
-
-        lastUpdateText = newText
-
-        // Note: Removed auto-save timer - users should tap "Done" when finished
-        // This prevents losing text when pausing to think
     }
 
 
