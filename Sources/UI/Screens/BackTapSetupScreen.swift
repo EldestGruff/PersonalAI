@@ -28,7 +28,8 @@ struct BackTapSetupScreen: View {
             ZStack {
                 theme.backgroundColor.ignoresSafeArea()
 
-                VStack(spacing: 24) {
+                ScrollView {
+                    VStack(spacing: 24) {
                     // Header
                     VStack(spacing: 12) {
                         Image(systemName: "hand.tap.fill")
@@ -44,6 +45,14 @@ struct BackTapSetupScreen: View {
                             .foregroundStyle(theme.textColor.opacity(0.7))
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
+
+                        // Note about app switching
+                        Text("💡 This screen will stay open - return here after each step")
+                            .font(.caption)
+                            .foregroundStyle(theme.accentColor)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                            .padding(.top, 4)
                     }
                     .padding(.top)
 
@@ -52,7 +61,7 @@ struct BackTapSetupScreen: View {
                         setupStepView(
                             number: 1,
                             title: "Add Voice Capture Shortcut",
-                            description: "Opens Shortcuts app where you'll tap the Voice Capture action",
+                            description: "Opens Shortcuts app. Follow instructions below, then return to STASH.",
                             buttonTitle: "Open Shortcuts App",
                             theme: theme,
                             isCompleted: currentStep.rawValue > SetupStep.addShortcut.rawValue
@@ -63,7 +72,7 @@ struct BackTapSetupScreen: View {
                         setupStepView(
                             number: 2,
                             title: "Configure Back Tap",
-                            description: "Opens Settings where you'll assign the shortcut to Double Tap",
+                            description: "Opens Settings. Follow instructions below to assign shortcut.",
                             buttonTitle: "Open Back Tap Settings",
                             theme: theme,
                             isCompleted: currentStep == .complete
@@ -135,6 +144,7 @@ struct BackTapSetupScreen: View {
                     .font(.footnote)
                     .foregroundStyle(theme.textColor.opacity(0.6))
                     .padding(.bottom)
+                    }
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
