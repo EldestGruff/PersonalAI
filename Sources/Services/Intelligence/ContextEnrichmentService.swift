@@ -77,28 +77,25 @@ final class ContextEnrichmentService {
         print("🔄 Enriching context for thought \(thoughtId)...")
 
         // Fetch the thought
-        guard let thought = try? await thoughtService.fetch(by: thoughtId) else {
+        guard let thought = try? await thoughtService.fetch(thoughtId) else {
             print("❌ Failed to fetch thought \(thoughtId)")
             return
         }
 
         // Gather context data in parallel
         async let location = fetchLocation()
-        async let energy = fetchEnergy()
         async let stateOfMind = fetchStateOfMind()
         async let calendar = fetchCalendar()
-        async let activity = fetchActivity()
-        async let focusState = fetchFocusState()
 
         // Wait for all data
         let enrichedContext = await Context(
             timestamp: thought.context.timestamp,
             location: location,
             timeOfDay: thought.context.timeOfDay, // Already set
-            energy: energy ?? thought.context.energy,
-            focusState: focusState ?? thought.context.focusState,
+            energy: thought.context.energy, // Keep existing - TODO: enrich from HealthKit
+            focusState: thought.context.focusState, // Keep existing - TODO: enrich from FocusStatus
             calendar: calendar,
-            activity: activity,
+            activity: nil, // TODO: Add ActivityContext enrichment
             weather: nil, // TODO: Add WeatherService when available
             stateOfMind: stateOfMind,
             energyBreakdown: nil // TODO: Calculate from HealthKit samples
@@ -120,43 +117,24 @@ final class ContextEnrichmentService {
     // MARK: - Private Methods
 
     /// Fetches current location if available.
-    private func fetchLocation() async -> LocationSnapshot? {
-        guard await locationService.permissionStatus == .authorized else {
+    private func fetchLocation() async -> Location? {
+        guard locationService.permissionStatus == .authorized else {
             return nil
         }
 
-        return await locationService.currentLocation
-    }
-
-    /// Fetches latest energy level from HealthKit.
-    private func fetchEnergy() async -> EnergyLevel? {
-        guard await healthKitService.permissionStatus == .authorized else {
-            return nil
-        }
-
-        // Fetch most recent energy sample from last 6 hours
-        let sixHoursAgo = Calendar.current.date(byAdding: .hour, value: -6, to: Date()) ?? Date()
-
-        guard let samples = try? await healthKitService.fetchEnergySamples(
-            from: sixHoursAgo,
-            to: Date()
-        ), let latestSample = samples.last else {
-            return nil
-        }
-
-        return latestSample.level
+        return await locationService.getCurrentLocation()
     }
 
     /// Fetches most recent state of mind from HealthKit.
     private func fetchStateOfMind() async -> StateOfMindSnapshot? {
-        guard await healthKitService.permissionStatus == .authorized else {
+        guard healthKitService.permissionStatus == .authorized else {
             return nil
         }
 
         // Fetch state of mind from last 24 hours
         let oneDayAgo = Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date()
 
-        guard let samples = try? await healthKitService.fetchStateOfMindSamples(
+        guard let samples = try? await healthKitService.fetchStateOfMind(
             from: oneDayAgo,
             to: Date()
         ), let latestSample = samples.last else {
@@ -166,50 +144,12 @@ final class ContextEnrichmentService {
         return latestSample
     }
 
-    /// Fetches nearby calendar events (within 2 hours).
-    private func fetchCalendar() async -> CalendarSnapshot? {
-        guard await eventKitService.permissionStatus == .authorized else {
+    /// Fetches calendar availability context.
+    private func fetchCalendar() async -> CalendarContext? {
+        guard eventKitService.permissionStatus == .authorized else {
             return nil
         }
 
-        let now = Date()
-        let twoHoursAgo = Calendar.current.date(byAdding: .hour, value: -2, to: now) ?? now
-        let twoHoursLater = Calendar.current.date(byAdding: .hour, value: 2, to: now) ?? now
-
-        guard let events = try? await eventKitService.fetchEvents(
-            from: twoHoursAgo,
-            to: twoHoursLater
-        ), !events.isEmpty else {
-            return nil
-        }
-
-        return CalendarSnapshot(events: events)
-    }
-
-    /// Fetches current activity type from MotionService.
-    private func fetchActivity() async -> ActivitySnapshot? {
-        guard await motionService.permissionStatus == .authorized else {
-            return nil
-        }
-
-        guard let activityType = await motionService.currentActivityType else {
-            return nil
-        }
-
-        return ActivitySnapshot(
-            type: activityType,
-            confidence: .medium,
-            startTime: Date() // Approximate
-        )
-    }
-
-    /// Fetches current iOS Focus mode (iOS 26+).
-    private func fetchFocusState() async -> FocusState? {
-        if #available(iOS 26.0, *) {
-            // TODO: Integrate FocusStatus API when available
-            // For now, return nil
-            return nil
-        }
-        return nil
+        return await eventKitService.getAvailability()
     }
 }
