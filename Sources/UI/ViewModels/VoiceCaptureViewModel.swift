@@ -107,11 +107,11 @@ final class VoiceCaptureViewModel {
                     await self.saveTranscriptForRestart()
 
                     // Small delay to prevent rapid restarts
-                    try? await _Concurrency.Task.sleep(nanoseconds: 100_000_000)
+                    try? await _Concurrency.Task.sleep(nanoseconds: 500_000_000)
 
                     // Restart recognition if still listening
                     if await self.captureState == .listening {
-                        await self.resumeListening()
+                        await self.restartListening()
                     }
                 }
             }
@@ -145,9 +145,48 @@ final class VoiceCaptureViewModel {
                 for await update in stream {
                     await self?.handleTranscriptionUpdate(update)
                 }
+
+                // Auto-restart if stream ends while listening
+                guard let self = self else { return }
+                if await self.captureState == .listening {
+                    await self.saveTranscriptForRestart()
+                    try? await _Concurrency.Task.sleep(nanoseconds: 500_000_000)
+                    if await self.captureState == .listening {
+                        await self.restartListening()
+                    }
+                }
             }
         } catch {
             captureState = .error("Failed to resume voice recognition: \(error.localizedDescription)")
+        }
+    }
+
+    /// Restarts listening without state checks (for auto-restart)
+    private func restartListening() async {
+        print("🔄 Restarting recognition...")
+
+        do {
+            let stream = try await speechService.startListening()
+
+            // Subscribe to new transcription updates (will append)
+            transcriptionTask = _Concurrency.Task { [weak self] in
+                for await update in stream {
+                    await self?.handleTranscriptionUpdate(update)
+                }
+
+                // Auto-restart if stream ends while listening
+                guard let self = self else { return }
+                if await self.captureState == .listening {
+                    await self.saveTranscriptForRestart()
+                    try? await _Concurrency.Task.sleep(nanoseconds: 500_000_000)
+                    if await self.captureState == .listening {
+                        await self.restartListening()
+                    }
+                }
+            }
+        } catch {
+            print("❌ Failed to restart: \(error.localizedDescription)")
+            captureState = .error("Failed to restart voice recognition: \(error.localizedDescription)")
         }
     }
 
