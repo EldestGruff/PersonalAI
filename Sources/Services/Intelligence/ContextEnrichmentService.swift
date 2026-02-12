@@ -84,7 +84,10 @@ final class ContextEnrichmentService {
 
         // Gather context data in parallel
         async let location = fetchLocation()
+        async let energy = fetchEnergy()
+        async let activity = fetchActivity()
         async let stateOfMind = fetchStateOfMind()
+        async let energyBreakdown = fetchEnergyBreakdown()
         async let calendar = fetchCalendar()
 
         // Wait for all data
@@ -92,22 +95,33 @@ final class ContextEnrichmentService {
             timestamp: thought.context.timestamp,
             location: location,
             timeOfDay: thought.context.timeOfDay, // Already set
-            energy: thought.context.energy, // Keep existing - TODO: enrich from HealthKit
-            focusState: thought.context.focusState, // Keep existing - TODO: enrich from FocusStatus
+            energy: energy,
+            focusState: thought.context.focusState, // Keep existing - iOS Focus API not yet integrated
             calendar: calendar,
-            activity: nil, // TODO: Add ActivityContext enrichment
+            activity: activity,
             weather: nil, // TODO: Add WeatherService when available
             stateOfMind: stateOfMind,
-            energyBreakdown: nil // TODO: Calculate from HealthKit samples
+            energyBreakdown: energyBreakdown
         )
 
-        // Update thought with enriched context
-        var updatedThought = thought
-        updatedThought.context = enrichedContext
-        updatedThought.updatedAt = Date()
+        // Create updated thought (Thought is immutable)
+        let updatedThought = Thought(
+            id: thought.id,
+            userId: thought.userId,
+            content: thought.content,
+            attributedContent: thought.attributedContent,
+            tags: thought.tags,
+            status: thought.status,
+            context: enrichedContext,
+            createdAt: thought.createdAt,
+            updatedAt: Date(),
+            classification: thought.classification,
+            relatedThoughtIds: thought.relatedThoughtIds,
+            taskId: thought.taskId
+        )
 
         do {
-            try await thoughtService.update(updatedThought)
+            _ = try await thoughtService.update(updatedThought)
             print("✅ Context enriched for thought \(thoughtId)")
         } catch {
             print("❌ Failed to update thought context: \(error)")
@@ -118,35 +132,52 @@ final class ContextEnrichmentService {
 
     /// Fetches current location if available.
     private func fetchLocation() async -> Location? {
-        guard locationService.permissionStatus == .authorized else {
+        guard await locationService.permissionStatus == .authorized else {
             return nil
         }
 
         return await locationService.getCurrentLocation()
     }
 
+    /// Fetches current energy level from HealthKit.
+    private func fetchEnergy() async -> EnergyLevel {
+        guard await healthKitService.permissionStatus == .authorized else {
+            return .medium
+        }
+
+        return await healthKitService.getEnergyLevel()
+    }
+
+    /// Fetches current activity context from HealthKit.
+    private func fetchActivity() async -> ActivityContext? {
+        guard await healthKitService.permissionStatus == .authorized else {
+            return nil
+        }
+
+        return await healthKitService.getActivityContext()
+    }
+
     /// Fetches most recent state of mind from HealthKit.
     private func fetchStateOfMind() async -> StateOfMindSnapshot? {
-        guard healthKitService.permissionStatus == .authorized else {
+        guard await healthKitService.permissionStatus == .authorized else {
             return nil
         }
 
-        // Fetch state of mind from last 24 hours
-        let oneDayAgo = Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date()
+        return await healthKitService.getStateOfMind()
+    }
 
-        guard let samples = try? await healthKitService.fetchStateOfMind(
-            from: oneDayAgo,
-            to: Date()
-        ), let latestSample = samples.last else {
+    /// Fetches energy breakdown from HealthKit.
+    private func fetchEnergyBreakdown() async -> EnergyBreakdown? {
+        guard await healthKitService.permissionStatus == .authorized else {
             return nil
         }
 
-        return latestSample
+        return await healthKitService.getEnergyBreakdown()
     }
 
     /// Fetches calendar availability context.
     private func fetchCalendar() async -> CalendarContext? {
-        guard eventKitService.permissionStatus == .authorized else {
+        guard await eventKitService.permissionStatus == .authorized else {
             return nil
         }
 
