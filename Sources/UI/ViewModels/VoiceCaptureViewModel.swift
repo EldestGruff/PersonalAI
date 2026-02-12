@@ -56,7 +56,7 @@ final class VoiceCaptureViewModel {
     // MARK: - Private State
 
     @ObservationIgnored private var transcriptionTask: _Concurrency.Task<Void, Never>?
-    @ObservationIgnored private var transcriptBeforePause: String = ""
+    @ObservationIgnored private var baseTranscript: String = "" // Accumulated text from all previous recognition sessions
 
     // MARK: - Initialization
 
@@ -124,8 +124,12 @@ final class VoiceCaptureViewModel {
     func pauseListening() async {
         guard captureState == .listening else { return }
 
-        // Stop audio engine but keep transcript
-        transcriptBeforePause = transcribedText
+        // Save current transcript to base before stopping
+        if !transcribedText.isEmpty {
+            baseTranscript = transcribedText
+            print("⏸️ Paused - saved to base: '\(baseTranscript.prefix(50))...'")
+        }
+
         _ = await speechService.stopListening()
 
         captureState = .paused
@@ -249,7 +253,7 @@ final class VoiceCaptureViewModel {
         await speechService.cancelListening()
 
         transcribedText = ""
-        transcriptBeforePause = ""
+        baseTranscript = ""
         captureState = .idle
         captureSucceeded = true // Dismiss screen
     }
@@ -258,20 +262,23 @@ final class VoiceCaptureViewModel {
 
     /// Saves current transcript before restarting recognition
     private func saveTranscriptForRestart() {
-        transcriptBeforePause = transcribedText
+        // Move current text to base transcript so it's prepended to all future updates
+        if !transcribedText.isEmpty && transcribedText != baseTranscript {
+            baseTranscript = transcribedText
+            print("💾 Saved to base: '\(baseTranscript.prefix(50))...' (length: \(baseTranscript.count))")
+        }
     }
 
     /// Handles a transcription update from the speech recognizer
     private func handleTranscriptionUpdate(_ update: TranscriptionUpdate) {
-        // Merge with previous transcript if resuming from pause/restart
-        if !transcriptBeforePause.isEmpty {
-            // Prepend saved text from before restart
-            transcribedText = transcriptBeforePause + " " + update.text
-            // Clear saved text so we don't prepend it again on subsequent updates
-            transcriptBeforePause = ""
-            print("📝 Merged saved text: \(transcribedText.prefix(50))...")
+        // Each update contains cumulative text from current recognition session
+        // Prepend base transcript from all previous sessions
+        if !baseTranscript.isEmpty {
+            transcribedText = baseTranscript + " " + update.text
+            print("📝 Base + Current: '\(baseTranscript.prefix(20))...' + '\(update.text.prefix(20))...' = '\(transcribedText.prefix(40))...'")
         } else {
             transcribedText = update.text
+            print("📝 First session: '\(transcribedText.prefix(40))...'")
         }
 
         // Note: Removed auto-save timer - users should tap "Done" when finished
