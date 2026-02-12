@@ -22,6 +22,12 @@ docs/
 
 ### I want to...
 
+**...get started as a new user**
+→ [QUICK_SETUP_GUIDE.md](./QUICK_SETUP_GUIDE.md)
+
+**...learn power user tips and shortcuts**
+→ [POWER_USER_TIPS.md](./POWER_USER_TIPS.md)
+
 **...understand where the project is going**
 → [planning/ROADMAP.md](./planning/ROADMAP.md)
 
@@ -139,6 +145,15 @@ Architecture principles and technical standards.
 |----------|----------|---------|
 | [README.md](../README.md) | `/` | Project overview and getting started |
 | [FEATURES.md](../FEATURES.md) | `/` | Detailed feature specifications |
+
+### User Guides & Tips
+
+| Document | Location | Purpose |
+|----------|----------|---------|
+| [QUICK_SETUP_GUIDE.md](./QUICK_SETUP_GUIDE.md) | `/docs` | Get started in 5 minutes |
+| [POWER_USER_TIPS.md](./POWER_USER_TIPS.md) | `/docs` | Advanced productivity tips, keyboard shortcuts equivalent for iOS |
+| [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) | `/docs` | Common issues and solutions |
+| [siri-integration-plan.md](./siri-integration-plan.md) | `/docs` | Technical implementation plan for Siri & voice features |
 
 ### Phase Documentation
 
@@ -362,4 +377,4 @@ Consider creating it! Follow patterns from existing docs:
 
 ---
 
-**Last Updated:** 2026-01-20
+**Last Updated:** 2026-02-11

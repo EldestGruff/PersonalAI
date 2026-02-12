@@ -51,7 +51,8 @@ struct CaptureThoughtIntent: AppIntent {
             autocorrect: true,
             smartQuotes: true,
             smartDashes: true
-        )
+        ),
+        requestValueDialog: "What's on your mind?"
     )
     var content: String
 
@@ -68,6 +69,12 @@ struct CaptureThoughtIntent: AppIntent {
         default: true
     )
     var autoClassify: Bool
+
+    // MARK: - Parameter Summary
+
+    static var parameterSummary: some ParameterSummary {
+        Summary("Capture \(\.$content)")
+    }
 
     // MARK: - Intent Execution
 
@@ -189,10 +196,13 @@ struct ThoughtAppShortcuts: AppShortcutsProvider {
             phrases: [
                 "Capture a thought in \(.applicationName)",
                 "Save a note in \(.applicationName)",
-                "Remember something in \(.applicationName)"
+                "Remember something in \(.applicationName)",
+                "Stash a thought in \(.applicationName)",
+                "Stash this in \(.applicationName)",
+                "Quick thought in \(.applicationName)"
             ],
-            shortTitle: "Capture",
-            systemImageName: "square.and.pencil"
+            shortTitle: "Stash Thought",
+            systemImageName: "brain.head.profile"
         )
     }
 }
