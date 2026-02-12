@@ -39,22 +39,22 @@ struct CaptureThoughtIntent: AppIntent {
         searchKeywords: ["save", "note", "remember", "capture", "thought"]
     )
 
-    static let openAppWhenRun: Bool = false // Run in background
+    static let openAppWhenRun: Bool = true // Open app to show voice capture when no content provided
 
     // MARK: - Parameters
 
     @Parameter(
         title: "Content",
-        description: "What you want to capture",
+        description: "What you want to capture (leave empty to use voice)",
         inputOptions: .init(
             multiline: true,
             autocorrect: true,
             smartQuotes: true,
             smartDashes: true
         ),
-        requestValueDialog: "What's on your mind?"
+        default: nil
     )
-    var content: String
+    var content: String?
 
     @Parameter(
         title: "Type",
@@ -80,6 +80,20 @@ struct CaptureThoughtIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
+        // If no content provided, open voice capture screen instead
+        guard let content = content, !content.isEmpty else {
+            // Set flag to open voice capture (same as OpenVoiceCaptureIntent)
+            if let defaults = UserDefaults(suiteName: "group.com.withershins.stash") {
+                defaults.set(true, forKey: "pendingVoiceCapture")
+                defaults.synchronize()
+                print("✅ Voice capture flag set (via CaptureThoughtIntent)")
+            }
+
+            return .result(
+                dialog: IntentDialog(stringLiteral: "Opening voice capture...")
+            )
+        }
+
         // Use ThoughtRepository directly (no protocol)
         let repository = ThoughtRepository.shared
 
