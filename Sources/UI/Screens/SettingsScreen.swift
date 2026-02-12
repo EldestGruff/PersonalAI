@@ -70,6 +70,9 @@ struct SettingsScreen: View {
             .sheet(isPresented: $showPaywall) {
                 PaywallScreen()
             }
+            .sheet(isPresented: $showBackTapSetup) {
+                BackTapSetupScreen()
+            }
             .refreshable {
                 await loadUsageAsync()
                 await viewModel.updatePermissionStatus()
@@ -124,9 +127,6 @@ struct SettingsScreen: View {
         } header: {
             Text("Quick Setup")
                 .foregroundStyle(theme.textColor)
-        }
-        .sheet(isPresented: $showBackTapSetup) {
-            BackTapSetupScreen()
         }
     }
 
