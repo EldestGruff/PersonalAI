@@ -25,7 +25,6 @@ struct SettingsScreen: View {
     @State private var subscriptionManager = SubscriptionManager.shared
     @State private var showPaywall = false
     @State private var thoughtUsage: SubscriptionUsage?
-    @State private var showBackTapSetup = false
 
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
@@ -35,9 +34,6 @@ struct SettingsScreen: View {
                     .ignoresSafeArea()
 
                 Form {
-                    // Quick Actions section
-                    quickActionsSection
-
                     // Subscription section
                     subscriptionSection
 
@@ -70,9 +66,6 @@ struct SettingsScreen: View {
             .sheet(isPresented: $showPaywall) {
                 PaywallScreen()
             }
-            .sheet(isPresented: $showBackTapSetup) {
-                BackTapSetupScreen()
-            }
             .refreshable {
                 await loadUsageAsync()
                 await viewModel.updatePermissionStatus()
@@ -89,44 +82,6 @@ struct SettingsScreen: View {
                     loadUsage()  // Reload usage when returning to app
                 }
             }
-        }
-    }
-
-    // MARK: - Quick Actions Section
-
-    private var quickActionsSection: some View {
-        let theme = themeEngine.getCurrentTheme()
-        return Section {
-            Button {
-                showBackTapSetup = true
-            } label: {
-                HStack {
-                    Image(systemName: "hand.tap.fill")
-                        .font(.title3)
-                        .foregroundStyle(theme.accentColor)
-                        .frame(width: 32)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Set Up Back Tap")
-                            .font(.headline)
-                            .foregroundStyle(theme.textColor)
-
-                        Text("Launch voice capture by tapping the back of your phone")
-                            .font(.caption)
-                            .foregroundStyle(theme.textColor.opacity(0.7))
-                    }
-
-                    Spacer()
-
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundStyle(theme.textColor.opacity(0.4))
-                }
-            }
-            .buttonStyle(.plain)
-        } header: {
-            Text("Quick Setup")
-                .foregroundStyle(theme.textColor)
         }
     }
 

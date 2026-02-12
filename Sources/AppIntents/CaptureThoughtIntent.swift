@@ -221,16 +221,5 @@ struct ThoughtAppShortcuts: AppShortcutsProvider {
             shortTitle: "Stash Thought",
             systemImageName: "brain.head.profile"
         )
-
-        AppShortcut(
-            intent: OpenVoiceCaptureIntent(),
-            phrases: [
-                "Voice capture in \(.applicationName)",
-                "Talk to \(.applicationName)",
-                "Speak to \(.applicationName)"
-            ],
-            shortTitle: "Voice Capture",
-            systemImageName: "mic.fill"
-        )
     }
 }
