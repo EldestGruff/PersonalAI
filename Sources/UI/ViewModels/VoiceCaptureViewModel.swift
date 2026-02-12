@@ -96,6 +96,24 @@ final class VoiceCaptureViewModel {
                 for await update in stream {
                     await self?.handleTranscriptionUpdate(update)
                 }
+
+                // Stream ended (user paused or recognizer finished)
+                // Auto-restart to continue listening
+                guard let self = self else { return }
+
+                if await self.captureState == .listening {
+                    print("🎤 Recognition stream ended, auto-restarting...")
+                    // Save current transcript before restarting
+                    await self.saveTranscriptForRestart()
+
+                    // Small delay to prevent rapid restarts
+                    try? await _Concurrency.Task.sleep(nanoseconds: 100_000_000)
+
+                    // Restart recognition if still listening
+                    if await self.captureState == .listening {
+                        await self.resumeListening()
+                    }
+                }
             }
         } catch {
             captureState = .error("Failed to start voice recognition: \(error.localizedDescription)")
@@ -198,6 +216,11 @@ final class VoiceCaptureViewModel {
     }
 
     // MARK: - Private Methods
+
+    /// Saves current transcript before restarting recognition
+    private func saveTranscriptForRestart() {
+        transcriptBeforePause = transcribedText
+    }
 
     /// Handles a transcription update from the speech recognizer
     private func handleTranscriptionUpdate(_ update: TranscriptionUpdate) {
