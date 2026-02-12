@@ -97,7 +97,6 @@
 		A1B77D082F3E3CD600F8D6B4 /* VoiceCaptureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D072F3E3CD600F8D6B4 /* VoiceCaptureViewModel.swift */; };
 		A1B77D0B2F3E3CEA00F8D6B4 /* MedicationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D092F3E3CEA00F8D6B4 /* MedicationService.swift */; };
 		A1B77D0C2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D0A2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift */; };
-		A1B77D0E2F3E43E600F8D6B4 /* BackTapSetupScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D0D2F3E43E600F8D6B4 /* BackTapSetupScreen.swift */; };
 		ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */; };
 /* End PBXBuildFile section */
 
@@ -194,7 +193,6 @@
 		A1B77D072F3E3CD600F8D6B4 /* VoiceCaptureViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceCaptureViewModel.swift; sourceTree = "<group>"; };
 		A1B77D092F3E3CEA00F8D6B4 /* MedicationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationService.swift; sourceTree = "<group>"; };
 		A1B77D0A2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognitionService.swift; sourceTree = "<group>"; };
-		A1B77D0D2F3E43E600F8D6B4 /* BackTapSetupScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackTapSetupScreen.swift; sourceTree = "<group>"; };
 		A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsAnalyzer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -462,7 +460,6 @@
 		A0800000000000000000041 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
-				A1B77D0D2F3E43E600F8D6B4 /* BackTapSetupScreen.swift */,
 				A1B77D052F3E3CBD00F8D6B4 /* VoiceCaptureScreen.swift */,
 				A1A632762F33BFE700DA552B /* PersonalizationScreen.swift */,
 				A1A632772F33BFE700DA552B /* ThoughtConversationScreen.swift */,
@@ -618,7 +615,6 @@
 				A0000001000000000000043 /* Classification+CoreData.swift in Sources */,
 				A0000001000000000000045 /* Task+CoreData.swift in Sources */,
 				A0000001000000000000047 /* FineTuningData+CoreData.swift in Sources */,
-				A1B77D0E2F3E43E600F8D6B4 /* BackTapSetupScreen.swift in Sources */,
 				A0000001000000000000049 /* SyncQueue+CoreData.swift in Sources */,
 				A0000001000000000000061 /* PersistenceController.swift in Sources */,
 				A0000001000000000000071 /* ThoughtEntity.swift in Sources */,
