@@ -97,6 +97,7 @@
 		A1B77D082F3E3CD600F8D6B4 /* VoiceCaptureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D072F3E3CD600F8D6B4 /* VoiceCaptureViewModel.swift */; };
 		A1B77D0B2F3E3CEA00F8D6B4 /* MedicationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D092F3E3CEA00F8D6B4 /* MedicationService.swift */; };
 		A1B77D0C2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D0A2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift */; };
+		A1B77D0F2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D0E2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift */; };
 		ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */; };
 /* End PBXBuildFile section */
 
@@ -193,6 +194,7 @@
 		A1B77D072F3E3CD600F8D6B4 /* VoiceCaptureViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceCaptureViewModel.swift; sourceTree = "<group>"; };
 		A1B77D092F3E3CEA00F8D6B4 /* MedicationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationService.swift; sourceTree = "<group>"; };
 		A1B77D0A2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognitionService.swift; sourceTree = "<group>"; };
+		A1B77D0E2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextEnrichmentService.swift; sourceTree = "<group>"; };
 		A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsAnalyzer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -405,6 +407,7 @@
 				A0000001000000000000152 /* NLPService.swift */,
 				A0000001000000000000154 /* ClassificationService.swift */,
 				A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */,
+				A1B77D0E2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift */,
 				A1803D472F25BDFD0071D950 /* DateTimeParsingService.swift */,
 				A1803D4A2F25BDFD0071D952 /* DateTimeParsingService_FoundationModels.swift */,
 				A1803D4C2F25BDFD0071D954 /* ClassificationService_FoundationModels.swift */,
@@ -652,6 +655,7 @@
 				A1A6326A2F33A8B900DA552B /* ConversationScreen.swift in Sources */,
 				A1A6326B2F33A8B900DA552B /* AppleIntelligenceRequiredView.swift in Sources */,
 				ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */,
+				A1B77D0F2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift in Sources */,
 				A1803D4B2F25BDFD0071D953 /* ClassificationService_FoundationModels.swift in Sources */,
 				A0000001000000000000161 /* ThoughtService.swift in Sources */,
 				A0000001000000000000163 /* TaskService.swift in Sources */,

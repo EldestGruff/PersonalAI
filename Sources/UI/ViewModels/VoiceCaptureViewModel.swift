@@ -184,10 +184,10 @@ final class VoiceCaptureViewModel {
             // Save thought
             _ = try await thoughtService.create(thought)
 
-            // TODO: Enrich context in background (Phase 1a requirement)
-            // Task.detached {
-            //     await self.enrichContextInBackground(for: thought.id)
-            // }
+            // Enrich context in background (Phase 1a requirement)
+            _Concurrency.Task.detached {
+                await ContextEnrichmentService.shared.enrichContext(for: thought.id)
+            }
 
             captureState = .saved
             captureSucceeded = true

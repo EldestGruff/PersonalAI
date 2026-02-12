@@ -160,6 +160,11 @@ struct CaptureThoughtIntent: AppIntent {
 
         _ = try await repository.create(thought)
 
+        // Enrich context in background (don't block user)
+        _Concurrency.Task.detached {
+            await ContextEnrichmentService.shared.enrichContext(for: thought.id)
+        }
+
         // Donate interaction for Siri suggestions
         if let classification = classification {
             donateInteraction(content: content, type: classification.type)
