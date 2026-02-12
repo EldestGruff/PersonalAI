@@ -9,6 +9,7 @@
 import SwiftUI
 import AppIntents
 import FoundationModels
+import Combine
 
 @main
 struct STASHApp: App {
@@ -129,6 +130,12 @@ struct MainTabView: View {
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
+                checkForPendingVoiceCapture()
+            }
+        }
+        .onReceive(Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()) { _ in
+            // Check for voice capture flag periodically (works when app is in foreground)
+            if scenePhase == .active {
                 checkForPendingVoiceCapture()
             }
         }
