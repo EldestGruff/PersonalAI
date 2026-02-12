@@ -148,7 +148,7 @@ extension Thought: Codable {
         // Decode attributedContent from Data if available
         if let data = try container.decodeIfPresent(Data.self, forKey: .attributedContentData),
            let nsAttributed = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSAttributedString.self, from: data) {
-            attributedContent = try? AttributedString(nsAttributed)
+            attributedContent = AttributedString(nsAttributed)
         } else {
             attributedContent = nil
         }

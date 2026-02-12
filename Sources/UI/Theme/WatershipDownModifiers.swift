@@ -36,7 +36,7 @@ struct ParchmentCardModifier: ViewModifier {
                         .fill(surfaceColor(theme))
 
                     // Category color bar on left edge (if enabled)
-                    if showCategoryBar, let category = category {
+                    if showCategoryBar, category != nil {
                         categoryBar(theme)
                     }
 

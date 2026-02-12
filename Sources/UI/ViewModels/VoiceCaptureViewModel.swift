@@ -95,12 +95,12 @@ final class VoiceCaptureViewModel {
             // Subscribe to transcription updates
             transcriptionTask = _Concurrency.Task { [weak self] in
                 for await update in stream {
-                    await self?.handleTranscriptionUpdate(update)
+                    self?.handleTranscriptionUpdate(update)
                 }
 
                 // Stream ended - let it end naturally, user can resume manually
                 guard let self = self else { return }
-                await self.handleStreamEnded()
+                self.handleStreamEnded()
             }
         } catch {
             captureState = .error("Failed to start voice recognition: \(error.localizedDescription)")
@@ -131,12 +131,12 @@ final class VoiceCaptureViewModel {
             // Subscribe to new transcription updates (savedTranscript will be prepended)
             transcriptionTask = _Concurrency.Task { [weak self] in
                 for await update in stream {
-                    await self?.handleTranscriptionUpdate(update)
+                    self?.handleTranscriptionUpdate(update)
                 }
 
                 // Stream ended naturally
                 guard let self = self else { return }
-                await self.handleStreamEnded()
+                self.handleStreamEnded()
             }
         } catch {
             captureState = .error("Failed to resume voice recognition: \(error.localizedDescription)")

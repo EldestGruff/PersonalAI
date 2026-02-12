@@ -46,13 +46,13 @@ struct CaptureThoughtIntent: AppIntent {
     @Parameter(
         title: "Content",
         description: "What you want to capture (leave empty to use voice)",
+        default: nil,
         inputOptions: .init(
             multiline: true,
             autocorrect: true,
             smartQuotes: true,
             smartDashes: true
-        ),
-        default: nil
+        )
     )
     var content: String?
 
@@ -73,7 +73,10 @@ struct CaptureThoughtIntent: AppIntent {
     // MARK: - Parameter Summary
 
     static var parameterSummary: some ParameterSummary {
-        Summary("Capture \(\.$content)")
+        Summary("Capture \(\.$content)") {
+            \.$type
+            \.$autoClassify
+        }
     }
 
     // MARK: - Intent Execution
