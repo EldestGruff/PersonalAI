@@ -292,21 +292,19 @@ final class VoiceCaptureViewModel {
                 transcribedText = newText
                 print("✅ Cumulative: '\(transcribedText.prefix(50))...'")
             }
+        } else if !lastUpdateText.isEmpty && !newText.isEmpty {
+            // Non-cumulative update detected - ALWAYS append to preserve previous text
+            print("⚠️ Non-cumulative update! Previous: '\(transcribedText.prefix(30))...' New: '\(newText.prefix(30))...'")
+            transcribedText = transcribedText + " " + newText
+            print("✅ Appended: '\(transcribedText.prefix(50))...'")
         } else {
-            // Non-cumulative update (recognizer started fresh after pause)
-            // Save what we had and append the new text
-            if !lastUpdateText.isEmpty && !transcribedText.contains(newText) {
-                print("⚠️ Non-cumulative update detected! Appending to preserve text.")
-                transcribedText = transcribedText + " " + newText
-                print("✅ Appended: '\(transcribedText.prefix(50))...'")
+            // First update of a session
+            if !baseTranscript.isEmpty {
+                transcribedText = baseTranscript + " " + newText
+                print("✅ First with base: '\(transcribedText.prefix(50))...'")
             } else {
-                // First update or new text already included
-                if !baseTranscript.isEmpty {
-                    transcribedText = baseTranscript + " " + newText
-                } else {
-                    transcribedText = newText
-                }
-                print("✅ Set: '\(transcribedText.prefix(50))...'")
+                transcribedText = newText
+                print("✅ First: '\(transcribedText.prefix(50))...'")
             }
         }
 
