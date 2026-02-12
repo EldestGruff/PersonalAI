@@ -172,23 +172,28 @@ actor SpeechRecognitionService: SpeechRecognitionServiceProtocol {
             }
 
             // Start recognition task
-            self.recognitionTask = self.recognizer?.recognitionTask(with: request, resultHandler: { result, error in
+            // Capture self weakly to avoid retain cycles
+            self.recognitionTask = self.recognizer?.recognitionTask(with: request, resultHandler: { [weak self] result, error in
                 if let result = result {
                     let transcription = result.bestTranscription.formattedString
                     let confidence = result.bestTranscription.segments.first?.confidence ?? 0.0
+                    let isFinal = result.isFinal
 
-                    _Concurrency.Task {
+                    // Run on actor's executor
+                    _Concurrency.Task { [weak self] in
+                        guard let self = self else { return }
+
                         await self.updateCurrentTranscript(transcription)
 
                         let update = TranscriptionUpdate(
                             text: transcription,
-                            isFinal: result.isFinal,
+                            isFinal: isFinal,
                             confidence: confidence
                         )
 
                         continuation.yield(update)
 
-                        if result.isFinal {
+                        if isFinal {
                             continuation.finish()
                         }
                     }
