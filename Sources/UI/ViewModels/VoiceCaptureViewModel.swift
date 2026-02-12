@@ -263,9 +263,13 @@ final class VoiceCaptureViewModel {
 
     /// Handles a transcription update from the speech recognizer
     private func handleTranscriptionUpdate(_ update: TranscriptionUpdate) {
-        // Merge with previous transcript if resuming from pause
-        if !transcriptBeforePause.isEmpty && !transcribedText.contains(transcriptBeforePause) {
+        // Merge with previous transcript if resuming from pause/restart
+        if !transcriptBeforePause.isEmpty {
+            // Prepend saved text from before restart
             transcribedText = transcriptBeforePause + " " + update.text
+            // Clear saved text so we don't prepend it again on subsequent updates
+            transcriptBeforePause = ""
+            print("📝 Merged saved text: \(transcribedText.prefix(50))...")
         } else {
             transcribedText = update.text
         }
