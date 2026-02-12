@@ -19,6 +19,9 @@ struct ArcadeTheme: ThemeVariant {
     let textColor = Color.white
     let secondaryTextColor = Color(red: 0.7, green: 0.7, blue: 0.9)
 
+    // Color Scheme - Always dark (neon-on-black palette)
+    let preferredColorScheme: ColorScheme? = .dark
+
     // Typography - Bold, energetic
     let headingWeight = Font.Weight.black
     let bodyWeight = Font.Weight.semibold

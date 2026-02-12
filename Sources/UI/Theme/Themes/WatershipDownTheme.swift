@@ -26,6 +26,10 @@ struct WatershipDownTheme: ThemeVariant {
     let textColor = Color(hex: "#2B2416") ?? Color.black        // Dark Umber (readable)
     let secondaryTextColor = Color(hex: "#6B5D4F") ?? Color.gray // Muted Brown
 
+    // MARK: - Color Scheme
+    // WatershipDown is always a light theme — never follows system dark mode
+    let preferredColorScheme: ColorScheme? = .light
+
     // MARK: - Typography (Balanced, readable)
     let headingWeight = Font.Weight.semibold
     let bodyWeight = Font.Weight.regular

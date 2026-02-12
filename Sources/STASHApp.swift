@@ -42,6 +42,7 @@ struct STASHApp: App {
             MainTabView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environment(\.themeEngine, themeEngine)
+                .preferredColorScheme(themeEngine.getCurrentTheme().preferredColorScheme)
         }
     }
 }

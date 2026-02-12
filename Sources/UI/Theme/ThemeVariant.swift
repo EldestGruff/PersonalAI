@@ -79,6 +79,12 @@ protocol ThemeVariant {
     /// Essential for terminal/hacker themes
     var monospacedFont: Font { get }
 
+    // MARK: - Color Scheme
+
+    /// Forces a specific color scheme on native SwiftUI components (Form, List, etc.)
+    /// Return nil to follow the system setting.
+    var preferredColorScheme: ColorScheme? { get }
+
     // MARK: - Visual Effects
 
     var cornerRadius: CGFloat { get }
@@ -179,6 +185,11 @@ extension ThemeVariant {
     var monospacedFont: Font {
         .system(.body, design: .monospaced, weight: bodyWeight)
     }
+
+    // MARK: - Color Scheme Default
+
+    /// Default: follow system (nil). Themes with fixed palettes should override.
+    var preferredColorScheme: ColorScheme? { nil }
 
     // MARK: - Advanced Effects Defaults
 

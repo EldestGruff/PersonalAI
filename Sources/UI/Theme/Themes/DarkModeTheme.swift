@@ -19,6 +19,9 @@ struct DarkModeTheme: ThemeVariant {
     let textColor = Color(white: 0.95)
     let secondaryTextColor = Color(white: 0.6)
 
+    // Color Scheme - Always dark regardless of system setting
+    let preferredColorScheme: ColorScheme? = .dark
+
     // Typography - Sharp and readable
     let headingWeight = Font.Weight.bold
     let bodyWeight = Font.Weight.medium
