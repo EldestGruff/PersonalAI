@@ -234,51 +234,61 @@ private struct BadgeCellView: View {
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
 
-        VStack(spacing: 5) {
+        VStack(spacing: 6) {
             ZStack {
-                // Glow ring — visible only on earned + recently earned
-                if glowing {
-                    Circle()
-                        .stroke(theme.primaryColor.opacity(0.5), lineWidth: 3)
-                        .frame(width: 58, height: 58)
-                        .scaleEffect(glowing ? 1.15 : 1.0)
-                        .opacity(glowing ? 0 : 1)
-                }
-
-                // Background circle
+                // Glow ring — pulses outward on earn
                 Circle()
-                    .fill(earned
-                          ? theme.primaryColor.opacity(0.25)
-                          : theme.dividerColor.opacity(0.3))
-                    .frame(width: 52, height: 52)
+                    .stroke(Color.yellow.opacity(glowing ? 0 : 0.7), lineWidth: 3)
+                    .frame(width: 58, height: 58)
+                    .scaleEffect(glowing ? 1.4 : 1.0)
 
                 if earned {
+                    // Rich gold gradient fill — clearly a badge
+                    Circle()
+                        .fill(LinearGradient(
+                            colors: [Color(red: 1.0, green: 0.78, blue: 0.1),
+                                     Color(red: 1.0, green: 0.55, blue: 0.1)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ))
+                        .frame(width: 52, height: 52)
+                        .shadow(color: Color.orange.opacity(0.45), radius: 6, y: 3)
+
                     Image(systemName: badge.symbol)
                         .font(.system(size: 22, weight: .semibold))
-                        .foregroundStyle(theme.primaryColor)
-                } else if badge.isSecret {
-                    Image(systemName: "questionmark")
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundStyle(theme.secondaryTextColor.opacity(0.3))
+                        .foregroundStyle(.white)
+                        .shadow(color: .black.opacity(0.2), radius: 1, y: 1)
                 } else {
-                    // Silhouette — same shape, clearly locked
-                    Image(systemName: badge.symbol)
-                        .font(.system(size: 22))
-                        .foregroundStyle(theme.secondaryTextColor.opacity(0.25))
+                    // Locked — flat grey circle
+                    Circle()
+                        .fill(theme.dividerColor.opacity(0.35))
+                        .frame(width: 52, height: 52)
+
+                    if badge.isSecret {
+                        Image(systemName: "questionmark")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(theme.secondaryTextColor.opacity(0.3))
+                    } else {
+                        Image(systemName: badge.symbol)
+                            .font(.system(size: 22))
+                            .foregroundStyle(theme.secondaryTextColor.opacity(0.25))
+                    }
                 }
             }
             .scaleEffect(scale)
 
             Text(earned ? badge.name : (badge.isSecret ? "???" : badge.name))
                 .font(.system(size: 9, weight: earned ? .semibold : .regular))
-                .foregroundStyle(earned ? theme.primaryColor : theme.secondaryTextColor.opacity(0.4))
+                .foregroundStyle(earned
+                                 ? Color(red: 0.75, green: 0.45, blue: 0.0)
+                                 : theme.secondaryTextColor.opacity(0.4))
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
         .grayscale(earned ? 0 : 1.0)
-        .opacity(earned ? 1.0 : 0.55)
+        .opacity(earned ? 1.0 : 0.5)
         .onAppear {
             guard badgeService.recentlyEarnedIds.contains(badge.id) else { return }
             // Spring bounce pop — triggers on first appearance after earning
