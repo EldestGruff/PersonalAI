@@ -24,6 +24,7 @@ struct CaptureScreen: View {
     @State private var showPaywall = false
     @State private var showAcornToast = false
     @State private var showBadgeToast = false
+    @State private var showVariableReward = false
     @Environment(\.themeEngine) var themeEngine
     @Environment(\.dismiss) private var dismiss
     @SwiftUI.FocusState private var isTextFieldFocused: Bool
@@ -107,18 +108,29 @@ struct CaptureScreen: View {
                     let hasBadge = !viewModel.lastEarnedBadges.isEmpty
                     let hasAcorn = viewModel.lastAcornReward != nil
                     let isNoteworthy = viewModel.lastAcornReward?.isNoteworthy ?? false
+                    let vrs = viewModel.lastVariableReward
 
                     if hasBadge { showBadgeToast = true }
                     if hasAcorn { showAcornToast = true }
+                    if vrs != nil { showVariableReward = true }
 
                     _Concurrency.Task {
-                        // Badges linger longer — they're a bigger deal
-                        let delay: Int = hasBadge ? 1800 : (isNoteworthy ? 1200 : 700)
+                        // VRS tier dictates minimum linger time; badges otherwise
+                        let delay: Int
+                        if let tier = vrs {
+                            delay = tier.dismissDelay
+                        } else if hasBadge {
+                            delay = 1800
+                        } else if isNoteworthy {
+                            delay = 1200
+                        } else {
+                            delay = 700
+                        }
                         try? await _Concurrency.Task.sleep(for: .milliseconds(delay))
                         dismiss()
                     }
 
-                    if !hasBadge && !hasAcorn { dismiss() }
+                    if !hasBadge && !hasAcorn && vrs == nil { dismiss() }
                 }
             }
             .overlay(alignment: .top) {
@@ -134,8 +146,19 @@ struct CaptureScreen: View {
                 }
                 .padding(.top, 8)
             }
+            .overlay {
+                if showVariableReward, let tier = viewModel.lastVariableReward {
+                    VStack {
+                        Spacer()
+                        VariableRewardView(tier: tier)
+                            .transition(.scale(scale: 0.8).combined(with: .opacity))
+                            .padding(.bottom, 60)
+                    }
+                }
+            }
             .animation(.spring(duration: 0.35), value: showAcornToast)
             .animation(.spring(duration: 0.35), value: showBadgeToast)
+            .animation(.spring(response: 0.45, dampingFraction: 0.6), value: showVariableReward)
             .sheet(isPresented: $showPaywall) {
                 PaywallScreen()
             }

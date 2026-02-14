@@ -55,6 +55,7 @@ final class AchievementsViewModel {
     private(set) var lifetimeAcorns: Int = 0
     private(set) var shinyCount: Int = 0
     private(set) var thoughtCount: Int = 0
+    var luckyCaptures: Int { VariableRewardService.shared.lifetimeCount }
 
     // MARK: - Achievements
 

@@ -111,6 +111,8 @@
 		A00000010000000000000275 /* BadgeDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000276 /* BadgeDefinition.swift */; };
 		A00000010000000000000277 /* BadgeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000278 /* BadgeService.swift */; };
 		A00000010000000000000279 /* BadgeToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000280 /* BadgeToastView.swift */; };
+		A00000010000000000000281 /* VariableRewardService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000282 /* VariableRewardService.swift */; };
+		A00000010000000000000283 /* VariableRewardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000284 /* VariableRewardView.swift */; };
 		/* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -220,6 +222,8 @@
 		A00000010000000000000276 /* BadgeDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeDefinition.swift; sourceTree = "<group>"; };
 		A00000010000000000000278 /* BadgeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeService.swift; sourceTree = "<group>"; };
 		A00000010000000000000280 /* BadgeToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeToastView.swift; sourceTree = "<group>"; };
+		A00000010000000000000282 /* VariableRewardService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableRewardService.swift; sourceTree = "<group>"; };
+		A00000010000000000000284 /* VariableRewardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableRewardView.swift; sourceTree = "<group>"; };
 		/* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -520,6 +524,7 @@
 				A00000010000000000000266 /* SquirrelGreetingCard.swift */,
 				A00000010000000000000270 /* TodaysShinyCard.swift */,
 				A00000010000000000000280 /* BadgeToastView.swift */,
+				A00000010000000000000284 /* VariableRewardView.swift */,
 				A1B632872F3510000071D954 /* FormattingToolbar.swift */,
 				A1B632882F3510000071D955 /* LiquidGlassModifiers.swift */,
 			);
@@ -560,6 +565,7 @@
 				A00000010000000000000268 /* ShinyService.swift */,
 				A00000010000000000000276 /* BadgeDefinition.swift */,
 				A00000010000000000000278 /* BadgeService.swift */,
+				A00000010000000000000282 /* VariableRewardService.swift */,
 			);
 			path = Gamification;
 			sourceTree = "<group>";
@@ -744,6 +750,8 @@
 					A00000010000000000000275 /* BadgeDefinition.swift in Sources */,
 					A00000010000000000000277 /* BadgeService.swift in Sources */,
 					A00000010000000000000279 /* BadgeToastView.swift in Sources */,
+					A00000010000000000000281 /* VariableRewardService.swift in Sources */,
+					A00000010000000000000283 /* VariableRewardView.swift in Sources */,
 				A00000010000000000000259 /* AcornToastView.swift in Sources */,
 				A0000001000000000000038 /* Subscription.swift in Sources */,
 				A0000001000000000000039 /* Conversation.swift in Sources */,

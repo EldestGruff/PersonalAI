@@ -98,6 +98,9 @@ final class CaptureViewModel {
     /// Badges newly earned from the most recent capture (empty if none)
     var lastEarnedBadges: [BadgeDefinition] = []
 
+    /// Variable reward tier from the most recent capture (nil if no reward fired)
+    var lastVariableReward: VRSTier?
+
     // MARK: - Services
 
     private let thoughtService: ThoughtService
@@ -112,6 +115,7 @@ final class CaptureViewModel {
     private let streakTracker = StreakTracker.shared
     private let stateEngine = SquirrelStateEngine.shared
     private let badgeService = BadgeService.shared
+    private let variableRewardService = VariableRewardService.shared
 
     // MARK: - Debounce
 
@@ -437,11 +441,14 @@ final class CaptureViewModel {
                     stateEngine.triggerCelebrating()
                 }
 
-                // Check for newly earned badges (fire and forget result back to UI)
+                // Check for newly earned badges
                 self.lastEarnedBadges = await badgeService.checkAll(
                     newThought: saved,
                     thoughtService: self.thoughtService
                 )
+
+                // Roll for variable reward
+                self.lastVariableReward = variableRewardService.roll()
 
                 // Success - reset form
                 self.resetForm()

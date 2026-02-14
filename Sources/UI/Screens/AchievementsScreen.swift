@@ -111,6 +111,8 @@ struct AchievementsScreen: View {
             StatCard(emoji: "🌰", value: "\(viewModel.currentAcorns)", label: "Current Acorns")
             StatCard(emoji: "💰", value: "\(viewModel.lifetimeAcorns)", label: "Lifetime Acorns")
             StatCard(emoji: "✨", value: "\(viewModel.shinyCount)", label: "Shinies Found")
+            StatCard(emoji: "🎲", value: "\(viewModel.luckyCaptures)", label: "Lucky Captures")
+            StatCard(emoji: "🏆", value: "\(viewModel.earnedBadgeCount)", label: "Badges Earned")
         }
     }
 
