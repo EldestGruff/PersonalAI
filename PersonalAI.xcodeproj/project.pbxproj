@@ -99,6 +99,8 @@
 		A1B77D0C2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D0A2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift */; };
 		A1B77D0F2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D0E2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift */; };
 		ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */; };
+		A00000010000000000000257 /* AcornService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000258 /* AcornService.swift */; };
+		A00000010000000000000259 /* AcornToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000260 /* AcornToastView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -196,6 +198,8 @@
 		A1B77D0A2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognitionService.swift; sourceTree = "<group>"; };
 		A1B77D0E2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextEnrichmentService.swift; sourceTree = "<group>"; };
 		A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsAnalyzer.swift; sourceTree = "<group>"; };
+		A00000010000000000000258 /* AcornService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcornService.swift; sourceTree = "<group>"; };
+		A00000010000000000000260 /* AcornToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcornToastView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -368,6 +372,7 @@
 				A0800000000000000000034 /* Domain */,
 				A0800000000000000000035 /* Orchestration */,
 				A0800000000000000000036 /* Monetization */,
+				A0800000000000000000037 /* Gamification */,
 				A1803E152F3145770071D950 /* AI */,
 				A1803E182F3145810071D950 /* Analytics */,
 			);
@@ -490,6 +495,7 @@
 				A0000001000000000000228 /* TagInputView.swift */,
 				A0000001000000000000230 /* FlowLayout.swift */,
 				A0000001000000000000232 /* ErrorView.swift */,
+				A00000010000000000000260 /* AcornToastView.swift */,
 				A1B632872F3510000071D954 /* FormattingToolbar.swift */,
 				A1B632882F3510000071D955 /* LiquidGlassModifiers.swift */,
 			);
@@ -518,6 +524,14 @@
 				A0000001000000000000004 /* Assets.xcassets */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		A0800000000000000000037 /* Gamification */ = {
+			isa = PBXGroup;
+			children = (
+				A00000010000000000000258 /* AcornService.swift */,
+			);
+			path = Gamification;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -689,6 +703,8 @@
 				A0000001000000000000249 /* SettingsViewModel.swift in Sources */,
 				A00000010000000000000256 /* InsightsViewModel.swift in Sources */,
 				A0000001000000000000251 /* AppError.swift in Sources */,
+				A00000010000000000000257 /* AcornService.swift in Sources */,
+				A00000010000000000000259 /* AcornToastView.swift in Sources */,
 				A0000001000000000000038 /* Subscription.swift in Sources */,
 				A0000001000000000000039 /* Conversation.swift in Sources */,
 				A0000001000000000000123 /* SubscriptionManager.swift in Sources */,

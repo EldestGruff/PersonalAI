@@ -27,6 +27,7 @@ struct BrowseScreen: View {
     @State private var thoughtToDelete: Thought?
     @State private var bulkTagInput: String = ""
     @State private var themeEngine = ThemeEngine.shared
+    private let acornLedger = AcornLedger.shared
 
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
@@ -75,6 +76,9 @@ struct BrowseScreen: View {
                 prompt: "Search thoughts"
             )
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    acornBalanceView
+                }
                 ToolbarItem(placement: .primaryAction) {
                     HStack(spacing: 16) {
                         editButton
@@ -161,6 +165,21 @@ struct BrowseScreen: View {
                 bulkTagSheet
             }
         }
+    }
+
+    // MARK: - Acorn Balance
+
+    private var acornBalanceView: some View {
+        let theme = themeEngine.getCurrentTheme()
+        return HStack(spacing: 4) {
+            Text("🌰")
+                .font(.subheadline)
+            Text("\(acornLedger.currentBalance)")
+                .font(.subheadline.monospacedDigit())
+                .fontWeight(.medium)
+                .foregroundStyle(theme.textColor)
+        }
+        .accessibilityLabel("\(acornLedger.currentBalance) acorns")
     }
 
     // MARK: - Thought List

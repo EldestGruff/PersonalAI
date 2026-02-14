@@ -22,6 +22,7 @@ import SwiftUI
 struct CaptureScreen: View {
     @State var viewModel: CaptureViewModel
     @State private var showPaywall = false
+    @State private var showAcornToast = false
     @Environment(\.themeEngine) var themeEngine
     @Environment(\.dismiss) private var dismiss
     @SwiftUI.FocusState private var isTextFieldFocused: Bool
@@ -102,9 +103,26 @@ struct CaptureScreen: View {
             }
             .onChange(of: viewModel.captureSucceeded) { _, succeeded in
                 if succeeded {
-                    dismiss()
+                    if let reward = viewModel.lastAcornReward {
+                        showAcornToast = true
+                        // Brief delay so the toast is visible before sheet dismisses
+                        _Concurrency.Task {
+                            try? await _Concurrency.Task.sleep(for: .milliseconds(reward.isNoteworthy ? 1200 : 700))
+                            dismiss()
+                        }
+                    } else {
+                        dismiss()
+                    }
                 }
             }
+            .overlay(alignment: .top) {
+                if showAcornToast, let reward = viewModel.lastAcornReward {
+                    AcornToastView(reward: reward)
+                        .padding(.top, 8)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
+            }
+            .animation(.spring(duration: 0.35), value: showAcornToast)
             .sheet(isPresented: $showPaywall) {
                 PaywallScreen()
             }

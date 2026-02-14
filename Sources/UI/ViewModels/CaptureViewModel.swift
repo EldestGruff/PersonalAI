@@ -90,6 +90,11 @@ final class CaptureViewModel {
         !similarThoughts.isEmpty
     }
 
+    // MARK: - Acorn Reward Feedback
+
+    /// Reward from the most recent capture — consumed by the UI for celebration
+    var lastAcornReward: AcornReward?
+
     // MARK: - Services
 
     private let thoughtService: ThoughtService
@@ -100,6 +105,7 @@ final class CaptureViewModel {
     private let settingsViewModel: SettingsViewModel?
     private let subscriptionManager: SubscriptionManager
     private let smartInsights = SmartInsightsService.shared
+    private let acornService = AcornService.shared
 
     // MARK: - Debounce
 
@@ -413,6 +419,10 @@ final class CaptureViewModel {
                    let classification = classification {
                     await self.autoCreateTask(for: saved, classification: classification)
                 }
+
+                // Award acorns
+                let hadContext = context != nil && context?.location != nil
+                self.lastAcornReward = acornService.processCapture(hadContext: hadContext)
 
                 // Success - reset form
                 self.resetForm()
