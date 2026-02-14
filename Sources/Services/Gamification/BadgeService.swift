@@ -25,6 +25,9 @@ final class BadgeService {
 
     private(set) var earnedBadgeIds: Set<String> = []
     private(set) var earnedDates: [String: Date] = [:]
+    /// Badges earned in the current session — used to trigger reveal animations.
+    /// Not persisted; cleared when the Achievements screen is dismissed.
+    private(set) var recentlyEarnedIds: Set<String> = []
 
     // MARK: - UserDefaults Keys
 
@@ -162,6 +165,7 @@ final class BadgeService {
 
     private func award(_ badge: BadgeDefinition) {
         earnedBadgeIds.insert(badge.id)
+        recentlyEarnedIds.insert(badge.id)
         earnedDates[badge.id] = Date()
 
         defaults.set(Array(earnedBadgeIds), forKey: Keys.earnedIds)
@@ -171,6 +175,11 @@ final class BadgeService {
 
         // Fire acorn bonus
         _ = AcornService.shared.processVariableReward(acorns: badge.acornBonus)
+    }
+
+    /// Call when the Achievements screen is dismissed to clear pending animations.
+    func clearRecentlyEarned() {
+        recentlyEarnedIds.removeAll()
     }
 
     // MARK: - Helpers

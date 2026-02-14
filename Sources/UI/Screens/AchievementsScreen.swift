@@ -40,6 +40,7 @@ struct AchievementsScreen: View {
                 }
             }
             .task { await viewModel.load() }
+            .onDisappear { BadgeService.shared.clearRecentlyEarned() }
         }
     }
 
@@ -224,6 +225,8 @@ private struct BadgeCellView: View {
     let badge: BadgeDefinition
 
     @Environment(\.themeEngine) private var themeEngine
+    @State private var scale: CGFloat = 1.0
+    @State private var glowing = false
 
     private var badgeService: BadgeService { BadgeService.shared }
     private var earned: Bool { badgeService.isEarned(badge.id) }
@@ -233,37 +236,63 @@ private struct BadgeCellView: View {
 
         VStack(spacing: 5) {
             ZStack {
+                // Glow ring — visible only on earned + recently earned
+                if glowing {
+                    Circle()
+                        .stroke(theme.primaryColor.opacity(0.5), lineWidth: 3)
+                        .frame(width: 58, height: 58)
+                        .scaleEffect(glowing ? 1.15 : 1.0)
+                        .opacity(glowing ? 0 : 1)
+                }
+
+                // Background circle
                 Circle()
                     .fill(earned
-                          ? theme.primaryColor.opacity(0.15)
-                          : theme.dividerColor.opacity(0.4))
+                          ? theme.primaryColor.opacity(0.25)
+                          : theme.dividerColor.opacity(0.3))
                     .frame(width: 52, height: 52)
 
                 if earned {
                     Image(systemName: badge.symbol)
-                        .font(.system(size: 22))
+                        .font(.system(size: 22, weight: .semibold))
                         .foregroundStyle(theme.primaryColor)
                 } else if badge.isSecret {
                     Image(systemName: "questionmark")
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundStyle(theme.secondaryTextColor.opacity(0.4))
+                        .foregroundStyle(theme.secondaryTextColor.opacity(0.3))
                 } else {
-                    // Silhouette — same shape, desaturated
+                    // Silhouette — same shape, clearly locked
                     Image(systemName: badge.symbol)
                         .font(.system(size: 22))
-                        .foregroundStyle(theme.secondaryTextColor.opacity(0.3))
+                        .foregroundStyle(theme.secondaryTextColor.opacity(0.25))
                 }
             }
+            .scaleEffect(scale)
 
             Text(earned ? badge.name : (badge.isSecret ? "???" : badge.name))
-                .font(.system(size: 9))
-                .foregroundStyle(earned ? theme.textColor : theme.secondaryTextColor.opacity(0.5))
+                .font(.system(size: 9, weight: earned ? .semibold : .regular))
+                .foregroundStyle(earned ? theme.primaryColor : theme.secondaryTextColor.opacity(0.4))
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
-        .opacity(earned ? 1.0 : 0.7)
+        .grayscale(earned ? 0 : 1.0)
+        .opacity(earned ? 1.0 : 0.55)
+        .onAppear {
+            guard badgeService.recentlyEarnedIds.contains(badge.id) else { return }
+            // Spring bounce pop — triggers on first appearance after earning
+            withAnimation(.spring(response: 0.25, dampingFraction: 0.45)) {
+                scale = 1.35
+            }
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.55).delay(0.2)) {
+                scale = 1.0
+            }
+            // Expanding glow ring
+            withAnimation(.easeOut(duration: 0.6).delay(0.1)) {
+                glowing = true
+            }
+        }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(earned
             ? "Badge earned: \(badge.name). \(badge.criteriaDescription)"
