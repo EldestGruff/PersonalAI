@@ -108,6 +108,9 @@
 		A00000010000000000000269 /* TodaysShinyCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000270 /* TodaysShinyCard.swift */; };
 		A00000010000000000000271 /* AchievementsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000272 /* AchievementsViewModel.swift */; };
 		A00000010000000000000273 /* AchievementsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000274 /* AchievementsScreen.swift */; };
+		A00000010000000000000275 /* BadgeDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000276 /* BadgeDefinition.swift */; };
+		A00000010000000000000277 /* BadgeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000278 /* BadgeService.swift */; };
+		A00000010000000000000279 /* BadgeToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000280 /* BadgeToastView.swift */; };
 		/* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -214,6 +217,9 @@
 		A00000010000000000000270 /* TodaysShinyCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodaysShinyCard.swift; sourceTree = "<group>"; };
 		A00000010000000000000272 /* AchievementsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsViewModel.swift; sourceTree = "<group>"; };
 		A00000010000000000000274 /* AchievementsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsScreen.swift; sourceTree = "<group>"; };
+		A00000010000000000000276 /* BadgeDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeDefinition.swift; sourceTree = "<group>"; };
+		A00000010000000000000278 /* BadgeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeService.swift; sourceTree = "<group>"; };
+		A00000010000000000000280 /* BadgeToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeToastView.swift; sourceTree = "<group>"; };
 		/* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -513,6 +519,7 @@
 				A00000010000000000000260 /* AcornToastView.swift */,
 				A00000010000000000000266 /* SquirrelGreetingCard.swift */,
 				A00000010000000000000270 /* TodaysShinyCard.swift */,
+				A00000010000000000000280 /* BadgeToastView.swift */,
 				A1B632872F3510000071D954 /* FormattingToolbar.swift */,
 				A1B632882F3510000071D955 /* LiquidGlassModifiers.swift */,
 			);
@@ -551,6 +558,8 @@
 				A00000010000000000000262 /* StreakTracker.swift */,
 				A00000010000000000000264 /* SquirrelStateEngine.swift */,
 				A00000010000000000000268 /* ShinyService.swift */,
+				A00000010000000000000276 /* BadgeDefinition.swift */,
+				A00000010000000000000278 /* BadgeService.swift */,
 			);
 			path = Gamification;
 			sourceTree = "<group>";
@@ -732,6 +741,9 @@
 					A00000010000000000000269 /* TodaysShinyCard.swift in Sources */,
 					A00000010000000000000271 /* AchievementsViewModel.swift in Sources */,
 					A00000010000000000000273 /* AchievementsScreen.swift in Sources */,
+					A00000010000000000000275 /* BadgeDefinition.swift in Sources */,
+					A00000010000000000000277 /* BadgeService.swift in Sources */,
+					A00000010000000000000279 /* BadgeToastView.swift in Sources */,
 				A00000010000000000000259 /* AcornToastView.swift in Sources */,
 				A0000001000000000000038 /* Subscription.swift in Sources */,
 				A0000001000000000000039 /* Conversation.swift in Sources */,

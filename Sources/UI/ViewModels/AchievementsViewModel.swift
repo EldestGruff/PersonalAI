@@ -60,6 +60,11 @@ final class AchievementsViewModel {
 
     private(set) var achievements: [Achievement] = []
 
+    // MARK: - Badges
+
+    private(set) var badges: [BadgeDefinition] = BadgeDefinition.catalog
+    var earnedBadgeCount: Int { BadgeService.shared.earnedBadgeIds.count }
+
     // MARK: - State
 
     var isLoading: Bool = false

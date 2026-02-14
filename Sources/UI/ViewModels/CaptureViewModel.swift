@@ -90,10 +90,13 @@ final class CaptureViewModel {
         !similarThoughts.isEmpty
     }
 
-    // MARK: - Acorn Reward Feedback
+    // MARK: - Gamification Feedback
 
     /// Reward from the most recent capture — consumed by the UI for celebration
     var lastAcornReward: AcornReward?
+
+    /// Badges newly earned from the most recent capture (empty if none)
+    var lastEarnedBadges: [BadgeDefinition] = []
 
     // MARK: - Services
 
@@ -108,6 +111,7 @@ final class CaptureViewModel {
     private let acornService = AcornService.shared
     private let streakTracker = StreakTracker.shared
     private let stateEngine = SquirrelStateEngine.shared
+    private let badgeService = BadgeService.shared
 
     // MARK: - Debounce
 
@@ -432,6 +436,12 @@ final class CaptureViewModel {
                     _ = acornService.processStreakMilestone(days: milestone.rawValue)
                     stateEngine.triggerCelebrating()
                 }
+
+                // Check for newly earned badges (fire and forget result back to UI)
+                self.lastEarnedBadges = await badgeService.checkAll(
+                    newThought: saved,
+                    thoughtService: self.thoughtService
+                )
 
                 // Success - reset form
                 self.resetForm()

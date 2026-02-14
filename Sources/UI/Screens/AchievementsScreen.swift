@@ -74,6 +74,13 @@ struct AchievementsScreen: View {
                 .padding(.vertical, 4)
             }
 
+            // ── Badges ────────────────────────────────────────────────
+            Section(header: badgeSectionHeader) {
+                badgeGrid
+            }
+            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+            .listRowBackground(Color.clear)
+
             // ── Achievements by category ──────────────────────────────
             ForEach(AchievementCategory.allCases, id: \.self) { category in
                 let items = viewModel.achievements(for: category)
@@ -130,6 +137,36 @@ struct AchievementsScreen: View {
         .animation(.easeInOut(duration: 0.6), value: progress)
     }
 
+    // MARK: - Badge Section
+
+    private var badgeSectionHeader: some View {
+        let theme = themeEngine.getCurrentTheme()
+        return HStack(spacing: 6) {
+            Image(systemName: "rosette")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text("Badges")
+                .font(.footnote.weight(.semibold))
+                .textCase(nil)
+            Spacer()
+            Text("\(viewModel.earnedBadgeCount) of \(BadgeDefinition.catalog.count)")
+                .font(.caption2)
+                .foregroundStyle(theme.secondaryTextColor)
+        }
+    }
+
+    private var badgeGrid: some View {
+        LazyVGrid(
+            columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4),
+            spacing: 16
+        ) {
+            ForEach(viewModel.badges) { badge in
+                BadgeCellView(badge: badge)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+
     // MARK: - Category Header
 
     private func categoryHeader(_ category: AchievementCategory) -> some View {
@@ -178,6 +215,59 @@ private struct StatCard: View {
         .padding(.vertical, 12)
         .background(theme.surfaceColor)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+// MARK: - Badge Cell
+
+private struct BadgeCellView: View {
+    let badge: BadgeDefinition
+
+    @Environment(\.themeEngine) private var themeEngine
+
+    private var badgeService: BadgeService { BadgeService.shared }
+    private var earned: Bool { badgeService.isEarned(badge.id) }
+
+    var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
+        VStack(spacing: 5) {
+            ZStack {
+                Circle()
+                    .fill(earned
+                          ? theme.primaryColor.opacity(0.15)
+                          : theme.dividerColor.opacity(0.4))
+                    .frame(width: 52, height: 52)
+
+                if earned {
+                    Image(systemName: badge.symbol)
+                        .font(.system(size: 22))
+                        .foregroundStyle(theme.primaryColor)
+                } else if badge.isSecret {
+                    Image(systemName: "questionmark")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundStyle(theme.secondaryTextColor.opacity(0.4))
+                } else {
+                    // Silhouette — same shape, desaturated
+                    Image(systemName: badge.symbol)
+                        .font(.system(size: 22))
+                        .foregroundStyle(theme.secondaryTextColor.opacity(0.3))
+                }
+            }
+
+            Text(earned ? badge.name : (badge.isSecret ? "???" : badge.name))
+                .font(.system(size: 9))
+                .foregroundStyle(earned ? theme.textColor : theme.secondaryTextColor.opacity(0.5))
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity)
+        .opacity(earned ? 1.0 : 0.7)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(earned
+            ? "Badge earned: \(badge.name). \(badge.criteriaDescription)"
+            : (badge.isSecret ? "Unknown secret badge" : "Locked badge: \(badge.name)"))
     }
 }
 

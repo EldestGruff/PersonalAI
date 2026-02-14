@@ -23,6 +23,7 @@ struct CaptureScreen: View {
     @State var viewModel: CaptureViewModel
     @State private var showPaywall = false
     @State private var showAcornToast = false
+    @State private var showBadgeToast = false
     @Environment(\.themeEngine) var themeEngine
     @Environment(\.dismiss) private var dismiss
     @SwiftUI.FocusState private var isTextFieldFocused: Bool
@@ -103,26 +104,38 @@ struct CaptureScreen: View {
             }
             .onChange(of: viewModel.captureSucceeded) { _, succeeded in
                 if succeeded {
-                    if let reward = viewModel.lastAcornReward {
-                        showAcornToast = true
-                        // Brief delay so the toast is visible before sheet dismisses
-                        _Concurrency.Task {
-                            try? await _Concurrency.Task.sleep(for: .milliseconds(reward.isNoteworthy ? 1200 : 700))
-                            dismiss()
-                        }
-                    } else {
+                    let hasBadge = !viewModel.lastEarnedBadges.isEmpty
+                    let hasAcorn = viewModel.lastAcornReward != nil
+                    let isNoteworthy = viewModel.lastAcornReward?.isNoteworthy ?? false
+
+                    if hasBadge { showBadgeToast = true }
+                    if hasAcorn { showAcornToast = true }
+
+                    _Concurrency.Task {
+                        // Badges linger longer — they're a bigger deal
+                        let delay: Int = hasBadge ? 1800 : (isNoteworthy ? 1200 : 700)
+                        try? await _Concurrency.Task.sleep(for: .milliseconds(delay))
                         dismiss()
                     }
+
+                    if !hasBadge && !hasAcorn { dismiss() }
                 }
             }
             .overlay(alignment: .top) {
-                if showAcornToast, let reward = viewModel.lastAcornReward {
-                    AcornToastView(reward: reward)
-                        .padding(.top, 8)
-                        .transition(.move(edge: .top).combined(with: .opacity))
+                VStack(spacing: 8) {
+                    if showBadgeToast, let badge = viewModel.lastEarnedBadges.first {
+                        BadgeToastView(badge: badge)
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+                    if showAcornToast, let reward = viewModel.lastAcornReward {
+                        AcornToastView(reward: reward)
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                    }
                 }
+                .padding(.top, 8)
             }
             .animation(.spring(duration: 0.35), value: showAcornToast)
+            .animation(.spring(duration: 0.35), value: showBadgeToast)
             .sheet(isPresented: $showPaywall) {
                 PaywallScreen()
             }
