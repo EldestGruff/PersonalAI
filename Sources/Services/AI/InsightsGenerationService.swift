@@ -207,26 +207,24 @@ actor InsightsGenerationService {
 
         session = LanguageModelSession(
             instructions: """
-            You are an AI assistant analyzing personal thought capture patterns. Generate insights that are:
-            - Specific and data-driven (reference actual numbers from the provided data)
-            - Actionable (suggest concrete next steps when appropriate)
-            - Empowering and positive in tone (celebrate wins, frame challenges constructively)
-            - Protective of privacy (never suggest sharing data externally)
-            - Based only on provided data (don't make assumptions)
+            You are a thoughtful personal analyst for STASH, a thought-capture app built for people who want to understand their own mind — including those with ADHD or who think in non-linear ways.
 
-            Your analysis should identify:
-            1. KEY PATTERNS - Recurring behaviors, peak productivity times, common themes
-            2. RECOMMENDATIONS - Actionable suggestions based on health correlations and patterns
-            3. ACHIEVEMENTS - Celebrate positive milestones when present (streaks, improvements)
-            4. ANOMALIES - Unusual patterns worth noting (without alarming the user)
+            Users capture spontaneous thoughts throughout their day: ideas, worries, tasks, feelings, observations. You analyze patterns in this data to help them understand themselves better.
 
-            Guidelines for correlation interpretation:
-            - Correlation > 0.7: Strong relationship
-            - Correlation 0.4-0.7: Moderate relationship
-            - Correlation 0.2-0.4: Weak relationship
-            - Correlation < 0.2: No meaningful relationship
+            Your insights should be:
+            - Grounded in actual numbers from the data (never invent statistics)
+            - Written like a trusted friend who happens to be data-savvy, not like a dashboard report
+            - Empowering and specific: "You capture 3x more thoughts on Tuesdays" beats "You are consistent"
+            - Honest about uncertainty: if data is thin, say so rather than overconfident
+            - Focused on behavior and patterns, not personality judgments
 
-            Always provide specific numbers and be concise. Use conversational, friendly language.
+            How to interpret health correlations:
+            - r > 0.7: strong relationship — worth acting on
+            - r 0.4–0.7: moderate — worth noting as a trend
+            - r 0.2–0.4: weak — mention with appropriate caution
+            - r < 0.2: no meaningful relationship — skip it
+
+            Tone: warm, curious, direct. You celebrate genuine wins, flag genuine patterns, and make one or two concrete suggestions — not a laundry list. Think quality over quantity.
             """
         )
     }
@@ -392,76 +390,105 @@ actor InsightsGenerationService {
     // MARK: - Private Methods
 
     private func buildPrompt(from context: InsightsContext) -> String {
-        // Format peak hours
-        let peakHours = context.thoughtsByHour
-            .sorted { $0.value > $1.value }
-            .prefix(3)
-            .map { "Hour \($0.key): \($0.value) thoughts" }
-            .joined(separator: ", ")
+        // Format peak capture hours (top 3)
+        let peakHoursText: String
+        let sortedHours = context.thoughtsByHour.sorted { $0.value > $1.value }
+        if sortedHours.isEmpty {
+            peakHoursText = "no data"
+        } else {
+            peakHoursText = sortedHours.prefix(3)
+                .map { "\(formatHour($0.key)) (\($0.value) thoughts)" }
+                .joined(separator: ", ")
+        }
 
-        // Format active days
-        let activeDays = context.thoughtsByDay
-            .sorted { $0.value > $1.value }
-            .map { "\($0.key): \($0.value)" }
-            .joined(separator: ", ")
-
-        // Format type distribution
-        let types = context.typeDistribution
-            .sorted { $0.value > $1.value }
-            .map { "\($0.key): \($0.value)" }
-            .joined(separator: ", ")
+        // Format most active days
+        let activeDaysText: String
+        let sortedDays = context.thoughtsByDay.sorted { $0.value > $1.value }
+        if sortedDays.isEmpty {
+            activeDaysText = "no data"
+        } else {
+            activeDaysText = sortedDays.prefix(3)
+                .map { "\($0.key) (\($0.value))" }
+                .joined(separator: ", ")
+        }
 
         // Format top tags
-        let tags = context.topTags
+        let tagsText: String
+        let sortedTags = context.topTags.sorted { $0.value > $1.value }
+        if sortedTags.isEmpty {
+            tagsText = "no tags yet"
+        } else {
+            tagsText = sortedTags.prefix(5)
+                .map { "#\($0.key) (\($0.value))" }
+                .joined(separator: ", ")
+        }
+
+        // Format thought types
+        let typesText = context.typeDistribution
             .sorted { $0.value > $1.value }
-            .prefix(5)
             .map { "\($0.key): \($0.value)" }
             .joined(separator: ", ")
 
+        // Only include health correlations that are meaningful
+        var healthLines: [String] = []
+        if let r = context.sleepCorrelation, abs(r) >= 0.2 {
+            healthLines.append("Sleep quality vs mood: \(formatCorrelation(r))")
+        }
+        if let r = context.stepsCorrelation, abs(r) >= 0.2 {
+            healthLines.append("Daily steps vs thought volume: \(formatCorrelation(r))")
+        }
+        if let r = context.hrvCorrelation, abs(r) >= 0.2 {
+            healthLines.append("HRV vs mood: \(formatCorrelation(r))")
+        }
+        if let r = context.workoutCorrelation, abs(r) >= 0.2 {
+            healthLines.append("Workouts vs thought volume: \(formatCorrelation(r))")
+        }
+        if let r = context.restingHRCorrelation, abs(r) >= 0.2 {
+            healthLines.append("Resting heart rate vs mood: \(formatCorrelation(r))")
+        }
+        let healthText = healthLines.isEmpty ? "No significant health correlations found yet." : healthLines.joined(separator: "\n")
+
+        let sentimentDescription: String
+        let s = context.averageSentiment
+        switch s {
+        case 0.3...: sentimentDescription = "positive (\(String(format: "%.2f", s)))"
+        case -0.3..<0.3: sentimentDescription = "neutral (\(String(format: "%.2f", s)))"
+        default: sentimentDescription = "negative (\(String(format: "%.2f", s)))"
+        }
+
         return """
-        Analyze this thought capture data and generate personalized insights:
+        Here is the thought capture data to analyze. The user has \(context.totalThoughts) thoughts captured \(context.dateRangeDescription).
 
-        SUMMARY:
-        - Total thoughts: \(context.totalThoughts)
-        - Average sentiment: \(String(format: "%.2f", context.averageSentiment)) (scale -1.0 to +1.0)
-        - Current streak: \(context.currentStreak) days
-        - Longest streak: \(context.longestStreak) days
-        - Time period: \(context.dateRangeDescription)
+        ACTIVITY OVERVIEW:
+        - Current streak: \(context.currentStreak) days (longest: \(context.longestStreak) days)
+        - Overall mood: \(sentimentDescription) on a -1.0 to +1.0 scale
+        - Mood trend: \(context.sentimentTrend)
+        - Capture volume trend: \(context.volumeTrend)
 
-        PATTERNS:
-        - Top tags: \(tags)
-        - Peak hours: \(peakHours)
-        - Active days: \(activeDays)
-        - Type distribution: \(types)
+        WHEN THEY THINK:
+        - Peak hours: \(peakHoursText)
+        - Most active days: \(activeDaysText)
 
-        HEALTH CORRELATIONS:
-        - Sleep vs Sentiment: \(formatCorrelation(context.sleepCorrelation))
-        - Steps vs Volume: \(formatCorrelation(context.stepsCorrelation))
-        - HRV vs Sentiment: \(formatCorrelation(context.hrvCorrelation))
-        - Workouts vs Volume: \(formatCorrelation(context.workoutCorrelation))
-        - Resting HR vs Sentiment: \(formatCorrelation(context.restingHRCorrelation))
+        WHAT THEY THINK ABOUT:
+        - Top tags: \(tagsText)
+        - Thought types: \(typesText)
 
-        TRENDS:
-        - Sentiment trend: \(context.sentimentTrend)
-        - Volume trend: \(context.volumeTrend)
+        HEALTH & LIFESTYLE CORRELATIONS:
+        \(healthText)
 
-        Generate insights with specific numbers from this data. Be conversational and empowering.
+        Generate 2–3 patterns, 1–2 recommendations, and (if warranted) an achievement or anomaly. Reference specific numbers. Write like a thoughtful analyst, not a list of bullet points.
         """
     }
 
-    private func formatCorrelation(_ correlation: Double?) -> String {
-        guard let r = correlation else { return "N/A (insufficient data)" }
-        let strength: String
+    private func formatCorrelation(_ r: Double) -> String {
         let direction = r > 0 ? "positive" : "negative"
-
+        let strength: String
         switch abs(r) {
         case 0.7...: strength = "strong"
         case 0.4..<0.7: strength = "moderate"
-        case 0.2..<0.4: strength = "weak"
-        default: strength = "no significant"
+        default: strength = "weak"
         }
-
-        return "\(String(format: "%.2f", r)) (\(strength) \(direction) correlation)"
+        return "\(String(format: "%.2f", r)) (\(strength) \(direction))"
     }
 
     private func formatHour(_ hour: Int) -> String {

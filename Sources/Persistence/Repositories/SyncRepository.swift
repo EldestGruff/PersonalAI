@@ -2,8 +2,11 @@
 //  SyncRepository.swift
 //  STASH
 //
-//  Phase 3A Spec 2: Repository for SyncQueueItem CRUD operations
-//  Thread-safe actor-based repository
+//  Repository for the server enrichment queue.
+//  Manages the lifecycle of pending operations destined for the personal server
+//  (AI inference, vector indexing, fine-tuning feedback, integrations).
+//
+//  Device-to-device sync is handled by CloudKit — this is for server-side enrichment only.
 //
 
 import Foundation

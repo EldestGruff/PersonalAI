@@ -2,15 +2,15 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="ThoughtEntity" representedClassName="ThoughtEntity" syncable="YES">
         <attribute name="attributedContentData" optional="YES" attributeType="Binary"/>
-        <attribute name="content" attributeType="String"/>
-        <attribute name="contextJSON" attributeType="Binary"/>
-        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="status" attributeType="String"/>
-        <attribute name="tagsJSON" attributeType="Binary"/>
+        <attribute name="content" optional="YES" attributeType="String"/>
+        <attribute name="contextJSON" optional="YES" attributeType="Binary"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="status" optional="YES" attributeType="String"/>
+        <attribute name="tagsJSON" optional="YES" attributeType="Binary"/>
         <attribute name="taskId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="userId" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="userId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <relationship name="classification" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="ClassificationEntity" inverseName="thought" inverseEntity="ClassificationEntity"/>
         <relationship name="fineTuningDataPoints" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="FineTuningDataEntity" inverseName="thought" inverseEntity="FineTuningDataEntity"/>
         <relationship name="relatedThoughts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ThoughtEntity" inverseName="relatedThoughts" inverseEntity="ThoughtEntity"/>
@@ -29,34 +29,34 @@
     </entity>
     <entity name="ClassificationEntity" representedClassName="ClassificationEntity" syncable="YES">
         <attribute name="confidence" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="entitiesJSON" attributeType="Binary"/>
-        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="entitiesJSON" optional="YES" attributeType="Binary"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="language" optional="YES" attributeType="String"/>
-        <attribute name="model" attributeType="String"/>
+        <attribute name="model" optional="YES" attributeType="String"/>
         <attribute name="parsedDateTimeJSON" optional="YES" attributeType="Binary"/>
         <attribute name="processingTime" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="sentiment" attributeType="String"/>
-        <attribute name="suggestedTagsJSON" attributeType="Binary"/>
-        <attribute name="type" attributeType="String"/>
+        <attribute name="sentiment" optional="YES" attributeType="String"/>
+        <attribute name="suggestedTagsJSON" optional="YES" attributeType="Binary"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
         <relationship name="fineTuningDataPoints" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="FineTuningDataEntity" inverseName="classification" inverseEntity="FineTuningDataEntity"/>
-        <relationship name="thought" maxCount="1" deletionRule="Nullify" destinationEntity="ThoughtEntity" inverseName="classification" inverseEntity="ThoughtEntity"/>
+        <relationship name="thought" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ThoughtEntity" inverseName="classification" inverseEntity="ThoughtEntity"/>
     </entity>
     <entity name="TaskEntity" representedClassName="TaskEntity" syncable="YES">
         <attribute name="completedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="dueDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="estimatedEffortMinutes" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="eventId" optional="YES" attributeType="String"/>
-        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="priority" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="priority" optional="YES" attributeType="String"/>
         <attribute name="reminderId" optional="YES" attributeType="String"/>
-        <attribute name="sourceThoughtId" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="status" attributeType="String"/>
+        <attribute name="sourceThoughtId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="status" optional="YES" attributeType="String"/>
         <attribute name="taskDescription" optional="YES" attributeType="String"/>
-        <attribute name="title" attributeType="String"/>
-        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="userId" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="userId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <relationship name="thought" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ThoughtEntity" inverseName="tasks" inverseEntity="ThoughtEntity"/>
         <fetchIndex name="byStatusAndDueDate">
             <fetchIndexElement property="status" type="Binary" order="ascending"/>
@@ -68,24 +68,24 @@
     </entity>
     <entity name="FineTuningDataEntity" representedClassName="FineTuningDataEntity" syncable="YES">
         <attribute name="archived" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="classificationId" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="classificationId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="createdEvent" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="createdReminder" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="wasDeleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="edits" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="eventCompleted" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
-        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="lastUpdatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="lastUpdatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="reminderCompleted" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
         <attribute name="shares" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="thoughtId" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="thoughtId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="timeToCompletion" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
         <attribute name="timeToFirstAction" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
         <attribute name="userFeedbackJSON" optional="YES" attributeType="Binary"/>
         <attribute name="views" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="classification" maxCount="1" deletionRule="Nullify" destinationEntity="ClassificationEntity" inverseName="fineTuningDataPoints" inverseEntity="ClassificationEntity"/>
-        <relationship name="thought" maxCount="1" deletionRule="Nullify" destinationEntity="ThoughtEntity" inverseName="fineTuningDataPoints" inverseEntity="ThoughtEntity"/>
+        <relationship name="classification" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ClassificationEntity" inverseName="fineTuningDataPoints" inverseEntity="ClassificationEntity"/>
+        <relationship name="thought" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ThoughtEntity" inverseName="fineTuningDataPoints" inverseEntity="ThoughtEntity"/>
         <fetchIndex name="byThoughtId">
             <fetchIndexElement property="thoughtId" type="Binary" order="ascending"/>
         </fetchIndex>
@@ -94,14 +94,14 @@
         </fetchIndex>
     </entity>
     <entity name="SyncQueueEntity" representedClassName="SyncQueueEntity" syncable="YES">
-        <attribute name="action" attributeType="String"/>
+        <attribute name="action" optional="YES" attributeType="String"/>
         <attribute name="backendResponseId" optional="YES" attributeType="String"/>
-        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="entityType" attributeType="String"/>
-        <attribute name="entityId" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="entityType" optional="YES" attributeType="String"/>
+        <attribute name="entityId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="lastError" optional="YES" attributeType="String"/>
-        <attribute name="nextRetryAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="nextRetryAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="payload" optional="YES" attributeType="Binary"/>
         <attribute name="retries" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <fetchIndex name="byNextRetryAt">

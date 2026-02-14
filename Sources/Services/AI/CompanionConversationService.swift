@@ -152,60 +152,28 @@ actor CompanionConversationService {
         persona: SquirrelPersona,
         isPrivate: Bool
     ) -> String {
-        var prompt = """
-        \(persona.systemPrompt)
-
-        CONVERSATION CONTEXT:
-        You are helping the user explore this specific thought:
-
-        """
-
-        prompt += "**Original Thought:**\n"
-        prompt += "\"\(thought.content)\"\n\n"
+        var prompt = persona.systemPrompt
+        prompt += "\n\n---\n\n"
+        prompt += "THE THOUGHT YOU'RE EXPLORING:\n"
+        prompt += "\"\(thought.content)\"\n"
 
         if !thought.tags.isEmpty {
-            prompt += "**Tags:** \(thought.tags.map { "#\($0)" }.joined(separator: ", "))\n"
+            prompt += "Tags: \(thought.tags.map { "#\($0)" }.joined(separator: " "))\n"
         }
 
-        prompt += "**Captured:** \(formatDate(thought.createdAt))\n\n"
+        prompt += "Captured: \(formatDate(thought.createdAt))\n"
 
         if isPrivate {
-            prompt += """
-            PRIVACY MODE: 🔒 PERSONAL SERVER
-            - You have NO ACCESS to the user's other thoughts
-            - Focus ONLY on this thought and the current conversation
-            - Do not reference or suggest connections to other thoughts
-            - Treat this as a private, isolated conversation
-
-            """
+            prompt += "\nPrivacy mode is on — stay focused on this thought only. Do not reference or suggest connections to other thoughts."
         } else {
-            prompt += """
-            CONNECTED MODE: 🌐 FULL ACCESS
-            - You have access to the user's other thoughts for context
-            - You can reference related thoughts to provide richer insights
-            - Make connections and identify patterns across thoughts
-            - Relevant thoughts will be provided with each message
-
-            """
+            prompt += "\nWhen relevant, you'll receive related past thoughts to help you make connections across the user's thinking."
         }
-
-        prompt += """
-        Your goal: Help the user explore, expand, and deepen their thinking about this thought.
-        Use your personality (\(persona.name)) to guide the conversation style.
-        """
 
         return prompt
     }
 
     private func buildPrivatePrompt(userMessage: String, thought: Thought) -> String {
-        """
-        User: \(userMessage)
-
-        Remember: This is the thought we're exploring:
-        "\(thought.content)"
-
-        Respond in character as \(currentPersona?.name ?? "companion").
-        """
+        userMessage
     }
 
     private func buildConnectedPrompt(
@@ -213,27 +181,20 @@ actor CompanionConversationService {
         thought: Thought,
         relevantThoughts: [Thought]
     ) -> String {
-        var prompt = "User: \(userMessage)\n\n"
+        guard !relevantThoughts.isEmpty else {
+            return userMessage
+        }
 
-        if !relevantThoughts.isEmpty {
-            prompt += "RELATED THOUGHTS (for context):\n"
-            for (index, relatedThought) in relevantThoughts.enumerated() {
-                prompt += "\n\(index + 1). [\(formatDate(relatedThought.createdAt))]: "
-                prompt += "\(String(relatedThought.content.prefix(200)))"
-                if !relatedThought.tags.isEmpty {
-                    prompt += " [Tags: \(relatedThought.tags.joined(separator: ", "))]"
-                }
-                prompt += "\n"
+        var prompt = userMessage
+        prompt += "\n\n[Background context — do not change the subject to these; use only if directly relevant]\n"
+        for (index, relatedThought) in relevantThoughts.enumerated() {
+            prompt += "\(index + 1). \(formatDate(relatedThought.createdAt)): "
+            prompt += String(relatedThought.content.prefix(200))
+            if !relatedThought.tags.isEmpty {
+                prompt += " [\(relatedThought.tags.joined(separator: ", "))]"
             }
             prompt += "\n"
         }
-
-        prompt += """
-        Current thought we're exploring:
-        "\(thought.content)"
-
-        Respond in character as \(currentPersona?.name ?? "companion").
-        """
 
         return prompt
     }

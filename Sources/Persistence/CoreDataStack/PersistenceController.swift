@@ -2,14 +2,24 @@
 //  PersistenceController.swift
 //  STASH
 //
-//  Phase 3A Spec 1: Core Data Stack Manager
-//  Manages NSPersistentContainer lifecycle and provides contexts
+//  Core Data + CloudKit stack manager.
+//  NSPersistentCloudKitContainer handles device-to-device sync via iCloud automatically.
+//  All entities marked syncable="YES" in the model are mirrored to CloudKit.
+//
+//  Architecture:
+//  - CloudKit sync: thoughts, classifications, tasks, fine-tuning data
+//  - Local-only:    server enrichment queue (SyncQueueEntity) — queues work
+//                   for the personal server (AI inference, vector indexing, etc.)
+//                   These items are device-local by design; each device manages its own queue.
 //
 
 import CoreData
 
-/// Manages the Core Data stack for the application
+/// Manages the Core Data + CloudKit stack for the application.
 struct PersistenceController: Sendable {
+
+    // MARK: - Shared Instances
+
     /// Shared instance for production use
     static let shared = PersistenceController()
 
@@ -18,13 +28,12 @@ struct PersistenceController: Sendable {
         let controller = PersistenceController(inMemory: true)
         let viewContext = controller.container.viewContext
 
-        // Create sample data for previews
         do {
             let sampleThought = Thought(
                 id: UUID(),
                 userId: UUID(),
                 content: "Sample thought for preview",
-                    attributedContent: nil,
+                attributedContent: nil,
                 tags: ["preview", "sample"],
                 status: .active,
                 context: Context(
@@ -49,75 +58,123 @@ struct PersistenceController: Sendable {
             _ = try sampleThought.toEntity(in: viewContext)
             try viewContext.save()
         } catch {
-            // Preview sample data creation is best-effort
             print("Failed to create preview data: \(error)")
         }
 
         return controller
     }()
 
-    /// The persistent container for the application
+    // MARK: - Container
+
+    /// The persistent container — NSPersistentCloudKitContainer for production,
+    /// NSPersistentContainer for in-memory previews.
     let container: NSPersistentContainer
 
-    /// Initializes the persistence controller
-    /// - Parameter inMemory: If true, creates an in-memory store (useful for testing and previews)
+    // MARK: - Initialization
+
     init(inMemory: Bool = false) {
-        container = NSPersistentContainer(name: "STASH")
-
         if inMemory {
-            container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
-        } else {
-            // Enable automatic lightweight migration for schema changes
-            // This allows Core Data to automatically migrate when we add new fields
-            if let description = container.persistentStoreDescriptions.first {
-                description.shouldMigrateStoreAutomatically = true
-                description.shouldInferMappingModelAutomatically = true
-            }
-        }
-
-        let persistentContainer = container
-        container.loadPersistentStores { storeDescription, error in
-            if let error = error as NSError? {
-                NSLog("⚠️ Core Data load error: \(error), \(error.userInfo)")
-
-                // Check if this is a migration error
-                if error.domain == NSCocoaErrorDomain &&
-                   (error.code == 134100 || // NSPersistentStoreIncompatibleVersionHashError
-                    error.code == 134130 || // NSMigrationMissingSourceModelError
-                    error.code == 134140) { // NSMigrationError
-
-                    NSLog("🔄 Migration error detected - deleting and recreating store")
-
-                    // Delete the old store
-                    if let storeURL = storeDescription.url {
-                        try? FileManager.default.removeItem(at: storeURL)
-                        try? FileManager.default.removeItem(at: storeURL.deletingLastPathComponent().appendingPathComponent(storeURL.lastPathComponent + "-shm"))
-                        try? FileManager.default.removeItem(at: storeURL.deletingLastPathComponent().appendingPathComponent(storeURL.lastPathComponent + "-wal"))
-
-                        // Try loading again
-                        persistentContainer.loadPersistentStores { _, retryError in
-                            if let retryError = retryError {
-                                fatalError("Failed to recreate store: \(retryError)")
-                            } else {
-                                NSLog("✅ Store recreated successfully")
-                            }
-                        }
-                    } else {
-                        fatalError("Could not determine store URL")
-                    }
-                } else {
-                    // Non-migration error - fatal
-                    fatalError("Unresolved error \(error), \(error.userInfo)")
+            // Use a plain container for previews — no CloudKit connection needed
+            let previewContainer = NSPersistentContainer(name: "STASH")
+            previewContainer.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
+            previewContainer.loadPersistentStores { _, error in
+                if let error {
+                    fatalError("Failed to load preview store: \(error)")
                 }
             }
+            previewContainer.viewContext.automaticallyMergesChangesFromParent = true
+            previewContainer.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+            container = previewContainer
+        } else {
+            container = Self.makeCloudKitContainer()
         }
-
-        // Configure for better performance and thread safety
-        container.viewContext.automaticallyMergesChangesFromParent = true
-        container.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
     }
 
-    /// Saves the view context if there are changes
+    // MARK: - CloudKit Container Setup
+
+    private static func makeCloudKitContainer() -> NSPersistentCloudKitContainer {
+        let ckContainer = NSPersistentCloudKitContainer(name: "STASH")
+
+        guard let description = ckContainer.persistentStoreDescriptions.first else {
+            fatalError("No persistent store description found")
+        }
+
+        // CloudKit container — must match the identifier in Xcode Signing & Capabilities
+        description.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(
+            containerIdentifier: "iCloud.com.withershins.stash"
+        )
+
+        // Required for CloudKit: persistent history lets the container track changes
+        // that need to be pushed to / pulled from iCloud
+        description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+
+        // Post a notification whenever remote changes arrive from CloudKit so the
+        // UI can refresh without polling
+        description.setOption(
+            true as NSNumber,
+            forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey
+        )
+
+        // Lightweight migration for future schema changes
+        description.shouldMigrateStoreAutomatically = true
+        description.shouldInferMappingModelAutomatically = true
+
+        ckContainer.loadPersistentStores { storeDescription, error in
+            if let error = error as NSError? {
+                handleLoadError(error, storeDescription: storeDescription, container: ckContainer)
+            }
+        }
+
+        // Automatically merge changes arriving from CloudKit into the view context
+        ckContainer.viewContext.automaticallyMergesChangesFromParent = true
+
+        // Last-write-wins per property — safe for concurrent edits across devices
+        ckContainer.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+
+        return ckContainer
+    }
+
+    // MARK: - Error Handling
+
+    private static func handleLoadError(
+        _ error: NSError,
+        storeDescription: NSPersistentStoreDescription,
+        container: NSPersistentCloudKitContainer
+    ) {
+        NSLog("⚠️ Core Data load error: \(error), \(error.userInfo)")
+
+        let migrationCodes: Set<Int> = [
+            134100, // NSPersistentStoreIncompatibleVersionHashError
+            134130, // NSMigrationMissingSourceModelError
+            134140  // NSMigrationError
+        ]
+
+        guard error.domain == NSCocoaErrorDomain,
+              migrationCodes.contains(error.code),
+              let storeURL = storeDescription.url else {
+            fatalError("Unresolved Core Data error: \(error)")
+        }
+
+        NSLog("🔄 Migration error — deleting and recreating store")
+
+        let fm = FileManager.default
+        let base = storeURL.deletingLastPathComponent()
+        let name = storeURL.lastPathComponent
+        try? fm.removeItem(at: storeURL)
+        try? fm.removeItem(at: base.appendingPathComponent(name + "-shm"))
+        try? fm.removeItem(at: base.appendingPathComponent(name + "-wal"))
+
+        container.loadPersistentStores { _, retryError in
+            if let retryError {
+                fatalError("Failed to recreate store: \(retryError)")
+            }
+            NSLog("✅ Store recreated successfully")
+        }
+    }
+
+    // MARK: - Public API
+
+    /// Saves the view context if there are pending changes
     func save() throws {
         let context = container.viewContext
         if context.hasChanges {
@@ -125,8 +182,27 @@ struct PersistenceController: Sendable {
         }
     }
 
-    /// Creates a new background context for performing work off the main thread
+    /// Creates a background context for off-main-thread work
     func newBackgroundContext() -> NSManagedObjectContext {
-        return container.newBackgroundContext()
+        container.newBackgroundContext()
     }
+}
+
+// MARK: - CloudKit Sync Status
+
+extension PersistenceController {
+
+    /// Subscribe to this notification to know when remote CloudKit changes have
+    /// been merged into the view context. Useful for refreshing UI or re-running
+    /// searches after a sync event.
+    ///
+    /// Usage:
+    /// ```swift
+    /// .onReceive(PersistenceController.remoteChangeNotification) { _ in
+    ///     // refresh UI
+    /// }
+    /// ```
+    static let remoteChangeNotification = Notification.Name(
+        NSPersistentStoreRemoteChangeNotificationPostOptionKey
+    )
 }
