@@ -28,6 +28,7 @@ struct BrowseScreen: View {
     @State private var bulkTagInput: String = ""
     @State private var themeEngine = ThemeEngine.shared
     private let acornLedger = AcornLedger.shared
+    private let streakTracker = StreakTracker.shared
 
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
@@ -171,15 +172,31 @@ struct BrowseScreen: View {
 
     private var acornBalanceView: some View {
         let theme = themeEngine.getCurrentTheme()
-        return HStack(spacing: 4) {
-            Text("🌰")
-                .font(.subheadline)
-            Text("\(acornLedger.currentBalance)")
-                .font(.subheadline.monospacedDigit())
-                .fontWeight(.medium)
-                .foregroundStyle(theme.textColor)
+        return HStack(spacing: 10) {
+            // Acorn balance
+            HStack(spacing: 4) {
+                Text("🌰")
+                    .font(.subheadline)
+                Text("\(acornLedger.currentBalance)")
+                    .font(.subheadline.monospacedDigit())
+                    .fontWeight(.medium)
+                    .foregroundStyle(theme.textColor)
+            }
+            .accessibilityLabel("\(acornLedger.currentBalance) acorns")
+
+            // Current streak (only shown when > 0)
+            if streakTracker.currentStreak > 0 {
+                HStack(spacing: 3) {
+                    Text(streakTracker.capturedToday ? "🔥" : "⏳")
+                        .font(.subheadline)
+                    Text("\(streakTracker.currentStreak)")
+                        .font(.subheadline.monospacedDigit())
+                        .fontWeight(.medium)
+                        .foregroundStyle(theme.textColor)
+                }
+                .accessibilityLabel("\(streakTracker.currentStreak) day streak")
+            }
         }
-        .accessibilityLabel("\(acornLedger.currentBalance) acorns")
     }
 
     // MARK: - Thought List

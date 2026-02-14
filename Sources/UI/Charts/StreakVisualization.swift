@@ -107,12 +107,22 @@ struct StreakVisualization: View {
     }
 
     private var encouragementMessage: some View {
-        Group {
-            if streakData.currentStreak == 0 {
+        let tracker = StreakTracker.shared
+        let days = tracker.daysSinceLastCapture ?? 999
+
+        return Group {
+            if streakData.currentStreak == 0 && days >= 3 {
+                // Squirrel went on an adventure — no shame
                 HStack(spacing: 6) {
-                    Image(systemName: "hand.wave.fill")
-                        .foregroundStyle(.orange)
-                    Text("Capture a thought today to start a new streak!")
+                    Text("🌰")
+                    Text("Your squirrel went foraging. Welcome back — let's capture something.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            } else if streakData.currentStreak == 0 {
+                HStack(spacing: 6) {
+                    Text("🌿")
+                    Text("Ready when you are. Capture a thought to start a new streak.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -120,7 +130,14 @@ struct StreakVisualization: View {
                 HStack(spacing: 6) {
                     Image(systemName: "sparkles")
                         .foregroundStyle(.yellow)
-                    Text("Great start! Come back tomorrow to keep it going.")
+                    Text("Day one. The hardest and most important one.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            } else if streakData.currentStreak >= 30 {
+                HStack(spacing: 6) {
+                    Text("🏆")
+                    Text("\(streakData.currentStreak) days. This is who you are now.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -128,7 +145,7 @@ struct StreakVisualization: View {
                 HStack(spacing: 6) {
                     Image(systemName: "star.fill")
                         .foregroundStyle(.yellow)
-                    Text("Amazing! You've built a solid habit 🎉")
+                    Text("\(streakData.currentStreak) days — that's a real habit forming.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -136,7 +153,7 @@ struct StreakVisualization: View {
                 HStack(spacing: 6) {
                     Image(systemName: "arrow.up.forward")
                         .foregroundStyle(.green)
-                    Text("Keep going! You're building momentum.")
+                    Text("\(streakData.currentStreak) days and building. Keep it going.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

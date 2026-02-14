@@ -101,6 +101,7 @@
 		ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */; };
 		A00000010000000000000257 /* AcornService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000258 /* AcornService.swift */; };
 		A00000010000000000000259 /* AcornToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000260 /* AcornToastView.swift */; };
+		A00000010000000000000261 /* StreakTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000262 /* StreakTracker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -200,6 +201,7 @@
 		A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsAnalyzer.swift; sourceTree = "<group>"; };
 		A00000010000000000000258 /* AcornService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcornService.swift; sourceTree = "<group>"; };
 		A00000010000000000000260 /* AcornToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcornToastView.swift; sourceTree = "<group>"; };
+		A00000010000000000000262 /* StreakTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakTracker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -530,6 +532,7 @@
 			isa = PBXGroup;
 			children = (
 				A00000010000000000000258 /* AcornService.swift */,
+				A00000010000000000000262 /* StreakTracker.swift */,
 			);
 			path = Gamification;
 			sourceTree = "<group>";
@@ -704,6 +707,7 @@
 				A00000010000000000000256 /* InsightsViewModel.swift in Sources */,
 				A0000001000000000000251 /* AppError.swift in Sources */,
 				A00000010000000000000257 /* AcornService.swift in Sources */,
+				A00000010000000000000261 /* StreakTracker.swift in Sources */,
 				A00000010000000000000259 /* AcornToastView.swift in Sources */,
 				A0000001000000000000038 /* Subscription.swift in Sources */,
 				A0000001000000000000039 /* Conversation.swift in Sources */,

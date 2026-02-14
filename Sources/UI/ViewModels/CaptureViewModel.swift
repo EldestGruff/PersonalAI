@@ -106,6 +106,7 @@ final class CaptureViewModel {
     private let subscriptionManager: SubscriptionManager
     private let smartInsights = SmartInsightsService.shared
     private let acornService = AcornService.shared
+    private let streakTracker = StreakTracker.shared
 
     // MARK: - Debounce
 
@@ -423,6 +424,12 @@ final class CaptureViewModel {
                 // Award acorns
                 let hadContext = context != nil && context?.location != nil
                 self.lastAcornReward = acornService.processCapture(hadContext: hadContext)
+
+                // Update streak (fire milestone acorn bonus if applicable)
+                let streakUpdate = streakTracker.recordCapture()
+                if let milestone = streakUpdate.milestone {
+                    _ = acornService.processStreakMilestone(days: milestone.rawValue)
+                }
 
                 // Success - reset form
                 self.resetForm()
