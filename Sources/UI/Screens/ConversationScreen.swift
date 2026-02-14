@@ -96,20 +96,11 @@ struct ConversationScreen: View {
 
     private var headerView: some View {
         let theme = themeEngine.getCurrentTheme()
+        let persona = PersonaService.shared.defaultPersona
 
         return VStack(spacing: 12) {
-            Image(systemName: "brain.head.profile")
-                .font(.system(size: 48))
-                .foregroundStyle(theme.accentColor.gradient)
-
-            Text("Chat with Your Thoughts")
-                .font(.title2.bold())
-                .foregroundColor(theme.textColor)
-
-            Text("Ask me anything about your captured thoughts")
-                .font(.subheadline)
-                .foregroundStyle(theme.secondaryTextColor)
-                .multilineTextAlignment(.center)
+            // Squirrelsona greeting card with emotional state
+            SquirrelGreetingCard(persona: persona)
 
             if viewModel.thoughtCount > 0 {
                 HStack(spacing: 4) {

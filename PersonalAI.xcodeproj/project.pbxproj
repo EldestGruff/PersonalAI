@@ -102,6 +102,8 @@
 		A00000010000000000000257 /* AcornService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000258 /* AcornService.swift */; };
 		A00000010000000000000259 /* AcornToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000260 /* AcornToastView.swift */; };
 		A00000010000000000000261 /* StreakTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000262 /* StreakTracker.swift */; };
+		A00000010000000000000263 /* SquirrelStateEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000264 /* SquirrelStateEngine.swift */; };
+		A00000010000000000000265 /* SquirrelGreetingCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000266 /* SquirrelGreetingCard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -202,6 +204,8 @@
 		A00000010000000000000258 /* AcornService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcornService.swift; sourceTree = "<group>"; };
 		A00000010000000000000260 /* AcornToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcornToastView.swift; sourceTree = "<group>"; };
 		A00000010000000000000262 /* StreakTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakTracker.swift; sourceTree = "<group>"; };
+		A00000010000000000000264 /* SquirrelStateEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquirrelStateEngine.swift; sourceTree = "<group>"; };
+		A00000010000000000000266 /* SquirrelGreetingCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquirrelGreetingCard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -498,6 +502,7 @@
 				A0000001000000000000230 /* FlowLayout.swift */,
 				A0000001000000000000232 /* ErrorView.swift */,
 				A00000010000000000000260 /* AcornToastView.swift */,
+				A00000010000000000000266 /* SquirrelGreetingCard.swift */,
 				A1B632872F3510000071D954 /* FormattingToolbar.swift */,
 				A1B632882F3510000071D955 /* LiquidGlassModifiers.swift */,
 			);
@@ -533,6 +538,7 @@
 			children = (
 				A00000010000000000000258 /* AcornService.swift */,
 				A00000010000000000000262 /* StreakTracker.swift */,
+				A00000010000000000000264 /* SquirrelStateEngine.swift */,
 			);
 			path = Gamification;
 			sourceTree = "<group>";
@@ -708,6 +714,8 @@
 				A0000001000000000000251 /* AppError.swift in Sources */,
 				A00000010000000000000257 /* AcornService.swift in Sources */,
 				A00000010000000000000261 /* StreakTracker.swift in Sources */,
+				A00000010000000000000263 /* SquirrelStateEngine.swift in Sources */,
+				A00000010000000000000265 /* SquirrelGreetingCard.swift in Sources */,
 				A00000010000000000000259 /* AcornToastView.swift in Sources */,
 				A0000001000000000000038 /* Subscription.swift in Sources */,
 				A0000001000000000000039 /* Conversation.swift in Sources */,

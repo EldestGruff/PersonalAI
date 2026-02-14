@@ -107,6 +107,7 @@ final class CaptureViewModel {
     private let smartInsights = SmartInsightsService.shared
     private let acornService = AcornService.shared
     private let streakTracker = StreakTracker.shared
+    private let stateEngine = SquirrelStateEngine.shared
 
     // MARK: - Debounce
 
@@ -425,10 +426,11 @@ final class CaptureViewModel {
                 let hadContext = context != nil && context?.location != nil
                 self.lastAcornReward = acornService.processCapture(hadContext: hadContext)
 
-                // Update streak (fire milestone acorn bonus if applicable)
+                // Update streak (fire milestone acorn bonus + celebrating state if applicable)
                 let streakUpdate = streakTracker.recordCapture()
                 if let milestone = streakUpdate.milestone {
                     _ = acornService.processStreakMilestone(days: milestone.rawValue)
+                    stateEngine.triggerCelebrating()
                 }
 
                 // Success - reset form
