@@ -6,8 +6,13 @@
 //
 //  Surfaces the user's best thoughts as "shinies." Scoring uses on-device
 //  signals only (no server, no ML inference beyond what's already stored).
-//  A thought can become a shiny exactly once. Promotion runs at most once
-//  per day and caps the shiny pool at 3 active shinies.
+//  A thought can become a shiny exactly once (shinies are permanent).
+//  Promotion runs at most once per day.
+//
+//  Pool cap scales with library size: max(3, floor(totalThoughts × 7%))
+//  — starts at 3, grows naturally as the user captures more thoughts.
+//  Threshold: 2.0 primary; falls back to 1.5 if nothing clears 2.0,
+//  ensuring great-but-not-quite thoughts aren't permanently overlooked.
 //
 //  Tagline: "STASH found a new shiny! ✨"
 //
@@ -45,11 +50,18 @@ actor ShinyService {
         thoughts.filter(\.isShiny)
     }
 
-    /// Scores and promotes up to 3 thoughts to shiny status if it hasn't
-    /// run today yet. Returns the IDs of newly promoted thoughts.
+    /// Scores and promotes thoughts to shiny status if it hasn't run today.
+    /// Returns the IDs of newly promoted thoughts.
+    ///
+    /// Pool cap scales with library size: `max(3, floor(totalThoughts × 7%))`.
+    /// Shinies are permanent — the cap only gates new promotions.
+    ///
+    /// Threshold rules (applied in order):
+    ///   1. Primary: score ≥ 2.0
+    ///   2. Fallback: score ≥ 1.5 (used only when nothing clears 2.0)
     ///
     /// - Parameters:
-    ///   - thoughts: Full thought list (active thoughts only)
+    ///   - thoughts: Full active thought list
     ///   - thoughtService: Used to persist the `isShiny = true` update
     /// - Returns: IDs of newly promoted shinies (empty if throttled or no candidates)
     func promoteShiniesIfNeeded(
@@ -59,21 +71,28 @@ actor ShinyService {
         guard shouldRunToday() else { return [] }
 
         let existing = thoughts.filter(\.isShiny)
-        let available = max(0, 3 - existing.count)
+
+        // Dynamic pool cap: ~7% of total thoughts, minimum 3
+        let poolCap = max(3, Int(Double(thoughts.count) * 0.07))
+        let available = max(0, poolCap - existing.count)
         guard available > 0 else { return [] }
 
         let candidates = thoughts.filter { !$0.isShiny && $0.status == .active }
-        let scored = candidates
+        let allScored = candidates
             .map { ShinyScore(thought: $0, score: score($0)) }
-            .filter { $0.score >= 2.0 }        // minimum threshold
             .sorted { $0.score > $1.score }
-            .prefix(available)
 
-        guard !scored.isEmpty else { return [] }
+        // Try primary threshold (2.0), fall back to 1.5 if nothing qualifies
+        var toPromote = allScored.filter { $0.score >= 2.0 }.prefix(available)
+        if toPromote.isEmpty {
+            toPromote = allScored.filter { $0.score >= 1.5 }.prefix(available)
+        }
+
+        guard !toPromote.isEmpty else { return [] }
 
         // Persist
         var promoted: [UUID] = []
-        for entry in scored {
+        for entry in toPromote {
             var updated = entry.thought
             updated.isShiny = true
             if (try? await thoughtService.update(updated)) != nil {
