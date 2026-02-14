@@ -62,6 +62,9 @@ public final class ThoughtEntity: NSManagedObject {
     /// Optional task ID
     @NSManaged public var taskId: UUID?
 
+    /// Whether this thought has been promoted to a "shiny" by ShinyService
+    @NSManaged public var isShiny: NSNumber?
+
     // MARK: - Relationships
 
     /// Many-to-many self-referencing relationship

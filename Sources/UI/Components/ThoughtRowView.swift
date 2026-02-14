@@ -28,13 +28,20 @@ struct ThoughtRowView: View {
         let theme = themeEngine.getCurrentTheme()
 
         VStack(alignment: .leading, spacing: 8) {
-            // Content preview (supports rich text)
-            ThoughtContentView(
-                thought: thought,
-                font: .body,
-                color: theme.textColor,
-                lineLimit: 2
-            )
+            // Content preview with optional shiny badge
+            HStack(alignment: .top, spacing: 6) {
+                ThoughtContentView(
+                    thought: thought,
+                    font: .body,
+                    color: theme.textColor,
+                    lineLimit: 2
+                )
+                if thought.isShiny {
+                    Text("✨")
+                        .font(.caption)
+                        .accessibilityLabel("Shiny thought")
+                }
+            }
 
             // Classification (compact)
             if let classification = thought.classification {

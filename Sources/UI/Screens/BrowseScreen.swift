@@ -24,6 +24,7 @@ struct BrowseScreen: View {
     @State var viewModel: BrowseViewModel
     @State private var showCaptureSheet = false
     @State private var showFilterSheet = false
+    @State private var showAchievements = false
     @State private var thoughtToDelete: Thought?
     @State private var bulkTagInput: String = ""
     @State private var themeEngine = ThemeEngine.shared
@@ -172,28 +173,37 @@ struct BrowseScreen: View {
 
     private var acornBalanceView: some View {
         let theme = themeEngine.getCurrentTheme()
-        return HStack(spacing: 10) {
-            HStack(spacing: 3) {
-                Text("🌰")
-                Text("\(acornLedger.currentBalance)")
-                    .fontWeight(.semibold)
-                    .foregroundStyle(theme.textColor)
-            }
-            .font(.caption.monospacedDigit())
-            .fixedSize()
-            .accessibilityLabel("\(acornLedger.currentBalance) acorns")
-
-            if streakTracker.currentStreak > 0 {
+        return Button {
+            showAchievements = true
+        } label: {
+            HStack(spacing: 10) {
                 HStack(spacing: 3) {
-                    Text(streakTracker.capturedToday ? "🔥" : "⏳")
-                    Text("\(streakTracker.currentStreak)")
+                    Text("🌰")
+                    Text("\(acornLedger.currentBalance)")
                         .fontWeight(.semibold)
                         .foregroundStyle(theme.textColor)
                 }
                 .font(.caption.monospacedDigit())
                 .fixedSize()
-                .accessibilityLabel("\(streakTracker.currentStreak) day streak")
+
+                if streakTracker.currentStreak > 0 {
+                    HStack(spacing: 3) {
+                        Text(streakTracker.capturedToday ? "🔥" : "⏳")
+                        Text("\(streakTracker.currentStreak)")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(theme.textColor)
+                    }
+                    .font(.caption.monospacedDigit())
+                    .fixedSize()
+                }
             }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(acornLedger.currentBalance) acorns, \(streakTracker.currentStreak) day streak. Tap to view achievements.")
+        .sheet(isPresented: $showAchievements) {
+            AchievementsScreen(
+                viewModel: AchievementsViewModel(thoughtService: viewModel.thoughtService)
+            )
         }
     }
 
@@ -219,6 +229,17 @@ struct BrowseScreen: View {
                 Section {
                     activeFilterBanner
                 }
+            }
+
+            // Today's Shiny card (Issue #40) — hidden in edit mode
+            if !viewModel.isEditMode, let shiny = viewModel.todaysShiny {
+                Section {
+                    TodaysShinyCard(thought: shiny) {
+                        viewModel.selectThought(shiny)
+                    }
+                }
+                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                .listRowBackground(Color.clear)
             }
 
             // Select all / Deselect all in edit mode (Issue #5)

@@ -84,6 +84,9 @@ final class BrowseViewModel {
     /// Current error to display
     var error: AppError?
 
+    /// A randomly selected shiny thought to surface as "Today's Shiny"
+    var todaysShiny: Thought?
+
     // MARK: - Filter State
 
     /// Filter by thought status
@@ -178,6 +181,21 @@ final class BrowseViewModel {
             results = sortThoughts(results)
 
             self.thoughts = results
+
+            // Promote shinies (throttled to once/day) then pick one to surface
+            let allActive = try await thoughtService.list(filter: .active)
+            let promoted = await ShinyService.shared.promoteShiniesIfNeeded(
+                from: allActive,
+                thoughtService: thoughtService
+            )
+            // Reload if we promoted new shinies so isShiny flags are fresh
+            if !promoted.isEmpty {
+                let refreshed = try await thoughtService.list(filter: .active)
+                self.thoughts = applyFilters(to: sortThoughts(refreshed))
+            }
+
+            let shinies = ShinyService.shared.currentShinies(from: self.thoughts)
+            self.todaysShiny = shinies.randomElement()
 
         } catch {
             self.error = AppError.from(error)

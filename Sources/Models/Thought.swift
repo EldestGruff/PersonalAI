@@ -129,6 +129,42 @@ struct Thought: Identifiable, Equatable, Sendable {
     /// If user converts thought to a task, this links to the TaskEntity.
     /// One-to-zero-or-one relationship.
     let taskId: UUID?
+
+    /// Whether this thought has been promoted to a "shiny" by ShinyService.
+    ///
+    /// Shinies are surfaced on the home screen as "Today's Shiny" and shown
+    /// with a ✨ badge in the thought list. A thought can only become a shiny once.
+    var isShiny: Bool
+
+    init(
+        id: UUID,
+        userId: UUID,
+        content: String,
+        attributedContent: AttributedString?,
+        tags: [String],
+        status: ThoughtStatus,
+        context: Context,
+        createdAt: Date,
+        updatedAt: Date,
+        classification: Classification?,
+        relatedThoughtIds: [UUID],
+        taskId: UUID?,
+        isShiny: Bool = false
+    ) {
+        self.id = id
+        self.userId = userId
+        self.content = content
+        self.attributedContent = attributedContent
+        self.tags = tags
+        self.status = status
+        self.context = context
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+        self.classification = classification
+        self.relatedThoughtIds = relatedThoughtIds
+        self.taskId = taskId
+        self.isShiny = isShiny
+    }
 }
 
 // MARK: - Codable
@@ -161,6 +197,7 @@ extension Thought: Codable {
         classification = try container.decodeIfPresent(Classification.self, forKey: .classification)
         relatedThoughtIds = try container.decode([UUID].self, forKey: .relatedThoughtIds)
         taskId = try container.decodeIfPresent(UUID.self, forKey: .taskId)
+        isShiny = false  // not persisted over the wire; CoreData is the source of truth
     }
 
     func encode(to encoder: Encoder) throws {

@@ -38,6 +38,7 @@ extension Thought {
         entity.createdAt = self.createdAt
         entity.updatedAt = self.updatedAt
         entity.taskId = self.taskId
+        entity.isShiny = self.isShiny as NSNumber
 
         // Encode tags as JSON
         do {
@@ -150,7 +151,8 @@ extension Thought {
             updatedAt: entity.updatedAt,
             classification: classification,
             relatedThoughtIds: relatedThoughtIds,
-            taskId: entity.taskId
+            taskId: entity.taskId,
+            isShiny: entity.isShiny?.boolValue ?? false
         )
     }
 }
