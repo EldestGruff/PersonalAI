@@ -172,29 +172,26 @@ struct BrowseScreen: View {
 
     private var acornBalanceView: some View {
         let theme = themeEngine.getCurrentTheme()
-        return HStack(spacing: 8) {
-            // Acorn balance
-            Label {
+        return HStack(spacing: 10) {
+            HStack(spacing: 3) {
+                Text("🌰")
                 Text("\(acornLedger.currentBalance)")
-                    .font(.caption.monospacedDigit())
                     .fontWeight(.semibold)
                     .foregroundStyle(theme.textColor)
-            } icon: {
-                Text("🌰").font(.caption)
             }
+            .font(.caption.monospacedDigit())
+            .fixedSize()
             .accessibilityLabel("\(acornLedger.currentBalance) acorns")
 
-            // Current streak (only shown when > 0)
             if streakTracker.currentStreak > 0 {
-                Label {
+                HStack(spacing: 3) {
+                    Text(streakTracker.capturedToday ? "🔥" : "⏳")
                     Text("\(streakTracker.currentStreak)")
-                        .font(.caption.monospacedDigit())
                         .fontWeight(.semibold)
                         .foregroundStyle(theme.textColor)
-                } icon: {
-                    Text(streakTracker.capturedToday ? "🔥" : "⏳")
-                        .font(.caption)
                 }
+                .font(.caption.monospacedDigit())
+                .fixedSize()
                 .accessibilityLabel("\(streakTracker.currentStreak) day streak")
             }
         }
