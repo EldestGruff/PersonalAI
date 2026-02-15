@@ -116,6 +116,8 @@ final class CaptureViewModel {
     private let stateEngine = SquirrelStateEngine.shared
     private let badgeService = BadgeService.shared
     private let variableRewardService = VariableRewardService.shared
+    private let reminderService = SquirrelReminderService.shared
+    private let companionService = SquirrelCompanionService.shared
 
     // MARK: - Debounce
 
@@ -449,6 +451,20 @@ final class CaptureViewModel {
 
                 // Roll for variable reward
                 self.lastVariableReward = variableRewardService.roll()
+
+                // Record capture timestamp for reminder peak-hour analysis
+                var timestamps = (UserDefaults.standard.array(forKey: "capture.timestamps") as? [Double]) ?? []
+                timestamps.append(Date().timeIntervalSince1970)
+                // Keep only last 60 days of data (no unbounded growth)
+                let cutoff = Date().addingTimeInterval(-60 * 24 * 3600).timeIntervalSince1970
+                timestamps = timestamps.filter { $0 > cutoff }
+                UserDefaults.standard.set(timestamps, forKey: "capture.timestamps")
+
+                // Reset gentle-return notification timer
+                self.reminderService.onCaptureCompleted()
+
+                // Advance companion life stage
+                self.companionService.recordCapture()
 
                 // Success - reset form
                 self.resetForm()

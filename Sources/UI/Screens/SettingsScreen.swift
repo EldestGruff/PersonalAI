@@ -40,6 +40,9 @@ struct SettingsScreen: View {
                     // Permissions section
                     permissionsSection
 
+                    // Notifications section
+                    notificationsSection
+
                     // Personalization section
                     personalizationSection
 
@@ -202,6 +205,82 @@ struct SettingsScreen: View {
             }
         }
         .listRowBackground(theme.surfaceColor)
+    }
+
+    // MARK: - Notifications Section
+
+    @State private var reminderService = SquirrelReminderService.shared
+
+    private var notificationsSection: some View {
+        let theme = themeEngine.getCurrentTheme()
+        return Section {
+            // Master toggle — requests permission on first enable
+            HStack {
+                Image(systemName: "bell.badge.fill")
+                    .foregroundStyle(theme.primaryColor)
+                    .frame(width: 28)
+                Toggle(isOn: Binding(
+                    get: { reminderService.notificationsEnabled },
+                    set: { newValue in
+                        if newValue {
+                            _Concurrency.Task {
+                                _ = await reminderService.requestPermission()
+                            }
+                        } else {
+                            reminderService.notificationsEnabled = false
+                        }
+                    }
+                )) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Squirrel Reminders")
+                            .foregroundStyle(theme.textColor)
+                        Text(reminderService.authorizationStatus == .denied
+                             ? "Blocked in Settings — tap to open"
+                             : "Persona-voiced nudges from your squirrelsona")
+                            .font(.caption)
+                            .foregroundStyle(theme.secondaryTextColor)
+                    }
+                }
+                .tint(theme.primaryColor)
+                .onChange(of: reminderService.notificationsEnabled) { _, _ in
+                    reminderService.rescheduleAll()
+                }
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if reminderService.authorizationStatus == .denied {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+            }
+
+            if reminderService.notificationsEnabled {
+                ForEach(SquirrelNotificationType.allCases, id: \.self) { type in
+                    HStack {
+                        Image(systemName: type.displayIcon)
+                            .foregroundStyle(theme.secondaryTextColor)
+                            .frame(width: 28)
+                        Toggle(isOn: Binding(
+                            get: { reminderService.isEnabled(type) },
+                            set: { reminderService.setEnabled(type, $0) }
+                        )) {
+                            Text(type.displayName)
+                                .foregroundStyle(theme.textColor)
+                        }
+                        .tint(theme.primaryColor)
+                    }
+                }
+            }
+        } header: {
+            Text("Notifications")
+                .foregroundStyle(theme.secondaryTextColor)
+        } footer: {
+            Text("Timing is based on when you usually capture. Max 1 notification per day.")
+                .foregroundStyle(theme.secondaryTextColor)
+        }
+        .listRowBackground(theme.surfaceColor)
+        .task { await reminderService.refreshAuthorizationStatus() }
     }
 
     // MARK: - Personalization Section

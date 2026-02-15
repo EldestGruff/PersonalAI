@@ -10,6 +10,7 @@ import SwiftUI
 import AppIntents
 import FoundationModels
 import Combine
+import UserNotifications
 
 @main
 struct STASHApp: App {
@@ -33,6 +34,9 @@ struct STASHApp: App {
         print("🎯 Registering \(ThoughtAppShortcuts.appShortcuts.count) App Shortcuts...")
         ThoughtAppShortcuts.updateAppShortcutParameters()
         print("✅ App Shortcuts registration complete")
+
+        // Register notification delegate for deep link handling
+        UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
     }
 
     // MARK: - Body
@@ -53,6 +57,7 @@ struct STASHApp: App {
 struct MainTabView: View {
     @State private var selectedTab: Tab = .browse
     @State private var showVoiceCapture: Bool = false
+    @State private var showCaptureFromNotification: Bool = false
     @Environment(\.scenePhase) private var scenePhase
 
     enum Tab: String {
@@ -129,6 +134,23 @@ struct MainTabView: View {
                 viewModel: VoiceCaptureViewModel()
             )
         }
+        .sheet(isPresented: $showCaptureFromNotification) {
+            CaptureScreen(
+                viewModel: CaptureViewModel(
+                    thoughtService: ThoughtService.shared,
+                    contextService: ContextService.shared,
+                    classificationService: ClassificationService.shared,
+                    fineTuningService: FineTuningService.shared,
+                    taskService: TaskService.shared
+                )
+            )
+        }
+        .onReceive(NotificationDelegate.shared.$openCapture) { shouldOpen in
+            if shouldOpen {
+                showCaptureFromNotification = true
+                NotificationDelegate.shared.openCapture = false
+            }
+        }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 checkForPendingVoiceCapture()
@@ -170,6 +192,37 @@ extension PermissionCoordinator {
             contactsService: ContactsService()
         )
     }()
+}
+
+// MARK: - Notification Delegate
+
+/// Handles notification tap responses and routes deep links to the capture screen.
+final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, ObservableObject, @unchecked Sendable {
+    static let shared = NotificationDelegate()
+
+    @Published var openCapture: Bool = false
+
+    // Display notifications even when app is foregrounded
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .sound])
+    }
+
+    // Handle notification tap — deep link to capture screen
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        let userInfo = response.notification.request.content.userInfo
+        if let deeplink = userInfo["deeplink"] as? String, deeplink == "stash://capture" {
+            DispatchQueue.main.async { self.openCapture = true }
+        }
+        completionHandler()
+    }
 }
 
 // MARK: - Previews

@@ -414,54 +414,65 @@ struct PersonaCard: View {
         let theme = themeEngine.getCurrentTheme()
 
         Button {
-            onTap()
+            onSetDefault()
         } label: {
-            VStack(spacing: 12) {
-                // Emoji
-                Text(persona.emoji)
-                    .font(.system(size: 48))
-                    .padding()
-                    .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? theme.primaryColor.opacity(0.2))
-                    .cornerRadius(20)
+            ZStack(alignment: .topTrailing) {
+                VStack(spacing: 12) {
+                    // Emoji
+                    Text(persona.emoji)
+                        .font(.system(size: 48))
+                        .padding()
+                        .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? theme.primaryColor.opacity(0.2))
+                        .cornerRadius(20)
 
-                // Name
-                Text(persona.name)
-                    .font(.headline)
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(theme.textColor)
-                    .lineLimit(2)
+                    // Name
+                    Text(persona.name)
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
+                        .foregroundColor(theme.textColor)
+                        .lineLimit(2)
 
-                // Default indicator
-                if isDefault {
-                    HStack(spacing: 4) {
-                        Image(systemName: "star.fill")
-                            .font(.caption)
-                        Text("Default")
-                            .font(.caption)
+                    // Selected indicator
+                    if isDefault {
+                        HStack(spacing: 4) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.caption)
+                            Text("Active")
+                                .font(.caption)
+                        }
+                        .foregroundColor(theme.primaryColor)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(theme.primaryColor.opacity(0.12))
+                        .cornerRadius(8)
                     }
-                    .foregroundColor(theme.warningColor)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(theme.warningColor.opacity(0.15))
-                    .cornerRadius(8)
-                }
 
-                Spacer()
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 180)
+                .padding()
+                .background(theme.surfaceColor)
+                .cornerRadius(16)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(isDefault ? theme.primaryColor : Color.clear, lineWidth: 2)
+                )
+
+                // Info button — opens detail sheet without triggering selection
+                Button {
+                    onTap()
+                } label: {
+                    Image(systemName: "info.circle")
+                        .font(.system(size: 16))
+                        .foregroundStyle(theme.secondaryTextColor)
+                        .padding(10)
+                }
+                .buttonStyle(.plain)
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 180)
-            .padding()
-            .background(theme.surfaceColor)
-            .cornerRadius(16)
         }
         .buttonStyle(.plain)
         .contextMenu {
-            Button {
-                onSetDefault()
-            } label: {
-                Label("Set as Default", systemImage: "star.fill")
-            }
-
             if let onDelete = onDelete {
                 Button(role: .destructive) {
                     onDelete()
@@ -479,6 +490,7 @@ struct PersonaDetailSheet: View {
     let persona: SquirrelPersona
     @Environment(\.dismiss) private var dismiss
     @State private var themeEngine = ThemeEngine.shared
+    @ObservedObject private var personaService = PersonaService.shared
 
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
@@ -552,8 +564,15 @@ struct PersonaDetailSheet: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Done") {
-                        dismiss()
+                    Button("Done") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    if personaService.defaultPersonaId != persona.id {
+                        Button("Use This") {
+                            personaService.setDefaultPersona(persona)
+                            dismiss()
+                        }
+                        .fontWeight(.semibold)
                     }
                 }
             }

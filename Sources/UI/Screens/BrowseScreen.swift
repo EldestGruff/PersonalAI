@@ -30,6 +30,7 @@ struct BrowseScreen: View {
     @State private var themeEngine = ThemeEngine.shared
     private let acornLedger = AcornLedger.shared
     private let streakTracker = StreakTracker.shared
+    private let personaService = PersonaService.shared
 
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
@@ -229,6 +230,15 @@ struct BrowseScreen: View {
                 Section {
                     activeFilterBanner
                 }
+            }
+
+            // Squirrel companion card (Issue #44) — hidden in edit mode
+            if !viewModel.isEditMode {
+                Section {
+                    SquirrelCompanionCard(persona: personaService.defaultPersona)
+                }
+                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                .listRowBackground(Color.clear)
             }
 
             // Today's Shiny card (Issue #40) — hidden in edit mode

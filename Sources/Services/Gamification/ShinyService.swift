@@ -102,6 +102,11 @@ actor ShinyService {
 
         if !promoted.isEmpty {
             UserDefaults.standard.set(Date(), forKey: Keys.lastPromotionDate)
+            let totalShinies = existing.count + promoted.count
+            await MainActor.run {
+                SquirrelReminderService.shared.scheduleShinyAlert()
+                SquirrelCompanionService.shared.updateShinyCount(totalShinies)
+            }
         }
 
         return promoted
