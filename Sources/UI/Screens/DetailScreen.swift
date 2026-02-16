@@ -936,7 +936,7 @@ struct RelatedThoughtRow: View {
 
             HStack(spacing: 8) {
                 // Date
-                Text(result.thought.createdAt.formatted(.relative(presentation: .named)))
+                Text(result.thought.createdAt, style: .relative)
                     .font(.caption)
                     .foregroundColor(theme.secondaryTextColor)
 

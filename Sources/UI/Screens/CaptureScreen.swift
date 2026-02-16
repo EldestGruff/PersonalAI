@@ -345,7 +345,7 @@ struct CaptureScreen: View {
                             .lineLimit(2)
 
                         HStack {
-                            Text(result.thought.createdAt.formatted(.relative(presentation: .named)))
+                            Text(result.thought.createdAt, style: .relative)
                                 .font(.caption2)
                                 .foregroundColor(theme.secondaryTextColor)
 

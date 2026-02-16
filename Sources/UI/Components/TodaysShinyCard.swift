@@ -26,7 +26,7 @@ struct TodaysShinyCard: View {
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(theme.secondaryTextColor)
                     Spacer()
-                    Text(thought.createdAt.formatted(.relative(presentation: .named)))
+                    Text(thought.createdAt, style: .relative)
                         .font(.caption2)
                         .foregroundStyle(theme.secondaryTextColor)
                 }

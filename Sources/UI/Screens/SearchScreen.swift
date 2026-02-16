@@ -302,7 +302,7 @@ struct SearchResultRow: View {
 
             // Metadata
             HStack(spacing: 8) {
-                Text(thought.createdAt.formatted(.relative(presentation: .named)))
+                Text(thought.createdAt, style: .relative)
                     .font(.caption)
                     .foregroundColor(theme.secondaryTextColor)
 

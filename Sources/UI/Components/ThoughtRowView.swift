@@ -72,7 +72,7 @@ struct ThoughtRowView: View {
                     Image(systemName: "clock")
                         .font(.caption2)
                         .accessibilityHidden(true)
-                    Text(thought.createdAt.formatted(.relative(presentation: .named)))
+                    Text(thought.createdAt, style: .relative)
                         .font(.caption)
                 }
                 .foregroundColor(theme.secondaryTextColor)
