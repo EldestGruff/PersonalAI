@@ -77,9 +77,6 @@ struct DetailScreen: View {
 
                     // Feedback section
                     feedbackSection
-
-                    // Metadata
-                    metadataSection
                 }
                 .padding()
             }
