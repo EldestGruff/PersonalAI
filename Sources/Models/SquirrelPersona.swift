@@ -45,6 +45,18 @@ struct SquirrelPersona: Identifiable, Codable, Sendable, Equatable {
     var color: Color {
         Color(hex: colorHex) ?? .blue
     }
+
+    /// Asset catalog image name for this persona's portrait
+    var imageName: String {
+        switch id.uuidString {
+        case "00000000-0000-0000-0000-000000000001": return "squirrel-supportive-listener"
+        case "00000000-0000-0000-0000-000000000002": return "squirrel-socratic-questioner"
+        case "00000000-0000-0000-0000-000000000003": return "squirrel-brainstorm"
+        case "00000000-0000-0000-0000-000000000004": return "squirrel-journaling"
+        case "00000000-0000-0000-0000-000000000005": return "squirrel-devils-advocate"
+        default:                                     return "squirrel-base"
+        }
+    }
 }
 
 // MARK: - Built-in Personas

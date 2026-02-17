@@ -418,12 +418,12 @@ struct PersonaCard: View {
         } label: {
             ZStack(alignment: .topTrailing) {
                 VStack(spacing: 12) {
-                    // Emoji
-                    Text(persona.emoji)
-                        .font(.system(size: 48))
-                        .padding()
-                        .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? theme.primaryColor.opacity(0.2))
-                        .cornerRadius(20)
+                    // Portrait image (emoji fallback for custom personas)
+                    Image(persona.imageName)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 90, height: 90)
+                        .clipShape(RoundedRectangle(cornerRadius: 18))
 
                     // Name
                     Text(persona.name)
@@ -503,12 +503,12 @@ struct PersonaDetailSheet: View {
 
                 ScrollView {
                     VStack(spacing: 24) {
-                        // Emoji
-                        Text(persona.emoji)
-                            .font(.system(size: 80))
-                            .padding()
-                            .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? theme.primaryColor.opacity(0.2))
-                            .cornerRadius(30)
+                        // Portrait image (emoji fallback for custom personas)
+                        Image(persona.imageName)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 140, height: 140)
+                            .clipShape(RoundedRectangle(cornerRadius: 28))
 
                         // Name
                         Text(persona.name)

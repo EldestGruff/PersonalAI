@@ -51,6 +51,17 @@ enum SquirrelLifeStage: String, CaseIterable, Codable {
         }
     }
 
+    /// Asset catalog image name for this stage
+    var imageName: String {
+        switch self {
+        case .sprout:    return "squirrel-sprout"
+        case .curious:   return "squirrel-curious"
+        case .seasoned:  return "squirrel-seasoned"
+        case .elder:     return "squirrel-elder"
+        case .legendary: return "squirrel-legendary"
+        }
+    }
+
     /// Base emoji representation. Accessories layer on top.
     var baseEmoji: String {
         switch self {

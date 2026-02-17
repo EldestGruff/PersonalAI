@@ -133,17 +133,20 @@ struct SquirrelCompanionCard: View {
     // MARK: - Avatar
 
     private func avatarView(stage: SquirrelLifeStage, theme: any ThemeVariant) -> some View {
-        ZStack {
+        let state = stateEngine.currentState
+        // Adventure mode overrides the normal state image
+        let imageName = companionService.isOnAdventure ? "squirrel-adventuring" : state.imageName
+
+        return ZStack {
             Circle()
                 .fill(stageColor(stage, theme: theme).opacity(0.12))
                 .frame(width: 68, height: 68)
 
-            VStack(spacing: 0) {
-                // Stage base
-                Text(stage.baseEmoji)
-                    .font(.system(size: stage == .sprout ? 28 : 36))
-            }
-            .frame(width: 68, height: 68)
+            Image(imageName)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 68, height: 68)
+                .clipShape(Circle())
 
             // Equipped accessory overlay (top-right corner)
             if let accessory = companionService.equippedAccessory {
@@ -152,11 +155,13 @@ struct SquirrelCompanionCard: View {
                     .offset(x: 18, y: -18)
             }
 
-            // Adventure mode indicator
+            // Adventure mode indicator badge
             if companionService.isOnAdventure {
                 Text("🗺️")
-                    .font(.system(size: 14))
-                    .offset(x: 18, y: 18)
+                    .font(.system(size: 12))
+                    .padding(3)
+                    .background(Circle().fill(theme.surfaceColor))
+                    .offset(x: 20, y: 20)
             }
         }
         .frame(width: 68, height: 68)

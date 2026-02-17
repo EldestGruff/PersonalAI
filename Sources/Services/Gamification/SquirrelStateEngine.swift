@@ -47,6 +47,17 @@ enum SquirrelEmotionalState: String, CaseIterable {
         case .celebrating: return "🎉"
         }
     }
+
+    /// Asset catalog image name for this state
+    var imageName: String {
+        switch self {
+        case .thriving:    return "squirrel-thriving"
+        case .curious:     return "squirrel-curious"
+        case .napping:     return "squirrel-napping"
+        case .waiting:     return "squirrel-base"
+        case .celebrating: return "squirrel-celebrating"
+        }
+    }
 }
 
 // MARK: - Commentary Tables
