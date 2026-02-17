@@ -107,8 +107,8 @@ final class SearchViewModel {
         offset = 0
 
         do {
-            // Fetch all thoughts for semantic search
-            let thoughts = try await thoughtService.list(filter: nil)
+            // Fetch all active thoughts for semantic search
+            let thoughts = try await thoughtService.list(filter: .active)
 
             // Perform semantic search
             let results = await semanticSearchService.search(query: query, in: thoughts)
