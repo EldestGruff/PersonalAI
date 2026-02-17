@@ -810,7 +810,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = 2773DJ42YU;
+				DEVELOPMENT_TEAM = 3RJ4WFRA6W;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -877,7 +877,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 2773DJ42YU;
+				DEVELOPMENT_TEAM = 3RJ4WFRA6W;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -911,12 +911,12 @@
 				CODE_SIGN_ENTITLEMENTS = PersonalAI.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0.3;
 				DEVELOPMENT_TEAM = 3RJ4WFRA6W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PersonalAI/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = S.T.A.S.H.;
+				INFOPLIST_KEY_CFBundleDisplayName = STASH;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "STASH needs access to calendar events to provide context-aware features.";
 				INFOPLIST_KEY_NSContactsUsageDescription = "STASH needs access to contacts to provide context-aware features.";
@@ -960,12 +960,12 @@
 				CODE_SIGN_ENTITLEMENTS = PersonalAI.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0.3;
 				DEVELOPMENT_TEAM = 3RJ4WFRA6W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PersonalAI/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = S.T.A.S.H.;
+				INFOPLIST_KEY_CFBundleDisplayName = STASH;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "STASH needs access to calendar events to provide context-aware features.";
 				INFOPLIST_KEY_NSContactsUsageDescription = "STASH needs access to contacts to provide context-aware features.";
