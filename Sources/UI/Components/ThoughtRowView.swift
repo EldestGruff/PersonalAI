@@ -72,8 +72,10 @@ struct ThoughtRowView: View {
                     Image(systemName: "clock")
                         .font(.caption2)
                         .accessibilityHidden(true)
-                    Text(thought.createdAt, style: .relative)
-                        .font(.caption)
+                    TimelineView(.everyMinute) { _ in
+                        Text(thought.createdAt.relativeLabel)
+                            .font(.caption)
+                    }
                 }
                 .foregroundColor(theme.secondaryTextColor)
 
@@ -247,4 +249,23 @@ struct ThoughtCardView: View {
         )
     )
     .padding()
+}
+
+// MARK: - Date Extension
+
+private extension Date {
+    /// Relative label without seconds. Updates at minute granularity.
+    var relativeLabel: String {
+        let diff = Int(Date().timeIntervalSince(self))
+        guard diff >= 0 else { return "Just now" }
+        if diff < 60 { return "Just now" }
+        let mins = diff / 60
+        if mins < 60 { return "\(mins) min ago" }
+        let hours = mins / 60
+        if hours < 24 { return "\(hours) hr ago" }
+        let days = hours / 24
+        if days == 1 { return "Yesterday" }
+        if days < 7 { return "\(days) days ago" }
+        return formatted(.dateTime.month(.abbreviated).day())
+    }
 }
