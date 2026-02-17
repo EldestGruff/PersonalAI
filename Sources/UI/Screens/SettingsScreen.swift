@@ -599,12 +599,14 @@ struct SettingsScreen: View {
 
     private var aboutSection: some View {
         let theme = themeEngine.getCurrentTheme()
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—"
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "—"
         return Section {
             HStack {
                 Text("Version")
                     .foregroundStyle(theme.textColor)
                 Spacer()
-                Text("3.0.0-alpha (Phase 3A)")
+                Text(version)
                     .foregroundColor(theme.secondaryTextColor)
             }
 
@@ -612,7 +614,7 @@ struct SettingsScreen: View {
                 Text("Build")
                     .foregroundStyle(theme.textColor)
                 Spacer()
-                Text("Spec 3 - UI & ViewModels")
+                Text(build)
                     .foregroundColor(theme.secondaryTextColor)
             }
 
