@@ -52,7 +52,7 @@ enum SquirrelEmotionalState: String, CaseIterable {
     var imageName: String {
         switch self {
         case .thriving:    return "squirrel-thriving"
-        case .curious:     return "squirrel-curious"
+        case .curious:     return "squirrel-base"
         case .napping:     return "squirrel-napping"
         case .waiting:     return "squirrel-base"
         case .celebrating: return "squirrel-celebrating"

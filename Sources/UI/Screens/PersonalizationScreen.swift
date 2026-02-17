@@ -421,9 +421,8 @@ struct PersonaCard: View {
                     // Portrait image (emoji fallback for custom personas)
                     Image(persona.imageName)
                         .resizable()
-                        .scaledToFill()
-                        .frame(width: 90, height: 90)
-                        .clipShape(RoundedRectangle(cornerRadius: 18))
+                        .scaledToFit()
+                        .frame(height: 90)
 
                     // Name
                     Text(persona.name)
@@ -506,9 +505,8 @@ struct PersonaDetailSheet: View {
                         // Portrait image (emoji fallback for custom personas)
                         Image(persona.imageName)
                             .resizable()
-                            .scaledToFill()
-                            .frame(width: 140, height: 140)
-                            .clipShape(RoundedRectangle(cornerRadius: 28))
+                            .scaledToFit()
+                            .frame(height: 140)
 
                         // Name
                         Text(persona.name)
