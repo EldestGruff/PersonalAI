@@ -138,21 +138,16 @@ struct SquirrelCompanionCard: View {
         let imageName = companionService.isOnAdventure ? "squirrel-adventuring" : state.imageName
 
         return ZStack {
-            Circle()
-                .fill(stageColor(stage, theme: theme).opacity(0.12))
-                .frame(width: 68, height: 68)
-
             Image(imageName)
                 .resizable()
-                .scaledToFill()
-                .frame(width: 68, height: 68)
-                .clipShape(Circle())
+                .scaledToFit()
+                .frame(height: 80)
 
             // Equipped accessory overlay (top-right corner)
             if let accessory = companionService.equippedAccessory {
                 Text(accessory.emoji)
                     .font(.system(size: 16))
-                    .offset(x: 18, y: -18)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             }
 
             // Adventure mode indicator badge
@@ -161,10 +156,10 @@ struct SquirrelCompanionCard: View {
                     .font(.system(size: 12))
                     .padding(3)
                     .background(Circle().fill(theme.surfaceColor))
-                    .offset(x: 20, y: 20)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
             }
         }
-        .frame(width: 68, height: 68)
+        .frame(width: 68, height: 80)
     }
 
     // MARK: - Helpers
