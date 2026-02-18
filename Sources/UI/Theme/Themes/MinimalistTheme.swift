@@ -12,12 +12,12 @@ struct MinimalistTheme: ThemeVariant {
     let displayName = "Minimalist"
 
     // Colors - Monochromatic grayscale palette
-    let primaryColor = Color.gray
-    let accentColor = Color(white: 0.3)
-    let backgroundColor = Color(white: 0.98)
-    let surfaceColor = Color.white
-    let textColor = Color(white: 0.15)
-    let secondaryTextColor = Color(white: 0.5)
+    let primaryColor = Color(white: 0.2)        // dark enough for clear on-state toggles
+    let accentColor = Color(white: 0.2)
+    let backgroundColor = Color(white: 0.96)
+    let surfaceColor = Color(white: 0.92)       // off-white rows give contrast to toggle tracks
+    let textColor = Color(white: 0.1)
+    let secondaryTextColor = Color(white: 0.45)
 
     // Typography - Clean, readable
     let headingWeight = Font.Weight.semibold
