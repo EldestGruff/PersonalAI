@@ -21,6 +21,15 @@ struct SquirrelCompanionCard: View {
     @State private var stateEngine = SquirrelStateEngine.shared
     @State private var greeting: String = ""
     @State private var showShop = false
+    @State private var adventureImageName: String = "squirrel-adventuring"
+
+    private static let adventureImages = [
+        "squirrel-adventuring",
+        "squirrel-adventuring-chef",
+        "squirrel-adventuring-painter",
+        "squirrel-adventuring-pilot",
+        "squirrel-adventuring-professor",
+    ]
 
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
@@ -124,7 +133,10 @@ struct SquirrelCompanionCard: View {
                 .fill(theme.surfaceColor.opacity(0.6))
                 .shadow(color: theme.shadowColor, radius: 4, y: 2)
         )
-        .onAppear { refreshGreeting() }
+        .onAppear {
+            refreshGreeting()
+            adventureImageName = Self.adventureImages.randomElement() ?? "squirrel-adventuring"
+        }
         .sheet(isPresented: $showShop) {
             AccessoryShopView(persona: persona)
         }
@@ -135,7 +147,7 @@ struct SquirrelCompanionCard: View {
     private func avatarView(stage: SquirrelLifeStage, theme: any ThemeVariant) -> some View {
         let state = stateEngine.currentState
         // Adventure mode overrides the normal state image
-        let imageName = companionService.isOnAdventure ? "squirrel-adventuring" : state.imageName
+        let imageName = companionService.isOnAdventure ? adventureImageName : state.imageName
 
         return ZStack {
             Image(imageName)
