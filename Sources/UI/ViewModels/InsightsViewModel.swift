@@ -180,14 +180,10 @@ class InsightsViewModel {
 
             isLoading = false
 
-            // Generate comprehensive AI insights (iOS 26+)
+            // Generate AI insights in background so charts appear immediately
             if #available(iOS 26.0, *), filteredThoughts.count >= 5 {
-                await loadGeneratedInsights(dateRange: chartRange)
-            }
-
-            // Also load legacy AI insights for backward compatibility
-            if #available(iOS 26.0, *), filteredThoughts.count >= 5 {
-                await loadAIInsights(thoughts: filteredThoughts)
+                let range = chartRange
+                Task { await loadGeneratedInsights(dateRange: range) }
             }
 
         } catch {
