@@ -183,7 +183,7 @@ class InsightsViewModel {
             // Generate AI insights in background so charts appear immediately
             if #available(iOS 26.0, *), filteredThoughts.count >= 5 {
                 let range = chartRange
-                Swift.Task { await loadGeneratedInsights(dateRange: range) }
+                _Concurrency.Task { await loadGeneratedInsights(dateRange: range) }
             }
 
         } catch {
