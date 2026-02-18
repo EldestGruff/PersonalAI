@@ -230,6 +230,7 @@ struct BrowseScreen: View {
                 Section {
                     activeFilterBanner
                 }
+                .listRowBackground(Color.clear)
             }
 
             // Squirrel companion card (Issue #44) — hidden in edit mode
@@ -277,6 +278,7 @@ struct BrowseScreen: View {
             // Thoughts
             Section {
                 ForEach(viewModel.thoughts) { thought in
+
                     HStack(spacing: 12) {
                         // Checkbox in edit mode (Issue #5)
                         if viewModel.isEditMode {
@@ -333,6 +335,7 @@ struct BrowseScreen: View {
                     }
                 }
             }
+            .listRowBackground(Color.clear)
         }
         .scrollContentBackground(.hidden)
         .background(theme.backgroundColor)
@@ -391,13 +394,15 @@ struct BrowseScreen: View {
     }
 
     private func filterChip(_ text: String, chipColor: Color) -> some View {
-        Text(text)
+        let theme = themeEngine.getCurrentTheme()
+        return Text(text)
             .font(.caption)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .glassEffect(
-                .regular.tint(chipColor.opacity(0.4)),
-                in: RoundedRectangle(cornerRadius: 8)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(chipColor.opacity(0.15))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(chipColor.opacity(0.4), lineWidth: 1))
             )
             .foregroundColor(chipColor)
     }
