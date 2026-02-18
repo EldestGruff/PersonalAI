@@ -20,6 +20,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3] - Gamification & Polish - 2026-02-17
+
+### Added
+
+**Squirrelsona Tamagotchi Layer (#44)**
+- Life stages: Sprout → Curious → Seasoned → Elder → Legendary (lifetime capture milestones)
+- Emotional states: Thriving, Curious, Napping, Waiting, Celebrating — derived from streak data
+- Adventure mode: 3+ day gaps send squirrel on adventure; 5 rotating illustrated variants (base, chef, painter, pilot, professor)
+- Accessories & Acorn Shop: 8 purchasable + 2 milestone-unlock accessories; equip/unequip from shop sheet
+- All illustrated portraits wired to asset catalog — transparent background PNGs, portrait layout
+
+**Squirrelsona Emotional Gauge (#39)**
+- SquirrelStateEngine: instant, offline, deterministic state from StreakTracker
+- Per-persona × per-state commentary tables for all 5 built-in personas
+
+**Squirrel-Sona Personalization System (#13)**
+- Persona portraits on cards and detail sheets — randomized squirrel header on screen appear
+- PersonalizationScreen persona grid with set-default, edit, delete
+
+**Search Improvements**
+- Semantic search threshold lowered (0.3 → 0.2) for better recall
+- Keyword fallback tokenized — individual word matching instead of exact phrase
+- Tags included in both semantic and keyword search paths
+- Search now filters to active thoughts only
+
+**UX Polish**
+- Thought row timestamps: replaced second-ticker with minute-granularity relative labels ("Just now", "X min ago", etc.) using TimelineView
+- About screen now shows live version and build number from Bundle.main
+- Insights: AI generation fires as background task — charts load instantly
+
+### Fixed
+- Insights screen hang on open (FoundationModels cold start was blocking UI)
+- Portrait squirrel images no longer cropped by circle clip — scaledToFit in portrait frame
+- Build warnings: removed deprecated ALWAYS_SEARCH_USER_PATHS and ENABLE_STRICT_OBJC_MSGSEND
+- Removed stale WatershipDown placeholder asset references
+
+---
+
 ## [0.1.0] - Phase 3A Complete - 2026-01-20
 
 ### Current Status
