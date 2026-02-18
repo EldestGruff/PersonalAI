@@ -175,7 +175,7 @@ struct SettingsScreen: View {
                         }
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(theme.primaryColor)
+                    .themedToggle(theme)
                 } else {
                     Button {
                         _Concurrency.Task {
@@ -188,7 +188,7 @@ struct SettingsScreen: View {
                         }
                     }
                     .buttonStyle(.bordered)
-                    .tint(theme.primaryColor)
+                    .themedToggle(theme)
                 }
             }
             .padding(.vertical, 8)
@@ -241,7 +241,7 @@ struct SettingsScreen: View {
                             .foregroundStyle(theme.secondaryTextColor)
                     }
                 }
-                .tint(theme.primaryColor)
+                .themedToggle(theme)
                 .onChange(of: reminderService.notificationsEnabled) { _, _ in
                     reminderService.rescheduleAll()
                 }
@@ -268,7 +268,7 @@ struct SettingsScreen: View {
                             Text(type.displayName)
                                 .foregroundStyle(theme.textColor)
                         }
-                        .tint(theme.primaryColor)
+                        .themedToggle(theme)
                     }
                 }
             }
@@ -398,7 +398,7 @@ struct SettingsScreen: View {
                         .foregroundColor(theme.secondaryTextColor)
                 }
             }
-            .tint(theme.primaryColor)
+            .themedToggle(theme)
             .accessibilityIdentifier("autoClassificationToggle")
 
             Toggle(isOn: $viewModel.enableContextEnrichment) {
@@ -410,7 +410,7 @@ struct SettingsScreen: View {
                         .foregroundColor(theme.secondaryTextColor)
                 }
             }
-            .tint(theme.primaryColor)
+            .themedToggle(theme)
             .accessibilityIdentifier("contextEnrichmentToggle")
 
             Toggle(isOn: $viewModel.enableAutoTags) {
@@ -422,7 +422,7 @@ struct SettingsScreen: View {
                         .foregroundColor(theme.secondaryTextColor)
                 }
             }
-            .tint(theme.primaryColor)
+            .themedToggle(theme)
             .accessibilityIdentifier("autoTaggingToggle")
 
             Toggle(isOn: $viewModel.autoCreateReminders) {
@@ -434,7 +434,7 @@ struct SettingsScreen: View {
                         .foregroundColor(theme.secondaryTextColor)
                 }
             }
-            .tint(theme.primaryColor)
+            .themedToggle(theme)
             .accessibilityIdentifier("autoCreateRemindersToggle")
         } header: {
             Text("Features")
@@ -477,7 +477,7 @@ struct SettingsScreen: View {
                     }
                 }
                 .foregroundStyle(theme.textColor)
-                .tint(theme.primaryColor)
+                .themedToggle(theme)
 
                 // Reminder list picker
                 Picker("Default Reminder List", selection: Binding(
@@ -503,7 +503,7 @@ struct SettingsScreen: View {
                     }
                 }
                 .foregroundStyle(theme.textColor)
-                .tint(theme.primaryColor)
+                .themedToggle(theme)
             }
         } header: {
             Text("Calendar & Reminders")
@@ -529,7 +529,7 @@ struct SettingsScreen: View {
                         .foregroundColor(theme.secondaryTextColor)
                 }
             }
-            .tint(theme.primaryColor)
+            .themedToggle(theme)
             .accessibilityIdentifier("autoSyncToggle")
 
             if viewModel.autoSyncEnabled {
@@ -544,7 +544,7 @@ struct SettingsScreen: View {
                         Text("1 hour").tag(TimeInterval(3600))
                     }
                     .pickerStyle(.menu)
-                    .tint(theme.primaryColor)
+                    .themedToggle(theme)
                 }
             }
         } header: {
@@ -683,7 +683,7 @@ struct PermissionRow: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
-                .tint(theme.primaryColor)
+                .themedToggle(theme)
                 .accessibilityIdentifier("\(permissionIdentifier)EnableButton")
             }
         }

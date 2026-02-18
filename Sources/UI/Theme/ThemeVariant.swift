@@ -205,6 +205,10 @@ extension ThemeVariant {
     /// Enable for themes that want frosted glass/blur effects
     var usesGlassEffect: Bool { false }
 
+    /// Use outlined toggle style instead of system toggle
+    /// Enables themes where system off-state track has insufficient contrast
+    var usesOutlinedToggles: Bool { false }
+
     // MARK: - Category Colors (Existing)
 
     /// Semantic category colors (default fallbacks for themes that don't define them)

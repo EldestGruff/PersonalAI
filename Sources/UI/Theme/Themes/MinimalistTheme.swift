@@ -19,6 +19,8 @@ struct MinimalistTheme: ThemeVariant {
     let textColor = Color(white: 0.1)
     let secondaryTextColor = Color(white: 0.45)
 
+    var usesOutlinedToggles: Bool { true }
+
     // Typography - Clean, readable
     let headingWeight = Font.Weight.semibold
     let bodyWeight = Font.Weight.regular
