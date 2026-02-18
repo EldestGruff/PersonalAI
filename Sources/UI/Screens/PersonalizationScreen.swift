@@ -15,6 +15,24 @@ struct PersonalizationScreen: View {
     @State private var showPersonaDetail: SquirrelPersona?
     @State private var showDeleteConfirmation = false
     @State private var personaToDelete: SquirrelPersona?
+    @State private var headerImageName: String = "squirrel-base"
+
+    private static let headerImagePool: [String] = [
+        "squirrel-base",
+        "squirrel-brainstorm",
+        "squirrel-celebrating",
+        "squirrel-devils-advocate",
+        "squirrel-journaling",
+        "squirrel-napping",
+        "squirrel-socratic-questioner",
+        "squirrel-sprout",
+        "squirrel-supportive-listener",
+        "squirrel-thriving",
+        "squirrel-adventuring-chef",
+        "squirrel-adventuring-painter",
+        "squirrel-adventuring-pilot",
+        "squirrel-adventuring-professor",
+    ]
 
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
@@ -117,6 +135,9 @@ struct PersonalizationScreen: View {
                 .padding(.vertical)
             }
         }
+        .onAppear {
+            headerImageName = Self.headerImagePool.randomElement() ?? "squirrel-base"
+        }
         .navigationTitle("Squirrel-Sona")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(theme.surfaceColor, for: .navigationBar)
@@ -149,8 +170,10 @@ struct PersonalizationScreen: View {
         let theme = themeEngine.getCurrentTheme()
 
         return VStack(spacing: 12) {
-            Text("🐿️")
-                .font(.system(size: 64))
+            Image(headerImageName)
+                .resizable()
+                .scaledToFit()
+                .frame(height: 100)
 
             Text("Squirrel-Sona")
                 .font(.title.bold())
