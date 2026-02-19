@@ -50,11 +50,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - About screen now shows live version and build number from Bundle.main
 - Insights: AI generation fires as background task — charts load instantly
 
+### Changed
+
+**Major UX Overhaul — Mood/Growth Separation & Compact Layout**
+- Companion card redesigned: left = mood squirrel (emotional state), right = growth tree (lifecycle stage)
+- Tree emoji progression: 🌰 Sprout → 🌱 Curious → 🪴 Seasoned → 🌳 Elder/Legendary (acorn to oak metaphor)
+- Removed persona name, greeting text, life stage badge from card — pure visual split
+- Card height reduced ~40% via tighter padding and removed spacers
+- Shop button moved from card to toolbar (next to acorn balance bubble)
+- BrowseScreen: search removed from main view (now only in Search tab for cleaner layout)
+- Navigation bar switched to inline mode — reclaims ~52px below toolbar
+- Companion card + filter banner moved OUT of List into pinned header — eliminates 3 section gaps (~105px)
+- Total vertical space recovered on main screen: ~200px
+- All persona emoji replaced with actual squirrel portrait images in chat screens (ThoughtConversationScreen, ConversationScreen)
+- Search screen: "Dig through the hoard..." placeholder, squirrel image in empty state
+
+**Theme Rendering Fixes**
+- Fixed minimalist theme dark card rendering — replaced iOS 26 `.glassEffect` (dark frosted glass on light backgrounds) with themed surface fills
+- Updated InsightsScreen (5 cards), BrowseScreen (filter chips), chat bubbles (ConversationScreen, ThoughtConversationScreen), AIInsightsView (2 panels)
+- Added `OutlinedToggleStyle` for themes with low contrast toggle off-state (minimalist theme)
+- Added `usesOutlinedToggles` protocol property to `ThemeVariant` — minimalist theme enables bordered off-state
+
 ### Fixed
 - Insights screen hang on open (FoundationModels cold start was blocking UI)
 - Portrait squirrel images no longer cropped by circle clip — scaledToFit in portrait frame
 - Build warnings: removed deprecated ALWAYS_SEARCH_USER_PATHS and ENABLE_STRICT_OBJC_MSGSEND
 - Removed stale WatershipDown placeholder asset references
+- Minimalist theme toggle visibility — off-state now has clear border instead of near-transparent fill
+- BrowseViewModel `hasActiveFilters` no longer checks `searchText` (search removed from Browse)
 
 ---
 
