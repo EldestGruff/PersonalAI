@@ -19,8 +19,6 @@ struct SquirrelCompanionCard: View {
     @Environment(\.themeEngine) private var themeEngine
     @State private var companionService = SquirrelCompanionService.shared
     @State private var stateEngine = SquirrelStateEngine.shared
-    @State private var greeting: String = ""
-    @State private var showShop = false
     @State private var adventureImageName: String = "squirrel-adventuring"
 
     private static let adventureImages = [
@@ -34,154 +32,89 @@ struct SquirrelCompanionCard: View {
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
         let stage = companionService.currentLifeStage
+        let state = stateEngine.currentState
+        let imageName = companionService.isOnAdventure ? adventureImageName : state.imageName
 
-        VStack(spacing: 12) {
-            // ── Top row: avatar + info ─────────────────────────────────
-            HStack(alignment: .top, spacing: 14) {
-                // Avatar
-                avatarView(stage: stage, theme: theme)
+        // Two equal halves — each centers its content independently
+        HStack(spacing: 0) {
+            // ── Left half: Mood squirrel ───────────────────────────────
+            VStack(spacing: 6) {
+                ZStack {
+                    Image(imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 100)
 
-                // Name, stage, emotional state
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(persona.name)
-                        .font(.headline)
-                        .foregroundStyle(theme.textColor)
-
-                    HStack(spacing: 6) {
-                        // Life stage badge
-                        HStack(spacing: 3) {
-                            Text(stage.stageOverlay.isEmpty ? "⭐️" : stage.stageOverlay)
-                                .font(.caption2)
-                            Text(stage.displayName)
-                                .font(.caption2.weight(.semibold))
-                                .foregroundStyle(stageColor(stage, theme: theme))
-                        }
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(
-                            Capsule().fill(stageColor(stage, theme: theme).opacity(0.12))
-                        )
-
-                        // Emotional state
-                        let state = stateEngine.currentState
-                        HStack(spacing: 3) {
-                            Text(state.emoji)
-                                .font(.caption2)
-                            Text(state.label)
-                                .font(.caption2)
-                                .foregroundStyle(theme.secondaryTextColor)
-                        }
+                    if let accessory = companionService.equippedAccessory {
+                        Text(accessory.emoji)
+                            .font(.system(size: 18))
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                     }
-
-                    // Progress to next stage
-                    if let next = stage.nextMilestone {
-                        let progress = Double(companionService.lifetimeCaptureCount) / Double(next)
-                        ProgressView(value: min(progress, 1.0))
-                            .tint(stageColor(stage, theme: theme))
-                            .frame(maxWidth: 120)
-                        Text("\(companionService.lifetimeCaptureCount) / \(next) to \(nextStageName(stage))")
-                            .font(.caption2)
-                            .foregroundStyle(theme.secondaryTextColor)
-                    } else {
-                        Text("Legendary — \(companionService.lifetimeCaptureCount) lifetime captures")
-                            .font(.caption2)
-                            .foregroundStyle(theme.secondaryTextColor)
-                    }
-                }
-
-                Spacer()
-
-                // Shop button
-                Button {
-                    showShop = true
-                } label: {
-                    Image(systemName: "cart.badge.plus")
-                        .font(.system(size: 15))
-                        .foregroundStyle(theme.primaryColor)
-                        .padding(8)
-                        .background(Circle().fill(theme.surfaceColor))
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Open Acorn Shop")
-            }
-
-            // ── Greeting / adventure recap ─────────────────────────────
-            if !greeting.isEmpty {
-                HStack(alignment: .top, spacing: 8) {
                     if companionService.isOnAdventure {
                         Text("🗺️")
-                            .font(.caption)
+                            .font(.system(size: 12))
+                            .padding(3)
+                            .background(Circle().fill(theme.surfaceColor))
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
                     }
-                    Text(greeting)
-                        .font(.subheadline)
-                        .foregroundStyle(theme.textColor)
-                        .multilineTextAlignment(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(12)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(companionService.isOnAdventure
-                              ? Color.orange.opacity(0.1)
-                              : theme.surfaceColor)
-                )
+                .frame(width: 90, height: 100)
+
+                HStack(spacing: 3) {
+                    Text(state.emoji).font(.caption2)
+                    Text(state.label)
+                        .font(.caption2)
+                        .foregroundStyle(theme.secondaryTextColor)
+                }
             }
+            .frame(maxWidth: .infinity)
+
+            // ── Right half: Growth tree ────────────────────────────────
+            VStack(spacing: 4) {
+                Text(treeEmoji(stage))
+                    .font(.system(size: 60))
+
+                Text(stage.displayName)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(stageColor(stage, theme: theme))
+
+                if let next = stage.nextMilestone {
+                    let progress = Double(companionService.lifetimeCaptureCount) / Double(next)
+                    ProgressView(value: min(progress, 1.0))
+                        .tint(stageColor(stage, theme: theme))
+                        .frame(maxWidth: 80)
+                    Text("\(companionService.lifetimeCaptureCount) / \(next)")
+                        .font(.caption2)
+                        .foregroundStyle(theme.secondaryTextColor)
+                } else {
+                    Text("🌟 Max level")
+                        .font(.caption2)
+                        .foregroundStyle(stageColor(stage, theme: theme))
+                }
+            }
+            .frame(maxWidth: .infinity)
         }
-        .padding(16)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(theme.surfaceColor.opacity(0.6))
                 .shadow(color: theme.shadowColor, radius: 4, y: 2)
         )
         .onAppear {
-            refreshGreeting()
             adventureImageName = Self.adventureImages.randomElement() ?? "squirrel-adventuring"
         }
-        .sheet(isPresented: $showShop) {
-            AccessoryShopView(persona: persona)
-        }
-    }
-
-    // MARK: - Avatar
-
-    private func avatarView(stage: SquirrelLifeStage, theme: any ThemeVariant) -> some View {
-        let state = stateEngine.currentState
-        // Adventure mode overrides the normal state image
-        let imageName = companionService.isOnAdventure ? adventureImageName : state.imageName
-
-        return ZStack {
-            Image(imageName)
-                .resizable()
-                .scaledToFit()
-                .frame(height: 80)
-
-            // Equipped accessory overlay (top-right corner)
-            if let accessory = companionService.equippedAccessory {
-                Text(accessory.emoji)
-                    .font(.system(size: 16))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-            }
-
-            // Adventure mode indicator badge
-            if companionService.isOnAdventure {
-                Text("🗺️")
-                    .font(.system(size: 12))
-                    .padding(3)
-                    .background(Circle().fill(theme.surfaceColor))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-            }
-        }
-        .frame(width: 68, height: 80)
     }
 
     // MARK: - Helpers
 
-    private func refreshGreeting() {
-        // Adventure recap takes priority over normal greeting
-        if let recap = companionService.adventureRecapIfNeeded(for: persona) {
-            greeting = recap
-        } else {
-            greeting = stateEngine.greetingLine(for: persona)
+    private func treeEmoji(_ stage: SquirrelLifeStage) -> String {
+        switch stage {
+        case .sprout:    return "🌰"
+        case .curious:   return "🌱"
+        case .seasoned:  return "🪴"
+        case .elder:     return "🌳"
+        case .legendary: return "🌳"
         }
     }
 
@@ -192,16 +125,6 @@ struct SquirrelCompanionCard: View {
         case .seasoned:  return Color.orange
         case .elder:     return Color.purple
         case .legendary: return Color(red: 1.0, green: 0.78, blue: 0.1)
-        }
-    }
-
-    private func nextStageName(_ stage: SquirrelLifeStage) -> String {
-        switch stage {
-        case .sprout:    return "Curious"
-        case .curious:   return "Seasoned"
-        case .seasoned:  return "Elder"
-        case .elder:     return "Legendary"
-        case .legendary: return ""
         }
     }
 }

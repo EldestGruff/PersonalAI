@@ -245,10 +245,7 @@ struct InsightsScreen: View {
             }
         }
         .padding()
-        .glassEffect(
-            .regular.tint(theme.primaryColor.opacity(0.4)),
-            in: RoundedRectangle(cornerRadius: 12)
-        )
+        .background(RoundedRectangle(cornerRadius: 12).fill(theme.surfaceColor).shadow(color: theme.shadowColor, radius: 4, y: 2))
     }
 
     @available(iOS 26.0, *)
@@ -343,10 +340,7 @@ struct InsightsScreen: View {
             }
         }
         .padding()
-        .glassEffect(
-            .regular.tint(theme.warningColor.opacity(0.3)),
-            in: RoundedRectangle(cornerRadius: 12)
-        )
+        .background(RoundedRectangle(cornerRadius: 12).fill(theme.surfaceColor).shadow(color: theme.shadowColor, radius: 4, y: 2))
     }
 
     // MARK: - Chart 2: Sentiment Trends
@@ -409,10 +403,7 @@ struct InsightsScreen: View {
             }
         }
         .padding()
-        .glassEffect(
-            .regular.tint(theme.primaryColor.opacity(0.3)),
-            in: RoundedRectangle(cornerRadius: 12)
-        )
+        .background(RoundedRectangle(cornerRadius: 12).fill(theme.surfaceColor).shadow(color: theme.shadowColor, radius: 4, y: 2))
     }
 
     // MARK: - Chart 3: Type Distribution
@@ -459,10 +450,7 @@ struct InsightsScreen: View {
             }
         }
         .padding()
-        .glassEffect(
-            .regular.tint(theme.successColor.opacity(0.3)),
-            in: RoundedRectangle(cornerRadius: 12)
-        )
+        .background(RoundedRectangle(cornerRadius: 12).fill(theme.surfaceColor).shadow(color: theme.shadowColor, radius: 4, y: 2))
     }
 
     // MARK: - Chart 4: Energy & Mood Correlation
@@ -541,10 +529,7 @@ struct InsightsScreen: View {
             }
         }
         .padding()
-        .glassEffect(
-            .regular.tint(theme.successColor.opacity(0.3)),
-            in: RoundedRectangle(cornerRadius: 12)
-        )
+        .background(RoundedRectangle(cornerRadius: 12).fill(theme.surfaceColor).shadow(color: theme.shadowColor, radius: 4, y: 2))
     }
 
     private func moodColor(for valence: Double?) -> Color {

@@ -68,7 +68,7 @@ struct SearchScreen: View {
                 .foregroundColor(theme.secondaryTextColor)
                 .accessibilityHidden(true)
 
-            TextField("Search thoughts...", text: $viewModel.searchQuery)
+            TextField("Dig through the hoard...", text: $viewModel.searchQuery)
                 .focused($isSearchFocused)
                 #if os(iOS)
                 .textInputAutocapitalization(.never)
@@ -114,21 +114,19 @@ struct SearchScreen: View {
         return VStack(spacing: 16) {
             Spacer()
 
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 48))
-                .foregroundColor(theme.secondaryTextColor)
-                .accessibilityHidden(true)
+            Image("squirrel-base")
+                .resizable()
+                .scaledToFit()
+                .frame(height: 90)
 
-            Text("Search Your Thoughts")
+            Text("What are you looking for?")
                 .font(.headline)
                 .foregroundColor(theme.textColor)
 
-            Text("Find thoughts by content, tags, or context")
+            Text("Dig through your hoard by content, tags, or context")
                 .font(.subheadline)
                 .foregroundColor(theme.secondaryTextColor)
                 .multilineTextAlignment(.center)
-
-            // Recent searches could go here in future
 
             Spacer()
         }

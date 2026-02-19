@@ -566,7 +566,6 @@ final class BrowseViewModel {
     var hasActiveFilters: Bool {
         filterStatus != nil ||
         !selectedFilterTags.isEmpty ||
-        !searchText.isEmpty ||
         dateRangeFilter != .all ||
         filterType != nil ||
         filterSentiment != nil

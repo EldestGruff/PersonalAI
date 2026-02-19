@@ -25,6 +25,7 @@ struct BrowseScreen: View {
     @State private var showCaptureSheet = false
     @State private var showFilterSheet = false
     @State private var showAchievements = false
+    @State private var showShop = false
     @State private var thoughtToDelete: Thought?
     @State private var bulkTagInput: String = ""
     @State private var themeEngine = ThemeEngine.shared
@@ -44,9 +45,16 @@ struct BrowseScreen: View {
                 if viewModel.isLoading && viewModel.thoughts.isEmpty {
                     LoadingView("Loading thoughts...")
                 } else if viewModel.thoughts.isEmpty {
-                    emptyState
+                    VStack(spacing: 0) {
+                        if !viewModel.isEditMode { pinnedHeader }
+                        emptyState
+                    }
                 } else {
-                    thoughtList
+                    VStack(spacing: 0) {
+                        // Pinned header: filter banner + companion card (no list section gaps)
+                        if !viewModel.isEditMode { pinnedHeader }
+                        thoughtList
+                    }
                 }
 
                 // Floating action button (hidden in edit mode)
@@ -69,15 +77,9 @@ struct BrowseScreen: View {
                 }
             }
             .navigationTitle("Thoughts")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(theme.surfaceColor, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .searchable(
-                text: Binding(
-                    get: { viewModel.searchText },
-                    set: { viewModel.setSearchText($0) }
-                ),
-                prompt: "Search thoughts"
-            )
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     acornBalanceView
@@ -174,38 +176,78 @@ struct BrowseScreen: View {
 
     private var acornBalanceView: some View {
         let theme = themeEngine.getCurrentTheme()
-        return Button {
-            showAchievements = true
-        } label: {
-            HStack(spacing: 10) {
-                HStack(spacing: 3) {
-                    Text("🌰")
-                    Text("\(acornLedger.currentBalance)")
-                        .fontWeight(.semibold)
-                        .foregroundStyle(theme.textColor)
-                }
-                .font(.caption.monospacedDigit())
-                .fixedSize()
-
-                if streakTracker.currentStreak > 0 {
+        return HStack(spacing: 8) {
+            // Achievements bubble
+            Button {
+                showAchievements = true
+            } label: {
+                HStack(spacing: 10) {
                     HStack(spacing: 3) {
-                        Text(streakTracker.capturedToday ? "🔥" : "⏳")
-                        Text("\(streakTracker.currentStreak)")
+                        Text("🌰")
+                        Text("\(acornLedger.currentBalance)")
                             .fontWeight(.semibold)
                             .foregroundStyle(theme.textColor)
                     }
                     .font(.caption.monospacedDigit())
                     .fixedSize()
+
+                    if streakTracker.currentStreak > 0 {
+                        HStack(spacing: 3) {
+                            Text(streakTracker.capturedToday ? "🔥" : "⏳")
+                            Text("\(streakTracker.currentStreak)")
+                                .fontWeight(.semibold)
+                                .foregroundStyle(theme.textColor)
+                        }
+                        .font(.caption.monospacedDigit())
+                        .fixedSize()
+                    }
                 }
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(acornLedger.currentBalance) acorns, \(streakTracker.currentStreak) day streak. Tap to view achievements.")
+            .sheet(isPresented: $showAchievements) {
+                AchievementsScreen(
+                    viewModel: AchievementsViewModel(thoughtService: viewModel.thoughtService)
+                )
+            }
+
+            // Shop button
+            Button {
+                showShop = true
+            } label: {
+                Image(systemName: "cart.badge.plus")
+                    .font(.caption)
+                    .foregroundStyle(theme.primaryColor)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Open Acorn Shop")
+            .sheet(isPresented: $showShop) {
+                AccessoryShopView(persona: personaService.defaultPersona)
+            }
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("\(acornLedger.currentBalance) acorns, \(streakTracker.currentStreak) day streak. Tap to view achievements.")
-        .sheet(isPresented: $showAchievements) {
-            AchievementsScreen(
-                viewModel: AchievementsViewModel(thoughtService: viewModel.thoughtService)
-            )
+    }
+
+    // MARK: - Pinned Header (above the scrollable list)
+
+    private var pinnedHeader: some View {
+        let theme = themeEngine.getCurrentTheme()
+        return VStack(spacing: 0) {
+            // Filter banner (only when filters are active)
+            if viewModel.hasActiveFilters {
+                activeFilterBanner
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                Divider().background(theme.dividerColor)
+            }
+
+            // Companion card
+            SquirrelCompanionCard(persona: personaService.defaultPersona)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+
+            Divider().background(theme.dividerColor)
         }
+        .background(theme.surfaceColor)
     }
 
     // MARK: - Thought List
@@ -225,25 +267,8 @@ struct BrowseScreen: View {
                 .listRowBackground(Color.clear)
             }
 
-            // Active filter indicator
-            if viewModel.hasActiveFilters {
-                Section {
-                    activeFilterBanner
-                }
-                .listRowBackground(Color.clear)
-            }
-
-            // Squirrel companion card (Issue #44) — hidden in edit mode
-            if !viewModel.isEditMode {
-                Section {
-                    SquirrelCompanionCard(persona: personaService.defaultPersona)
-                }
-                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                .listRowBackground(Color.clear)
-            }
-
-            // Today's Shiny card (Issue #40) — hidden in edit mode
-            if !viewModel.isEditMode, let shiny = viewModel.todaysShiny {
+            // Today's Shiny card (Issue #40)
+            if let shiny = viewModel.todaysShiny {
                 Section {
                     TodaysShinyCard(thought: shiny) {
                         viewModel.selectThought(shiny)
@@ -375,10 +400,6 @@ struct BrowseScreen: View {
 
                 if let sentiment = viewModel.filterSentiment {
                     filterChip(sentimentDisplayName(sentiment), chipColor: theme.infoColor)
-                }
-
-                if !viewModel.searchText.isEmpty {
-                    filterChip("\"\(viewModel.searchText)\"", chipColor: theme.secondaryTextColor)
                 }
 
                 Spacer()

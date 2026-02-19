@@ -241,9 +241,10 @@ struct MessageBubbleView: View {
                 Text(message.content)
                     .font(.body)
                     .padding(12)
-                    .glassEffect(
-                        .regular.tint((message.role == .user ? theme.primaryColor : theme.accentColor).opacity(0.5)),
-                        in: RoundedRectangle(cornerRadius: 16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(message.role == .user ? theme.primaryColor : theme.surfaceColor)
+                            .shadow(color: theme.shadowColor, radius: 3, y: 1)
                     )
                     .foregroundColor(message.role == .user ? .white : theme.textColor)
 

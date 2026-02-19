@@ -92,10 +92,7 @@ struct AIInsightsView: View {
             Spacer()
         }
         .padding()
-        .glassEffect(
-            .regular.tint(theme.accentColor.opacity(0.2)),
-            in: RoundedRectangle(cornerRadius: 10)
-        )
+        .background(RoundedRectangle(cornerRadius: 10).fill(theme.surfaceColor).shadow(color: theme.shadowColor, radius: 4, y: 2))
     }
 
     // MARK: - Section View
@@ -241,10 +238,7 @@ struct InsightItemView: View {
             }
         }
         .padding(12)
-        .glassEffect(
-            .regular.tint(theme.accentColor.opacity(0.5)),
-            in: RoundedRectangle(cornerRadius: 10)
-        )
+        .background(RoundedRectangle(cornerRadius: 10).fill(theme.surfaceColor).shadow(color: theme.shadowColor, radius: 4, y: 2))
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(item.title). \(item.description)")
         .accessibilityHint(item.actionable ? "This is an actionable recommendation" : "")

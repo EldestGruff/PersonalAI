@@ -2,11 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- Push Notifications -->
 	<key>aps-environment</key>
 	<string>development</string>
-
-	<!-- HealthKit -->
 	<key>com.apple.developer.healthkit</key>
 	<true/>
 	<key>com.apple.developer.healthkit.access</key>
@@ -15,8 +12,6 @@
 	</array>
 	<key>com.apple.developer.healthkit.background-delivery</key>
 	<true/>
-
-	<!-- iCloud -->
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
 		<string>iCloud.com.withershins.stash</string>
@@ -26,35 +21,21 @@
 		<string>CloudKit</string>
 		<string>CloudDocuments</string>
 	</array>
+	<key>com.apple.developer.in-app-payments</key>
+	<array>
+		<string>merchant.com.withershins.stash</string>
+	</array>
+	<key>com.apple.developer.siri</key>
+	<true/>
 	<key>com.apple.developer.ubiquity-container-identifiers</key>
 	<array>
 		<string>iCloud.com.withershins.stash</string>
 	</array>
 	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
 	<string>$(TeamIdentifierPrefix)com.withershins.stash</string>
-
-	<!-- In-App Payments -->
-	<key>com.apple.developer.in-app-payments</key>
-	<array>
-		<string>merchant.com.withershins.stash</string>
-	</array>
-
-	<!-- Siri -->
-	<key>com.apple.developer.siri</key>
-	<true/>
-
-	<!-- App Groups -->
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.com.withershins.stash</string>
 	</array>
-
-	<!-- Personal Information Access -->
-	<key>com.apple.security.personal-information.addressbook</key>
-	<true/>
-	<key>com.apple.security.personal-information.calendars</key>
-	<true/>
-	<key>com.apple.security.personal-information.location</key>
-	<true/>
 </dict>
 </plist>

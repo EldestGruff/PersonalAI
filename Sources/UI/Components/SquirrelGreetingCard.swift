@@ -23,10 +23,12 @@ struct SquirrelGreetingCard: View {
         let state = stateEngine.currentState
 
         VStack(spacing: 10) {
-            // Persona emoji + state indicator
+            // Persona image + state indicator
             HStack(spacing: 8) {
-                Text(persona.emoji)
-                    .font(.system(size: 48))
+                Image(persona.imageName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 56, height: 56)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(persona.name)

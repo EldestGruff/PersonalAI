@@ -104,8 +104,10 @@ struct ThoughtConversationScreen: View {
                     Button {
                         showPersonaPicker = true
                     } label: {
-                        Text(viewModel.selectedPersona.emoji)
-                            .font(.title3)
+                        Image(viewModel.selectedPersona.imageName)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 28, height: 28)
                     }
                     .accessibilityLabel("Change persona")
 
@@ -295,9 +297,11 @@ struct ThoughtConversationScreen: View {
 
             HStack(alignment: .bottom, spacing: 12) {
                 // Persona indicator
-                Text(viewModel.selectedPersona.emoji)
-                    .font(.title2)
-                    .padding(8)
+                Image(viewModel.selectedPersona.imageName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 32, height: 32)
+                    .padding(6)
                     .background(Color(hex: viewModel.selectedPersona.colorHex)?.opacity(0.2) ?? theme.primaryColor.opacity(0.2))
                     .cornerRadius(10)
 
@@ -368,9 +372,10 @@ struct CompanionMessageBubbleView: View {
                 Text(message.content)
                     .font(.body)
                     .padding(12)
-                    .glassEffect(
-                        .regular.tint((message.role == .user ? theme.primaryColor : Color(hex: persona.colorHex) ?? theme.accentColor).opacity(0.5)),
-                        in: RoundedRectangle(cornerRadius: 16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(message.role == .user ? theme.primaryColor : theme.surfaceColor)
+                            .shadow(color: theme.shadowColor, radius: 3, y: 1)
                     )
                     .foregroundColor(textColor)
 
@@ -407,9 +412,11 @@ struct CompanionMessageBubbleView: View {
                     .font(.title2)
                     .foregroundStyle(theme.primaryColor)
             } else {
-                Text(persona.emoji)
-                    .font(.title2)
-                    .padding(6)
+                Image(persona.imageName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 32, height: 32)
+                    .padding(4)
                     .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? theme.accentColor.opacity(0.2))
                     .cornerRadius(10)
             }
@@ -436,9 +443,11 @@ struct CompanionLoadingView: View {
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
         HStack(spacing: 12) {
-            Text(persona.emoji)
-                .font(.title2)
-                .padding(6)
+            Image(persona.imageName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 32, height: 32)
+                .padding(4)
                 .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? theme.accentColor.opacity(0.2))
                 .cornerRadius(10)
 
@@ -487,9 +496,11 @@ struct PersonaPickerSheet: View {
                                 onSelect(persona)
                             } label: {
                                 HStack(spacing: 12) {
-                                    Text(persona.emoji)
-                                        .font(.title2)
-                                        .padding(8)
+                                    Image(persona.imageName)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 36, height: 36)
+                                        .padding(6)
                                         .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? theme.primaryColor.opacity(0.2))
                                         .cornerRadius(10)
 
@@ -527,9 +538,11 @@ struct PersonaPickerSheet: View {
                                     onSelect(persona)
                                 } label: {
                                     HStack(spacing: 12) {
-                                        Text(persona.emoji)
-                                            .font(.title2)
-                                            .padding(8)
+                                        Image(persona.imageName)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 36, height: 36)
+                                            .padding(6)
                                             .background(Color(hex: persona.colorHex)?.opacity(0.2) ?? theme.primaryColor.opacity(0.2))
                                             .cornerRadius(10)
 
