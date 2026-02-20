@@ -74,7 +74,7 @@ struct SquirrelCompanionCard: View {
                 Text(treeEmoji(stage))
                     .font(.system(size: 60))
 
-                Text(stage.displayName)
+                Text(stage.growthTreeName)
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(stageColor(stage, theme: theme))
 
