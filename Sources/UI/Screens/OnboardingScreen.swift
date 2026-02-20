@@ -22,13 +22,34 @@ struct OnboardingScreen: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
+                // Back button (show when not on first step)
+                if viewModel.currentStep.rawValue > 0 {
+                    HStack {
+                        Button {
+                            viewModel.goBack()
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "chevron.left")
+                                    .font(.body.weight(.semibold))
+                                Text("Back")
+                            }
+                            .foregroundStyle(theme.primaryColor)
+                        }
+                        .padding(.leading, 16)
+
+                        Spacer()
+                    }
+                    .padding(.top, 12)
+                    .transition(.opacity)
+                }
+
                 // Progress dots (hide on welcome and completion)
                 if viewModel.currentStep.showProgressDots {
                     ProgressDotsView(
                         currentStep: viewModel.currentStep.rawValue,
                         totalSteps: OnboardingStep.allCases.count
                     )
-                    .padding(.top, 20)
+                    .padding(.top, viewModel.currentStep.rawValue > 0 ? 8 : 20)
                     .padding(.bottom, 12)
                 }
 
@@ -41,6 +62,7 @@ struct OnboardingScreen: View {
             }
         }
         .preferredColorScheme(theme.preferredColorScheme)
+        .animation(.easeInOut(duration: 0.3), value: viewModel.currentStep)
     }
 
     // MARK: - Step Routing
