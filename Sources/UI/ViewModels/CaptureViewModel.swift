@@ -408,12 +408,20 @@ final class CaptureViewModel {
                 // Apply manual type override if set (#49)
                 var finalClassification = classification
                 if let manualType = manualClassificationType, let baseClassification = classification {
+                    // Sanitize suggested tags (fix underscores, uppercase, etc.)
+                    let sanitizedTags = baseClassification.suggestedTags.map { tag in
+                        tag.lowercased()
+                            .replacingOccurrences(of: "_", with: "-")
+                            .replacingOccurrences(of: " ", with: "-")
+                            .trimmingCharacters(in: .whitespacesAndNewlines)
+                    }
+
                     finalClassification = Classification(
                         id: baseClassification.id,
                         type: manualType,
                         confidence: 1.0,  // User selection has 100% confidence
                         entities: baseClassification.entities,
-                        suggestedTags: baseClassification.suggestedTags,
+                        suggestedTags: sanitizedTags,  // Use sanitized tags
                         sentiment: baseClassification.sentiment,
                         language: baseClassification.language,
                         processingTime: 1.0,  // Minimal processing time for validation

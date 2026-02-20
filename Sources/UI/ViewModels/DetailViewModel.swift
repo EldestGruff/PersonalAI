@@ -225,13 +225,21 @@ final class DetailViewModel {
                 if let newType = editedClassificationType,
                    let currentClassification = thought.classification,
                    newType != currentClassification.type {
+                    // Sanitize suggested tags (fix underscores, uppercase, etc.)
+                    let sanitizedTags = currentClassification.suggestedTags.map { tag in
+                        tag.lowercased()
+                            .replacingOccurrences(of: "_", with: "-")
+                            .replacingOccurrences(of: " ", with: "-")
+                            .trimmingCharacters(in: .whitespacesAndNewlines)
+                    }
+
                     // Create new Classification with updated type
                     updatedClassification = Classification(
                         id: currentClassification.id,
                         type: newType,
                         confidence: 1.0,  // User override has 100% confidence
                         entities: currentClassification.entities,
-                        suggestedTags: currentClassification.suggestedTags,
+                        suggestedTags: sanitizedTags,  // Use sanitized tags
                         sentiment: currentClassification.sentiment,
                         language: currentClassification.language,
                         processingTime: 1.0,  // Minimal processing time for validation
@@ -268,6 +276,12 @@ final class DetailViewModel {
                 self.showingClassificationPicker = false
 
             } catch {
+                // Enhanced error logging for debugging (#49)
+                NSLog("❌ DetailViewModel - Save failed: %@", error.localizedDescription)
+                NSLog("❌ Error type: %@", String(describing: type(of: error)))
+                if let validationError = error as? ValidationError {
+                    NSLog("❌ Validation error details: %@", String(describing: validationError))
+                }
                 self.error = AppError.from(error)
             }
 
