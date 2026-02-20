@@ -6,19 +6,24 @@ STASH is a personal AI-powered thought capture app for iOS. Users capture fleeti
 ## Development Workflow
 
 ### Branch-Based Development
-**Always use feature branches for new development.** Keep `main` stable and working.
+**ALWAYS use feature branches for ALL code changes.** NEVER commit directly to `main`.
 
-#### When to Use Branches:
-- ✅ New features or experiments (e.g., `feature/3d-charts-v2`)
-- ✅ Significant refactoring (e.g., `refactor/theme-system`)
-- ✅ Risky changes that might not work out
-- ✅ Anything that needs iteration before integration
+#### ALL Code Changes Require Branches:
+- ✅ New features (e.g., `feature/classification-override`)
+- ✅ Bug fixes (e.g., `fix/storage-error`)
+- ✅ Refactoring (e.g., `refactor/theme-system`)
+- ✅ Experiments (e.g., `experiment/3d-charts`)
+- ✅ Performance improvements
+- ✅ UI/UX changes
+- ✅ Any code modification whatsoever
 
-#### When Direct Commits to Main Are OK:
-- ✅ Bug fixes in existing features
-- ✅ Documentation updates
-- ✅ Minor tweaks and polish
-- ✅ Dependency updates
+#### ONLY Exception - Documentation on Main:
+- ✅ CLAUDE.md updates (this file)
+- ✅ README.md updates
+- ✅ CHANGELOG.md updates
+- ✅ Comment-only changes in code
+
+**If it changes behavior, it goes in a branch. No exceptions.**
 
 ### Recommended Flow:
 
