@@ -322,12 +322,57 @@ struct DetailScreen: View {
         let theme = themeEngine.getCurrentTheme()
 
         return VStack(alignment: .leading, spacing: 12) {
-            Text("Classification")
-                .font(.headline)
-                .foregroundColor(theme.textColor)
+            // Section Header
+            HStack {
+                Text("Classification")
+                    .font(.headline)
+                    .foregroundColor(theme.textColor)
+
+                Spacer()
+
+                // Change Type button (only in edit mode) (#49)
+                if viewModel.isEditing {
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            viewModel.showingClassificationPicker.toggle()
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text("Change Type")
+                                .font(.caption)
+                            Image(systemName: viewModel.showingClassificationPicker ? "chevron.up" : "chevron.down")
+                                .font(.caption2)
+                        }
+                        .foregroundStyle(theme.primaryColor)
+                    }
+                    .accessibilityLabel("Change classification type")
+                    .accessibilityIdentifier("changeClassificationTypeButton")
+                }
+            }
 
             if let classification = viewModel.thought.classification {
-                ClassificationBadge(classification: classification)
+                // Show badge with edited type if available (#49)
+                let displayType = viewModel.editedClassificationType ?? classification.type
+                let displayClassification = Classification(
+                    id: classification.id,
+                    type: displayType,
+                    confidence: viewModel.editedClassificationType != nil ? 1.0 : classification.confidence,
+                    entities: classification.entities,
+                    suggestedTags: classification.suggestedTags,
+                    sentiment: classification.sentiment,
+                    language: classification.language,
+                    processingTime: classification.processingTime,
+                    model: viewModel.editedClassificationType != nil ? "user-override" : classification.model,
+                    createdAt: classification.createdAt,
+                    parsedDateTime: classification.parsedDateTime
+                )
+                ClassificationBadge(classification: displayClassification)
+
+                // Type Picker (when editing and picker shown) (#49)
+                if viewModel.isEditing && viewModel.showingClassificationPicker {
+                    classificationTypePicker
+                        .transition(.opacity.combined(with: .scale))
+                }
 
                 // Action prompt for reminder or event types
                 if (classification.type == .reminder || classification.type == .event),
@@ -382,6 +427,87 @@ struct DetailScreen: View {
                 }
             }
         }
+    }
+
+    // MARK: - Classification Type Picker (#49)
+
+    /// Type picker for changing classification type
+    @ViewBuilder
+    private var classificationTypePicker: some View {
+        let theme = themeEngine.getCurrentTheme()
+
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Select Type")
+                .font(.caption)
+                .foregroundStyle(theme.secondaryTextColor)
+
+            // Grid of classification type options
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ], spacing: 12) {
+                ForEach(ClassificationType.allCases, id: \.self) { type in
+                    classificationTypeOption(type)
+                }
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(theme.surfaceColor)
+                .shadow(color: theme.shadowColor.opacity(0.1), radius: 4, y: 2)
+        )
+    }
+
+    /// Individual classification type option button
+    @ViewBuilder
+    private func classificationTypeOption(_ type: ClassificationType) -> some View {
+        let theme = themeEngine.getCurrentTheme()
+        let isSelected = viewModel.editedClassificationType == type
+
+        Button {
+            withAnimation(.spring(response: 0.3)) {
+                viewModel.editedClassificationType = type
+                viewModel.showingClassificationPicker = false
+            }
+        } label: {
+            VStack(spacing: 6) {
+                Image(systemName: type.icon)
+                    .font(.title3)
+                    .foregroundStyle(
+                        isSelected ? .white : type.color(theme: theme)
+                    )
+
+                Text(type.displayName)
+                    .font(.caption)
+                    .fontWeight(isSelected ? .semibold : .regular)
+                    .foregroundStyle(
+                        isSelected ? .white : theme.textColor
+                    )
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(
+                        isSelected
+                            ? type.color(theme: theme)
+                            : theme.backgroundColor
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(
+                        isSelected
+                            ? type.color(theme: theme)
+                            : theme.dividerColor,
+                        lineWidth: isSelected ? 2 : 1
+                    )
+            )
+        }
+        .accessibilityLabel("\(type.displayName) classification")
+        .accessibilityHint(isSelected ? "Currently selected" : "Double tap to select")
+        .accessibilityIdentifier("classificationTypeOption_\(type.rawValue)")
     }
 
     // MARK: - Context Section

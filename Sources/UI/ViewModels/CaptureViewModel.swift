@@ -55,6 +55,12 @@ final class CaptureViewModel {
     /// Error message if classification failed
     var classificationError: String?
 
+    /// Manually selected classification type (overrides AI classification) (#49)
+    var manualClassificationType: ClassificationType?
+
+    /// Whether the type picker is showing (#49)
+    var showingTypePicker: Bool = false
+
     // MARK: - UI State
 
     /// Whether to show the permission alert
@@ -399,6 +405,39 @@ final class CaptureViewModel {
                     classification = try? await classificationService.classify(thoughtContent)
                 }
 
+                // Apply manual type override if set (#49)
+                var finalClassification = classification
+                if let manualType = manualClassificationType, let baseClassification = classification {
+                    finalClassification = Classification(
+                        id: baseClassification.id,
+                        type: manualType,
+                        confidence: 1.0,  // User selection has 100% confidence
+                        entities: baseClassification.entities,
+                        suggestedTags: baseClassification.suggestedTags,
+                        sentiment: baseClassification.sentiment,
+                        language: baseClassification.language,
+                        processingTime: 1.0,  // Minimal processing time for validation
+                        model: "user-override",
+                        createdAt: Date(),
+                        parsedDateTime: baseClassification.parsedDateTime
+                    )
+                } else if let manualType = manualClassificationType {
+                    // Create classification from scratch if AI classification failed but user selected a type
+                    finalClassification = Classification(
+                        id: UUID(),
+                        type: manualType,
+                        confidence: 1.0,
+                        entities: [],
+                        suggestedTags: [],
+                        sentiment: .neutral,
+                        language: "en",
+                        processingTime: 1.0,  // Minimal processing time for validation
+                        model: "user-override",
+                        createdAt: Date(),
+                        parsedDateTime: nil
+                    )
+                }
+
                 // Create thought model
                 let thought = Thought(
                     id: UUID(),
@@ -410,7 +449,7 @@ final class CaptureViewModel {
                     context: context ?? Context.empty(),
                     createdAt: Date(),
                     updatedAt: Date(),
-                    classification: classification,
+                    classification: finalClassification,
                     relatedThoughtIds: [],
                     taskId: nil
                 )
@@ -488,6 +527,8 @@ final class CaptureViewModel {
         contextError = nil
         classificationError = nil
         captureSucceeded = false
+        manualClassificationType = nil
+        showingTypePicker = false
     }
 
 

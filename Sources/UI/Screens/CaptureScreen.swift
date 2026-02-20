@@ -401,7 +401,8 @@ struct CaptureScreen: View {
     private var classificationSection: some View {
         let theme = themeEngine.getCurrentTheme()
 
-        return VStack(alignment: .leading, spacing: 8) {
+        return VStack(alignment: .leading, spacing: 12) {
+            // Header with type picker toggle (#49)
             HStack {
                 Text("Classification")
                     .font(.headline)
@@ -412,9 +413,64 @@ struct CaptureScreen: View {
                         .scaleEffect(0.8)
                         .tint(theme.accentColor)
                 }
+
+                Spacer()
+
+                // Change Type button (#49)
+                Button {
+                    withAnimation(.spring(response: 0.3)) {
+                        viewModel.showingTypePicker.toggle()
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Text(viewModel.manualClassificationType != nil ? "Type Set" : "Set Type")
+                            .font(.caption)
+                        Image(systemName: viewModel.showingTypePicker ? "chevron.up" : "chevron.down")
+                            .font(.caption2)
+                    }
+                    .foregroundStyle(viewModel.manualClassificationType != nil ? theme.successColor : theme.primaryColor)
+                }
+                .accessibilityLabel("Set classification type")
+                .accessibilityIdentifier("setClassificationTypeButton")
             }
 
-            if let classification = viewModel.classification {
+            // Type Picker (when shown) (#49)
+            if viewModel.showingTypePicker {
+                classificationTypePicker
+                    .transition(.opacity.combined(with: .scale))
+            }
+
+            // Display AI or manual classification
+            if let manualType = viewModel.manualClassificationType {
+                // Show manual type selection
+                let manualClassification = Classification(
+                    id: UUID(),
+                    type: manualType,
+                    confidence: 1.0,
+                    entities: [],
+                    suggestedTags: [],
+                    sentiment: .neutral,
+                    language: "en",
+                    processingTime: 0.0,
+                    model: "user-override",
+                    createdAt: Date(),
+                    parsedDateTime: nil
+                )
+
+                VStack(alignment: .leading, spacing: 8) {
+                    ClassificationBadge(classification: manualClassification)
+
+                    HStack(spacing: 4) {
+                        Image(systemName: "hand.raised.fill")
+                            .font(.caption)
+                            .foregroundColor(theme.successColor)
+                        Text("You set this type manually")
+                            .font(.caption)
+                            .foregroundColor(theme.secondaryTextColor)
+                    }
+                }
+            } else if let classification = viewModel.classification {
+                // Show AI classification
                 VStack(alignment: .leading, spacing: 8) {
                     ClassificationBadge(classification: classification)
 
@@ -424,7 +480,7 @@ struct CaptureScreen: View {
                             Image(systemName: "info.circle")
                                 .font(.caption)
                                 .foregroundColor(theme.accentColor)
-                            Text("Low confidence (\(Int(classification.confidence * 100))%) - you can edit type if needed")
+                            Text("Low confidence (\(Int(classification.confidence * 100))%) - you can set type manually")
                                 .font(.caption)
                                 .foregroundColor(theme.secondaryTextColor)
                         }
@@ -439,6 +495,106 @@ struct CaptureScreen: View {
         .padding()
         .background(theme.surfaceColor.opacity(0.5))
         .cornerRadius(theme.cornerRadius)
+    }
+
+    // MARK: - Classification Type Picker (#49)
+
+    /// Type picker for setting classification type during capture
+    @ViewBuilder
+    private var classificationTypePicker: some View {
+        let theme = themeEngine.getCurrentTheme()
+
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Select Type")
+                .font(.caption)
+                .foregroundStyle(theme.secondaryTextColor)
+
+            // Grid of classification type options
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ], spacing: 12) {
+                ForEach(ClassificationType.allCases, id: \.self) { type in
+                    classificationTypeOption(type)
+                }
+            }
+
+            // Clear button if a type is selected
+            if viewModel.manualClassificationType != nil {
+                Button {
+                    withAnimation(.spring(response: 0.3)) {
+                        viewModel.manualClassificationType = nil
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: "arrow.uturn.backward")
+                        Text("Use AI Classification")
+                    }
+                    .font(.caption)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                }
+                .buttonStyle(.bordered)
+                .tint(theme.secondaryTextColor)
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(theme.backgroundColor)
+                .shadow(color: theme.shadowColor.opacity(0.1), radius: 4, y: 2)
+        )
+    }
+
+    /// Individual classification type option button
+    @ViewBuilder
+    private func classificationTypeOption(_ type: ClassificationType) -> some View {
+        let theme = themeEngine.getCurrentTheme()
+        let isSelected = viewModel.manualClassificationType == type
+
+        Button {
+            withAnimation(.spring(response: 0.3)) {
+                viewModel.manualClassificationType = type
+                viewModel.showingTypePicker = false
+            }
+        } label: {
+            VStack(spacing: 6) {
+                Image(systemName: type.icon)
+                    .font(.title3)
+                    .foregroundStyle(
+                        isSelected ? .white : type.color(theme: theme)
+                    )
+
+                Text(type.displayName)
+                    .font(.caption)
+                    .fontWeight(isSelected ? .semibold : .regular)
+                    .foregroundStyle(
+                        isSelected ? .white : theme.textColor
+                    )
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(
+                        isSelected
+                            ? type.color(theme: theme)
+                            : theme.surfaceColor
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(
+                        isSelected
+                            ? type.color(theme: theme)
+                            : theme.dividerColor,
+                        lineWidth: isSelected ? 2 : 1
+                    )
+            )
+        }
+        .accessibilityLabel("\(type.displayName) classification")
+        .accessibilityHint(isSelected ? "Currently selected" : "Double tap to select")
+        .accessibilityIdentifier("captureClassificationTypeOption_\(type.rawValue)")
     }
 
     // MARK: - Subscription Error Banner
