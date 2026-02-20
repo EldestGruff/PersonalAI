@@ -41,6 +41,17 @@ enum SquirrelLifeStage: String, CaseIterable, Codable {
         }
     }
 
+    /// Plant-themed label for the growth tree visualization
+    var growthTreeName: String {
+        switch self {
+        case .sprout:    return "Sprouting"
+        case .curious:   return "Seedling"
+        case .seasoned:  return "Flourishing"
+        case .elder:     return "Maturing"
+        case .legendary: return "Thriving"
+        }
+    }
+
     var description: String {
         switch self {
         case .sprout:    return "Just getting started — tiny, wide-eyed, full of wonder."
