@@ -106,6 +106,38 @@ actor ThoughtRepository {
             entity.contextJSON = try JSONEncoder().encode(thought.context)
             entity.updatedAt = thought.updatedAt
 
+            // Update classification (one-to-one relationship) (#49)
+            if let classification = thought.classification {
+                // If classification exists, update it; otherwise create new
+                if let existingClassification = entity.classification {
+                    // Update existing classification entity
+                    existingClassification.type = classification.type.rawValue
+                    existingClassification.confidence = classification.confidence
+                    existingClassification.sentiment = classification.sentiment.rawValue
+                    existingClassification.language = classification.language
+                    existingClassification.processingTime = classification.processingTime
+                    existingClassification.model = classification.model
+                    existingClassification.entitiesJSON = try JSONEncoder().encode(classification.entities)
+                    existingClassification.suggestedTagsJSON = try JSONEncoder().encode(classification.suggestedTags)
+
+                    if let parsedDateTime = classification.parsedDateTime {
+                        existingClassification.parsedDateTimeJSON = try JSONEncoder().encode(parsedDateTime)
+                    } else {
+                        existingClassification.parsedDateTimeJSON = nil
+                    }
+                } else {
+                    // Create new classification entity
+                    entity.classification = try classification.toEntity(in: context)
+                    entity.classification?.thought = entity
+                }
+            } else {
+                // Remove classification if thought no longer has one
+                if let existingClassification = entity.classification {
+                    context.delete(existingClassification)
+                    entity.classification = nil
+                }
+            }
+
             try context.save()
         }
     }

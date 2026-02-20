@@ -84,6 +84,12 @@ final class DetailViewModel {
     /// Edited tags (while in edit mode)
     var editedTags: [String] = []
 
+    /// Edited classification type (while in edit mode) (#49)
+    var editedClassificationType: ClassificationType?
+
+    /// Whether the classification type picker is showing (#49)
+    var showingClassificationPicker: Bool = false
+
     /// Whether changes are being saved
     var isSaving: Bool = false
 
@@ -186,6 +192,7 @@ final class DetailViewModel {
     func startEditing() {
         editedContent = thought.content
         editedTags = thought.tags
+        editedClassificationType = thought.classification?.type
         isEditing = true
     }
 
@@ -194,6 +201,8 @@ final class DetailViewModel {
         isEditing = false
         editedContent = ""
         editedTags = []
+        editedClassificationType = nil
+        showingClassificationPicker = false
     }
 
     /// Saves edited changes
@@ -211,6 +220,27 @@ final class DetailViewModel {
 
         _Concurrency.Task {
             do {
+                // Check if classification type changed (#49)
+                var updatedClassification = thought.classification
+                if let newType = editedClassificationType,
+                   let currentClassification = thought.classification,
+                   newType != currentClassification.type {
+                    // Create new Classification with updated type
+                    updatedClassification = Classification(
+                        id: currentClassification.id,
+                        type: newType,
+                        confidence: 1.0,  // User override has 100% confidence
+                        entities: currentClassification.entities,
+                        suggestedTags: currentClassification.suggestedTags,
+                        sentiment: currentClassification.sentiment,
+                        language: currentClassification.language,
+                        processingTime: 1.0,  // Minimal processing time for validation
+                        model: "user-override",
+                        createdAt: currentClassification.createdAt,
+                        parsedDateTime: currentClassification.parsedDateTime
+                    )
+                }
+
                 // Create updated thought (Thought is immutable, so create new instance)
                 let updated = Thought(
                     id: thought.id,
@@ -222,7 +252,7 @@ final class DetailViewModel {
                     context: thought.context,
                     createdAt: thought.createdAt,
                     updatedAt: Date(),
-                    classification: thought.classification,
+                    classification: updatedClassification,
                     relatedThoughtIds: thought.relatedThoughtIds,
                     taskId: thought.taskId
                 )
@@ -234,6 +264,8 @@ final class DetailViewModel {
                 self.isEditing = false
                 self.editedContent = ""
                 self.editedTags = []
+                self.editedClassificationType = nil
+                self.showingClassificationPicker = false
 
             } catch {
                 self.error = AppError.from(error)
