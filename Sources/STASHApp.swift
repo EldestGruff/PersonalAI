@@ -22,6 +22,10 @@ struct STASHApp: App {
 
     @State private var themeEngine = ThemeEngine.shared
 
+    // MARK: - Onboarding
+
+    @State private var showOnboarding = false
+
     // MARK: - Services (Shared Instances)
 
     // Services are lazily initialized as static properties on their types
@@ -37,6 +41,10 @@ struct STASHApp: App {
 
         // Register notification delegate for deep link handling
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
+
+        // Check if onboarding should be shown
+        let hasCompleted = OnboardingViewModel.hasCompletedOnboarding()
+        self._showOnboarding = State(initialValue: !hasCompleted)
     }
 
     // MARK: - Body
@@ -47,6 +55,29 @@ struct STASHApp: App {
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environment(\.themeEngine, themeEngine)
                 .preferredColorScheme(themeEngine.getCurrentTheme().preferredColorScheme)
+                .fullScreenCover(isPresented: $showOnboarding) {
+                    OnboardingScreen(
+                        viewModel: OnboardingViewModel(
+                            captureViewModel: CaptureViewModel(
+                                thoughtService: ThoughtService.shared,
+                                contextService: ContextService.shared,
+                                classificationService: ClassificationService.shared,
+                                fineTuningService: FineTuningService.shared,
+                                taskService: TaskService.shared
+                            ),
+                            onComplete: {
+                                showOnboarding = false
+                            }
+                        )
+                    )
+                }
+                .interactiveDismissDisabled(showOnboarding)
+                .onReceive(NotificationCenter.default.publisher(for: .replayOnboarding)) { _ in
+                    _Concurrency.Task { @MainActor in
+                        OnboardingViewModel.resetOnboarding()
+                        showOnboarding = true
+                    }
+                }
         }
     }
 }
@@ -223,6 +254,12 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, Ob
         }
         completionHandler()
     }
+}
+
+// MARK: - Notification Names
+
+extension Notification.Name {
+    static let replayOnboarding = Notification.Name("replayOnboarding")
 }
 
 // MARK: - Previews

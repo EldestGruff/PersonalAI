@@ -58,6 +58,9 @@ struct SettingsScreen: View {
                     // Stats section
                     statsSection
 
+                    // Onboarding section
+                    onboardingSection
+
                     // About section
                     aboutSection
                 }
@@ -590,6 +593,31 @@ struct SettingsScreen: View {
             }
         } header: {
             Text("Your Stats")
+                .foregroundStyle(theme.secondaryTextColor)
+        }
+        .listRowBackground(theme.surfaceColor)
+    }
+
+    // MARK: - Onboarding Section
+
+    private var onboardingSection: some View {
+        let theme = themeEngine.getCurrentTheme()
+        return Section {
+            Button {
+                NotificationCenter.default.post(name: .replayOnboarding, object: nil)
+            } label: {
+                HStack {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .foregroundStyle(theme.primaryColor)
+                    Text("Replay Onboarding")
+                        .foregroundStyle(theme.textColor)
+                }
+            }
+        } header: {
+            Text("Tutorial")
+                .foregroundStyle(theme.secondaryTextColor)
+        } footer: {
+            Text("Replay the first-run tutorial to see the onboarding experience again.")
                 .foregroundStyle(theme.secondaryTextColor)
         }
         .listRowBackground(theme.surfaceColor)

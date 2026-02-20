@@ -107,6 +107,8 @@
 		A1A632752F33BFD500DA552B /* ThoughtConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632742F33BFD500DA552B /* ThoughtConversationViewModel.swift */; };
 		A1A632782F33BFE700DA552B /* PersonalizationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632762F33BFE700DA552B /* PersonalizationScreen.swift */; };
 		A1A632792F33BFE700DA552B /* ThoughtConversationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632772F33BFE700DA552B /* ThoughtConversationScreen.swift */; };
+		A1B3B3B42F47D961005B3C62 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B3B3B32F47D961005B3C62 /* OnboardingViewModel.swift */; };
+		A1B3B3B62F47D971005B3C62 /* OnboardingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B3B3B52F47D971005B3C62 /* OnboardingScreen.swift */; };
 		A1B632832F3510000071D950 /* ThoughtContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B632862F3510000071D953 /* ThoughtContentView.swift */; };
 		A1B632842F3510000071D951 /* FormattingToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B632872F3510000071D954 /* FormattingToolbar.swift */; };
 		A1B632852F3510000071D952 /* LiquidGlassModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B632882F3510000071D955 /* LiquidGlassModifiers.swift */; };
@@ -221,6 +223,8 @@
 		A1A632742F33BFD500DA552B /* ThoughtConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtConversationViewModel.swift; sourceTree = "<group>"; };
 		A1A632762F33BFE700DA552B /* PersonalizationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalizationScreen.swift; sourceTree = "<group>"; };
 		A1A632772F33BFE700DA552B /* ThoughtConversationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtConversationScreen.swift; sourceTree = "<group>"; };
+		A1B3B3B32F47D961005B3C62 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
+		A1B3B3B52F47D971005B3C62 /* OnboardingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingScreen.swift; sourceTree = "<group>"; };
 		A1B632862F3510000071D953 /* ThoughtContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtContentView.swift; sourceTree = "<group>"; };
 		A1B632872F3510000071D954 /* FormattingToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattingToolbar.swift; sourceTree = "<group>"; };
 		A1B632882F3510000071D955 /* LiquidGlassModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassModifiers.swift; sourceTree = "<group>"; };
@@ -256,6 +260,11 @@
 		A1803E1F2F31459D0071D950 /* Charts */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Charts;
+			sourceTree = "<group>";
+		};
+		A1B3B3A82F47D935005B3C62 /* Onboarding */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		A1B632802F3500000071D950 /* Theme */ = {
@@ -498,6 +507,7 @@
 		A0800000000000000000040 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				A1B3B3A82F47D935005B3C62 /* Onboarding */,
 				A0000001000000000000012 /* ContentView.swift */,
 				A0000001000000000000252 /* AppError.swift */,
 				A0800000000000000000041 /* Screens */,
@@ -514,6 +524,7 @@
 		A0800000000000000000041 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				A1B3B3B52F47D971005B3C62 /* OnboardingScreen.swift */,
 				A1B77D052F3E3CBD00F8D6B4 /* VoiceCaptureScreen.swift */,
 				A1A632762F33BFE700DA552B /* PersonalizationScreen.swift */,
 				A1A632772F33BFE700DA552B /* ThoughtConversationScreen.swift */,
@@ -557,6 +568,7 @@
 		A0800000000000000000043 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				A1B3B3B32F47D961005B3C62 /* OnboardingViewModel.swift */,
 				A1B77D072F3E3CD600F8D6B4 /* VoiceCaptureViewModel.swift */,
 				A1A632742F33BFD500DA552B /* ThoughtConversationViewModel.swift */,
 				A1A6326C2F33A8CF00DA552B /* ConversationViewModel.swift */,
@@ -600,6 +612,7 @@
 				A1803E152F3145770071D950 /* AI */,
 				A1803E182F3145810071D950 /* Analytics */,
 				A1803E1F2F31459D0071D950 /* Charts */,
+				A1B3B3A82F47D935005B3C62 /* Onboarding */,
 				A1B632802F3500000071D950 /* Theme */,
 				A1B632812F3500000071D951 /* Messaging */,
 				A1B632822F3500000071D952 /* Extensions */,
@@ -732,8 +745,10 @@
 				A1803E282F327EC60071D950 /* AIInsightsView.swift in Sources */,
 				A1B77D0B2F3E3CEA00F8D6B4 /* MedicationService.swift in Sources */,
 				A1B77D0C2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift in Sources */,
+				A1B3B3B62F47D971005B3C62 /* OnboardingScreen.swift in Sources */,
 				A0000001000000000000221 /* ThoughtRowView.swift in Sources */,
 				A0000001000000000000223 /* ClassificationBadge.swift in Sources */,
+				A1B3B3B42F47D961005B3C62 /* OnboardingViewModel.swift in Sources */,
 				A0000001000000000000225 /* ContextDisplayView.swift in Sources */,
 				A0000001000000000000227 /* TagInputView.swift in Sources */,
 				A0000001000000000000229 /* FlowLayout.swift in Sources */,
@@ -909,7 +924,7 @@
 				CODE_SIGN_ENTITLEMENTS = PersonalAI.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3RJ4WFRA6W;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
@@ -962,7 +977,7 @@
 				CODE_SIGN_ENTITLEMENTS = PersonalAI.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3RJ4WFRA6W;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
