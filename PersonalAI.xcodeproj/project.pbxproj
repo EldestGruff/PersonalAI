@@ -109,6 +109,7 @@
 		A1A632792F33BFE700DA552B /* ThoughtConversationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632772F33BFE700DA552B /* ThoughtConversationScreen.swift */; };
 		A1B3B3B42F47D961005B3C62 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B3B3B32F47D961005B3C62 /* OnboardingViewModel.swift */; };
 		A1B3B3B62F47D971005B3C62 /* OnboardingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B3B3B52F47D971005B3C62 /* OnboardingScreen.swift */; };
+		A1B3B3C62F480E2F005B3C62 /* Chart3DInfoButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B3B3C52F480E2F005B3C62 /* Chart3DInfoButton.swift */; };
 		A1B632832F3510000071D950 /* ThoughtContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B632862F3510000071D953 /* ThoughtContentView.swift */; };
 		A1B632842F3510000071D951 /* FormattingToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B632872F3510000071D954 /* FormattingToolbar.swift */; };
 		A1B632852F3510000071D952 /* LiquidGlassModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B632882F3510000071D955 /* LiquidGlassModifiers.swift */; };
@@ -225,6 +226,7 @@
 		A1A632772F33BFE700DA552B /* ThoughtConversationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtConversationScreen.swift; sourceTree = "<group>"; };
 		A1B3B3B32F47D961005B3C62 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		A1B3B3B52F47D971005B3C62 /* OnboardingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingScreen.swift; sourceTree = "<group>"; };
+		A1B3B3C52F480E2F005B3C62 /* Chart3DInfoButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chart3DInfoButton.swift; sourceTree = "<group>"; };
 		A1B632862F3510000071D953 /* ThoughtContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtContentView.swift; sourceTree = "<group>"; };
 		A1B632872F3510000071D954 /* FormattingToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattingToolbar.swift; sourceTree = "<group>"; };
 		A1B632882F3510000071D955 /* LiquidGlassModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassModifiers.swift; sourceTree = "<group>"; };
@@ -545,6 +547,7 @@
 		A0800000000000000000042 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				A1B3B3C52F480E2F005B3C62 /* Chart3DInfoButton.swift */,
 				A1803E272F327EC60071D950 /* AIInsightsView.swift */,
 				A0000001000000000000222 /* ThoughtRowView.swift */,
 				A1B632862F3510000071D953 /* ThoughtContentView.swift */,
@@ -758,6 +761,7 @@
 				A1B632852F3510000071D952 /* LiquidGlassModifiers.swift in Sources */,
 				A0000001000000000000241 /* BrowseViewModel.swift in Sources */,
 				A0000001000000000000243 /* CaptureViewModel.swift in Sources */,
+				A1B3B3C62F480E2F005B3C62 /* Chart3DInfoButton.swift in Sources */,
 				A0000001000000000000245 /* DetailViewModel.swift in Sources */,
 				A0000001000000000000247 /* SearchViewModel.swift in Sources */,
 				A0000001000000000000249 /* SettingsViewModel.swift in Sources */,
@@ -924,7 +928,7 @@
 				CODE_SIGN_ENTITLEMENTS = PersonalAI.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 3RJ4WFRA6W;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
@@ -977,7 +981,7 @@
 				CODE_SIGN_ENTITLEMENTS = PersonalAI.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 3RJ4WFRA6W;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
