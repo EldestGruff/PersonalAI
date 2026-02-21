@@ -105,6 +105,8 @@ actor ThoughtRepository {
             entity.status = thought.status.rawValue
             entity.contextJSON = try JSONEncoder().encode(thought.context)
             entity.updatedAt = thought.updatedAt
+            entity.isShiny = NSNumber(value: thought.isShiny)  // Issue #40: Persist shiny status
+            entity.taskId = thought.taskId
 
             // Update classification (one-to-one relationship) (#49)
             if let classification = thought.classification {

@@ -249,7 +249,8 @@ actor ThoughtService: ThoughtServiceProtocol {
             updatedAt: thought.updatedAt,
             classification: thought.classification,
             relatedThoughtIds: thought.relatedThoughtIds,
-            taskId: thought.taskId
+            taskId: thought.taskId,
+            isShiny: thought.isShiny  // Issue #40: Preserve shiny status during updates
         )
 
         // Validate
@@ -273,7 +274,8 @@ actor ThoughtService: ThoughtServiceProtocol {
             updatedAt: Date(),
             classification: normalizedThought.classification,
             relatedThoughtIds: normalizedThought.relatedThoughtIds,
-            taskId: normalizedThought.taskId
+            taskId: normalizedThought.taskId,
+            isShiny: normalizedThought.isShiny  // Issue #40: Preserve shiny status
         )
 
         do {
