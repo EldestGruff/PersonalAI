@@ -64,7 +64,7 @@ enum OnboardingCopy {
             return [
                 "ACORN ACQUIRED! 🌰",
                 "You get acorns for every capture. Stack them up!",
-                "Future feature: spend them on shiny upgrades. For now? Hoard them."
+                "Spend them in the Acorn Shop on accessories for your squirrel!"
             ]
         case SquirrelPersona.socraticQuestioner.id:
             return [
@@ -147,17 +147,17 @@ enum OnboardingCopy {
     static func futureTeaser(for persona: SquirrelPersona) -> String {
         switch persona.id {
         case SquirrelPersona.supportiveListener.id:
-            return "Soon, some of your thoughts will earn 'shiny' status—the ones that matter most. I'll help you spot them. ✨"
+            return "Some of your thoughts will earn 'shiny' status—the ones with strong feelings, tasks, or connections. I'll help you spot them on your home screen. ✨"
         case SquirrelPersona.brainstormPartner.id:
-            return "Coming soon: SHINY THOUGHTS. The vault will surface your best ideas automatically. It's gonna be SO GOOD. ✨"
+            return "SHINY THOUGHTS! The vault surfaces your best ideas automatically—the ones with tasks, connections, or strong vibes. Check 'Today's Shiny' daily! ✨"
         case SquirrelPersona.socraticQuestioner.id:
-            return "Future feature: shiny thoughts. The system will identify high-signal captures. Worth asking: what metric defines 'high-signal'? ✨"
+            return "Shiny thoughts: scored on sentiment, actionability, connections, and time depth. The algorithm picks your high-signal captures. Worth examining what it values. ✨"
         case SquirrelPersona.journalGuide.id:
-            return "Eventually, certain thoughts will glow brighter—the ones that want more attention. We'll notice them together. ✨"
+            return "Certain thoughts will glow brighter—the ones carrying emotion, action, or connection. We'll notice them together in 'Today's Shiny.' ✨"
         case SquirrelPersona.devilsAdvocate.id:
-            return "Shiny thoughts are coming: algorithmic ranking of your 'best' captures. Could be useful. Could be noise. We'll see. ✨"
+            return "Shiny thoughts: algorithmic ranking of your 'best' captures. Based on sentiment, tasks, connections, energy. Could surface gems. Could miss what matters. ✨"
         default:
-            return "Coming soon: Shiny thoughts—your most important captures, automatically surfaced. ✨"
+            return "Shiny thoughts—your most meaningful captures, automatically surfaced daily based on emotion, action, and connection. ✨"
         }
     }
 
