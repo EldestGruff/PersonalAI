@@ -20,6 +20,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4] - Shinies Live & Onboarding Polish - 2026-02-21 (Build 6)
+
+### Fixed
+
+- **Shinies persistence (#40)** — `isShiny` flag was not being written to CoreData on updates, so promoted thoughts reverted to non-shiny after restarting the app. Fixed in both `ThoughtService.update()` (two `Thought` initializers that dropped the flag during tag normalization and timestamp updates) and `ThoughtRepository.update()` (missing field write).
+- **Growth tree labels** — Companion card life stage labels now use plant-themed names: Sprout → Curious → Seasoned → Elder → Legendary, matching the acorn-to-oak metaphor.
+
+### Changed
+
+- **Onboarding — Shinies step** — Updated copy from "coming soon" placeholder to explain how Shinies actually work: thoughts are scored on sentiment intensity, task linkage, connection count, capture energy, age, and length; high-scoring thoughts (≥ 1.5 pts) are promoted daily and surfaced in the "Today's Shiny" card on Browse.
+- **Onboarding — acorn step** — Updated copy to mention the Acorn Shop.
+
+### Added
+
+- Back button on onboarding tutorial screens.
+
+---
+
 ## [0.3] - Gamification & Polish - 2026-02-17
 
 ### Added
