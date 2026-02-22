@@ -92,6 +92,8 @@
 		A0000001000000000000247 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000248 /* SearchViewModel.swift */; };
 		A0000001000000000000249 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000250 /* SettingsViewModel.swift */; };
 		A0000001000000000000251 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000252 /* AppError.swift */; };
+		A138668F2F4A9321002CB2DD /* TelemetryClient in Frameworks */ = {isa = PBXBuildFile; productRef = A138668E2F4A9321002CB2DD /* TelemetryClient */; };
+		A13866912F4A9321002CB2DD /* TelemetryDeck in Frameworks */ = {isa = PBXBuildFile; productRef = A13866902F4A9321002CB2DD /* TelemetryDeck */; };
 		A1803D482F25BDFD0071D950 /* DateTimeParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803D472F25BDFD0071D950 /* DateTimeParsingService.swift */; };
 		A1803D492F25BDFD0071D951 /* DateTimeParsingService_FoundationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803D4A2F25BDFD0071D952 /* DateTimeParsingService_FoundationModels.swift */; };
 		A1803D4B2F25BDFD0071D953 /* ClassificationService_FoundationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803D4C2F25BDFD0071D954 /* ClassificationService_FoundationModels.swift */; };
@@ -291,6 +293,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A138668F2F4A9321002CB2DD /* TelemetryClient in Frameworks */,
+				A13866912F4A9321002CB2DD /* TelemetryDeck in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -622,6 +626,8 @@
 			);
 			name = STASH;
 			packageProductDependencies = (
+				A138668E2F4A9321002CB2DD /* TelemetryClient */,
+				A13866902F4A9321002CB2DD /* TelemetryDeck */,
 			);
 			productName = STASH;
 			productReference = A1000000000000000000001 /* STASH.app */;
@@ -651,6 +657,9 @@
 			);
 			mainGroup = A0800000000000000000001;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A138668D2F4A9321002CB2DD /* XCRemoteSwiftPackageReference "SwiftSDK" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A0800000000000000000003 /* Products */;
 			projectDirPath = "";
@@ -1047,6 +1056,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A138668D2F4A9321002CB2DD /* XCRemoteSwiftPackageReference "SwiftSDK" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TelemetryDeck/SwiftSDK";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.11.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A138668E2F4A9321002CB2DD /* TelemetryClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A138668D2F4A9321002CB2DD /* XCRemoteSwiftPackageReference "SwiftSDK" */;
+			productName = TelemetryClient;
+		};
+		A13866902F4A9321002CB2DD /* TelemetryDeck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A138668D2F4A9321002CB2DD /* XCRemoteSwiftPackageReference "SwiftSDK" */;
+			productName = TelemetryDeck;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		A0000001000000000000006 /* STASH.xcdatamodeld */ = {

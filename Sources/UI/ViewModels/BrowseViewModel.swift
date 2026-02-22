@@ -196,6 +196,9 @@ final class BrowseViewModel {
 
             let shinies = ShinyService.shared.currentShinies(from: self.thoughts)
             self.todaysShiny = shinies.randomElement()
+            if todaysShiny != nil {
+                AnalyticsService.shared.track(.shinySurfaced)
+            }
 
         } catch {
             self.error = AppError.from(error)
@@ -404,6 +407,7 @@ final class BrowseViewModel {
         _Concurrency.Task {
             do {
                 try await thoughtService.archive([thought.id])
+                AnalyticsService.shared.track(.thoughtArchived)
                 await loadThoughts()
             } catch {
                 self.error = AppError.from(error)
@@ -428,6 +432,7 @@ final class BrowseViewModel {
         _Concurrency.Task {
             do {
                 try await thoughtService.delete(thought.id)
+                AnalyticsService.shared.track(.thoughtDeleted)
                 await loadThoughts()
             } catch {
                 self.error = AppError.from(error)
@@ -483,6 +488,7 @@ final class BrowseViewModel {
         _Concurrency.Task {
             do {
                 try await thoughtService.archive(ids)
+                AnalyticsService.shared.track(.thoughtArchived)
                 selectedThoughtIds.removeAll()
                 isEditMode = false
                 await loadThoughts()
@@ -500,6 +506,7 @@ final class BrowseViewModel {
         _Concurrency.Task {
             do {
                 try await thoughtService.bulkDelete(ids)
+                AnalyticsService.shared.track(.thoughtDeleted)
                 selectedThoughtIds.removeAll()
                 isEditMode = false
                 await loadThoughts()

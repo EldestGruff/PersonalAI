@@ -268,6 +268,13 @@ final class DetailViewModel {
                 // Save
                 self.thought = try await thoughtService.update(updated)
 
+                // Analytics: only fires if save succeeded
+                if let newType = editedClassificationType,
+                   let originalType = thought.classification?.type,
+                   newType != originalType {
+                    AnalyticsService.shared.track(.classificationOverridden(from: originalType.rawValue, to: newType.rawValue))
+                }
+
                 // Exit edit mode
                 self.isEditing = false
                 self.editedContent = ""
@@ -512,6 +519,7 @@ final class DetailViewModel {
     /// Deletes the current thought
     func deleteThought() async throws {
         try await thoughtService.delete(thought.id)
+        AnalyticsService.shared.track(.thoughtDeleted)
     }
 
     // MARK: - Related Thoughts

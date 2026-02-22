@@ -136,6 +136,7 @@ final class OnboardingViewModel {
     func selectPersona(_ persona: SquirrelPersona) {
         selectedPersona = persona
         personaService.setDefaultPersona(persona)
+        AnalyticsService.shared.track(.personaSelected(persona: persona.name))
 
         // Auto-advance after short delay for feedback
         _Concurrency.Task {
@@ -192,6 +193,7 @@ final class OnboardingViewModel {
     func completeOnboarding() {
         // Set completion flag
         UserDefaults.standard.set(true, forKey: "onboarding.completed")
+        AnalyticsService.shared.track(.onboardingCompleted(stepsCompleted: currentStep.rawValue))
 
         // Call completion handler (dismisses onboarding)
         onComplete()

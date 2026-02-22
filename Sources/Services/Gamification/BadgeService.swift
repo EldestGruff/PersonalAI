@@ -166,6 +166,7 @@ final class BadgeService {
     private func award(_ badge: BadgeDefinition) {
         earnedBadgeIds.insert(badge.id)
         recentlyEarnedIds.insert(badge.id)
+        AnalyticsService.shared.track(.badgeUnlocked(badgeId: badge.id))
         earnedDates[badge.id] = Date()
 
         defaults.set(Array(earnedBadgeIds), forKey: Keys.earnedIds)

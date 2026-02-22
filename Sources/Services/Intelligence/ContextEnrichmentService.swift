@@ -140,15 +140,21 @@ final class ContextEnrichmentService {
     /// Fetches current location if available.
     private func fetchLocation() async -> Location? {
         guard await locationService.permissionStatus == .authorized else {
+            AnalyticsService.shared.track(.contextEnrichmentFailed(component: .location))
             return nil
         }
 
-        return await locationService.getCurrentLocation()
+        let location = await locationService.getCurrentLocation()
+        if location == nil {
+            AnalyticsService.shared.track(.contextEnrichmentFailed(component: .location))
+        }
+        return location
     }
 
     /// Fetches current energy level from HealthKit.
     private func fetchEnergy() async -> EnergyLevel {
         guard await healthKitService.permissionStatus == .authorized else {
+            AnalyticsService.shared.track(.contextEnrichmentFailed(component: .healthKit))
             return .medium
         }
 
@@ -185,6 +191,7 @@ final class ContextEnrichmentService {
     /// Fetches calendar availability context.
     private func fetchCalendar() async -> CalendarContext? {
         guard await eventKitService.permissionStatus == .authorized else {
+            AnalyticsService.shared.track(.contextEnrichmentFailed(component: .calendar))
             return nil
         }
 

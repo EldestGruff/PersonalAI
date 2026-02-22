@@ -518,6 +518,9 @@ final class CaptureViewModel {
                 self.captureSucceeded = true
                 self.error = nil
 
+                // Analytics: default to .text (no voice/text mode flag in this VM)
+                AnalyticsService.shared.track(.thoughtCaptured(method: .text))
+
             } catch {
                 self.error = AppError.from(error)
             }

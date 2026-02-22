@@ -87,6 +87,7 @@ final class AcornLedger {
         lifetimeEarned += amount
         defaults.set(currentBalance, forKey: Keys.currentBalance)
         defaults.set(lifetimeEarned, forKey: Keys.lifetimeEarned)
+        AnalyticsService.shared.track(.acornEarned(amount: amount))
     }
 
     /// Deducts acorns when the user spends them (shop, future use).
@@ -96,6 +97,7 @@ final class AcornLedger {
         guard currentBalance >= amount else { return false }
         currentBalance -= amount
         defaults.set(currentBalance, forKey: Keys.currentBalance)
+        AnalyticsService.shared.track(.acornSpent(amount: amount))
         return true
     }
 

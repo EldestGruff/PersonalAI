@@ -35,6 +35,7 @@ class ThemeEngine {
 
     func setTheme(_ theme: ThemeType) {
         currentTheme = theme
+        AnalyticsService.shared.track(.themeChanged(theme: theme.rawValue))
     }
 
     func getCurrentTheme() -> any ThemeVariant {

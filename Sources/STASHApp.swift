@@ -42,6 +42,9 @@ struct STASHApp: App {
         // Register notification delegate for deep link handling
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
 
+        // Initialize analytics (respects user opt-out from UserDefaults)
+        AnalyticsService.shared.initialize()
+
         // Check if onboarding should be shown
         let hasCompleted = OnboardingViewModel.hasCompletedOnboarding()
         self._showOnboarding = State(initialValue: !hasCompleted)

@@ -209,6 +209,7 @@ class InsightsViewModel {
         do {
             // Try to generate AI-powered insights
             generatedInsights = try await chartDataService.generateInsights(dateRange: dateRange)
+            AnalyticsService.shared.track(.aiInsightsGenerated)
         } catch {
             NSLog("⚠️ Failed to generate AI insights: \(error)")
             insightsError = error
@@ -216,6 +217,7 @@ class InsightsViewModel {
             // Fall back to rule-based insights
             do {
                 generatedInsights = try await chartDataService.generateFallbackInsights(dateRange: dateRange)
+                AnalyticsService.shared.track(.aiInsightsGenerated)
             } catch {
                 NSLog("⚠️ Failed to generate fallback insights: \(error)")
                 generatedInsights = nil

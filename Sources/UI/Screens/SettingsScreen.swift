@@ -79,6 +79,7 @@ struct SettingsScreen: View {
             .onAppear {
                 viewModel.onAppear()
                 loadUsage()
+                AnalyticsService.shared.track(.screenViewed(.settings))
             }
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active {
@@ -768,6 +769,27 @@ struct PrivacyInfoView: View {
                     Text("Personal AI is designed with privacy first.")
                         .font(.headline)
                         .foregroundStyle(theme.textColor)
+
+                    Group {
+                        Text("Usage Analytics")
+                            .font(.headline)
+                            .foregroundStyle(theme.textColor)
+                        Text("STASH collects anonymous metadata about how app features are used — for example, which screens you visit and whether you use voice or text capture. No thought content, tags, health data, or personal information ever leaves your device. This telemetry is used solely to understand which features are working well and where the app can improve.")
+                            .foregroundStyle(theme.secondaryTextColor)
+                        Toggle(isOn: Binding(
+                            get: { !AnalyticsService.shared.isOptedOut },
+                            set: { AnalyticsService.shared.isOptedOut = !$0 }
+                        )) {
+                            Text("Share anonymous usage data")
+                                .foregroundStyle(theme.textColor)
+                        }
+                        .themedToggle(theme)
+                        if AnalyticsService.shared.isOptedOut {
+                            Text("Usage data will no longer be collected.")
+                                .font(.caption)
+                                .foregroundStyle(theme.secondaryTextColor)
+                        }
+                    }
 
                     Group {
                         Text("Data Storage")

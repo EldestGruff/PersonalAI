@@ -154,6 +154,9 @@ struct DetailScreen: View {
             await viewModel.loadRelatedThoughts()
             await loadConversationCount()
         }
+        .onAppear {
+            AnalyticsService.shared.track(.screenViewed(.detail))
+        }
     }
 
     // MARK: - Confirmation Sheet (#34)
