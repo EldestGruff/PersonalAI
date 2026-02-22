@@ -140,6 +140,7 @@ final class ContextEnrichmentService {
     /// Fetches current location if available.
     private func fetchLocation() async -> Location? {
         guard await locationService.permissionStatus == .authorized else {
+            AnalyticsService.shared.track(.contextEnrichmentFailed(component: .location))
             return nil
         }
 

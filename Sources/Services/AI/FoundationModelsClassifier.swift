@@ -24,6 +24,18 @@ actor FoundationModelsClassifier {
 
     private var session: LanguageModelSession?
     private var isPrewarmed = false
+    // `nonisolated(unsafe)` is intentional here. The flag is written inside
+    // `setupSession()`, which runs on the actor's executor, so any two calls from
+    // the *same* instance are serialized by the actor. A theoretical race exists
+    // only if two *different* `FoundationModelsClassifier` instances call
+    // `setupSession()` simultaneously. In practice this cannot happen:
+    // `ClassificationService` (the sole owner) lazily creates exactly one instance
+    // via `if foundationModelsClassifier == nil` inside its own actor-isolated
+    // method, and `ClassificationService` is constructed once inside
+    // `ContextEnrichmentService.shared`. The worst-case outcome of a race would
+    // be a duplicate analytics event, not a crash or data corruption.
+    // If multi-instance usage is ever introduced, replace this with
+    // `OSAllocatedUnfairLock` or promote the flag to an actor-isolated property.
     private nonisolated(unsafe) static var hasTrackedUnavailable = false
 
     /// Availability status of Apple Intelligence
