@@ -116,6 +116,13 @@ final class SearchViewModel {
             self.searchResults = results
             self.hasMore = false  // Semantic search returns all relevant results
 
+            // Analytics
+            if results.isEmpty {
+                AnalyticsService.shared.track(.searchZeroResults)
+            } else {
+                AnalyticsService.shared.track(.searchPerformed(resultCount: results.count))
+            }
+
         } catch {
             self.error = AppError.from(error)
             self.searchResults = []

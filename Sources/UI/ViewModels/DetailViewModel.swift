@@ -249,6 +249,13 @@ final class DetailViewModel {
                     )
                 }
 
+                // Analytics: track classification override if type changed
+                if let newType = editedClassificationType,
+                   let originalType = thought.classification?.type,
+                   newType != originalType {
+                    AnalyticsService.shared.track(.classificationOverridden(from: originalType.rawValue, to: newType.rawValue))
+                }
+
                 // Create updated thought (Thought is immutable, so create new instance)
                 let updated = Thought(
                     id: thought.id,
@@ -512,6 +519,7 @@ final class DetailViewModel {
     /// Deletes the current thought
     func deleteThought() async throws {
         try await thoughtService.delete(thought.id)
+        AnalyticsService.shared.track(.thoughtDeleted)
     }
 
     // MARK: - Related Thoughts
