@@ -196,6 +196,9 @@ final class BrowseViewModel {
 
             let shinies = ShinyService.shared.currentShinies(from: self.thoughts)
             self.todaysShiny = shinies.randomElement()
+            if todaysShiny != nil {
+                AnalyticsService.shared.track(.shinySurfaced)
+            }
 
         } catch {
             self.error = AppError.from(error)

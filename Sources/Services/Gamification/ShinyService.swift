@@ -102,6 +102,7 @@ actor ShinyService {
 
         if !promoted.isEmpty {
             UserDefaults.standard.set(Date(), forKey: Keys.lastPromotionDate)
+            AnalyticsService.shared.track(.shinyPromoted(count: promoted.count))
             let totalShinies = existing.count + promoted.count
             await MainActor.run {
                 SquirrelReminderService.shared.scheduleShinyAlert()
