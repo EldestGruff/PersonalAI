@@ -109,6 +109,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
         }
 
         guard let classification = result else {
+            AnalyticsService.shared.track(.classificationFailed)
             throw ServiceError.timeout(
                 operation: "classification",
                 elapsedMs: Int(Date().timeIntervalSince(startTime) * 1000),

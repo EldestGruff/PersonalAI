@@ -24,6 +24,7 @@ actor FoundationModelsClassifier {
 
     private var session: LanguageModelSession?
     private var isPrewarmed = false
+    private nonisolated(unsafe) static var hasTrackedUnavailable = false
 
     /// Availability status of Apple Intelligence
     nonisolated var isAvailable: Bool {
@@ -41,6 +42,10 @@ actor FoundationModelsClassifier {
     private func setupSession() {
         guard SystemLanguageModel().availability == .available else {
             print("⚠️ Apple Intelligence not available")
+            if !FoundationModelsClassifier.hasTrackedUnavailable {
+                AnalyticsService.shared.track(.aiUnavailable)
+                FoundationModelsClassifier.hasTrackedUnavailable = true
+            }
             return
         }
 
