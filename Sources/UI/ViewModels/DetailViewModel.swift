@@ -249,13 +249,6 @@ final class DetailViewModel {
                     )
                 }
 
-                // Analytics: track classification override if type changed
-                if let newType = editedClassificationType,
-                   let originalType = thought.classification?.type,
-                   newType != originalType {
-                    AnalyticsService.shared.track(.classificationOverridden(from: originalType.rawValue, to: newType.rawValue))
-                }
-
                 // Create updated thought (Thought is immutable, so create new instance)
                 let updated = Thought(
                     id: thought.id,
@@ -274,6 +267,13 @@ final class DetailViewModel {
 
                 // Save
                 self.thought = try await thoughtService.update(updated)
+
+                // Analytics: only fires if save succeeded
+                if let newType = editedClassificationType,
+                   let originalType = thought.classification?.type,
+                   newType != originalType {
+                    AnalyticsService.shared.track(.classificationOverridden(from: originalType.rawValue, to: newType.rawValue))
+                }
 
                 // Exit edit mode
                 self.isEditing = false
