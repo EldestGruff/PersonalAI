@@ -41,6 +41,9 @@ struct AchievementsScreen: View {
             }
             .task { await viewModel.load() }
             .onDisappear { BadgeService.shared.clearRecentlyEarned() }
+            .onAppear {
+                AnalyticsService.shared.track(.screenViewed(.achievements))
+            }
         }
     }
 

@@ -102,6 +102,7 @@ struct CaptureScreen: View {
             .onAppear {
                 viewModel.gatherContext()
                 isTextFieldFocused = true
+                AnalyticsService.shared.track(.screenViewed(.capture))
             }
             .onChange(of: viewModel.captureSucceeded) { _, succeeded in
                 if succeeded {

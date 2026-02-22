@@ -169,6 +169,9 @@ struct BrowseScreen: View {
             .sheet(isPresented: $viewModel.showBulkTagSheet) {
                 bulkTagSheet
             }
+            .onAppear {
+                AnalyticsService.shared.track(.screenViewed(.browse))
+            }
         }
     }
 

@@ -55,6 +55,9 @@ struct SearchScreen: View {
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
+            .onAppear {
+                AnalyticsService.shared.track(.screenViewed(.search))
+            }
         }
     }
 

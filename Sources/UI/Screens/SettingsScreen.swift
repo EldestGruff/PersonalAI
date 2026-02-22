@@ -79,6 +79,7 @@ struct SettingsScreen: View {
             .onAppear {
                 viewModel.onAppear()
                 loadUsage()
+                AnalyticsService.shared.track(.screenViewed(.settings))
             }
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active {

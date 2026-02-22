@@ -86,6 +86,9 @@ struct InsightsScreen: View {
                     await viewModel.loadInsights()
                 }
             }
+            .onAppear {
+                AnalyticsService.shared.track(.screenViewed(.insights))
+            }
         }
     }
 
