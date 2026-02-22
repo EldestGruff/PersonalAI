@@ -83,6 +83,7 @@ struct CaptureThoughtIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
+        AnalyticsService.shared.track(.siriShortcutUsed(intent: "capture"))
         // If no content provided, open voice capture screen instead
         guard let content = content, !content.isEmpty else {
             // Set flag to open voice capture (same as OpenVoiceCaptureIntent)

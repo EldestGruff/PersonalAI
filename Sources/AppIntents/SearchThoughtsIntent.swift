@@ -52,6 +52,7 @@ struct SearchThoughtsIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ReturnsValue<[ThoughtAppEntity]> & ProvidesDialog {
+        AnalyticsService.shared.track(.siriShortcutUsed(intent: "search"))
         // Validate input
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedQuery.isEmpty else {
