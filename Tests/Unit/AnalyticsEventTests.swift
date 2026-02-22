@@ -82,6 +82,37 @@ final class AnalyticsEventTests: XCTestCase {
         XCTAssertEqual(event.metadata["stepsCompleted"], "6")
     }
 
+
+    func test_acornSpent_metadata() {
+        let event = AnalyticsEvent.acornSpent(amount: 5)
+        XCTAssertEqual(event.metadata["amount"], "5")
+    }
+
+    func test_siriShortcutUsed_metadata() {
+        let event = AnalyticsEvent.siriShortcutUsed(intent: "capture")
+        XCTAssertEqual(event.metadata["intent"], "capture")
+    }
+
+    func test_badgeUnlocked_metadata() {
+        let event = AnalyticsEvent.badgeUnlocked(badgeId: "streak-7")
+        XCTAssertEqual(event.metadata["badgeId"], "streak-7")
+    }
+
+    func test_themeChanged_metadata() {
+        let event = AnalyticsEvent.themeChanged(theme: "minimalist")
+        XCTAssertEqual(event.metadata["theme"], "minimalist")
+    }
+
+    func test_personaSelected_metadata() {
+        let event = AnalyticsEvent.personaSelected(persona: "brainstormPartner")
+        XCTAssertEqual(event.metadata["persona"], "brainstormPartner")
+    }
+
+    func test_onboardingAbandoned_metadata() {
+        let event = AnalyticsEvent.onboardingAbandoned(atStep: 3)
+        XCTAssertEqual(event.metadata["atStep"], "3")
+    }
+
     // MARK: - Privacy: no personal data in metadata
 
     func test_noPersonalDataLeaks() {
@@ -111,5 +142,25 @@ final class AnalyticsEventTests: XCTestCase {
 
     func test_classificationFailed_emptyMetadata() {
         XCTAssertTrue(AnalyticsEvent.classificationFailed.metadata.isEmpty)
+    }
+
+    func test_thoughtArchived_emptyMetadata() {
+        XCTAssertTrue(AnalyticsEvent.thoughtArchived.metadata.isEmpty)
+    }
+
+    func test_searchZeroResults_emptyMetadata() {
+        XCTAssertTrue(AnalyticsEvent.searchZeroResults.metadata.isEmpty)
+    }
+
+    func test_aiInsightsGenerated_emptyMetadata() {
+        XCTAssertTrue(AnalyticsEvent.aiInsightsGenerated.metadata.isEmpty)
+    }
+
+    func test_shinySurfaced_emptyMetadata() {
+        XCTAssertTrue(AnalyticsEvent.shinySurfaced.metadata.isEmpty)
+    }
+
+    func test_aiUnavailable_emptyMetadata() {
+        XCTAssertTrue(AnalyticsEvent.aiUnavailable.metadata.isEmpty)
     }
 }
