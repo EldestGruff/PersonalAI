@@ -751,7 +751,6 @@ struct StatRow: View {
 /// Privacy information screen.
 struct PrivacyInfoView: View {
     @State private var themeEngine = ThemeEngine.shared
-    @State private var isOptedOut = AnalyticsService.shared.isOptedOut
 
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
@@ -778,16 +777,13 @@ struct PrivacyInfoView: View {
                             .foregroundStyle(theme.secondaryTextColor)
                         Toggle(isOn: Binding(
                             get: { !AnalyticsService.shared.isOptedOut },
-                            set: { newValue in
-                                AnalyticsService.shared.isOptedOut = !newValue
-                                isOptedOut = !newValue
-                            }
+                            set: { AnalyticsService.shared.isOptedOut = !$0 }
                         )) {
                             Text("Share anonymous usage data")
                                 .foregroundStyle(theme.textColor)
                         }
                         .themedToggle(theme)
-                        if isOptedOut {
+                        if AnalyticsService.shared.isOptedOut {
                             Text("Usage data will no longer be collected.")
                                 .font(.caption)
                                 .foregroundStyle(theme.secondaryTextColor)
