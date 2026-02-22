@@ -6,37 +6,44 @@
 import XCTest
 @testable import STASH
 
-@MainActor
 final class AnalyticsServiceTests: XCTestCase {
 
     private let optOutKey = "analytics.optOut"
-    private var service: AnalyticsService { .shared }
+    private var testDefaults: UserDefaults!
+    private var service: AnalyticsService!
 
-    override func tearDown() {
-        UserDefaults.standard.removeObject(forKey: optOutKey)
+    override func setUp() async throws {
+        testDefaults = UserDefaults(suiteName: "test.analytics")!
+        testDefaults.removePersistentDomain(forName: "test.analytics")
+        service = AnalyticsService(defaults: testDefaults)
+    }
+
+    override func tearDown() async throws {
+        testDefaults.removePersistentDomain(forName: "test.analytics")
+        testDefaults = nil
+        service = nil
     }
 
     func test_isOptedOut_defaultsFalse() {
-        UserDefaults.standard.removeObject(forKey: optOutKey)
         XCTAssertFalse(service.isOptedOut)
     }
 
     func test_setOptedOut_true_persists() {
         service.isOptedOut = true
-        XCTAssertTrue(UserDefaults.standard.bool(forKey: optOutKey))
+        XCTAssertTrue(testDefaults.bool(forKey: optOutKey))
     }
 
     func test_setOptedOut_false_persists() {
         service.isOptedOut = true
         service.isOptedOut = false
-        XCTAssertFalse(UserDefaults.standard.bool(forKey: optOutKey))
+        XCTAssertFalse(testDefaults.bool(forKey: optOutKey))
     }
 
     func test_isOptedOut_reflectsUserDefaults() {
-        UserDefaults.standard.set(true, forKey: optOutKey)
+        testDefaults.set(true, forKey: optOutKey)
         XCTAssertTrue(service.isOptedOut)
 
-        UserDefaults.standard.set(false, forKey: optOutKey)
+        testDefaults.set(false, forKey: optOutKey)
         XCTAssertFalse(service.isOptedOut)
     }
 }

@@ -9,16 +9,19 @@
 import Foundation
 import TelemetryDeck
 
-@MainActor
-final class AnalyticsService {
+final class AnalyticsService: @unchecked Sendable {
     static let shared = AnalyticsService()
-    private init() {}
 
     private let optOutKey = "analytics.optOut"
+    private let defaults: UserDefaults
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+    }
 
     var isOptedOut: Bool {
-        get { UserDefaults.standard.bool(forKey: optOutKey) }
-        set { UserDefaults.standard.set(newValue, forKey: optOutKey) }
+        get { defaults.bool(forKey: optOutKey) }
+        set { defaults.set(newValue, forKey: optOutKey) }
     }
 
     func initialize() {
