@@ -237,7 +237,9 @@ final class VoiceCaptureViewModel {
                 transcribedText = newText
             }
         } else {
-            // Fresh update mid-session - append to preserve previous text
+            // Fresh segment starting - save current text as base so subsequent
+            // cumulative updates in this segment append rather than overwrite
+            savedTranscript = transcribedText
             transcribedText = transcribedText + " " + newText
         }
 
