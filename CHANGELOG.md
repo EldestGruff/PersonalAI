@@ -20,6 +20,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5] - Crash Fixes & Streak Overhaul - 2026-02-23 (Build 1)
+
+### Fixed
+
+- **CoreData threading crashes (critical)** — All repository read operations were accessing `viewContext` from background actor threads, causing `EXC_BAD_ACCESS` memory corruption crashes. All reads now use `newBackgroundContext()` with proper `context.perform {}` wrapping.
+- **Voice capture transcript wipe** — Transcribed text was being cleared every 1–2 seconds due to aggressive on-device silence detection. Switched to server-based recognition (longer silence tolerance) with automatic session restart across OS-managed boundaries. Voice now captures continuously without interruption.
+- **Voice captures not counting toward streak or acorns** — Thoughts saved via voice capture were never calling the gamification hooks, so streaks, acorns, badges, and companion progress were all silently skipped for voice captures.
+- **Streak showing stale value after lapse** — Current streak was loaded from UserDefaults at launch without checking if it had lapsed overnight. Streak now validates on init and every time the app returns to foreground.
+- **Streak inconsistency across screens** — Insights, Achievements, and Browse were each reading from different sources (ChartDataService vs StreakTracker), causing different numbers on every screen. All screens now use StreakTracker as the single source of truth.
+- **Longest streak lower than current streak** — ChartDataService computed streaks without grace day logic, so a grace-day-bridged streak would appear shorter in Insights than in Achievements. StreakTracker now reconciles all three stats (current streak, longest streak, total capture days) from authoritative thought history on every Achievements load.
+
+### Changed
+
+- **Siri shortcut renamed** — "Capture a Thought" → "Stash a Thought". Try: *"Hey Siri, stash a thought in STASH"*
+- **Free tier limit** — Reduced from 50 to 30 thoughts/month ("a thought a day"). Easily adjustable via `freeMonthlyThoughtLimit` constant as we watch beta analytics.
+
+---
+
 ## [0.4] - Shinies Live & Onboarding Polish - 2026-02-21 (Build 6)
 
 ### Fixed
