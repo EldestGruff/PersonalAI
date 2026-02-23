@@ -31,12 +31,12 @@ import Foundation
 struct CaptureThoughtIntent: AppIntent {
     // MARK: - Intent Metadata
 
-    static let title: LocalizedStringResource = "Capture Thought"
+    static let title: LocalizedStringResource = "Stash a Thought"
 
     static let description = IntentDescription(
-        "Quickly capture a thought, note, or idea",
+        "Quickly stash a thought, note, or idea",
         categoryName: "Capture",
-        searchKeywords: ["save", "note", "remember", "capture", "thought"]
+        searchKeywords: ["save", "note", "remember", "stash", "capture", "thought"]
     )
 
     static let openAppWhenRun: Bool = true // Open app to show voice capture when no content provided
@@ -216,7 +216,7 @@ struct ThoughtAppShortcuts: AppShortcutsProvider {
         AppShortcut(
             intent: CaptureThoughtIntent(),
             phrases: [
-                "Capture a thought in \(.applicationName)",
+                "Stash a thought in \(.applicationName)",
                 "Save a note in \(.applicationName)",
                 "Remember something in \(.applicationName)",
                 "Stash a thought in \(.applicationName)",

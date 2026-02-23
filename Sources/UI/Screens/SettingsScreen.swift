@@ -110,7 +110,7 @@ struct SettingsScreen: View {
                             .foregroundStyle(theme.textColor)
 
                         if subscriptionManager.status.tier == .free {
-                            Text("50 thoughts per month")
+                            Text("\(freeMonthlyThoughtLimit) thoughts per month")
                                 .font(.caption)
                                 .foregroundStyle(theme.secondaryTextColor)
                         } else {
@@ -141,7 +141,7 @@ struct SettingsScreen: View {
                             Text("This Month")
                                 .font(.caption)
                                 .foregroundStyle(theme.secondaryTextColor)
-                            Text("\(usage.thoughtsThisMonth) / 50 thoughts")
+                            Text("\(usage.thoughtsThisMonth) / \(freeMonthlyThoughtLimit) thoughts")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                                 .foregroundStyle(theme.textColor)

@@ -38,16 +38,18 @@ actor SyncRepository {
 
     /// Dequeues items ready for processing
     func dequeue(limit: Int) async throws -> [SyncQueueItem] {
-        let context = container.viewContext
+        let context = container.newBackgroundContext()
 
-        let fetchRequest = NSFetchRequest<SyncQueueEntity>(entityName: "SyncQueueEntity")
-        fetchRequest.predicate = NSPredicate(format: "nextRetryAt <= %@", Date() as NSDate)
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: true)]
-        fetchRequest.fetchLimit = limit
+        return try await context.perform {
+            let fetchRequest = NSFetchRequest<SyncQueueEntity>(entityName: "SyncQueueEntity")
+            fetchRequest.predicate = NSPredicate(format: "nextRetryAt <= %@", Date() as NSDate)
+            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: true)]
+            fetchRequest.fetchLimit = limit
 
-        let results = try context.fetch(fetchRequest)
+            let results = try context.fetch(fetchRequest)
 
-        return try results.map { try SyncQueueItem.from($0) }
+            return try results.map { try SyncQueueItem.from($0) }
+        }
     }
 
     // MARK: - Update

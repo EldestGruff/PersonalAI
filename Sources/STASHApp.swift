@@ -177,6 +177,7 @@ struct MainTabView: View {
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
+                StreakTracker.shared.onAppForeground()
                 checkForPendingVoiceCapture()
             }
         }

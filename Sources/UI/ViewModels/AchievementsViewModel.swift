@@ -102,6 +102,13 @@ final class AchievementsViewModel {
             let allThoughts = try await thoughtService.list(filter: nil)
             thoughtCount = allThoughts.count
             shinyCount   = allThoughts.filter { $0.isShiny }.count
+
+            // Reconcile all streak stats against the authoritative thought history.
+            StreakTracker.shared.reconcile(from: allThoughts.map { $0.createdAt })
+
+            currentStreak    = StreakTracker.shared.currentStreak
+            longestStreak    = StreakTracker.shared.longestStreak
+            totalCaptureDays = StreakTracker.shared.totalCaptureDays
         } catch {
             self.error = AppError.from(error)
         }
@@ -202,6 +209,8 @@ final class AchievementsViewModel {
 
         return list
     }
+
+    // MARK: - Private Helpers
 
     // MARK: - Computed
 
