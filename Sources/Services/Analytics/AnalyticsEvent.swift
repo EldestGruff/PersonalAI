@@ -56,6 +56,7 @@ enum AnalyticsEvent {
     case classificationFailed
     case aiUnavailable
     case contextEnrichmentFailed(component: ContextComponent)
+    case coreDataError(operation: String)
 
     // MARK: - Supporting Types
 
@@ -99,6 +100,7 @@ enum AnalyticsEvent {
         case .classificationFailed:      return "classificationFailed"
         case .aiUnavailable:             return "aiUnavailable"
         case .contextEnrichmentFailed:   return "contextEnrichmentFailed"
+        case .coreDataError:             return "coreDataError"
         }
     }
 
@@ -136,6 +138,8 @@ enum AnalyticsEvent {
             return ["intent": intent]
         case .contextEnrichmentFailed(let component):
             return ["component": component.rawValue]
+        case .coreDataError(let operation):
+            return ["operation": operation]
         case .thoughtDeleted, .thoughtArchived, .searchZeroResults,
              .aiInsightsGenerated, .shinySurfaced, .classificationFailed,
              .aiUnavailable:

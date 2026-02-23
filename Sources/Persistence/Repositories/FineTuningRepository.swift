@@ -36,31 +36,35 @@ actor FineTuningRepository {
 
     /// Fetches fine-tuning data by thought ID
     func fetch(thoughtId: UUID) async throws -> FineTuningData? {
-        let context = container.viewContext
+        let context = container.newBackgroundContext()
 
-        let fetchRequest = NSFetchRequest<FineTuningDataEntity>(entityName: "FineTuningDataEntity")
-        fetchRequest.predicate = NSPredicate(format: "thoughtId == %@", thoughtId as CVarArg)
-        fetchRequest.fetchLimit = 1
+        return try await context.perform {
+            let fetchRequest = NSFetchRequest<FineTuningDataEntity>(entityName: "FineTuningDataEntity")
+            fetchRequest.predicate = NSPredicate(format: "thoughtId == %@", thoughtId as CVarArg)
+            fetchRequest.fetchLimit = 1
 
-        let results = try context.fetch(fetchRequest)
+            let results = try context.fetch(fetchRequest)
 
-        guard let entity = results.first else {
-            return nil
+            guard let entity = results.first else {
+                return nil
+            }
+
+            return try FineTuningData.from(entity)
         }
-
-        return try FineTuningData.from(entity)
     }
 
     /// Lists all fine-tuning data points
     func list() async throws -> [FineTuningData] {
-        let context = container.viewContext
+        let context = container.newBackgroundContext()
 
-        let fetchRequest = NSFetchRequest<FineTuningDataEntity>(entityName: "FineTuningDataEntity")
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
+        return try await context.perform {
+            let fetchRequest = NSFetchRequest<FineTuningDataEntity>(entityName: "FineTuningDataEntity")
+            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
 
-        let results = try context.fetch(fetchRequest)
+            let results = try context.fetch(fetchRequest)
 
-        return try results.map { try FineTuningData.from($0) }
+            return try results.map { try FineTuningData.from($0) }
+        }
     }
 
     // MARK: - Update

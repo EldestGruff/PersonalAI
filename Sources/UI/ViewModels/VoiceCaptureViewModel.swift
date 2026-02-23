@@ -56,8 +56,10 @@ final class VoiceCaptureViewModel {
     // MARK: - Private State
 
     @ObservationIgnored private var transcriptionTask: _Concurrency.Task<Void, Never>?
-    @ObservationIgnored private var savedTranscript: String = "" // Text saved from previous session when paused
-    @ObservationIgnored private var lastUpdate: String = "" // Last update received to detect cumulative vs fresh
+    @ObservationIgnored private var silenceTimer: _Concurrency.Task<Void, Never>?
+    @ObservationIgnored private var savedTranscript: String = "" // Text saved from completed segments
+
+    private let silenceTimeoutSeconds: TimeInterval = 7
 
     // MARK: - Initialization
 
@@ -73,76 +75,73 @@ final class VoiceCaptureViewModel {
 
     /// Starts listening on view appear
     func startListening() async {
-        // Check permissions first
         let permissionStatus = await speechService.permissionStatus
 
         if permissionStatus != .authorized {
-            // Request permission
             let newStatus = await speechService.requestPermission()
-
             if newStatus != .authorized {
                 captureState = .error("Microphone and speech recognition permissions are required. Please enable them in Settings.")
                 return
             }
         }
 
-        // Start speech recognition
+        captureState = .listening
+        await beginCapture()
+    }
+
+    /// Pauses listening (keeps transcript)
+    func pauseListening() async {
+        guard captureState == .listening else { return }
+        savedTranscript = transcribedText
+        cancelSilenceTimer()
+        // Set state BEFORE stopping so handleStreamEnded won't auto-restart
+        captureState = .paused
+        _ = await speechService.stopListening()
+    }
+
+    /// Resumes listening (appends to existing transcript)
+    func resumeListening() async {
+        guard captureState == .paused else { return }
+        captureState = .listening
+        await beginCapture()
+    }
+
+
+    // MARK: - Private — Capture Management
+
+    /// Starts a recognition session and wires up the stream.
+    /// Called on initial start, resume, and auto-restart after session end.
+    private func beginCapture() async {
+        guard captureState == .listening else { return }
+        resetSilenceTimer() // Safety net: save after 7s of silence even if no new speech
         do {
-            captureState = .listening
-
             let stream = try await speechService.startListening()
-
-            // Subscribe to transcription updates
             transcriptionTask = _Concurrency.Task { [weak self] in
                 for await update in stream {
                     self?.handleTranscriptionUpdate(update)
                 }
-
-                // Stream ended - let it end naturally, user can resume manually
                 guard let self = self else { return }
-                self.handleStreamEnded()
+                self.handleSessionEnded()
             }
         } catch {
             captureState = .error("Failed to start voice recognition: \(error.localizedDescription)")
         }
     }
 
-    /// Pauses listening (keeps transcript)
-    func pauseListening() async {
+    /// Called when a recognition session ends (stream exhausted).
+    ///
+    /// If we're still in listening state this was an OS-initiated session boundary
+    /// (silence timeout, 60-second limit, etc.) — auto-restart seamlessly so the
+    /// user never sees a "paused" state they didn't ask for.
+    private func handleSessionEnded() {
         guard captureState == .listening else { return }
-
-        // Save current transcript before stopping
+        cancelSilenceTimer()
         savedTranscript = transcribedText
-        lastUpdate = ""
-        _ = await speechService.stopListening()
-
-        captureState = .paused
-    }
-
-    /// Resumes listening (appends to existing transcript)
-    func resumeListening() async {
-        guard captureState == .paused else { return }
-
-        do {
-            captureState = .listening
-
-            let stream = try await speechService.startListening()
-
-            // Subscribe to new transcription updates (savedTranscript will be prepended)
-            transcriptionTask = _Concurrency.Task { [weak self] in
-                for await update in stream {
-                    self?.handleTranscriptionUpdate(update)
-                }
-
-                // Stream ended naturally
-                guard let self = self else { return }
-                self.handleStreamEnded()
-            }
-        } catch {
-            captureState = .error("Failed to resume voice recognition: \(error.localizedDescription)")
+        // Auto-restart: let iOS manage session boundaries, we just continue
+        _Concurrency.Task { [weak self] in
+            await self?.beginCapture()
         }
     }
-
 
     /// Stops listening and saves the thought
     func stopAndSave() async {
@@ -155,13 +154,13 @@ final class VoiceCaptureViewModel {
         captureState = .processing
 
         // Cancel ongoing tasks
+        cancelSilenceTimer()
         transcriptionTask?.cancel()
 
-        // Stop speech recognition
-        let finalTranscript = await speechService.stopListening()
+        // Stop speech recognition (cleanup only — transcribedText is authoritative)
+        _ = await speechService.stopListening()
 
-        // Use final transcript if available, otherwise use what we have
-        let content = finalTranscript.isEmpty ? transcribedText : finalTranscript
+        let content = transcribedText
 
         // Create thought
         let now = Date()
@@ -182,12 +181,24 @@ final class VoiceCaptureViewModel {
 
         do {
             // Save thought
-            _ = try await thoughtService.create(thought)
+            let saved = try await thoughtService.create(thought)
 
             // Enrich context in background (Phase 1a requirement)
             _Concurrency.Task.detached {
                 await ContextEnrichmentService.shared.enrichContext(for: thought.id)
             }
+
+            // Gamification hooks (mirrors CaptureViewModel)
+            let streakUpdate = StreakTracker.shared.recordCapture()
+            if let milestone = streakUpdate.milestone {
+                _ = AcornService.shared.processStreakMilestone(days: milestone.rawValue)
+            }
+            _ = AcornService.shared.processCapture(hadContext: false)
+            _ = await BadgeService.shared.checkAll(newThought: saved, thoughtService: thoughtService)
+            _ = VariableRewardService.shared.roll()
+            SquirrelReminderService.shared.onCaptureCompleted()
+            SquirrelCompanionService.shared.recordCapture()
+            AnalyticsService.shared.track(.thoughtCaptured(method: .voice))
 
             captureState = .saved
             captureSucceeded = true
@@ -198,58 +209,52 @@ final class VoiceCaptureViewModel {
 
     /// Cancels listening and discards transcript
     func cancelListening() async {
+        cancelSilenceTimer()
+        // Set state BEFORE cancelling task so handleSessionEnded won't auto-restart
+        captureState = .idle
         transcriptionTask?.cancel()
-
         await speechService.cancelListening()
-
         transcribedText = ""
         savedTranscript = ""
-        lastUpdate = ""
-        captureState = .idle
         captureSucceeded = true // Dismiss screen
     }
 
     // MARK: - Private Methods
 
-    /// Called when the recognition stream ends naturally
-    private func handleStreamEnded() {
-        if captureState == .listening {
-            // Stream ended due to pause - save what we have and transition to paused
+    /// Handles a transcription update from the speech recognizer.
+    ///
+    /// update.text is cumulative within a session (partial result building up).
+    /// savedTranscript holds text from completed prior sessions so it prepends.
+    private func handleTranscriptionUpdate(_ update: TranscriptionUpdate) {
+        transcribedText = savedTranscript.isEmpty ? update.text : savedTranscript + " " + update.text
+
+        if update.isFinal {
             savedTranscript = transcribedText
-            lastUpdate = ""
-            captureState = .paused
-            print("⏸️ Stream ended - tap mic to continue")
+        }
+
+        resetSilenceTimer()
+    }
+
+    private func resetSilenceTimer() {
+        silenceTimer?.cancel()
+        let timeout = silenceTimeoutSeconds
+        silenceTimer = _Concurrency.Task { [weak self] in
+            try? await _Concurrency.Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
+            guard let self, !_Concurrency.Task.isCancelled else { return }
+            await self.stopAndSave()
         }
     }
 
-    /// Handles a transcription update from the speech recognizer
-    private func handleTranscriptionUpdate(_ update: TranscriptionUpdate) {
-        let newText = update.text
-
-        // Check if this update builds on the last one (cumulative) or is fresh (non-cumulative)
-        let isCumulative = lastUpdate.isEmpty || (newText.count >= lastUpdate.count && newText.hasPrefix(lastUpdate))
-
-        if isCumulative {
-            // Normal cumulative update - use it
-            if !savedTranscript.isEmpty {
-                transcribedText = savedTranscript + " " + newText
-            } else {
-                transcribedText = newText
-            }
-        } else {
-            // Fresh segment starting - save current text as base so subsequent
-            // cumulative updates in this segment append rather than overwrite
-            savedTranscript = transcribedText
-            transcribedText = transcribedText + " " + newText
-        }
-
-        lastUpdate = newText
+    private func cancelSilenceTimer() {
+        silenceTimer?.cancel()
+        silenceTimer = nil
     }
 
 
     // MARK: - Cleanup
 
     deinit {
+        silenceTimer?.cancel()
         transcriptionTask?.cancel()
     }
 }

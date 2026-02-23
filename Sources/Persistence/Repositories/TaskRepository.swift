@@ -38,36 +38,40 @@ actor TaskRepository {
 
     /// Fetches a task by ID
     func fetch(_ id: UUID) async throws -> Task? {
-        let context = container.viewContext
+        let context = container.newBackgroundContext()
 
-        let fetchRequest = NSFetchRequest<TaskEntity>(entityName: "TaskEntity")
-        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-        fetchRequest.fetchLimit = 1
+        return try await context.perform {
+            let fetchRequest = NSFetchRequest<TaskEntity>(entityName: "TaskEntity")
+            fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+            fetchRequest.fetchLimit = 1
 
-        let results = try context.fetch(fetchRequest)
+            let results = try context.fetch(fetchRequest)
 
-        guard let entity = results.first else {
-            return nil
+            guard let entity = results.first else {
+                return nil
+            }
+
+            return try Task.from(entity)
         }
-
-        return try Task.from(entity)
     }
 
     /// Lists all tasks with optional filtering
     func list(filter: TaskFilter? = nil) async throws -> [Task] {
-        let context = container.viewContext
+        let context = container.newBackgroundContext()
 
-        let fetchRequest = NSFetchRequest<TaskEntity>(entityName: "TaskEntity")
+        return try await context.perform {
+            let fetchRequest = NSFetchRequest<TaskEntity>(entityName: "TaskEntity")
 
-        if let filter = filter {
-            fetchRequest.predicate = filter.predicate
+            if let filter = filter {
+                fetchRequest.predicate = filter.predicate
+            }
+
+            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dueDate", ascending: true)]
+
+            let results = try context.fetch(fetchRequest)
+
+            return try results.map { try Task.from($0) }
         }
-
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dueDate", ascending: true)]
-
-        let results = try context.fetch(fetchRequest)
-
-        return try results.map { try Task.from($0) }
     }
 
     // MARK: - Update

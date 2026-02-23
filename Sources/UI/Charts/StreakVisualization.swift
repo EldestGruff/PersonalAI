@@ -24,7 +24,7 @@ struct StreakVisualization: View {
             HStack(spacing: 20) {
                 // Current streak
                 VStack(spacing: 4) {
-                    Text("\(streakData.currentStreak)")
+                    Text("\(currentStreak)")
                         .font(.system(size: 48, weight: .bold, design: .rounded))
                         .foregroundStyle(streakColor)
                         .contentTransition(.numericText())
@@ -34,7 +34,7 @@ struct StreakVisualization: View {
                         .foregroundStyle(.secondary)
                 }
                 .accessibilityElement(children: .combine)
-                .accessibilityLabel("\(streakData.currentStreak) day current streak")
+                .accessibilityLabel("\(currentStreak) day current streak")
 
                 Divider()
                     .frame(height: 60)
@@ -106,12 +106,16 @@ struct StreakVisualization: View {
         }
     }
 
+    /// StreakTracker is the authoritative source for current streak — it applies grace day logic.
+    /// ChartDataService only counts raw consecutive days, so it under-counts when grace days are used.
+    private var currentStreak: Int { StreakTracker.shared.currentStreak }
+
     private var encouragementMessage: some View {
         let tracker = StreakTracker.shared
         let days = tracker.daysSinceLastCapture ?? 999
 
         return Group {
-            if streakData.currentStreak == 0 && days >= 3 {
+            if currentStreak == 0 && days >= 3 {
                 // Squirrel went on an adventure — no shame
                 HStack(spacing: 6) {
                     Text("🌰")
@@ -119,14 +123,14 @@ struct StreakVisualization: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-            } else if streakData.currentStreak == 0 {
+            } else if currentStreak == 0 {
                 HStack(spacing: 6) {
                     Text("🌿")
                     Text("Ready when you are. Capture a thought to start a new streak.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-            } else if streakData.currentStreak == 1 {
+            } else if currentStreak == 1 {
                 HStack(spacing: 6) {
                     Image(systemName: "sparkles")
                         .foregroundStyle(.yellow)
@@ -134,18 +138,18 @@ struct StreakVisualization: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-            } else if streakData.currentStreak >= 30 {
+            } else if currentStreak >= 30 {
                 HStack(spacing: 6) {
                     Text("🏆")
-                    Text("\(streakData.currentStreak) days. This is who you are now.")
+                    Text("\(currentStreak) days. This is who you are now.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-            } else if streakData.currentStreak >= 7 {
+            } else if currentStreak >= 7 {
                 HStack(spacing: 6) {
                     Image(systemName: "star.fill")
                         .foregroundStyle(.yellow)
-                    Text("\(streakData.currentStreak) days — that's a real habit forming.")
+                    Text("\(currentStreak) days — that's a real habit forming.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -153,7 +157,7 @@ struct StreakVisualization: View {
                 HStack(spacing: 6) {
                     Image(systemName: "arrow.up.forward")
                         .foregroundStyle(.green)
-                    Text("\(streakData.currentStreak) days and building. Keep it going.")
+                    Text("\(currentStreak) days and building. Keep it going.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -164,7 +168,7 @@ struct StreakVisualization: View {
     // MARK: - Helpers
 
     private var streakColor: Color {
-        switch streakData.currentStreak {
+        switch currentStreak {
         case 0: return .gray
         case 1...2: return .orange
         case 3...6: return .yellow

@@ -26,10 +26,15 @@ actor ThoughtRepository {
         // Note: Validation handled by ThoughtService - repository only persists
         let context = container.newBackgroundContext()
 
-        return try await context.perform {
-            let entity = try thought.toEntity(in: context)
-            try context.save()
-            return try Thought.from(entity)
+        do {
+            return try await context.perform {
+                let entity = try thought.toEntity(in: context)
+                try context.save()
+                return try Thought.from(entity)
+            }
+        } catch {
+            AnalyticsService.shared.track(.coreDataError(operation: "create_thought"))
+            throw error
         }
     }
 
@@ -37,49 +42,55 @@ actor ThoughtRepository {
 
     /// Fetches a thought by ID
     func fetch(_ id: UUID) async throws -> Thought? {
-        let context = container.viewContext
+        let context = container.newBackgroundContext()
 
-        let fetchRequest = NSFetchRequest<ThoughtEntity>(entityName: "ThoughtEntity")
-        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-        fetchRequest.fetchLimit = 1
+        return try await context.perform {
+            let fetchRequest = NSFetchRequest<ThoughtEntity>(entityName: "ThoughtEntity")
+            fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+            fetchRequest.fetchLimit = 1
 
-        let results = try context.fetch(fetchRequest)
+            let results = try context.fetch(fetchRequest)
 
-        guard let entity = results.first else {
-            return nil
+            guard let entity = results.first else {
+                return nil
+            }
+
+            return try Thought.from(entity)
         }
-
-        return try Thought.from(entity)
     }
 
     /// Lists all thoughts with optional filtering
     func list(filter: ThoughtFilter? = nil) async throws -> [Thought] {
-        let context = container.viewContext
+        let context = container.newBackgroundContext()
 
-        let fetchRequest = NSFetchRequest<ThoughtEntity>(entityName: "ThoughtEntity")
+        return try await context.perform {
+            let fetchRequest = NSFetchRequest<ThoughtEntity>(entityName: "ThoughtEntity")
 
-        if let filter = filter {
-            fetchRequest.predicate = filter.predicate
+            if let filter = filter {
+                fetchRequest.predicate = filter.predicate
+            }
+
+            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
+
+            let results = try context.fetch(fetchRequest)
+
+            return try results.map { try Thought.from($0) }
         }
-
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
-
-        let results = try context.fetch(fetchRequest)
-
-        return try results.map { try Thought.from($0) }
     }
 
     /// Searches thoughts by content
     func search(_ query: String) async throws -> [Thought] {
-        let context = container.viewContext
+        let context = container.newBackgroundContext()
 
-        let fetchRequest = NSFetchRequest<ThoughtEntity>(entityName: "ThoughtEntity")
-        fetchRequest.predicate = NSPredicate(format: "content CONTAINS[cd] %@", query)
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
+        return try await context.perform {
+            let fetchRequest = NSFetchRequest<ThoughtEntity>(entityName: "ThoughtEntity")
+            fetchRequest.predicate = NSPredicate(format: "content CONTAINS[cd] %@", query)
+            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
 
-        let results = try context.fetch(fetchRequest)
+            let results = try context.fetch(fetchRequest)
 
-        return try results.map { try Thought.from($0) }
+            return try results.map { try Thought.from($0) }
+        }
     }
 
     // MARK: - Update
@@ -212,21 +223,23 @@ actor ThoughtRepository {
 
     /// Gets all related thoughts for a given thought
     func getRelatedThoughts(for thoughtId: UUID) async throws -> [Thought] {
-        let context = container.viewContext
+        let context = container.newBackgroundContext()
 
-        let fetchRequest = NSFetchRequest<ThoughtEntity>(entityName: "ThoughtEntity")
-        fetchRequest.predicate = NSPredicate(format: "id == %@", thoughtId as CVarArg)
-        fetchRequest.fetchLimit = 1
+        return try await context.perform {
+            let fetchRequest = NSFetchRequest<ThoughtEntity>(entityName: "ThoughtEntity")
+            fetchRequest.predicate = NSPredicate(format: "id == %@", thoughtId as CVarArg)
+            fetchRequest.fetchLimit = 1
 
-        guard let entity = try context.fetch(fetchRequest).first else {
-            throw PersistenceError.notFound(thoughtId)
+            guard let entity = try context.fetch(fetchRequest).first else {
+                throw PersistenceError.notFound(thoughtId)
+            }
+
+            if let relatedSet = entity.relatedThoughts as? Set<ThoughtEntity> {
+                return try relatedSet.map { try Thought.from($0) }
+            }
+
+            return []
         }
-
-        if let relatedSet = entity.relatedThoughts as? Set<ThoughtEntity> {
-            return try relatedSet.map { try Thought.from($0) }
-        }
-
-        return []
     }
 
     // MARK: - Optimized Aggregation Queries for Charts
@@ -237,24 +250,26 @@ actor ThoughtRepository {
     /// Get distinct capture dates for streak calculation
     /// Uses optimized query to avoid loading full thought entities
     func getDistinctCaptureDates() async throws -> [Date] {
-        let context = container.viewContext
+        let context = container.newBackgroundContext()
 
-        let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "ThoughtEntity")
-        fetchRequest.resultType = .dictionaryResultType
-        fetchRequest.returnsDistinctResults = true
+        return try await context.perform {
+            let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "ThoughtEntity")
+            fetchRequest.resultType = .dictionaryResultType
+            fetchRequest.returnsDistinctResults = true
 
-        // Only fetch the createdAt date (not the full entity)
-        fetchRequest.propertiesToFetch = ["createdAt"]
+            // Only fetch the createdAt date (not the full entity)
+            fetchRequest.propertiesToFetch = ["createdAt"]
 
-        let results = try context.fetch(fetchRequest)
+            let results = try context.fetch(fetchRequest)
 
-        // Extract dates and normalize to start of day
-        let calendar = Calendar.current
-        return results.compactMap { dict in
-            guard let date = dict["createdAt"] as? Date else { return nil }
-            return calendar.startOfDay(for: date)
+            // Extract dates and normalize to start of day
+            let calendar = Calendar.current
+            return results.compactMap { dict in
+                guard let date = dict["createdAt"] as? Date else { return nil }
+                return calendar.startOfDay(for: date)
+            }
+            .sorted()
         }
-        .sorted()
     }
 
     /// Aggregate sentiment by date range

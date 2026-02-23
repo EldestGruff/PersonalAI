@@ -90,9 +90,103 @@ final class StreakTracker {
         currentStreak    = defaults.integer(forKey: Keys.currentStreak)
         longestStreak    = defaults.integer(forKey: Keys.longestStreak)
         totalCaptureDays = defaults.integer(forKey: Keys.totalCaptureDays)
+        validateStreak()
     }
 
     // MARK: - Public API
+
+    /// Reconciles all streak stats against the authoritative thought history.
+    ///
+    /// Pass in every capture date from the thought database. This method computes
+    /// currentStreak (with grace day logic), longestStreak, and totalCaptureDays
+    /// from the ground truth and raises any stored value that has fallen behind.
+    ///
+    /// Values are only ever raised, never lowered, so this is safe to call on every
+    /// app launch or screen load. Call sites don't need to know which values are stale.
+    func reconcile(from captureDates: [Date]) {
+        let calendar = Calendar.current
+        let uniqueDays = Set(captureDates.map { calendar.startOfDay(for: $0) })
+
+        let computedTotal   = uniqueDays.count
+        let computedLongest = longestConsecutiveRun(in: uniqueDays, calendar: calendar)
+        let computedCurrent = currentConsecutiveRun(in: uniqueDays, calendar: calendar)
+
+        // Enforce logical invariant: longest ≥ current
+        let effectiveLongest = max(computedLongest, computedCurrent)
+
+        if computedCurrent > currentStreak {
+            currentStreak = computedCurrent
+            defaults.set(currentStreak, forKey: Keys.currentStreak)
+        }
+        if effectiveLongest > longestStreak {
+            longestStreak = effectiveLongest
+            defaults.set(longestStreak, forKey: Keys.longestStreak)
+        }
+        if computedTotal > totalCaptureDays {
+            totalCaptureDays = computedTotal
+            defaults.set(totalCaptureDays, forKey: Keys.totalCaptureDays)
+        }
+    }
+
+    // MARK: - Private — Streak Computation
+
+    private func longestConsecutiveRun(in days: Set<Date>, calendar: Calendar) -> Int {
+        let sorted = days.sorted()
+        var longest = 0, current = 0
+        var previous: Date?
+        for day in sorted {
+            if let prev = previous,
+               calendar.date(byAdding: .day, value: 1, to: prev) == day {
+                current += 1
+            } else {
+                current = 1
+            }
+            longest = max(longest, current)
+            previous = day
+        }
+        return longest
+    }
+
+    private func currentConsecutiveRun(in days: Set<Date>, calendar: Calendar) -> Int {
+        let today     = calendar.startOfDay(for: Date())
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: today) ?? today
+
+        // Streak is only alive if captured today or yesterday
+        guard days.contains(today) || days.contains(yesterday) else { return 0 }
+
+        var streak = 0
+        var date   = days.contains(today) ? today : yesterday
+        var usedGraceDayWeeks = Set<String>()
+
+        while true {
+            if days.contains(date) {
+                streak += 1
+                guard let prev = calendar.date(byAdding: .day, value: -1, to: date) else { break }
+                date = prev
+            } else {
+                // Missed this date — try grace day (one per ISO week)
+                let week = isoWeekString(for: date)
+                if !usedGraceDayWeeks.contains(week),
+                   let prev = calendar.date(byAdding: .day, value: -1, to: date),
+                   days.contains(prev) {
+                    usedGraceDayWeeks.insert(week)
+                    date = prev
+                } else {
+                    break
+                }
+            }
+        }
+        return streak
+    }
+
+    /// Call this when the app returns to the foreground (e.g. scenePhase → .active).
+    ///
+    /// Recalculates the streak in case the date crossed midnight while the app
+    /// was running or backgrounded. Safe to call multiple times — no-op if the
+    /// streak is already correct.
+    func onAppForeground() {
+        validateStreak()
+    }
 
     /// Call this immediately after a successful thought capture.
     ///
@@ -195,6 +289,34 @@ final class StreakTracker {
     var capturedToday: Bool {
         guard let last = defaults.object(forKey: Keys.lastCaptureDate) as? Date else { return false }
         return Calendar.current.isDateInToday(last)
+    }
+
+    // MARK: - Streak Validation
+
+    /// Resets currentStreak if it has lapsed since the last capture.
+    ///
+    /// Called at init and on app foreground so the displayed value is always
+    /// accurate, not just accurate-after-next-capture.
+    private func validateStreak() {
+        guard currentStreak > 0 else { return }
+        guard let days = daysSinceLastCapture else { return }
+
+        let lapsed: Bool
+        switch days {
+        case 0, 1:
+            lapsed = false
+        case 2:
+            // Grace day available means the streak can still be saved on next capture.
+            // Grace day already used means it's gone.
+            lapsed = !canUseGraceDay(for: Date())
+        default:
+            lapsed = true
+        }
+
+        if lapsed {
+            currentStreak = 0
+            defaults.set(0, forKey: Keys.currentStreak)
+        }
     }
 
     // MARK: - Grace Day
