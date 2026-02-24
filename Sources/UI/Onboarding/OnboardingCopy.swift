@@ -161,6 +161,23 @@ enum OnboardingCopy {
         }
     }
 
+    static func siriSetupIntro(for persona: SquirrelPersona) -> String {
+        switch persona.id {
+        case SquirrelPersona.supportiveListener.id:
+            return "You can reach me from anywhere — even without opening the app. Just tell Siri, and I'll catch it for you."
+        case SquirrelPersona.brainstormPartner.id:
+            return "Best ideas happen mid-run, mid-drive, mid-shower. Set this up so we never lose one."
+        case SquirrelPersona.socraticQuestioner.id:
+            return "What's the cost of a thought that slips away? Set this up so you can capture from anywhere."
+        case SquirrelPersona.journalGuide.id:
+            return "Sometimes a moment needs to be held right as it happens. This lets you do that hands-free."
+        case SquirrelPersona.devilsAdvocate.id:
+            return "You're going to forget it. You always do. Unless you tell Siri right now."
+        default:
+            return "Capture thoughts anywhere — just tell Siri."
+        }
+    }
+
     static func completionMessage(for persona: SquirrelPersona) -> String {
         switch persona.id {
         case SquirrelPersona.supportiveListener.id:
