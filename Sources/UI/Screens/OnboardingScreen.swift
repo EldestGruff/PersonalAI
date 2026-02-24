@@ -86,6 +86,11 @@ struct OnboardingScreen: View {
             NotificationsStepView(viewModel: viewModel)
         case .futureTeaser:
             FutureTeaserStepView(viewModel: viewModel)
+        case .siriSetup:
+            SiriSetupStepView(
+                persona: viewModel.selectedPersona,
+                onContinue: { viewModel.advance() }
+            )
         case .completion:
             CompletionStepView(viewModel: viewModel)
         }

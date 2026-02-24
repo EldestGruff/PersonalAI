@@ -13,15 +13,16 @@ import SwiftUI
 // MARK: - Onboarding Step
 
 enum OnboardingStep: Int, CaseIterable {
-    case welcome = 0
+    case welcome       = 0
     case personaPicker = 1
-    case firstCapture = 2
+    case firstCapture  = 2
     case acornExplainer = 3
-    case streakIntro = 4
-    case permissions = 5
+    case streakIntro   = 4
+    case permissions   = 5
     case notifications = 6
-    case futureTeaser = 7
-    case completion = 8
+    case futureTeaser  = 7
+    case siriSetup     = 8
+    case completion    = 9
 
     var canSkip: Bool {
         switch self {
@@ -73,15 +74,20 @@ final class OnboardingViewModel {
     // Embedded CaptureViewModel for step 3 (real capture)
     let captureViewModel: CaptureViewModel
 
+    /// Whether this is a replay of the tutorial (skips firstCapture step)
+    let isReplay: Bool
+
     // MARK: - Initialization
 
     init(
+        isReplay: Bool = false,
         personaService: PersonaService = .shared,
         permissionCoordinator: PermissionCoordinator = .shared,
         reminderService: SquirrelReminderService = .shared,
         captureViewModel: CaptureViewModel,
         onComplete: @escaping () -> Void
     ) {
+        self.isReplay = isReplay
         self.personaService = personaService
         self.permissionCoordinator = permissionCoordinator
         self.reminderService = reminderService
@@ -104,6 +110,14 @@ final class OnboardingViewModel {
         guard let nextStep = OnboardingStep(rawValue: currentStep.rawValue + 1) else {
             // Reached the end
             completeOnboarding()
+            return
+        }
+
+        // Skip firstCapture when replaying — user has already done this
+        if nextStep == .firstCapture && isReplay {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                currentStep = .acornExplainer
+            }
             return
         }
 
