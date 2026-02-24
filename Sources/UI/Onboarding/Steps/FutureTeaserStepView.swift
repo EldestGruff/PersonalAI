@@ -2,7 +2,7 @@
 //  FutureTeaserStepView.swift
 //  STASH
 //
-//  Onboarding Step 8: Preview of future shiny thoughts feature
+//  Onboarding Step 8: Introduces the Shiny Thoughts feature
 //
 
 import SwiftUI
@@ -43,7 +43,7 @@ struct FutureTeaserStepView: View {
 
             // Feature preview
             VStack(spacing: 16) {
-                Text("Coming Soon")
+                Text("Shiny Thoughts")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .foregroundStyle(theme.textColor)
@@ -54,7 +54,7 @@ struct FutureTeaserStepView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
 
-                // Mock shiny thought preview
+                // Shiny thought preview
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Image(systemName: "sparkles")
@@ -66,7 +66,7 @@ struct FutureTeaserStepView: View {
                         Spacer()
                     }
 
-                    Text("Your most insightful captures will be automatically surfaced here...")
+                    Text("Your most insightful captures are automatically surfaced in \"Today's Shiny\" on Browse.")
                         .font(.subheadline)
                         .foregroundStyle(theme.textColor)
                         .lineLimit(3)
