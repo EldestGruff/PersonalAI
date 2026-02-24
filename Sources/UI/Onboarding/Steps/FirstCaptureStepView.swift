@@ -44,6 +44,16 @@ struct FirstCaptureStepView: View {
                         viewModel.completeCapture()
                     }
                 }
+
+            // Skip option
+            Button {
+                viewModel.skip()
+            } label: {
+                Text("Skip for now")
+                    .font(.subheadline)
+                    .foregroundStyle(theme.secondaryTextColor)
+            }
+            .padding(.bottom, 16)
         }
     }
 }
