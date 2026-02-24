@@ -147,17 +147,17 @@ enum OnboardingCopy {
     static func futureTeaser(for persona: SquirrelPersona) -> String {
         switch persona.id {
         case SquirrelPersona.supportiveListener.id:
-            return "Some of your thoughts will earn 'shiny' status—the ones with strong feelings, tasks, or connections. I'll help you spot them on your home screen. ✨"
+            return "Soon I'll start surfacing your most meaningful thoughts—the ones with strong feelings, tasks, or real connections. The ones worth a second look. ✨"
         case SquirrelPersona.brainstormPartner.id:
-            return "SHINY THOUGHTS! The vault surfaces your best ideas automatically—the ones with tasks, connections, or strong vibes. Check 'Today's Shiny' daily! ✨"
+            return "SHINY THOUGHTS ARE COMING! Soon the vault will automatically spot your best ideas—the ones with tasks, connections, or strong vibes. Can't wait! ✨"
         case SquirrelPersona.socraticQuestioner.id:
-            return "Shiny thoughts: scored on sentiment, actionability, connections, and time depth. The algorithm picks your high-signal captures. Worth examining what it values. ✨"
+            return "Coming next: a scoring system for your captures—sentiment, actionability, connections, depth. Worth asking now what you think makes a thought worth revisiting. ✨"
         case SquirrelPersona.journalGuide.id:
-            return "Certain thoughts will glow brighter—the ones carrying emotion, action, or connection. We'll notice them together in 'Today's Shiny.' ✨"
+            return "Soon, certain thoughts will glow a little brighter—the ones carrying real emotion, action, or connection. We'll find them together. ✨"
         case SquirrelPersona.devilsAdvocate.id:
-            return "Shiny thoughts: algorithmic ranking of your 'best' captures. Based on sentiment, tasks, connections, energy. Could surface gems. Could miss what matters. ✨"
+            return "Not built yet. But coming: an algorithm that ranks what you've captured. Sentiment, tasks, connections, energy. We'll see if the machine knows what matters to you. ✨"
         default:
-            return "Shiny thoughts—your most meaningful captures, automatically surfaced daily based on emotion, action, and connection. ✨"
+            return "Coming soon: shiny thoughts—your most meaningful captures will be automatically surfaced based on emotion, action, and connection. ✨"
         }
     }
 
