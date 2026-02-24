@@ -25,6 +25,7 @@ struct STASHApp: App {
     // MARK: - Onboarding
 
     @State private var showOnboarding = false
+    @State private var isReplayOnboarding = false
 
     // MARK: - Services (Shared Instances)
 
@@ -61,6 +62,7 @@ struct STASHApp: App {
                 .fullScreenCover(isPresented: $showOnboarding) {
                     OnboardingScreen(
                         viewModel: OnboardingViewModel(
+                            isReplay: isReplayOnboarding,
                             captureViewModel: CaptureViewModel(
                                 thoughtService: ThoughtService.shared,
                                 contextService: ContextService.shared,
@@ -70,6 +72,7 @@ struct STASHApp: App {
                             ),
                             onComplete: {
                                 showOnboarding = false
+                                isReplayOnboarding = false
                             }
                         )
                     )
@@ -78,6 +81,7 @@ struct STASHApp: App {
                 .onReceive(NotificationCenter.default.publisher(for: .replayOnboarding)) { _ in
                     _Concurrency.Task { @MainActor in
                         OnboardingViewModel.resetOnboarding()
+                        isReplayOnboarding = true
                         showOnboarding = true
                     }
                 }
