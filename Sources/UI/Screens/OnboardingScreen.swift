@@ -63,6 +63,19 @@ struct OnboardingScreen: View {
         }
         .preferredColorScheme(theme.preferredColorScheme)
         .animation(.easeInOut(duration: 0.3), value: viewModel.currentStep)
+        .overlay(alignment: .topTrailing) {
+            if viewModel.currentStep != .welcome && viewModel.currentStep != .completion {
+                Button {
+                    viewModel.completeOnboarding()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(.tertiary)
+                        .padding(16)
+                }
+                .accessibilityLabel("Exit tutorial")
+            }
+        }
     }
 
     // MARK: - Step Routing
