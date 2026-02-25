@@ -69,13 +69,29 @@ struct PersonaPickerStepView: View {
                                 // No detail sheet in onboarding
                             },
                             onSetDefault: {
-                                viewModel.selectPersona(persona)
+                                // Preview only — does not advance. Confirm button below commits the choice.
+                                viewModel.selectedPersona = persona
                             }
                         )
                     }
                 }
                 .padding(.horizontal, 24)
+
+                // Confirm button — commits selection and advances
+                Button {
+                    viewModel.selectPersona(viewModel.selectedPersona)
+                } label: {
+                    Text("Choose \(viewModel.selectedPersona.name)")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.accentColor)
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+                .padding(.horizontal, 24)
                 .padding(.bottom, 40)
+                .animation(.easeInOut(duration: 0.2), value: viewModel.selectedPersona.id)
             }
         }
         .scrollContentBackground(.hidden)
