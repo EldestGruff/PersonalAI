@@ -97,6 +97,7 @@ struct CaptureScreenContent: View {
                     VStack(alignment: .leading, spacing: 8) {
                         TextEditor(text: $viewModel.thoughtContent)
                             .frame(minHeight: 120)
+                            .scrollContentBackground(.hidden)
                             .padding(12)
                             .background(theme.surfaceColor)
                             .cornerRadius(12)
