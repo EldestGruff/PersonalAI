@@ -45,7 +45,7 @@ struct ClassificationCorrection: Codable {
 /// ## Maintenance
 /// - Capped at 200 entries; oldest are evicted when over limit.
 /// - Entries older than 90 days are pruned on every write.
-final class ClassificationBiasStore {
+final class ClassificationBiasStore: @unchecked Sendable {
     static let shared = ClassificationBiasStore()
 
     private let userDefaultsKey = "classificationBiasCorrections"
