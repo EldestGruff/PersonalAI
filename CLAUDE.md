@@ -112,6 +112,30 @@ Use sosumi for Apple documentation before implementing new iOS features:
 - Hidden from UI but code preserved for future iteration when iOS 26 APIs mature
 - **Takeaway**: Complex visualizations need interactivity to be useful
 
+### NLTagger API (Feb 2026)
+- `NLTagger.tag(at:unit:scheme:)` returns a **tuple** `(NLTag?, Range<String.Index>)`, not a bare optional
+- Must destructure: `let (lemmaTag, _) = tagger.tag(at: ..., unit: .word, scheme: .lemma)`
+- Optional chaining on the return value is a compile error
+
+### Xcode Project File (Feb 2026)
+- New Swift files must be manually added to `project.pbxproj` in three places:
+  1. `PBXFileReference` section
+  2. Group `children` array (under the correct folder group)
+  3. `PBXSourcesBuildPhase` sources list
+- Build will succeed in Xcode UI (auto-resolves) but CLI builds fail without this
+
+### Accessibility Patterns (Feb 2026)
+- Decorative SF Symbol icons alongside text must have `.accessibilityHidden(true)`
+- Pickers with empty string labels need `.accessibilityLabel("...")` explicitly
+- Buttons with explicit `.accessibilityLabel(...)` don't need Image children hidden — the label overrides children
+- `ThoughtCardView` used in grid layouts benefits from `.accessibilityElement(children: .combine)`
+- `ContextItem` pattern (`.accessibilityElement(children: .ignore)` + `.accessibilityLabel(...)`) is the right model for icon+label+value compound items
+
+### Classification Feedback Loop (Feb 2026)
+- `ClassificationBiasStore` is a `UserDefaults`-backed local bias layer — `@unchecked Sendable` because all mutation goes through thread-safe `UserDefaults`
+- Pattern key = first 5 words lowercased; penalty threshold = 2.0 weight
+- Three-state feedback (`helpful`/`partially_helpful`/`not_helpful`) must use `feedbackType: FeedbackType` not `isPositive: Bool` to avoid losing the middle state
+
 ## Future Considerations
 
 ### Onboarding (Planned)
