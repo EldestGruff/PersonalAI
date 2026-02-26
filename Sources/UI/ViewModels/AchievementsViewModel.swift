@@ -149,11 +149,11 @@ final class AchievementsViewModel {
 
         // ── Acorn achievements ────────────────────────────────────────
         let acornDefs: [(threshold: Int, title: String, icon: String)] = [
-            (1,    "First Acorn",        "leaf"),
-            (50,   "Small Stash",        "bag"),
-            (100,  "Growing Hoard",      "bag.fill"),
-            (500,  "Big Stash",          "archivebox"),
-            (1000, "Overflowing Stash",  "archivebox.fill"),
+            (100,   "Small Stash",        "bag"),
+            (350,   "Growing Hoard",      "bag.fill"),
+            (1000,  "Big Stash",          "archivebox"),
+            (3000,  "Overflowing Stash",  "archivebox.fill"),
+            (10000, "Legendary Hoard",    "crown.fill"),
         ]
         for def in acornDefs {
             list.append(Achievement(
