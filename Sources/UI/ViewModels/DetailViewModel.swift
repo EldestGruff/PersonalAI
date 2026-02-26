@@ -180,7 +180,7 @@ final class DetailViewModel {
             do {
                 try await fineTuningService.trackUserFeedback(
                     thoughtId: thought.id,
-                    isPositive: type == .helpful,
+                    feedbackType: type,
                     correction: comment
                 )
             } catch {
