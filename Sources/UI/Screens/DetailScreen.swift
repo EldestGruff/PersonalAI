@@ -424,6 +424,7 @@ struct DetailScreen: View {
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(theme.successColor)
+                            .accessibilityHidden(true)
                         Text(classification.type == .reminder ? "Reminder created!" : "Event added!")
                             .font(.caption)
                             .foregroundColor(theme.secondaryTextColor)
@@ -622,6 +623,7 @@ struct DetailScreen: View {
             HStack {
                 Image(systemName: "link")
                     .foregroundColor(theme.infoColor)
+                    .accessibilityHidden(true)
                 Text("Related Thoughts")
                     .font(.headline)
                     .foregroundColor(theme.textColor)
@@ -1074,6 +1076,7 @@ struct RelatedThoughtRow: View {
                     Image(systemName: result.isHighConfidence ? "checkmark.circle.fill" : "checkmark.circle")
                         .font(.caption2)
                         .foregroundColor(result.isHighConfidence ? theme.successColor : theme.warningColor)
+                        .accessibilityHidden(true)
 
                     Text("\(result.relevancePercentage)% similar")
                         .font(.caption)

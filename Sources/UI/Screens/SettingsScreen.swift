@@ -103,6 +103,7 @@ struct SettingsScreen: View {
                     Image(systemName: subscriptionManager.status.tier == .pro ? "crown.fill" : "person.circle.fill")
                         .foregroundStyle(subscriptionManager.status.tier == .pro ? theme.warningColor : theme.primaryColor)
                         .font(.title2)
+                        .accessibilityHidden(true)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(subscriptionManager.status.tier.displayName)
@@ -126,6 +127,7 @@ struct SettingsScreen: View {
                         Image(systemName: "checkmark.seal.fill")
                             .foregroundStyle(theme.successColor)
                             .font(.title3)
+                            .accessibilityHidden(true)
                     }
                 }
 
@@ -171,6 +173,7 @@ struct SettingsScreen: View {
                     } label: {
                         HStack {
                             Image(systemName: "arrow.up.circle.fill")
+                                .accessibilityHidden(true)
                             Text("Upgrade to Pro")
                             Spacer()
                             Text("$4.99/mo")
@@ -188,6 +191,7 @@ struct SettingsScreen: View {
                     } label: {
                         HStack {
                             Image(systemName: "arrow.clockwise.circle.fill")
+                                .accessibilityHidden(true)
                             Text("Restore Purchases")
                         }
                     }
@@ -223,6 +227,7 @@ struct SettingsScreen: View {
                 Image(systemName: "bell.badge.fill")
                     .foregroundStyle(theme.primaryColor)
                     .frame(width: 28)
+                    .accessibilityHidden(true)
                 Toggle(isOn: Binding(
                     get: { reminderService.notificationsEnabled },
                     set: { newValue in
@@ -265,6 +270,7 @@ struct SettingsScreen: View {
                         Image(systemName: type.displayIcon)
                             .foregroundStyle(theme.secondaryTextColor)
                             .frame(width: 28)
+                            .accessibilityHidden(true)
                         Toggle(isOn: Binding(
                             get: { reminderService.isEnabled(type) },
                             set: { reminderService.setEnabled(type, $0) }
@@ -482,6 +488,7 @@ struct SettingsScreen: View {
                 }
                 .foregroundStyle(theme.textColor)
                 .themedToggle(theme)
+                .accessibilityIdentifier("defaultCalendarPicker")
 
                 // Reminder list picker
                 Picker("Default Reminder List", selection: Binding(
@@ -508,6 +515,7 @@ struct SettingsScreen: View {
                 }
                 .foregroundStyle(theme.textColor)
                 .themedToggle(theme)
+                .accessibilityIdentifier("defaultReminderListPicker")
             }
         } header: {
             Text("Calendar & Reminders")
@@ -549,6 +557,8 @@ struct SettingsScreen: View {
                     }
                     .pickerStyle(.menu)
                     .themedToggle(theme)
+                    .accessibilityLabel("Sync interval")
+                    .accessibilityIdentifier("syncIntervalPicker")
                 }
             }
         } header: {
@@ -610,6 +620,7 @@ struct SettingsScreen: View {
                 HStack {
                     Image(systemName: "arrow.triangle.2.circlepath")
                         .foregroundStyle(theme.primaryColor)
+                        .accessibilityHidden(true)
                     Text("Replay Onboarding")
                         .foregroundStyle(theme.textColor)
                 }
