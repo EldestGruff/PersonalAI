@@ -226,7 +226,7 @@ actor NLPService: NLPServiceProtocol, DomainServiceProtocol {
         let options: NLTagger.Options = [.omitPunctuation, .omitWhitespace]
 
         tagger.enumerateTags(in: text.startIndex..<text.endIndex, unit: .word, scheme: .lexicalClass, options: options) { tag, tokenRange in
-            let lemmaTag = tagger.tag(at: tokenRange.lowerBound, unit: .word, scheme: .lemma)
+            let (lemmaTag, _) = tagger.tag(at: tokenRange.lowerBound, unit: .word, scheme: .lemma)
             let word = (lemmaTag?.rawValue ?? String(text[tokenRange])).lowercased()
 
             if tag == .noun {
