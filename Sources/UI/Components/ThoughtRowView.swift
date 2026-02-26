@@ -165,6 +165,7 @@ struct ThoughtCardView: View {
         .background(theme.surfaceColor)
         .cornerRadius(12)
         .shadow(color: theme.shadowColor, radius: 4, y: 2)
+        .accessibilityElement(children: .combine)
     }
 }
 

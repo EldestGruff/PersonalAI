@@ -314,6 +314,7 @@ struct CaptureScreen: View {
             HStack {
                 Image(systemName: "lightbulb")
                     .foregroundColor(theme.accentColor)
+                    .accessibilityHidden(true)
                 Text("You've thought about this before")
                     .font(.subheadline)
                     .fontWeight(.medium)
@@ -465,6 +466,7 @@ struct CaptureScreen: View {
                         Image(systemName: "hand.raised.fill")
                             .font(.caption)
                             .foregroundColor(theme.successColor)
+                            .accessibilityHidden(true)
                         Text("You set this type manually")
                             .font(.caption)
                             .foregroundColor(theme.secondaryTextColor)
@@ -481,6 +483,7 @@ struct CaptureScreen: View {
                             Image(systemName: "info.circle")
                                 .font(.caption)
                                 .foregroundColor(theme.accentColor)
+                                .accessibilityHidden(true)
                             Text("Low confidence (\(Int(classification.confidence * 100))%) - you can set type manually")
                                 .font(.caption)
                                 .foregroundColor(theme.secondaryTextColor)
@@ -529,6 +532,7 @@ struct CaptureScreen: View {
                 } label: {
                     HStack {
                         Image(systemName: "arrow.uturn.backward")
+                            .accessibilityHidden(true)
                         Text("Use AI Classification")
                     }
                     .font(.caption)
@@ -611,6 +615,7 @@ struct CaptureScreen: View {
                     Image(systemName: "crown.fill")
                         .foregroundStyle(theme.warningColor)
                         .font(.title2)
+                        .accessibilityHidden(true)
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Free Tier Limit Reached")
@@ -631,6 +636,7 @@ struct CaptureScreen: View {
                 } label: {
                     HStack {
                         Image(systemName: "arrow.up.circle.fill")
+                            .accessibilityHidden(true)
                         Text("Upgrade to Pro")
                     }
                     .frame(maxWidth: .infinity)

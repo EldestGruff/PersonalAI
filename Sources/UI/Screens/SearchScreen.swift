@@ -293,6 +293,7 @@ struct SearchResultRow: View {
                         Image(systemName: result.isHighConfidence ? "checkmark.circle.fill" : "checkmark.circle")
                             .font(.caption2)
                             .foregroundColor(result.isHighConfidence ? theme.successColor : theme.warningColor)
+                            .accessibilityHidden(true)
 
                         Text("\(result.relevancePercentage)%")
                             .font(.caption)

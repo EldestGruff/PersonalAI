@@ -55,7 +55,7 @@ enum SubscriptionProduct: String, CaseIterable {
 
 /// Monthly thought limit for the free tier.
 /// Adjust here as needed while monitoring beta analytics.
-let freeMonthlyThoughtLimit = 30
+let freeMonthlyThoughtLimit = 60
 
 /// Feature entitlements based on subscription tier
 struct SubscriptionEntitlements: Codable, Sendable {
