@@ -429,6 +429,11 @@ actor FineTuningService: FineTuningServiceProtocol {
         try await repository.update(updated)
     }
 
+    /// Returns previously stored feedback for a thought, if any.
+    func getFeedback(for thoughtId: UUID) async -> UserFeedback? {
+        (try? await repository.fetch(thoughtId: thoughtId))?.userFeedback
+    }
+
     /// Tracks user feedback on classification.
     func trackUserFeedback(thoughtId: UUID, isPositive: Bool, correction: String?) async throws {
         guard configuration.features.enableFineTuningTracking else { return }

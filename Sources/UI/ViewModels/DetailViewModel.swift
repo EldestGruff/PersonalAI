@@ -165,6 +165,11 @@ final class DetailViewModel {
 
     // MARK: - Feedback Actions
 
+    /// Loads previously stored feedback from CoreData so the UI reflects it on return.
+    func loadFeedback() async {
+        userFeedback = await fineTuningService.getFeedback(for: thought.id)
+    }
+
     /// Provides feedback on the thought/classification
     func provideFeedback(_ type: UserFeedback.FeedbackType, comment: String? = nil) {
         let feedback = UserFeedback(type: type, comment: comment, timestamp: Date())
