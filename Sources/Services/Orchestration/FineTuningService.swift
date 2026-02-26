@@ -68,7 +68,7 @@ protocol FineTuningServiceProtocol: OrchestrationServiceProtocol {
     func trackEdited(_ thoughtId: UUID) async throws
 
     /// Tracks user feedback on classification
-    func trackUserFeedback(thoughtId: UUID, isPositive: Bool, correction: String?) async throws
+    func trackUserFeedback(thoughtId: UUID, feedbackType: UserFeedback.FeedbackType, correction: String?) async throws
 
     /// Calculates reward signal for a fine-tuning data point
     func calculateReward(_ data: FineTuningData) -> Double
@@ -429,15 +429,19 @@ actor FineTuningService: FineTuningServiceProtocol {
         try await repository.update(updated)
     }
 
+    /// Returns previously stored feedback for a thought, if any.
+    func getFeedback(for thoughtId: UUID) async -> UserFeedback? {
+        (try? await repository.fetch(thoughtId: thoughtId))?.userFeedback
+    }
+
     /// Tracks user feedback on classification.
-    func trackUserFeedback(thoughtId: UUID, isPositive: Bool, correction: String?) async throws {
+    func trackUserFeedback(thoughtId: UUID, feedbackType: UserFeedback.FeedbackType, correction: String?) async throws {
         guard configuration.features.enableFineTuningTracking else { return }
 
         guard let data = try await repository.fetch(thoughtId: thoughtId) else {
             return
         }
 
-        let feedbackType: UserFeedback.FeedbackType = isPositive ? .helpful : .not_helpful
         let feedback = UserFeedback(
             type: feedbackType,
             comment: correction,
@@ -616,7 +620,7 @@ actor MockFineTuningService: FineTuningServiceProtocol {
     func trackDeleted(_ thoughtId: UUID) async throws {}
     func trackViewed(_ thoughtId: UUID) async throws {}
     func trackEdited(_ thoughtId: UUID) async throws {}
-    func trackUserFeedback(thoughtId: UUID, isPositive: Bool, correction: String?) async throws {}
+    func trackUserFeedback(thoughtId: UUID, feedbackType: UserFeedback.FeedbackType, correction: String?) async throws {}
 
     func calculateReward(_ data: FineTuningData) -> Double {
         0.75

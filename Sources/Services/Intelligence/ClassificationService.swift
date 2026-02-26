@@ -218,28 +218,37 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
 
     private func classifyType(_ content: String) async -> ClassificationType {
         let lowercased = content.lowercased()
+        let pattern = ClassificationBiasStore.extractPattern(from: lowercased)
+        let bias = ClassificationBiasStore.shared
 
-        // Check for reminder indicators
-        if containsReminderIndicators(lowercased) {
-            return .reminder
+        // Ordered candidates matching original heuristic priority.
+        // The bias store can skip a penalized type and jump to the next match,
+        // or return an explicit preferred type if the user recorded one via a type edit.
+        let candidates: [(ClassificationType, Bool)] = [
+            (.reminder, containsReminderIndicators(lowercased)),
+            (.event, containsEventIndicators(lowercased)),
+            (.question, isQuestion(lowercased)),
+            (.idea, containsIdeaIndicators(lowercased)),
+            (.note, true)
+        ]
+
+        for (type, matches) in candidates {
+            guard matches else { continue }
+
+            if bias.penaltyWeight(for: pattern, type: type.rawValue) >= bias.applyThreshold {
+                // Type is penalized — return explicit preferred type if known
+                if let preferredRaw = bias.preferredType(for: pattern, penalizedType: type.rawValue),
+                   let preferred = ClassificationType(rawValue: preferredRaw) {
+                    NSLog("🎯 Bias correction: \(type.rawValue) → \(preferred.rawValue) for '\(pattern)'")
+                    return preferred
+                }
+                // No preferred type recorded yet — skip to next candidate
+                continue
+            }
+
+            return type
         }
 
-        // Check for event indicators
-        if containsEventIndicators(lowercased) {
-            return .event
-        }
-
-        // Check for question indicators
-        if isQuestion(lowercased) {
-            return .question
-        }
-
-        // Check for idea indicators
-        if containsIdeaIndicators(lowercased) {
-            return .idea
-        }
-
-        // Default to note
         return .note
     }
 

@@ -165,6 +165,11 @@ final class DetailViewModel {
 
     // MARK: - Feedback Actions
 
+    /// Loads previously stored feedback from CoreData so the UI reflects it on return.
+    func loadFeedback() async {
+        userFeedback = await fineTuningService.getFeedback(for: thought.id)
+    }
+
     /// Provides feedback on the thought/classification
     func provideFeedback(_ type: UserFeedback.FeedbackType, comment: String? = nil) {
         let feedback = UserFeedback(type: type, comment: comment, timestamp: Date())
@@ -175,11 +180,21 @@ final class DetailViewModel {
             do {
                 try await fineTuningService.trackUserFeedback(
                     thoughtId: thought.id,
-                    isPositive: type == .helpful,
+                    feedbackType: type,
                     correction: comment
                 )
             } catch {
                 // Silently fail - feedback is best-effort
+            }
+
+            // Update local bias store
+            if let currentType = thought.classification?.type {
+                let pattern = ClassificationBiasStore.extractPattern(from: thought.content)
+                if type == .not_helpful {
+                    ClassificationBiasStore.shared.record(pattern: pattern, penalizedType: currentType.rawValue)
+                } else if type == .helpful {
+                    ClassificationBiasStore.shared.reinforce(pattern: pattern, penalizedType: currentType.rawValue)
+                }
             }
 
             isSubmittingFeedback = false
@@ -268,11 +283,20 @@ final class DetailViewModel {
                 // Save
                 self.thought = try await thoughtService.update(updated)
 
-                // Analytics: only fires if save succeeded
+                // Analytics + bias correction: only fire if save succeeded
                 if let newType = editedClassificationType,
                    let originalType = thought.classification?.type,
                    newType != originalType {
                     AnalyticsService.shared.track(.classificationOverridden(from: originalType.rawValue, to: newType.rawValue))
+
+                    // Record explicit type correction so future captures of similar
+                    // content get the preferred type applied by ClassificationBiasStore
+                    let pattern = ClassificationBiasStore.extractPattern(from: trimmedContent)
+                    ClassificationBiasStore.shared.record(
+                        pattern: pattern,
+                        penalizedType: originalType.rawValue,
+                        preferredType: newType.rawValue
+                    )
                 }
 
                 // Exit edit mode

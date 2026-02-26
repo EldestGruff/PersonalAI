@@ -152,6 +152,7 @@ struct DetailScreen: View {
         }
         .task {
             await viewModel.loadRelatedThoughts()
+            await viewModel.loadFeedback()
             await loadConversationCount()
         }
         .onAppear {
