@@ -29,6 +29,12 @@ protocol NLPServiceProtocol: ServiceProtocol {
 
     /// Tokenizes text into words
     func tokenize(_ text: String) async -> [String]
+
+    /// Extracts tag candidates, joining consecutive nouns as compound phrases.
+    ///
+    /// For example: "server issues" → ["server-issue"] instead of ["server", "issue"].
+    /// Non-noun content words are returned as individual lemmatized tokens.
+    func extractTagCandidates(_ text: String) async -> [String]
 }
 
 // MARK: - NLP Service
@@ -201,6 +207,51 @@ actor NLPService: NLPServiceProtocol, DomainServiceProtocol {
         return tokens
     }
 
+    // MARK: - Tag Candidates
+
+    /// Extracts tag candidates, joining consecutive nouns as compound phrases.
+    ///
+    /// Uses a single NLTagger pass with both `.lexicalClass` and `.lemma` schemes.
+    /// Consecutive nouns are lemmatized and joined with hyphens (e.g. "server-issue").
+    /// Non-noun tokens are returned as individual lemmatized words.
+    func extractTagCandidates(_ text: String) async -> [String] {
+        guard !text.isEmpty else { return [] }
+
+        let tagger = NLTagger(tagSchemes: [.lexicalClass, .lemma])
+        tagger.string = text
+
+        var result: [String] = []
+        var currentNounPhrase: [String] = []
+
+        let options: NLTagger.Options = [.omitPunctuation, .omitWhitespace]
+
+        tagger.enumerateTags(in: text.startIndex..<text.endIndex, unit: .word, scheme: .lexicalClass, options: options) { tag, tokenRange in
+            let lemmaTag = tagger.tag(at: tokenRange.lowerBound, unit: .word, scheme: .lemma)
+            let word = (lemmaTag?.rawValue ?? String(text[tokenRange])).lowercased()
+
+            if tag == .noun {
+                currentNounPhrase.append(word)
+            } else {
+                if !currentNounPhrase.isEmpty {
+                    result.append(currentNounPhrase.count > 1
+                        ? currentNounPhrase.joined(separator: "-")
+                        : currentNounPhrase[0])
+                    currentNounPhrase = []
+                }
+                result.append(word)
+            }
+            return true
+        }
+
+        if !currentNounPhrase.isEmpty {
+            result.append(currentNounPhrase.count > 1
+                ? currentNounPhrase.joined(separator: "-")
+                : currentNounPhrase[0])
+        }
+
+        return result
+    }
+
     // MARK: - Service Protocol
 
     func initialize() async throws {
@@ -290,5 +341,9 @@ actor MockNLPService: NLPServiceProtocol {
 
     func tokenize(_ text: String) async -> [String] {
         mockTokens
+    }
+
+    func extractTagCandidates(_ text: String) async -> [String] {
+        mockLemmas
     }
 }
