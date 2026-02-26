@@ -394,9 +394,9 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
             }
         }
 
-        // Extract keywords
-        let lemmas = await nlpService.lemmatize(content)
-        let keywords = extractKeywords(from: lemmas)
+        // Extract tag candidates — consecutive nouns are compounded (e.g. "server-issue")
+        let candidates = await nlpService.extractTagCandidates(content)
+        let keywords = extractKeywords(from: candidates)
 
         for keyword in keywords {
             let normalized = normalizeTag(keyword)
@@ -412,7 +412,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
             .map { $0 }
     }
 
-    private func extractKeywords(from lemmas: [String]) -> [String] {
+    private func extractKeywords(from candidates: [String]) -> [String] {
         // Filter out common stop words
         let stopWords = Set([
             "the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for",
@@ -425,10 +425,18 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
             "being", "doing", "having", "getting"
         ])
 
-        return lemmas
-            .filter { !stopWords.contains($0) }
-            .filter { $0.count > 2 } // At least 3 characters
-            .filter { $0.allSatisfy { $0.isLetter } } // Letters only
+        return candidates.filter { candidate in
+            if candidate.contains("-") {
+                // Compound noun phrase — validate each component
+                let parts = candidate.components(separatedBy: "-")
+                return parts.count >= 2
+                    && parts.allSatisfy { !stopWords.contains($0) && $0.count > 2 && $0.allSatisfy { $0.isLetter } }
+            }
+            // Single word — standard filters
+            return !stopWords.contains(candidate)
+                && candidate.count > 2
+                && candidate.allSatisfy { $0.isLetter }
+        }
     }
 
     private func normalizeTag(_ tag: String) -> String {
