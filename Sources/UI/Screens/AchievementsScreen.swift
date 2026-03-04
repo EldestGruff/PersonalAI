@@ -14,6 +14,7 @@ struct AchievementsScreen: View {
     @State var viewModel: AchievementsViewModel
     @Environment(\.themeEngine) private var themeEngine
     @Environment(\.dismiss) private var dismiss
+    @State private var selectedBadge: BadgeDefinition?
 
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
@@ -43,6 +44,9 @@ struct AchievementsScreen: View {
             .onDisappear { BadgeService.shared.clearRecentlyEarned() }
             .onAppear {
                 AnalyticsService.shared.track(.screenViewed(.achievements))
+            }
+            .sheet(item: $selectedBadge) { badge in
+                BadgeDetailSheet(badge: badge)
             }
         }
     }
@@ -167,7 +171,9 @@ struct AchievementsScreen: View {
             spacing: 16
         ) {
             ForEach(viewModel.badges) { badge in
-                BadgeCellView(badge: badge)
+                BadgeCellView(badge: badge) {
+                    selectedBadge = badge
+                }
             }
         }
         .padding(.vertical, 4)
@@ -228,6 +234,7 @@ private struct StatCard: View {
 
 private struct BadgeCellView: View {
     let badge: BadgeDefinition
+    let onTap: () -> Void
 
     @Environment(\.themeEngine) private var themeEngine
     @State private var scale: CGFloat = 1.0
@@ -294,6 +301,8 @@ private struct BadgeCellView: View {
         .frame(maxWidth: .infinity)
         .grayscale(earned ? 0 : 1.0)
         .opacity(earned ? 1.0 : 0.5)
+        .contentShape(Rectangle())
+        .onTapGesture { onTap() }
         .onAppear {
             guard badgeService.recentlyEarnedIds.contains(badge.id) else { return }
             // Spring bounce pop — triggers on first appearance after earning
@@ -372,6 +381,122 @@ private struct AchievementRowView: View {
         .accessibilityLabel(achievement.isEarned
             ? "\(achievement.title), earned. \(achievement.description)"
             : "\(achievement.title), locked. Goal: \(achievement.goalLabel)")
+    }
+}
+
+// MARK: - Badge Detail Sheet
+
+private struct BadgeDetailSheet: View {
+    let badge: BadgeDefinition
+
+    @Environment(\.themeEngine) private var themeEngine
+    @Environment(\.dismiss) private var dismiss
+
+    private var badgeService: BadgeService { BadgeService.shared }
+    private var earned: Bool { badgeService.isEarned(badge.id) }
+    private var isSecretAndLocked: Bool { badge.isSecret && !earned }
+
+    var body: some View {
+        let theme = themeEngine.getCurrentTheme()
+
+        NavigationStack {
+            ZStack {
+                theme.backgroundColor.ignoresSafeArea()
+
+                VStack(spacing: 24) {
+                    Spacer()
+
+                    // Badge icon
+                    ZStack {
+                        if earned {
+                            Circle()
+                                .fill(LinearGradient(
+                                    colors: [Color(red: 1.0, green: 0.78, blue: 0.1),
+                                             Color(red: 1.0, green: 0.55, blue: 0.1)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ))
+                                .frame(width: 96, height: 96)
+                                .shadow(color: Color.orange.opacity(0.4), radius: 12, y: 6)
+
+                            Image(systemName: badge.symbol)
+                                .font(.system(size: 42, weight: .semibold))
+                                .foregroundStyle(.white)
+                        } else {
+                            Circle()
+                                .fill(theme.dividerColor.opacity(0.35))
+                                .frame(width: 96, height: 96)
+
+                            Image(systemName: isSecretAndLocked ? "questionmark" : badge.symbol)
+                                .font(.system(size: 38, weight: isSecretAndLocked ? .bold : .regular))
+                                .foregroundStyle(theme.secondaryTextColor.opacity(0.35))
+                        }
+                    }
+                    .grayscale(earned ? 0 : 1.0)
+
+                    // Name
+                    Text(isSecretAndLocked ? "???" : badge.name)
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(earned
+                            ? Color(red: 0.75, green: 0.45, blue: 0.0)
+                            : theme.secondaryTextColor)
+                        .multilineTextAlignment(.center)
+
+                    // Criteria / hint
+                    VStack(spacing: 6) {
+                        if earned {
+                            Text(badge.criteriaDescription)
+                                .font(.body)
+                                .foregroundStyle(theme.textColor)
+                                .multilineTextAlignment(.center)
+
+                            HStack(spacing: 4) {
+                                Text("🌰")
+                                Text("+\(badge.acornBonus) acorns earned")
+                                    .font(.subheadline)
+                                    .foregroundStyle(theme.secondaryTextColor)
+                            }
+                            .padding(.top, 4)
+                        } else if isSecretAndLocked {
+                            Text("This badge is secret.")
+                                .font(.body)
+                                .foregroundStyle(theme.secondaryTextColor)
+                                .multilineTextAlignment(.center)
+                            Text("Keep capturing thoughts to discover it.")
+                                .font(.subheadline)
+                                .foregroundStyle(theme.secondaryTextColor)
+                                .multilineTextAlignment(.center)
+                        } else {
+                            Text("Earn this badge to reveal its criteria.")
+                                .font(.body)
+                                .foregroundStyle(theme.secondaryTextColor)
+                                .multilineTextAlignment(.center)
+                            HStack(spacing: 4) {
+                                Text("🌰")
+                                Text("+\(badge.acornBonus) acorns on earn")
+                                    .font(.subheadline)
+                                    .foregroundStyle(theme.secondaryTextColor)
+                            }
+                            .padding(.top, 4)
+                        }
+                    }
+                    .padding(.horizontal, 32)
+
+                    Spacer()
+                    Spacer()
+                }
+            }
+            .navigationTitle(isSecretAndLocked ? "Secret Badge" : badge.name)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(theme.surfaceColor, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.medium])
     }
 }
 
