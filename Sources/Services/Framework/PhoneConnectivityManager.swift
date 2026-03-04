@@ -4,15 +4,16 @@
 //
 //  Issue #58: Apple Watch companion app — iPhone side
 //
-//  Receives thought payloads from the Apple Watch via WatchConnectivity
-//  and persists them through ThoughtService for normal classification
-//  and storage. Classification runs on iPhone, not Watch.
+//  Receives audio files recorded on the Apple Watch, transcribes them
+//  with SFSpeechRecognizer, and saves the resulting thought via ThoughtService.
+//  Classification runs normally on iPhone, not Watch.
 //
 //  Activate in STASHApp.init() alongside other service bootstrapping.
 //
 
 import Foundation
 import WatchConnectivity
+import Speech
 
 // MARK: - Phone Connectivity Manager
 
@@ -28,6 +29,32 @@ final class PhoneConnectivityManager: NSObject {
         WCSession.default.delegate = self
         WCSession.default.activate()
     }
+
+    // MARK: - Transcription
+
+    private func transcribe(audioURL: URL) async throws -> String {
+        let recognizer = SFSpeechRecognizer(locale: .current)
+        guard recognizer?.isAvailable == true else {
+            throw TranscriptionError.unavailable
+        }
+
+        let request = SFSpeechURLRecognitionRequest(url: audioURL)
+        request.requiresOnDeviceRecognition = false
+
+        return try await withCheckedThrowingContinuation { continuation in
+            recognizer?.recognitionTask(with: request) { result, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                } else if let result, result.isFinal {
+                    continuation.resume(returning: result.bestTranscription.formattedString)
+                }
+            }
+        }
+    }
+
+    private enum TranscriptionError: Error {
+        case unavailable
+    }
 }
 
 // MARK: - WCSessionDelegate
@@ -39,31 +66,43 @@ extension PhoneConnectivityManager: WCSessionDelegate {
         error: Error?
     ) {}
 
-    // Required on iOS (not watchOS)
     func sessionDidBecomeInactive(_ session: WCSession) {}
 
     func sessionDidDeactivate(_ session: WCSession) {
-        // Reactivate after handoff (e.g. paired Watch swap)
         WCSession.default.activate()
     }
 
-    // MARK: - Receive Watch Thoughts
+    // MARK: - Receive Watch Audio
 
-    /// Called when the Watch delivers a queued thought payload.
-    /// Creates a Thought and saves it via ThoughtService.
-    /// Classification happens normally on the iPhone side.
-    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any]) {
-        guard
-            let idString = userInfo["id"] as? String,
-            let id = UUID(uuidString: idString),
-            let text = userInfo["text"] as? String,
-            let timestamp = userInfo["capturedAt"] as? TimeInterval
-        else { return }
+    /// Called when the Watch delivers a recorded audio file.
+    /// Transcribes → creates Thought → saves via ThoughtService.
+    func session(_ session: WCSession, didReceive file: WCSessionFile) {
+        let capturedAt: Date
+        if let ts = file.metadata?["capturedAt"] as? TimeInterval {
+            capturedAt = Date(timeIntervalSince1970: ts)
+        } else {
+            capturedAt = Date()
+        }
 
-        let capturedAt = Date(timeIntervalSince1970: timestamp)
+        // Copy to a stable location before the system cleans up the received file
+        let dest = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathExtension(file.fileURL.pathExtension)
+
+        do {
+            try FileManager.default.copyItem(at: file.fileURL, to: dest)
+        } catch {
+            AnalyticsService.shared.track(.coreDataError(operation: "watch_file_copy"))
+            return
+        }
 
         Task {
             do {
+                let text = try await transcribe(audioURL: dest)
+                try FileManager.default.removeItem(at: dest)
+
+                guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+
                 let context = Context(
                     timestamp: capturedAt,
                     location: nil,
@@ -77,7 +116,7 @@ extension PhoneConnectivityManager: WCSessionDelegate {
                     energyBreakdown: nil
                 )
                 let thought = Thought(
-                    id: id,
+                    id: UUID(),
                     userId: UUID(),
                     content: text,
                     attributedContent: nil,
@@ -92,9 +131,8 @@ extension PhoneConnectivityManager: WCSessionDelegate {
                 )
                 _ = try await ThoughtService.shared.create(thought)
             } catch {
-                // Delivery is guaranteed by WCSession — if persistence fails,
-                // the thought is lost. Log for analytics and move on.
-                AnalyticsService.shared.track(.coreDataError(operation: "watch_thought_receive"))
+                AnalyticsService.shared.track(.coreDataError(operation: "watch_thought_create"))
+                try? FileManager.default.removeItem(at: dest)
             }
         }
     }
