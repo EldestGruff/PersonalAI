@@ -43,6 +43,9 @@ struct STASHApp: App {
         // Register notification delegate for deep link handling
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
 
+        // Activate WatchConnectivity to receive thoughts from Apple Watch
+        PhoneConnectivityManager.shared.activate()
+
         // Initialize analytics (respects user opt-out from UserDefaults)
         AnalyticsService.shared.initialize()
 
