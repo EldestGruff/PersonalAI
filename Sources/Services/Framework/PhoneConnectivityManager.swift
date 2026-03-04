@@ -17,7 +17,7 @@ import Speech
 
 // MARK: - Phone Connectivity Manager
 
-final class PhoneConnectivityManager: NSObject {
+final class PhoneConnectivityManager: NSObject, @unchecked Sendable {
     static let shared = PhoneConnectivityManager()
 
     private override init() {}
@@ -96,7 +96,7 @@ extension PhoneConnectivityManager: WCSessionDelegate {
             return
         }
 
-        Task {
+        _Concurrency.Task {
             do {
                 let text = try await transcribe(audioURL: dest)
                 try FileManager.default.removeItem(at: dest)

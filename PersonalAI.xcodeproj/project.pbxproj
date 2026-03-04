@@ -67,6 +67,7 @@
 		A0000001000000000000137 /* EventKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000138 /* EventKitService.swift */; };
 		A0000001000000000000139 /* ContactsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000140 /* ContactsService.swift */; };
 		A0000001000000000000143 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000144 /* NetworkMonitor.swift */; };
+		A0000001000000000000146 /* PhoneConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000145 /* PhoneConnectivityManager.swift */; };
 		A0000001000000000000151 /* NLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000152 /* NLPService.swift */; };
 		A0000001000000000000153 /* ClassificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000154 /* ClassificationService.swift */; };
 		A0000001000000000000155 /* ClassificationBiasStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000156 /* ClassificationBiasStore.swift */; };
@@ -226,6 +227,7 @@
 		A0000001000000000000138 /* EventKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventKitService.swift; sourceTree = "<group>"; };
 		A0000001000000000000140 /* ContactsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsService.swift; sourceTree = "<group>"; };
 		A0000001000000000000144 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		A0000001000000000000145 /* PhoneConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneConnectivityManager.swift; sourceTree = "<group>"; };
 		A0000001000000000000152 /* NLPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NLPService.swift; sourceTree = "<group>"; };
 		A0000001000000000000154 /* ClassificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationService.swift; sourceTree = "<group>"; };
 		A0000001000000000000156 /* ClassificationBiasStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationBiasStore.swift; sourceTree = "<group>"; };
@@ -287,24 +289,6 @@
 		A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsAnalyzer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A1F85F7D2F57BBE3003C400D /* Exceptions for "STASH Watch App Watch AppTests" folder in "STASH" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				STASH_Watch_App_Watch_AppTests.swift,
-			);
-			target = A0700000000000000000001 /* STASH */;
-		};
-		A1F85F7E2F57BBE3003C400D /* Exceptions for "STASH Watch App Watch AppUITests" folder in "STASH" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				STASH_Watch_App_Watch_AppUITests.swift,
-				STASH_Watch_App_Watch_AppUITestsLaunchTests.swift,
-			);
-			target = A0700000000000000000001 /* STASH */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A1803D4E2F270E6C0071D950 /* Assets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -358,17 +342,11 @@
 		};
 		A1F85F5B2F57BA55003C400D /* STASH Watch App Watch AppTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				A1F85F7D2F57BBE3003C400D /* Exceptions for "STASH Watch App Watch AppTests" folder in "STASH" target */,
-			);
 			path = "STASH Watch App Watch AppTests";
 			sourceTree = "<group>";
 		};
 		A1F85F652F57BA55003C400D /* STASH Watch App Watch AppUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				A1F85F7E2F57BBE3003C400D /* Exceptions for "STASH Watch App Watch AppUITests" folder in "STASH" target */,
-			);
 			path = "STASH Watch App Watch AppUITests";
 			sourceTree = "<group>";
 		};
@@ -563,6 +541,7 @@
 				A0000001000000000000138 /* EventKitService.swift */,
 				A0000001000000000000140 /* ContactsService.swift */,
 				A0000001000000000000144 /* NetworkMonitor.swift */,
+				A0000001000000000000145 /* PhoneConnectivityManager.swift */,
 			);
 			path = Framework;
 			sourceTree = "<group>";
@@ -964,6 +943,7 @@
 				A1803DF02F2FF8750071D950 /* SmartInsightsService.swift in Sources */,
 				A1803DF12F2FF8750071D950 /* SemanticSearchService.swift in Sources */,
 				A0000001000000000000143 /* NetworkMonitor.swift in Sources */,
+				A0000001000000000000146 /* PhoneConnectivityManager.swift in Sources */,
 				A0000001000000000000151 /* NLPService.swift in Sources */,
 				A0000001000000000000153 /* ClassificationService.swift in Sources */,
 				A0000001000000000000155 /* ClassificationBiasStore.swift in Sources */,
@@ -1331,6 +1311,7 @@
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1368,6 +1349,7 @@
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
