@@ -124,7 +124,8 @@
 		A1B77D0F2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D0E2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift */; };
 		A1F85F6C2F57BA55003C400D /* STASH Watch App Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = A1F85F4C2F57BA54003C400D /* STASH Watch App Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A1F85F822F57C0ED003C400D /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1F85F812F57C0ED003C400D /* WatchConnectivity.framework */; };
-		A1F85F832F57C0FB003C400D /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1F85F812F57C0ED003C400D /* WatchConnectivity.framework */; };
+		A1F862232F5926F3003C400D /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1F85F812F57C0ED003C400D /* WatchConnectivity.framework */; };
+		A1F862262F59272D003C400D /* STASH.app in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001 /* STASH.app */; };
 		ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */; };
 /* End PBXBuildFile section */
 
@@ -359,7 +360,7 @@
 			files = (
 				A138668F2F4A9321002CB2DD /* TelemetryClient in Frameworks */,
 				A13866912F4A9321002CB2DD /* TelemetryDeck in Frameworks */,
-				A1F85F832F57C0FB003C400D /* WatchConnectivity.framework in Frameworks */,
+				A1F862232F5926F3003C400D /* WatchConnectivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -872,6 +873,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1F862262F59272D003C400D /* STASH.app in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1290,6 +1292,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "STASH Watch App Watch App/STASH Watch App Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -1328,6 +1331,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "STASH Watch App Watch App/STASH Watch App Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
