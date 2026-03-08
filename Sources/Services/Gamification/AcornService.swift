@@ -6,14 +6,17 @@
 //
 //  Acorns are earned passively through capturing thoughts. They are never
 //  purchasable with real money and are spent exclusively on cosmetics
-//  (squirrelsona accessories, themes). Spending UI comes later — this
-//  file handles earning, persistence, and reactive balance updates.
+//  (squirrelsona accessories, themes).
 //
-//  UserDefaults-backed at MVP. Data is device-local; if the user wants
-//  cross-device acorn sync that's a future CloudKit extension.
+//  Phase 3B: Migrated to NSUbiquitousKeyValueStore for cross-device sync.
+//  - lifetimeEarned syncs via SyncedDefaults (KV Store)
+//  - spend events persist as AcornSpendRecord in CloudKit (CoreData)
+//  - currentBalance is derived: lifetimeEarned - sum(AcornSpendRecords)
+//  - No stored currentBalance — prevents spend-race conflicts across devices
 //
 
 import Foundation
+import CoreData
 import Observation
 
 // MARK: - Earning Events
@@ -53,8 +56,10 @@ enum AcornEarningEvent {
 
 /// Persistent, observable ledger for the user's acorn balance.
 ///
-/// `currentBalance` is what they can spend. `lifetimeEarned` is the
-/// all-time total — it never decreases and is used for progression stats.
+/// `lifetimeEarned` is the all-time acorn total — it never decreases
+/// and syncs via iCloud KV Store. `currentBalance` is derived at runtime:
+/// lifetimeEarned minus the sum of all AcornSpendRecords in CloudKit.
+/// This prevents spend-race conflicts across devices.
 @Observable
 @MainActor
 final class AcornLedger {
@@ -62,41 +67,69 @@ final class AcornLedger {
 
     // MARK: Observed Properties
 
-    private(set) var currentBalance: Int
     private(set) var lifetimeEarned: Int
 
-    // MARK: UserDefaults Keys
+    // MARK: Keys
 
     private enum Keys {
-        static let currentBalance  = "acorn.currentBalance"
         static let lifetimeEarned  = "acorn.lifetimeEarned"
         static let lastCaptureDate = "acorn.lastCaptureDate"
     }
 
-    private let defaults = UserDefaults.standard
+    private let defaults = SyncedDefaults.shared
+    private let context: NSManagedObjectContext
 
     private init() {
-        currentBalance = defaults.integer(forKey: Keys.currentBalance)
-        lifetimeEarned = defaults.integer(forKey: Keys.lifetimeEarned)
+        lifetimeEarned = SyncedDefaults.shared.integer(forKey: Keys.lifetimeEarned)
+        context = PersistenceController.shared.container.viewContext
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleExternalChange(_:)),
+            name: .syncedDefaultsDidChangeExternally,
+            object: nil
+        )
+    }
+
+    // MARK: - Derived Balance
+
+    /// Current spendable balance, derived by subtracting all spend records from lifetime earned.
+    var currentBalance: Int {
+        get async {
+            let spent = fetchTotalSpent()
+            return max(0, lifetimeEarned - spent)
+        }
+    }
+
+    /// Sums all AcornSpendRecord amounts. Safe on main thread using the viewContext.
+    private func fetchTotalSpent() -> Int {
+        let request = AcornSpendRecord.fetchRequest()
+        let records = (try? context.fetch(request)) ?? []
+        return records.reduce(0) { $0 + Int($1.amount) }
     }
 
     // MARK: Internal Mutations
 
     fileprivate func award(_ amount: Int) {
-        currentBalance += amount
         lifetimeEarned += amount
-        defaults.set(currentBalance, forKey: Keys.currentBalance)
         defaults.set(lifetimeEarned, forKey: Keys.lifetimeEarned)
         AnalyticsService.shared.track(.acornEarned(amount: amount))
     }
 
-    /// Deducts acorns when the user spends them (shop, future use).
+    /// Deducts acorns by writing an append-only AcornSpendRecord to CoreData.
     /// Returns false if the balance is insufficient.
     @discardableResult
-    func spend(_ amount: Int) -> Bool {
-        guard currentBalance >= amount else { return false }
-        currentBalance -= amount
-        defaults.set(currentBalance, forKey: Keys.currentBalance)
+    func spend(_ amount: Int) async -> Bool {
+        let balance = await currentBalance
+        guard balance >= amount else { return false }
+
+        let record = AcornSpendRecord(context: context)
+        record.id = UUID()
+        record.amount = Int32(amount)
+        record.reason = "manual"
+        record.createdAt = Date()
+        try? context.save()
+
         AnalyticsService.shared.track(.acornSpent(amount: amount))
         return true
     }
@@ -106,6 +139,26 @@ final class AcornLedger {
     var lastCaptureDate: Date? {
         get { defaults.object(forKey: Keys.lastCaptureDate) as? Date }
         set { defaults.set(newValue, forKey: Keys.lastCaptureDate) }
+    }
+
+    // MARK: - External Change Handler
+
+    @objc private func handleExternalChange(_ notification: Notification) {
+        guard let changedKeys = notification.userInfo?["changedKeys"] as? [String] else { return }
+        if changedKeys.contains(Keys.lifetimeEarned) {
+            let remote = defaults.integer(forKey: Keys.lifetimeEarned)
+            if remote > lifetimeEarned {
+                lifetimeEarned = remote
+            }
+        }
+        // lastCaptureDate: take later date to avoid double-awarding the first-capture-of-day bonus
+        if changedKeys.contains(Keys.lastCaptureDate) {
+            if let remote = defaults.object(forKey: Keys.lastCaptureDate) as? Date,
+               let local = lastCaptureDate,
+               remote > local {
+                defaults.set(remote, forKey: Keys.lastCaptureDate)
+            }
+        }
     }
 }
 
@@ -136,7 +189,7 @@ final class AcornService {
     /// - Parameter hadContext: True if context was auto-populated (earns bonus acorn)
     /// - Returns: The reward details for UI feedback
     @discardableResult
-    func processCapture(hadContext: Bool) -> AcornReward {
+    func processCapture(hadContext: Bool) async -> AcornReward {
         var events: [AcornEarningEvent] = [.capture]
 
         if hadContext {
@@ -148,26 +201,26 @@ final class AcornService {
             ledger.lastCaptureDate = Date()
         }
 
-        return award(events: events)
+        return await award(events: events)
     }
 
     /// Call this when the user hits a streak milestone.
     ///
     /// - Parameter days: The streak length reached (3, 7, 14, 30, etc.)
     @discardableResult
-    func processStreakMilestone(days: Int) -> AcornReward {
-        award(events: [.streakMilestone(days: days)])
+    func processStreakMilestone(days: Int) async -> AcornReward {
+        await award(events: [.streakMilestone(days: days)])
     }
 
     /// Called by VariableRewardService (issue #42) when a surprise fires.
     @discardableResult
-    func processVariableReward(acorns: Int) -> AcornReward {
-        award(events: [.variableReward(acorns: acorns)])
+    func processVariableReward(acorns: Int) async -> AcornReward {
+        await award(events: [.variableReward(acorns: acorns)])
     }
 
     // MARK: - Read-Only Access
 
-    var currentBalance: Int  { ledger.currentBalance }
+    var currentBalance: Int { get async { await ledger.currentBalance } }
     var lifetimeEarned: Int  { ledger.lifetimeEarned }
 
     // MARK: - Private
@@ -177,10 +230,11 @@ final class AcornService {
         return !Calendar.current.isDateInToday(last)
     }
 
-    private func award(events: [AcornEarningEvent]) -> AcornReward {
+    private func award(events: [AcornEarningEvent]) async -> AcornReward {
         let total = events.reduce(0) { $0 + $1.acorns }
         ledger.award(total)
-        return AcornReward(events: events, total: total, newBalance: ledger.currentBalance)
+        let newBalance = await ledger.currentBalance
+        return AcornReward(events: events, total: total, newBalance: newBalance)
     }
 }
 

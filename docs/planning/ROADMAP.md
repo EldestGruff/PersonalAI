@@ -217,3 +217,33 @@ STASH is a thought-capture and context-aware system currently in Phase 3A develo
 3. Set up backend infrastructure prototype
 4. Plan beta testing program
 5. Establish analytics and monitoring
+
+---
+
+## Platform Expansion Considerations
+
+### Apple Watch *(elevated priority — Phase 4 candidate)*
+Watch is the highest-value secondary capture surface — always on wrist, available in car/driving contexts where phone interaction is unsafe, ideal for ADHD capture moments.
+
+**Scope: Native voice-capture Watch app with offline queueing**
+
+- Single capture screen: large mic button, tap to dictate
+- Offline queue: thoughts stored locally on Watch, sync via WatchConnectivity when iPhone reachable
+- Classification happens on iPhone side after sync (no ML on Watch)
+- Complications: tap-to-open in Modular, Circular, Graphic Rectangular families
+- Capture acknowledgment: 2-3 randomized squirrel micro-animations (variable reward DNA)
+  - Common: squirrel catches an acorn
+  - Uncommon: squirrel happy spin
+  - Rare: squirrel tips hat / celebratory moment
+- GitHub issue filed — see Phase 4
+
+
+
+### CarPlay *(Phase 4 candidate)*
+High-value capture context identified during beta. Requires Apple entitlement approval — does not map cleanly to existing CarPlay app categories (audio, communication, navigation, etc.). CarPlay Simulator available in Xcode for UI design without entitlement. Entitlement request strategy TBD. File issue as "requires Apple approval" and design UI speculatively.
+
+### Tag Intelligence *(Phase 4 — GitHub issues filed)*
+- **BUG:** Tag generation creates word fragments on non-Apple Intelligence devices. Fix: noun phrase detection before lemmatization.
+- **FEATURE:** Fuzzy tag matching from existing user tag library. Requires new `TagNormalizationService`. Prevents tag fragmentation across all devices.
+
+---

@@ -5,8 +5,9 @@
 //  Gamification issue #41: Discovery Badges
 //
 //  Checks badge criteria after each capture and persists earned state
-//  in UserDefaults. Criteria are evaluated against the just-saved thought
-//  plus stats from the other gamification services.
+//  in SyncedDefaults (iCloud KV Store) for cross-device sync.
+//  Criteria are evaluated against the just-saved thought plus stats from
+//  the other gamification services.
 //
 //  All checks are lightweight — no heavy computation, no ML inference.
 //
@@ -29,14 +30,14 @@ final class BadgeService {
     /// Not persisted; cleared when the Achievements screen is dismissed.
     private(set) var recentlyEarnedIds: Set<String> = []
 
-    // MARK: - UserDefaults Keys
+    // MARK: - Keys
 
     private enum Keys {
         static let earnedIds   = "badge.earnedIds"
         static let earnedDates = "badge.earnedDates"
     }
 
-    private let defaults = UserDefaults.standard
+    private let defaults = SyncedDefaults.shared
 
     // MARK: - Init
 
@@ -48,6 +49,13 @@ final class BadgeService {
            let decoded = try? JSONDecoder().decode([String: Date].self, from: data) {
             earnedDates = decoded
         }
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleExternalChange(_:)),
+            name: .syncedDefaultsDidChangeExternally,
+            object: nil
+        )
     }
 
     // MARK: - Public API
@@ -76,7 +84,7 @@ final class BadgeService {
             guard !isEarned(badge.id) else { continue }
 
             if qualifies(badge: badge, thought: thought, allThoughts: allThoughts) {
-                award(badge)
+                await award(badge)
                 newlyEarned.append(badge)
             }
         }
@@ -163,7 +171,7 @@ final class BadgeService {
 
     // MARK: - Awarding
 
-    private func award(_ badge: BadgeDefinition) {
+    private func award(_ badge: BadgeDefinition) async {
         earnedBadgeIds.insert(badge.id)
         recentlyEarnedIds.insert(badge.id)
         AnalyticsService.shared.track(.badgeUnlocked(badgeId: badge.id))
@@ -175,7 +183,7 @@ final class BadgeService {
         }
 
         // Fire acorn bonus
-        _ = AcornService.shared.processVariableReward(acorns: badge.acornBonus)
+        _ = await AcornService.shared.processVariableReward(acorns: badge.acornBonus)
     }
 
     /// Call when the Achievements screen is dismissed to clear pending animations.
@@ -189,5 +197,37 @@ final class BadgeService {
         text.components(separatedBy: .whitespacesAndNewlines)
             .filter { !$0.isEmpty }
             .count
+    }
+
+    // MARK: - External Change Handler
+
+    @objc private func handleExternalChange(_ notification: Notification) {
+        guard let changedKeys = notification.userInfo?["changedKeys"] as? [String] else { return }
+
+        if changedKeys.contains(Keys.earnedIds) {
+            let remote = Set(defaults.stringArray(forKey: Keys.earnedIds) ?? [])
+            let merged = earnedBadgeIds.union(remote)
+            if merged != earnedBadgeIds {
+                earnedBadgeIds = merged
+                defaults.set(Array(merged), forKey: Keys.earnedIds)
+            }
+        }
+        if changedKeys.contains(Keys.earnedDates) {
+            if let data = defaults.data(forKey: Keys.earnedDates),
+               let decoded = try? JSONDecoder().decode([String: Date].self, from: data) {
+                // Merge: keep earliest date per badge (first time earned wins)
+                for (badgeId, remoteDate) in decoded {
+                    if let localDate = earnedDates[badgeId] {
+                        earnedDates[badgeId] = min(localDate, remoteDate)
+                    } else {
+                        earnedDates[badgeId] = remoteDate
+                    }
+                }
+                // Persist merged dates
+                if let data = try? JSONEncoder().encode(earnedDates) {
+                    defaults.set(data, forKey: Keys.earnedDates)
+                }
+            }
+        }
     }
 }

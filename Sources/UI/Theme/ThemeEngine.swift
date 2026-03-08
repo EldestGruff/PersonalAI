@@ -2,7 +2,8 @@
 //  ThemeEngine.swift
 //  STASH
 //
-//  Central theme management and application system
+//  Central theme management and application system.
+//  Phase 3B: selected_theme syncs via iCloud KV Store.
 //
 
 import SwiftUI
@@ -14,21 +15,33 @@ class ThemeEngine {
     static let shared = ThemeEngine()
 
     private let themeKey = "selected_theme"
+    private let defaults = SyncedDefaults.shared
 
     var currentTheme: ThemeType {
         didSet {
+            // Guard against no-op writes to prevent KV Store ping-pong between devices.
+            // Without this, handleExternalChange sets currentTheme → didSet fires → writes
+            // the same value back → triggers another external change on the other device.
+            guard oldValue != newValue else { return }
             saveTheme()
         }
     }
 
     private init() {
         // Load saved theme or use default
-        if let savedTheme = UserDefaults.standard.string(forKey: themeKey),
+        if let savedTheme = SyncedDefaults.shared.string(forKey: "selected_theme"),
            let theme = ThemeType(rawValue: savedTheme) {
             self.currentTheme = theme
         } else {
             self.currentTheme = .minimalist
         }
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleExternalChange(_:)),
+            name: .syncedDefaultsDidChangeExternally,
+            object: nil
+        )
     }
 
     // MARK: - Theme Management
@@ -45,7 +58,19 @@ class ThemeEngine {
     // MARK: - Persistence
 
     private func saveTheme() {
-        UserDefaults.standard.set(currentTheme.rawValue, forKey: themeKey)
+        defaults.set(currentTheme.rawValue, forKey: themeKey)
+    }
+
+    // MARK: - External Change Handler
+
+    @objc private func handleExternalChange(_ notification: Notification) {
+        guard let changedKeys = notification.userInfo?["changedKeys"] as? [String] else { return }
+        if changedKeys.contains(themeKey) {
+            if let rawValue = defaults.string(forKey: themeKey),
+               let theme = ThemeType(rawValue: rawValue) {
+                currentTheme = theme
+            }
+        }
     }
 }
 

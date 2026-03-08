@@ -101,7 +101,7 @@ actor ShinyService {
         }
 
         if !promoted.isEmpty {
-            UserDefaults.standard.set(Date(), forKey: Keys.lastPromotionDate)
+            SyncedDefaults.shared.set(Date(), forKey: Keys.lastPromotionDate)
             AnalyticsService.shared.track(.shinyPromoted(count: promoted.count))
             let totalShinies = existing.count + promoted.count
             await MainActor.run {
@@ -157,7 +157,7 @@ actor ShinyService {
     // MARK: - Throttle
 
     private func shouldRunToday() -> Bool {
-        guard let last = UserDefaults.standard.object(forKey: Keys.lastPromotionDate) as? Date else {
+        guard let last = SyncedDefaults.shared.object(forKey: Keys.lastPromotionDate) as? Date else {
             return true
         }
         return !Calendar.current.isDateInToday(last)
