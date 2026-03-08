@@ -33,8 +33,8 @@ enum SubscriptionTier: String, Codable, CaseIterable, Sendable {
 
 /// StoreKit product identifiers
 enum SubscriptionProduct: String, CaseIterable {
-    case proMonthly = "com.personalai.pro.monthly"
-    case proAnnual = "com.personalai.pro.annual"
+    case proMonthly = "com.withershins.stash.pro.monthly"
+    case proAnnual = "com.withershins.stash.pro.annual"
 
     var tier: SubscriptionTier {
         switch self {
@@ -54,8 +54,10 @@ enum SubscriptionProduct: String, CaseIterable {
 // MARK: - Entitlements
 
 /// Monthly thought limit for the free tier.
+/// Warning shown at (freeMonthlyThoughtLimit - 5) captures.
 /// Adjust here as needed while monitoring beta analytics.
-let freeMonthlyThoughtLimit = 60
+let freeMonthlyThoughtLimit = 45
+let freeMonthlyThoughtWarningThreshold = 40
 
 /// Feature entitlements based on subscription tier
 struct SubscriptionEntitlements: Codable, Sendable {

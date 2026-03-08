@@ -71,8 +71,16 @@ struct SyncedDefaultsMigration {
         // Nothing to migrate if user has never spent, or data is missing
         guard lifetimeEarned > 0, totalSpent > 0 else { return }
 
-        // Create a single synthetic record representing all historical spend
-        context.perform {
+        // Idempotency guard: if a migration record already exists (e.g. from a previous
+        // run that crashed after Core Data saved but before the migration flag was written),
+        // skip creation entirely. This prevents double-counting historical spend.
+        // performAndWait ensures the save completes before migrateIfNeeded sets its guard flag,
+        // eliminating the async window where a crash could leave data in an inconsistent state.
+        context.performAndWait {
+            let request = AcornSpendRecord.fetchRequest()
+            let existing = (try? context.fetch(request)) ?? []
+            guard !existing.contains(where: { $0.reason == "migration.opening_balance" }) else { return }
+
             let record = AcornSpendRecord(context: context)
             record.id = UUID()
             record.amount = Int32(totalSpent)

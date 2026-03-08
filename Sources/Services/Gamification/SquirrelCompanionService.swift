@@ -266,10 +266,20 @@ final class SquirrelCompanionService {
 
     private(set) var lifetimeCaptureCount: Int
     private(set) var ownedAccessoryIds: Set<String>
-    /// One accessory shown on the avatar at a time (nil = none)
+
+    /// Backing store for equippedAccessoryId — written directly by the external change handler
+    /// to avoid triggering the KV Store write-back loop that the computed setter would cause.
+    private var _equippedAccessoryId: String?
+
+    /// One accessory shown on the avatar at a time (nil = none).
+    /// Setting this via the public API writes through to KV Store.
+    /// The external change handler writes to `_equippedAccessoryId` directly.
     var equippedAccessoryId: String? {
-        didSet {
-            syncedDefaults.set(equippedAccessoryId, forKey: Keys.equippedAccessory)
+        get { _equippedAccessoryId }
+        set {
+            guard _equippedAccessoryId != newValue else { return }
+            _equippedAccessoryId = newValue
+            syncedDefaults.set(newValue, forKey: Keys.equippedAccessory)
         }
     }
 
@@ -311,7 +321,7 @@ final class SquirrelCompanionService {
         lifetimeCaptureCount = SyncedDefaults.shared.integer(forKey: Keys.lifetimeCaptures)
         let saved = SyncedDefaults.shared.stringArray(forKey: Keys.ownedAccessories) ?? []
         ownedAccessoryIds = Set(saved)
-        equippedAccessoryId = SyncedDefaults.shared.string(forKey: Keys.equippedAccessory)
+        _equippedAccessoryId = SyncedDefaults.shared.string(forKey: Keys.equippedAccessory)
 
         NotificationCenter.default.addObserver(
             self,
@@ -397,8 +407,9 @@ final class SquirrelCompanionService {
             }
         }
         if changedKeys.contains(Keys.equippedAccessory) {
-            // Last-write-wins: re-read from store without triggering didSet
-            equippedAccessoryId = syncedDefaults.string(forKey: Keys.equippedAccessory)
+            // Write directly to backing var to avoid triggering the KV Store write-back.
+            // The public setter would call syncedDefaults.set() again, causing ping-pong.
+            _equippedAccessoryId = syncedDefaults.string(forKey: Keys.equippedAccessory)
         }
     }
 }

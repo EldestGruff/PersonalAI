@@ -240,6 +240,25 @@ Track technical debt, known issues, workarounds, and areas needing refactoring. 
 - **Applied:** Fixed with proper async/await boundaries
 - **Location:** Commit 79015ae
 
+### LL-006: Apple Watch Architecture Decisions
+- **Issue:** Watch apps require deliberate scoping — too little and it feels like a gimmick, too much and it becomes a maintenance burden for a solo developer.
+- **Learning:** For v1, restrict Watch to voice capture only. No browsing, no gamification detail, no text input. Classification stays on iPhone — never run ML on Watch. Offline queue is non-negotiable; capture must work when iPhone is unreachable.
+- **Applied:** Native watchOS target with single capture screen, WatchConnectivity sync, local queue persistence, 3-tier variable reward acknowledgment animations, complications in Circular/Modular/Graphic Rectangular families.
+- **Location:** New watchOS target — `WatchApp/`, `Sources/Services/Framework/PhoneConnectivityManager.swift`
+- **Review:** After v1 ships, evaluate whether Watch users want read access to recent thoughts. Resist scope creep until data supports it.
+
+### LL-004: Tag Generation Creates Word Fragments
+- **Issue:** Keyword-based fallback in `ClassificationService.generateTags()` splits compound concepts into individual lemmas. "Server issues" becomes "server" + "issues" rather than "server-issues". Affects all devices without Foundation Models (iPhone 14 and below, iPhone 15 non-Pro).
+- **Learning:** NLP lemmatization must detect noun phrases as compound units before splitting. Individual word extraction is insufficient for meaningful tag generation.
+- **Applied:** GitHub Issue filed — implement bigram/phrase detection using NLTagger `.noun` scheme before falling back to individual keywords.
+- **Location:** `Sources/Services/Intelligence/ClassificationService.swift` — `generateTags(content:entities:)`, `extractKeywords(from:)`
+
+### LL-005: Tag Fragmentation from Lack of Library Awareness
+- **Issue:** Tag input and AI classification have no awareness of the user's existing tag library. Results in multiple variants of the same concept ("server issues", "server-issues", "serverissues").
+- **Learning:** The user's own tag history is the best normalization signal available. Fuzzy matching against existing tags should be the first step before creating anything new.
+- **Applied:** GitHub Issue filed — implement `TagNormalizationService` with fuzzy matching (prefix, contains, Levenshtein, hyphen/space normalization). Surface suggestions in `TagInputView` as user types. Cross-reference in `ClassificationService` before returning suggested tags.
+- **Location:** `Sources/UI/Components/TagInputView.swift`, `Sources/Services/Intelligence/ClassificationService.swift`, new `TagNormalizationService.swift`
+
 ### LL-003: Core Data Attribute Naming
 - **Issue:** Mismatch between Core Data entity attribute names and Swift property names
 - **Learning:** Use Xcode code generation or be very explicit with @NSManaged

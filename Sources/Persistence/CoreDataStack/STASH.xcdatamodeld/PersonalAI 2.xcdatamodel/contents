@@ -1,34 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="ThoughtEntity" representedClassName="ThoughtEntity" syncable="YES">
-        <attribute name="attributedContentData" optional="YES" attributeType="Binary"/>
-        <attribute name="isShiny" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
-        <attribute name="content" optional="YES" attributeType="String"/>
-        <attribute name="contextJSON" optional="YES" attributeType="Binary"/>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24512" systemVersion="25D125" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="AcornSpendRecord" representedClassName="AcornSpendRecord" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="status" optional="YES" attributeType="String"/>
-        <attribute name="tagsJSON" optional="YES" attributeType="Binary"/>
-        <attribute name="taskId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="userId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="classification" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="ClassificationEntity" inverseName="thought" inverseEntity="ClassificationEntity"/>
-        <relationship name="fineTuningDataPoints" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="FineTuningDataEntity" inverseName="thought" inverseEntity="FineTuningDataEntity"/>
-        <relationship name="relatedThoughts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ThoughtEntity" inverseName="relatedThoughts" inverseEntity="ThoughtEntity"/>
-        <relationship name="tasks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TaskEntity" inverseName="thought" inverseEntity="TaskEntity"/>
-        <fetchIndex name="byUserIdAndCreatedAt">
-            <fetchIndexElement property="userId" type="Binary" order="ascending"/>
-            <fetchIndexElement property="createdAt" type="Binary" order="descending"/>
-        </fetchIndex>
-        <fetchIndex name="byUserIdAndStatus">
-            <fetchIndexElement property="userId" type="Binary" order="ascending"/>
-            <fetchIndexElement property="status" type="Binary" order="ascending"/>
-        </fetchIndex>
-        <fetchIndex name="byId">
-            <fetchIndexElement property="id" type="Binary" order="ascending"/>
-        </fetchIndex>
+        <attribute name="reason" optional="YES" attributeType="String"/>
     </entity>
     <entity name="ClassificationEntity" representedClassName="ClassificationEntity" syncable="YES">
+        <attribute name="attribute" optional="YES"/>
         <attribute name="confidence" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="entitiesJSON" optional="YES" attributeType="Binary"/>
@@ -42,6 +21,51 @@
         <attribute name="type" optional="YES" attributeType="String"/>
         <relationship name="fineTuningDataPoints" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="FineTuningDataEntity" inverseName="classification" inverseEntity="FineTuningDataEntity"/>
         <relationship name="thought" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ThoughtEntity" inverseName="classification" inverseEntity="ThoughtEntity"/>
+    </entity>
+    <entity name="FineTuningDataEntity" representedClassName="FineTuningDataEntity" syncable="YES">
+        <attribute name="archived" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="classificationId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createdEvent" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="createdReminder" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="edits" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="eventCompleted" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="lastUpdatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="reminderCompleted" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
+        <attribute name="shares" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="thoughtId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="timeToCompletion" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
+        <attribute name="timeToFirstAction" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
+        <attribute name="userFeedbackJSON" optional="YES" attributeType="Binary"/>
+        <attribute name="views" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="wasDeleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <relationship name="classification" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ClassificationEntity" inverseName="fineTuningDataPoints" inverseEntity="ClassificationEntity"/>
+        <relationship name="thought" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ThoughtEntity" inverseName="fineTuningDataPoints" inverseEntity="ThoughtEntity"/>
+        <fetchIndex name="byThoughtId">
+            <fetchIndexElement property="thoughtId" type="Binary" order="ascending"/>
+        </fetchIndex>
+        <fetchIndex name="byCreatedAt">
+            <fetchIndexElement property="createdAt" type="Binary" order="descending"/>
+        </fetchIndex>
+    </entity>
+    <entity name="SyncQueueEntity" representedClassName="SyncQueueEntity" syncable="YES">
+        <attribute name="action" optional="YES" attributeType="String"/>
+        <attribute name="backendResponseId" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="entityId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="entityType" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="lastError" optional="YES" attributeType="String"/>
+        <attribute name="nextRetryAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="payload" optional="YES" attributeType="Binary"/>
+        <attribute name="retries" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <fetchIndex name="byNextRetryAt">
+            <fetchIndexElement property="nextRetryAt" type="Binary" order="ascending"/>
+        </fetchIndex>
+        <fetchIndex name="byBackendResponseId">
+            <fetchIndexElement property="backendResponseId" type="Binary" order="ascending"/>
+        </fetchIndex>
     </entity>
     <entity name="TaskEntity" representedClassName="TaskEntity" syncable="YES">
         <attribute name="completedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -67,49 +91,32 @@
             <fetchIndexElement property="id" type="Binary" order="ascending"/>
         </fetchIndex>
     </entity>
-    <entity name="FineTuningDataEntity" representedClassName="FineTuningDataEntity" syncable="YES">
-        <attribute name="archived" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="classificationId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+    <entity name="ThoughtEntity" representedClassName="ThoughtEntity" syncable="YES">
+        <attribute name="attributedContentData" optional="YES" attributeType="Binary"/>
+        <attribute name="content" optional="YES" attributeType="String"/>
+        <attribute name="contextJSON" optional="YES" attributeType="Binary"/>
         <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="createdEvent" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="createdReminder" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="wasDeleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="edits" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="eventCompleted" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="lastUpdatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="reminderCompleted" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
-        <attribute name="shares" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="thoughtId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="timeToCompletion" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
-        <attribute name="timeToFirstAction" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
-        <attribute name="userFeedbackJSON" optional="YES" attributeType="Binary"/>
-        <attribute name="views" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="classification" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ClassificationEntity" inverseName="fineTuningDataPoints" inverseEntity="ClassificationEntity"/>
-        <relationship name="thought" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ThoughtEntity" inverseName="fineTuningDataPoints" inverseEntity="ThoughtEntity"/>
-        <fetchIndex name="byThoughtId">
-            <fetchIndexElement property="thoughtId" type="Binary" order="ascending"/>
-        </fetchIndex>
-        <fetchIndex name="byCreatedAt">
+        <attribute name="isShiny" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
+        <attribute name="status" optional="YES" attributeType="String"/>
+        <attribute name="tagsJSON" optional="YES" attributeType="Binary"/>
+        <attribute name="taskId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="userId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="classification" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="ClassificationEntity" inverseName="thought" inverseEntity="ClassificationEntity"/>
+        <relationship name="fineTuningDataPoints" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="FineTuningDataEntity" inverseName="thought" inverseEntity="FineTuningDataEntity"/>
+        <relationship name="relatedThoughts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ThoughtEntity" inverseName="relatedThoughts" inverseEntity="ThoughtEntity"/>
+        <relationship name="tasks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TaskEntity" inverseName="thought" inverseEntity="TaskEntity"/>
+        <fetchIndex name="byUserIdAndCreatedAt">
+            <fetchIndexElement property="userId" type="Binary" order="ascending"/>
             <fetchIndexElement property="createdAt" type="Binary" order="descending"/>
         </fetchIndex>
-    </entity>
-    <entity name="SyncQueueEntity" representedClassName="SyncQueueEntity" syncable="NO">
-        <attribute name="action" optional="YES" attributeType="String"/>
-        <attribute name="backendResponseId" optional="YES" attributeType="String"/>
-        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="entityType" optional="YES" attributeType="String"/>
-        <attribute name="entityId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="lastError" optional="YES" attributeType="String"/>
-        <attribute name="nextRetryAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="payload" optional="YES" attributeType="Binary"/>
-        <attribute name="retries" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <fetchIndex name="byNextRetryAt">
-            <fetchIndexElement property="nextRetryAt" type="Binary" order="ascending"/>
+        <fetchIndex name="byUserIdAndStatus">
+            <fetchIndexElement property="userId" type="Binary" order="ascending"/>
+            <fetchIndexElement property="status" type="Binary" order="ascending"/>
         </fetchIndex>
-        <fetchIndex name="byBackendResponseId">
-            <fetchIndexElement property="backendResponseId" type="Binary" order="ascending"/>
+        <fetchIndex name="byId">
+            <fetchIndexElement property="id" type="Binary" order="ascending"/>
         </fetchIndex>
     </entity>
 </model>

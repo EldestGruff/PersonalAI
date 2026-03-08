@@ -42,7 +42,9 @@ final class SyncedDefaults: @unchecked Sendable {
 
     func set(_ value: Int, forKey key: String) {
         store.set(Int64(value), forKey: key)
-        store.synchronize()
+        // Note: Do NOT call store.synchronize() here. Per Apple docs, synchronize() only
+        // flushes in-memory state to local disk — it does NOT trigger iCloud sync.
+        // The system handles cloud propagation automatically.
     }
 
     func string(forKey key: String) -> String? {
@@ -51,7 +53,6 @@ final class SyncedDefaults: @unchecked Sendable {
 
     func set(_ value: String?, forKey key: String) {
         store.set(value, forKey: key)
-        store.synchronize()
     }
 
     func bool(forKey key: String) -> Bool {
@@ -60,7 +61,6 @@ final class SyncedDefaults: @unchecked Sendable {
 
     func set(_ value: Bool, forKey key: String) {
         store.set(value, forKey: key)
-        store.synchronize()
     }
 
     func object(forKey key: String) -> Any? {
@@ -69,7 +69,6 @@ final class SyncedDefaults: @unchecked Sendable {
 
     func set(_ value: Any?, forKey key: String) {
         store.set(value, forKey: key)
-        store.synchronize()
     }
 
     func data(forKey key: String) -> Data? {
@@ -78,7 +77,6 @@ final class SyncedDefaults: @unchecked Sendable {
 
     func set(_ value: Data?, forKey key: String) {
         store.set(value, forKey: key)
-        store.synchronize()
     }
 
     func stringArray(forKey key: String) -> [String]? {

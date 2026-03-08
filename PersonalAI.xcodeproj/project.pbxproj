@@ -97,6 +97,8 @@
 		A0000001000000000000247 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000248 /* SearchViewModel.swift */; };
 		A0000001000000000000249 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000250 /* SettingsViewModel.swift */; };
 		A0000001000000000000251 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000252 /* AppError.swift */; };
+		A12BCEDE2F5D2A540051F0EA /* AcornSpendRecord+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12BCEDD2F5D2A540051F0EA /* AcornSpendRecord+CoreDataProperties.swift */; };
+		A12BCEDF2F5D2A540051F0EA /* AcornSpendRecord+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12BCEDC2F5D2A540051F0EA /* AcornSpendRecord+CoreDataClass.swift */; };
 		A138668F2F4A9321002CB2DD /* TelemetryClient in Frameworks */ = {isa = PBXBuildFile; productRef = A138668E2F4A9321002CB2DD /* TelemetryClient */; };
 		A13866912F4A9321002CB2DD /* TelemetryDeck in Frameworks */ = {isa = PBXBuildFile; productRef = A13866902F4A9321002CB2DD /* TelemetryDeck */; };
 		A1803D482F25BDFD0071D950 /* DateTimeParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803D472F25BDFD0071D950 /* DateTimeParsingService.swift */; };
@@ -262,6 +264,9 @@
 		A0000001000000000000252 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
 		A1000000000000000000001 /* STASH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = STASH.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A11AA0202F36C5430088EB2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Info.plist; path = PersonalAI/Info.plist; sourceTree = "<group>"; };
+		A12BCEDB2F5D278A0051F0EA /* PersonalAI 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PersonalAI 2.xcdatamodel"; sourceTree = "<group>"; };
+		A12BCEDC2F5D2A540051F0EA /* AcornSpendRecord+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "AcornSpendRecord+CoreDataClass.swift"; path = "Sources/Persistence/CoreDataStack/AcornSpendRecord+CoreDataClass.swift"; sourceTree = "<group>"; };
+		A12BCEDD2F5D2A540051F0EA /* AcornSpendRecord+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "AcornSpendRecord+CoreDataProperties.swift"; path = "Sources/Persistence/CoreDataStack/AcornSpendRecord+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A1803D472F25BDFD0071D950 /* DateTimeParsingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeParsingService.swift; sourceTree = "<group>"; };
 		A1803D4A2F25BDFD0071D952 /* DateTimeParsingService_FoundationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeParsingService_FoundationModels.swift; sourceTree = "<group>"; };
 		A1803D4C2F25BDFD0071D954 /* ClassificationService_FoundationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationService_FoundationModels.swift; sourceTree = "<group>"; };
@@ -397,6 +402,8 @@
 		A0800000000000000000001 = {
 			isa = PBXGroup;
 			children = (
+				A12BCEDC2F5D2A540051F0EA /* AcornSpendRecord+CoreDataClass.swift */,
+				A12BCEDD2F5D2A540051F0EA /* AcornSpendRecord+CoreDataProperties.swift */,
 				A11AA0202F36C5430088EB2E /* Info.plist */,
 				A0800000000000000000002 /* Sources */,
 				A1F85F4D2F57BA54003C400D /* STASH Watch App Watch App */,
@@ -948,6 +955,8 @@
 				A1A632752F33BFD500DA552B /* ThoughtConversationViewModel.swift in Sources */,
 				A0000001000000000000117 /* ServiceContainer.swift in Sources */,
 				A1B77D082F3E3CD600F8D6B4 /* VoiceCaptureViewModel.swift in Sources */,
+				A12BCEDE2F5D2A540051F0EA /* AcornSpendRecord+CoreDataProperties.swift in Sources */,
+				A12BCEDF2F5D2A540051F0EA /* AcornSpendRecord+CoreDataClass.swift in Sources */,
 				A0000001000000000000119 /* PermissionCoordinator.swift in Sources */,
 				A0000001000000000000131 /* LocationService.swift in Sources */,
 				A0000001000000000000133 /* HealthKitService.swift in Sources */,
@@ -1554,9 +1563,10 @@
 		A0000001000000000000006 /* STASH.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				A12BCEDB2F5D278A0051F0EA /* PersonalAI 2.xcdatamodel */,
 				A0000001000000000000007 /* PersonalAI.xcdatamodel */,
 			);
-			currentVersion = A0000001000000000000007 /* PersonalAI.xcdatamodel */;
+			currentVersion = A12BCEDB2F5D278A0051F0EA /* PersonalAI 2.xcdatamodel */;
 			path = STASH.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

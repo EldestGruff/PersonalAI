@@ -19,6 +19,10 @@ class ThemeEngine {
 
     var currentTheme: ThemeType {
         didSet {
+            // Guard against no-op writes to prevent KV Store ping-pong between devices.
+            // Without this, handleExternalChange sets currentTheme → didSet fires → writes
+            // the same value back → triggers another external change on the other device.
+            guard oldValue != newValue else { return }
             saveTheme()
         }
     }
