@@ -33,6 +33,8 @@ struct STASHComplicationProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (STASHComplicationEntry) -> Void) {
+        // If STASHComplicationEntry ever carries real data, check context.isPreview
+        // and return generic placeholder data when true (used in the complication picker).
         completion(STASHComplicationEntry(date: Date()))
     }
 
@@ -52,7 +54,6 @@ struct STASHCircularView: View {
             AccessoryWidgetBackground()
             Image(systemName: "brain.head.profile")
                 .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(.white)
         }
     }
 }
@@ -65,7 +66,6 @@ struct STASHRectangularView: View {
             Text("Capture thought")
                 .font(.system(size: 14, weight: .medium))
         }
-        .foregroundStyle(.white)
     }
 }
 
@@ -82,6 +82,8 @@ struct STASHComplicationWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: STASHComplicationProvider()) { _ in
+            // Add .widgetURL(URL(string: "stash://capture")!) on the entry view
+            // if the Watch app ever gains multiple navigation destinations.
             STASHComplicationEntryView()
         }
         .configurationDisplayName("STASH")
