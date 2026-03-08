@@ -10,6 +10,7 @@
 //
 
 import SwiftUI
+import WatchKit
 
 // MARK: - Acknowledgment Kind
 
@@ -147,6 +148,7 @@ struct WatchCaptureView: View {
             do {
                 try await WatchSpeechService.shared.startRecording()
                 await MainActor.run {
+                    WKInterfaceDevice.current().play(.start)
                     isRecording = true
                     startLevelPolling()
                 }
@@ -159,6 +161,7 @@ struct WatchCaptureView: View {
     private func stopCapture() {
         guard isRecording else { return }
         stopLevelPolling()
+        WKInterfaceDevice.current().play(.stop)
         isRecording = false
 
         Task {
@@ -168,6 +171,7 @@ struct WatchCaptureView: View {
             await MainActor.run {
                 capturedCount += 1
                 UserDefaults.standard.set(capturedCount, forKey: "watchCapturedCount")
+                WKInterfaceDevice.current().play(.success)
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
                     acknowledgment = .random()
                 }
