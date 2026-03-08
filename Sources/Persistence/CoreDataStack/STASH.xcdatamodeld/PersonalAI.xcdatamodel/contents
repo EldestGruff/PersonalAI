@@ -94,6 +94,15 @@
             <fetchIndexElement property="createdAt" type="Binary" order="descending"/>
         </fetchIndex>
     </entity>
+    <entity name="AcornSpendRecord" representedClassName="AcornSpendRecord" syncable="YES">
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="amount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="reason" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <fetchIndex name="byCreatedAt">
+            <fetchIndexElement property="createdAt" type="Binary" order="descending"/>
+        </fetchIndex>
+    </entity>
     <entity name="SyncQueueEntity" representedClassName="SyncQueueEntity" syncable="YES">
         <attribute name="action" optional="YES" attributeType="String"/>
         <attribute name="backendResponseId" optional="YES" attributeType="String"/>

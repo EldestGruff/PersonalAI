@@ -255,8 +255,12 @@ final class SquirrelCompanionService {
         static let lifetimeCaptures  = "companion.lifetimeCaptures"
         static let ownedAccessories  = "companion.ownedAccessories"
         static let equippedAccessory = "companion.equippedAccessory"
+        static let shinyCount        = "companion.shinyCount"
+        // adventureShown stays in UserDefaults — device-local UI state
         static let adventureShown    = "companion.adventureReturnShown"
     }
+
+    private let syncedDefaults = SyncedDefaults.shared
 
     // MARK: - State
 
@@ -265,7 +269,7 @@ final class SquirrelCompanionService {
     /// One accessory shown on the avatar at a time (nil = none)
     var equippedAccessoryId: String? {
         didSet {
-            UserDefaults.standard.set(equippedAccessoryId, forKey: Keys.equippedAccessory)
+            syncedDefaults.set(equippedAccessoryId, forKey: Keys.equippedAccessory)
         }
     }
 
@@ -290,7 +294,7 @@ final class SquirrelCompanionService {
     /// Milestone unlocks that are now available based on current progress
     var unlockedMilestoneAccessories: [SquirrelAccessory] {
         let ledger = AcornLedger.shared
-        let shinyCount = UserDefaults.standard.integer(forKey: "companion.shinyCount")
+        let shinyCount = syncedDefaults.integer(forKey: Keys.shinyCount)
         return SquirrelAccessory.catalog.filter { accessory in
             guard !accessory.isForSale else { return false }
             switch accessory.id {
@@ -304,10 +308,17 @@ final class SquirrelCompanionService {
     // MARK: - Init
 
     private init() {
-        lifetimeCaptureCount = UserDefaults.standard.integer(forKey: Keys.lifetimeCaptures)
-        let saved = UserDefaults.standard.stringArray(forKey: Keys.ownedAccessories) ?? []
+        lifetimeCaptureCount = SyncedDefaults.shared.integer(forKey: Keys.lifetimeCaptures)
+        let saved = SyncedDefaults.shared.stringArray(forKey: Keys.ownedAccessories) ?? []
         ownedAccessoryIds = Set(saved)
-        equippedAccessoryId = UserDefaults.standard.string(forKey: Keys.equippedAccessory)
+        equippedAccessoryId = SyncedDefaults.shared.string(forKey: Keys.equippedAccessory)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleExternalChange(_:)),
+            name: .syncedDefaultsDidChangeExternally,
+            object: nil
+        )
     }
 
     // MARK: - Capture Hook
@@ -315,8 +326,9 @@ final class SquirrelCompanionService {
     /// Call after every successful capture.
     func recordCapture() {
         lifetimeCaptureCount += 1
-        UserDefaults.standard.set(lifetimeCaptureCount, forKey: Keys.lifetimeCaptures)
-        // Clear "adventure shown" flag so next return triggers recap
+        syncedDefaults.set(lifetimeCaptureCount, forKey: Keys.lifetimeCaptures)
+        // Clear "adventure shown" flag so next return triggers recap.
+        // Stays in UserDefaults — this is device-local UI state.
         UserDefaults.standard.set(false, forKey: Keys.adventureShown)
     }
 
@@ -326,6 +338,7 @@ final class SquirrelCompanionService {
     /// and the recap hasn't been shown yet this return.
     func adventureRecapIfNeeded(for persona: SquirrelPersona) -> String? {
         guard isOnAdventure else { return nil }
+        // adventureShown is device-local UI state — stays in UserDefaults
         let alreadyShown = UserDefaults.standard.bool(forKey: Keys.adventureShown)
         guard !alreadyShown else { return nil }
         UserDefaults.standard.set(true, forKey: Keys.adventureShown)
@@ -340,13 +353,13 @@ final class SquirrelCompanionService {
     }
 
     /// Purchase an accessory with acorns. Returns true if successful.
-    func purchase(_ accessory: SquirrelAccessory) -> Bool {
+    func purchase(_ accessory: SquirrelAccessory) async -> Bool {
         guard accessory.isForSale else { return false }
         guard !isOwned(accessory) else { return true }
-        guard AcornLedger.shared.currentBalance >= accessory.cost else { return false }
-        _ = AcornLedger.shared.spend(accessory.cost)
+        let didSpend = await AcornLedger.shared.spend(accessory.cost)
+        guard didSpend else { return false }
         ownedAccessoryIds.insert(accessory.id)
-        UserDefaults.standard.set(Array(ownedAccessoryIds), forKey: Keys.ownedAccessories)
+        syncedDefaults.set(Array(ownedAccessoryIds), forKey: Keys.ownedAccessories)
         return true
     }
 
@@ -361,6 +374,31 @@ final class SquirrelCompanionService {
 
     /// Update shiny count (called from ShinyService after promotions)
     func updateShinyCount(_ count: Int) {
-        UserDefaults.standard.set(count, forKey: "companion.shinyCount")
+        syncedDefaults.set(count, forKey: Keys.shinyCount)
+    }
+
+    // MARK: - External Change Handler
+
+    @objc private func handleExternalChange(_ notification: Notification) {
+        guard let changedKeys = notification.userInfo?["changedKeys"] as? [String] else { return }
+
+        if changedKeys.contains(Keys.lifetimeCaptures) {
+            let remote = syncedDefaults.integer(forKey: Keys.lifetimeCaptures)
+            if remote > lifetimeCaptureCount {
+                lifetimeCaptureCount = remote
+            }
+        }
+        if changedKeys.contains(Keys.ownedAccessories) {
+            let remote = Set(syncedDefaults.stringArray(forKey: Keys.ownedAccessories) ?? [])
+            let union = ownedAccessoryIds.union(remote)
+            if union != ownedAccessoryIds {
+                ownedAccessoryIds = union
+                syncedDefaults.set(Array(union), forKey: Keys.ownedAccessories)
+            }
+        }
+        if changedKeys.contains(Keys.equippedAccessory) {
+            // Last-write-wins: re-read from store without triggering didSet
+            equippedAccessoryId = syncedDefaults.string(forKey: Keys.equippedAccessory)
+        }
     }
 }

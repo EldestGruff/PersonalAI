@@ -94,7 +94,7 @@ final class AchievementsViewModel {
         currentStreak    = streak.currentStreak
         longestStreak    = streak.longestStreak
         totalCaptureDays = streak.totalCaptureDays
-        currentAcorns    = ledger.currentBalance
+        currentAcorns    = await ledger.currentBalance
         lifetimeAcorns   = ledger.lifetimeEarned
 
         // Pull thought + shiny counts from CoreData
