@@ -31,3 +31,4 @@ DerivedData/
 # Dependencies (CocoaPods if used)
 Pods/
 Podfile.lock
+.worktrees/
