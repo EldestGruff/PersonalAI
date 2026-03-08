@@ -132,7 +132,7 @@ struct BrowseScreen: View {
             }
             .task {
                 await viewModel.loadThoughts()
-                currentAcornBalance = await currentAcornBalance
+                currentAcornBalance = await acornLedger.currentBalance
             }
             .confirmationDialog(
                 "Delete this thought?",
