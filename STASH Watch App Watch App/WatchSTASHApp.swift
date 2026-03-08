@@ -9,11 +9,13 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 @main
 struct WatchSTASHApp: App {
     init() {
         WatchConnectivityManager.shared.activate()
+        UNUserNotificationCenter.current().delegate = WatchNotificationDelegate.shared
     }
 
     var body: some Scene {
