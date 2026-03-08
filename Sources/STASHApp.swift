@@ -49,6 +49,11 @@ struct STASHApp: App {
         // Initialize analytics (respects user opt-out from UserDefaults)
         AnalyticsService.shared.initialize()
 
+        // Migrate gamification state and preferences from UserDefaults to iCloud KV Store.
+        // Runs exactly once per device (guarded by migration flag). Must run before
+        // any service reads from SyncedDefaults.
+        SyncedDefaultsMigration.migrateIfNeeded(context: PersistenceController.shared.container.viewContext)
+
         // Check if onboarding should be shown
         let hasCompleted = OnboardingViewModel.hasCompletedOnboarding()
         self._showOnboarding = State(initialValue: !hasCompleted)

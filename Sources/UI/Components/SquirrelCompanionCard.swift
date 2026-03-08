@@ -138,6 +138,7 @@ struct AccessoryShopView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var companionService = SquirrelCompanionService.shared
     @State private var acornLedger = AcornService.shared
+    @State private var currentBalance: Int = 0
 
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
@@ -152,7 +153,7 @@ struct AccessoryShopView: View {
                             Text("🌰")
                                 .font(.title2)
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("\(acornLedger.currentBalance) acorns available")
+                                Text("\(currentBalance) acorns available")
                                     .font(.headline)
                                     .foregroundStyle(theme.textColor)
                                 Text("Earn more by capturing thoughts")
@@ -226,6 +227,9 @@ struct AccessoryShopView: View {
                     Button("Done") { dismiss() }
                 }
             }
+            .task {
+                currentBalance = await acornLedger.currentBalance
+            }
         }
     }
 
@@ -233,7 +237,7 @@ struct AccessoryShopView: View {
     private func accessoryRow(_ accessory: SquirrelAccessory, theme: any ThemeVariant) -> some View {
         let isOwned = companionService.isOwned(accessory)
         let isEquipped = companionService.equippedAccessoryId == accessory.id
-        let canAfford = acornLedger.currentBalance >= accessory.cost
+        let canAfford = currentBalance >= accessory.cost
 
         HStack(spacing: 12) {
             Text(accessory.emoji)
@@ -273,7 +277,10 @@ struct AccessoryShopView: View {
                 .tint(theme.primaryColor)
             } else if accessory.isForSale {
                 Button("Buy") {
-                    _ = companionService.purchase(accessory)
+                    _Concurrency.Task {
+                        _ = await companionService.purchase(accessory)
+                        currentBalance = await acornLedger.currentBalance
+                    }
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.small)

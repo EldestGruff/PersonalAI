@@ -10,9 +10,9 @@
 //  - Lifetime stats (totalCaptureDays) never reset
 //  - Milestone events fire acorn rewards + are available for squirrelsona reactions
 //
-//  This service maintains its own UserDefaults-backed state so streak info
-//  is instantly available without querying CoreData. The ChartDataService
-//  continues to compute streak history for the Insights visualization.
+//  Phase 3B: Migrated to SyncedDefaults (iCloud KV Store) for cross-device sync.
+//  External changes are merged with max-take strategy for numeric values
+//  and union strategy for milestone sets.
 //
 
 import Foundation
@@ -52,8 +52,9 @@ struct StreakUpdate {
 
 /// Live, game-layer streak tracker with ADHD-first grace day logic.
 ///
-/// The streak counter lives here, in UserDefaults, so it's available
-/// instantly at app launch without hitting CoreData.
+/// The streak counter syncs via iCloud KV Store so it's available
+/// instantly at app launch without hitting CoreData, and stays consistent
+/// across all the user's devices.
 ///
 /// Grace day logic:
 /// - Each week (Mon–Sun) the user gets one free missed day.
@@ -71,7 +72,7 @@ final class StreakTracker {
     private(set) var longestStreak: Int
     private(set) var totalCaptureDays: Int
 
-    // MARK: - UserDefaults Keys
+    // MARK: - Keys
 
     private enum Keys {
         static let currentStreak      = "streak.current"
@@ -82,14 +83,28 @@ final class StreakTracker {
         static let milestonesAwarded  = "streak.milestonesAwarded" // [Int] of milestone rawValues already fired
     }
 
-    private let defaults = UserDefaults.standard
+    private let defaults = SyncedDefaults.shared
+
+    // In-memory milestone set — required for correct union-merge when external change arrives
+    // before local write has propagated. Keeps the pre-change local state available.
+    private var awardedMilestones: Set<Int>
 
     // MARK: - Initialization
 
     private init() {
-        currentStreak    = defaults.integer(forKey: Keys.currentStreak)
-        longestStreak    = defaults.integer(forKey: Keys.longestStreak)
-        totalCaptureDays = defaults.integer(forKey: Keys.totalCaptureDays)
+        currentStreak    = SyncedDefaults.shared.integer(forKey: Keys.currentStreak)
+        longestStreak    = SyncedDefaults.shared.integer(forKey: Keys.longestStreak)
+        totalCaptureDays = SyncedDefaults.shared.integer(forKey: Keys.totalCaptureDays)
+        let stored = (SyncedDefaults.shared.object(forKey: Keys.milestonesAwarded) as? [Int]) ?? []
+        awardedMilestones = Set(stored)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleExternalChange(_:)),
+            name: .syncedDefaultsDidChangeExternally,
+            object: nil
+        )
+
         validateStreak()
     }
 
@@ -341,12 +356,44 @@ final class StreakTracker {
 
     private func checkMilestone(newStreak: Int) -> StreakMilestone? {
         guard let milestone = StreakMilestone.from(newStreak) else { return nil }
+        guard !awardedMilestones.contains(milestone.rawValue) else { return nil }
 
-        var awarded = (defaults.array(forKey: Keys.milestonesAwarded) as? [Int]) ?? []
-        guard !awarded.contains(milestone.rawValue) else { return nil }
-
-        awarded.append(milestone.rawValue)
-        defaults.set(awarded, forKey: Keys.milestonesAwarded)
+        awardedMilestones.insert(milestone.rawValue)
+        defaults.set(Array(awardedMilestones), forKey: Keys.milestonesAwarded)
         return milestone
+    }
+
+    // MARK: - External Change Handler
+
+    @objc private func handleExternalChange(_ notification: Notification) {
+        guard let changedKeys = notification.userInfo?["changedKeys"] as? [String] else { return }
+
+        if changedKeys.contains(Keys.currentStreak) {
+            let remote = defaults.integer(forKey: Keys.currentStreak)
+            if remote > currentStreak {
+                currentStreak = remote
+            }
+        }
+        if changedKeys.contains(Keys.longestStreak) {
+            let remote = defaults.integer(forKey: Keys.longestStreak)
+            if remote > longestStreak {
+                longestStreak = remote
+            }
+        }
+        if changedKeys.contains(Keys.totalCaptureDays) {
+            let remote = defaults.integer(forKey: Keys.totalCaptureDays)
+            if remote > totalCaptureDays {
+                totalCaptureDays = remote
+            }
+        }
+        if changedKeys.contains(Keys.milestonesAwarded) {
+            // Union — never lose a milestone. Merge remote with in-memory local set.
+            let remote = Set((defaults.object(forKey: Keys.milestonesAwarded) as? [Int]) ?? [])
+            let union = awardedMilestones.union(remote)
+            if union != awardedMilestones {
+                awardedMilestones = union
+                defaults.set(Array(union), forKey: Keys.milestonesAwarded)
+            }
+        }
     }
 }

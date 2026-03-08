@@ -30,6 +30,7 @@ struct BrowseScreen: View {
     @State private var bulkTagInput: String = ""
     @State private var themeEngine = ThemeEngine.shared
     private let acornLedger = AcornLedger.shared
+    @State private var currentAcornBalance: Int = 0
     private let streakTracker = StreakTracker.shared
     private let personaService = PersonaService.shared
 
@@ -131,6 +132,7 @@ struct BrowseScreen: View {
             }
             .task {
                 await viewModel.loadThoughts()
+                currentAcornBalance = await currentAcornBalance
             }
             .confirmationDialog(
                 "Delete this thought?",
@@ -187,7 +189,7 @@ struct BrowseScreen: View {
                 HStack(spacing: 10) {
                     HStack(spacing: 3) {
                         Text("🌰")
-                        Text("\(acornLedger.currentBalance)")
+                        Text("\(currentAcornBalance)")
                             .fontWeight(.semibold)
                             .foregroundStyle(theme.textColor)
                     }
@@ -207,7 +209,7 @@ struct BrowseScreen: View {
                 }
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("\(acornLedger.currentBalance) acorns, \(streakTracker.currentStreak) day streak. Tap to view achievements.")
+            .accessibilityLabel("\(currentAcornBalance) acorns, \(streakTracker.currentStreak) day streak. Tap to view achievements.")
             .sheet(isPresented: $showAchievements) {
                 AchievementsScreen(
                     viewModel: AchievementsViewModel(thoughtService: viewModel.thoughtService)

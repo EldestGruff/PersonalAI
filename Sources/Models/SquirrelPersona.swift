@@ -174,7 +174,8 @@ extension SquirrelPersona {
 
 // MARK: - Persona Service
 
-/// Service for managing squirrel personas
+/// Service for managing squirrel personas.
+/// Custom personas and default persona ID sync via iCloud KV Store.
 @MainActor
 class PersonaService: ObservableObject {
     static let shared = PersonaService()
@@ -184,10 +185,18 @@ class PersonaService: ObservableObject {
 
     private let userDefaultsKey = "squirrel_personas"
     private let defaultPersonaKey = "default_persona_id"
+    private let defaults = SyncedDefaults.shared
 
     init() {
         loadCustomPersonas()
         loadDefaultPersonaId()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleExternalChange(_:)),
+            name: .syncedDefaultsDidChangeExternally,
+            object: nil
+        )
     }
 
     /// All personas (built-in + custom)
@@ -208,7 +217,7 @@ class PersonaService: ObservableObject {
     /// Set default persona
     func setDefaultPersona(_ persona: SquirrelPersona) {
         defaultPersonaId = persona.id
-        UserDefaults.standard.set(persona.id.uuidString, forKey: defaultPersonaKey)
+        defaults.set(persona.id.uuidString, forKey: defaultPersonaKey)
     }
 
     /// Create custom persona
@@ -254,7 +263,7 @@ class PersonaService: ObservableObject {
     // MARK: - Persistence
 
     private func loadCustomPersonas() {
-        guard let data = UserDefaults.standard.data(forKey: userDefaultsKey) else { return }
+        guard let data = defaults.data(forKey: userDefaultsKey) else { return }
         do {
             customPersonas = try JSONDecoder().decode([SquirrelPersona].self, from: data)
         } catch {
@@ -265,16 +274,41 @@ class PersonaService: ObservableObject {
     private func saveCustomPersonas() {
         do {
             let data = try JSONEncoder().encode(customPersonas)
-            UserDefaults.standard.set(data, forKey: userDefaultsKey)
+            defaults.set(data, forKey: userDefaultsKey)
         } catch {
             print("❌ Failed to save custom personas: \(error)")
         }
     }
 
     private func loadDefaultPersonaId() {
-        if let idString = UserDefaults.standard.string(forKey: defaultPersonaKey),
+        if let idString = defaults.string(forKey: defaultPersonaKey),
            let uuid = UUID(uuidString: idString) {
             defaultPersonaId = uuid
+        }
+    }
+
+    // MARK: - External Change Handler
+
+    @objc private func handleExternalChange(_ notification: Notification) {
+        guard let changedKeys = notification.userInfo?["changedKeys"] as? [String] else { return }
+
+        if changedKeys.contains(userDefaultsKey) {
+            // Merge custom personas by UUID: add remote personas not in local set, never delete
+            guard let data = defaults.data(forKey: userDefaultsKey),
+                  let remote = try? JSONDecoder().decode([SquirrelPersona].self, from: data) else { return }
+            let localIds = Set(customPersonas.map { $0.id })
+            let newRemote = remote.filter { !localIds.contains($0.id) }
+            if !newRemote.isEmpty {
+                customPersonas.append(contentsOf: newRemote)
+                saveCustomPersonas()
+            }
+        }
+        if changedKeys.contains(defaultPersonaKey) {
+            // Last-write-wins for default persona
+            if let idString = defaults.string(forKey: defaultPersonaKey),
+               let uuid = UUID(uuidString: idString) {
+                defaultPersonaId = uuid
+            }
         }
     }
 }

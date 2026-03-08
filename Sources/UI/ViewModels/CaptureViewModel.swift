@@ -481,12 +481,12 @@ final class CaptureViewModel {
 
                 // Award acorns
                 let hadContext = context != nil && context?.location != nil
-                self.lastAcornReward = acornService.processCapture(hadContext: hadContext)
+                self.lastAcornReward = await acornService.processCapture(hadContext: hadContext)
 
                 // Update streak (fire milestone acorn bonus + celebrating state if applicable)
                 let streakUpdate = streakTracker.recordCapture()
                 if let milestone = streakUpdate.milestone {
-                    _ = acornService.processStreakMilestone(days: milestone.rawValue)
+                    _ = await acornService.processStreakMilestone(days: milestone.rawValue)
                     stateEngine.triggerCelebrating()
                 }
 
@@ -497,7 +497,7 @@ final class CaptureViewModel {
                 )
 
                 // Roll for variable reward
-                self.lastVariableReward = variableRewardService.roll()
+                self.lastVariableReward = await variableRewardService.roll()
 
                 // Record capture timestamp for reminder peak-hour analysis
                 var timestamps = (UserDefaults.standard.array(forKey: "capture.timestamps") as? [Double]) ?? []

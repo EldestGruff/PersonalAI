@@ -35,6 +35,9 @@
 		A00000010000000000000288 /* SquirrelCompanionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000287 /* SquirrelCompanionService.swift */; };
 		A0000001000000000000029 /* FineTuningData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000030 /* FineTuningData.swift */; };
 		A00000010000000000000290 /* SquirrelCompanionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000289 /* SquirrelCompanionCard.swift */; };
+		A00000010000000000000291 /* SyncedDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000292 /* SyncedDefaults.swift */; };
+		A00000010000000000000293 /* SyncedDefaultsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000294 /* SyncedDefaultsMigration.swift */; };
+		A00000010000000000000295 /* AcornSpendRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000296 /* AcornSpendRecord.swift */; };
 		A0000001000000000000031 /* SyncQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000032 /* SyncQueue.swift */; };
 		A0000001000000000000033 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000034 /* Enums.swift */; };
 		A0000001000000000000035 /* ModelError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000036 /* ModelError.swift */; };
@@ -194,6 +197,8 @@
 		A00000010000000000000285 /* SquirrelReminderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquirrelReminderService.swift; sourceTree = "<group>"; };
 		A00000010000000000000287 /* SquirrelCompanionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquirrelCompanionService.swift; sourceTree = "<group>"; };
 		A00000010000000000000289 /* SquirrelCompanionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquirrelCompanionCard.swift; sourceTree = "<group>"; };
+		A00000010000000000000292 /* SyncedDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncedDefaults.swift; sourceTree = "<group>"; };
+		A00000010000000000000294 /* SyncedDefaultsMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncedDefaultsMigration.swift; sourceTree = "<group>"; };
 		A0000001000000000000030 /* FineTuningData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningData.swift; sourceTree = "<group>"; };
 		A0000001000000000000032 /* SyncQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncQueue.swift; sourceTree = "<group>"; };
 		A0000001000000000000034 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
@@ -211,6 +216,7 @@
 		A0000001000000000000076 /* TaskEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskEntity.swift; sourceTree = "<group>"; };
 		A0000001000000000000078 /* FineTuningDataEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningDataEntity.swift; sourceTree = "<group>"; };
 		A0000001000000000000080 /* SyncQueueEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncQueueEntity.swift; sourceTree = "<group>"; };
+		A00000010000000000000296 /* AcornSpendRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcornSpendRecord.swift; sourceTree = "<group>"; };
 		A0000001000000000000092 /* ThoughtRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtRepository.swift; sourceTree = "<group>"; };
 		A0000001000000000000094 /* TaskRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskRepository.swift; sourceTree = "<group>"; };
 		A0000001000000000000096 /* FineTuningRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningRepository.swift; sourceTree = "<group>"; };
@@ -487,6 +493,7 @@
 				A0000001000000000000076 /* TaskEntity.swift */,
 				A0000001000000000000078 /* FineTuningDataEntity.swift */,
 				A0000001000000000000080 /* SyncQueueEntity.swift */,
+				A00000010000000000000296 /* AcornSpendRecord.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -512,6 +519,7 @@
 				A0800000000000000000035 /* Orchestration */,
 				A0800000000000000000036 /* Monetization */,
 				A0800000000000000000037 /* Gamification */,
+				A0800000000000000000038 /* Sync */,
 				A1803E152F3145770071D950 /* AI */,
 				A1803E182F3145810071D950 /* Analytics */,
 			);
@@ -604,6 +612,15 @@
 				A00000010000000000000287 /* SquirrelCompanionService.swift */,
 			);
 			path = Gamification;
+			sourceTree = "<group>";
+		};
+		A0800000000000000000038 /* Sync */ = {
+			isa = PBXGroup;
+			children = (
+				A00000010000000000000292 /* SyncedDefaults.swift */,
+				A00000010000000000000294 /* SyncedDefaultsMigration.swift */,
+			);
+			path = Sync;
 			sourceTree = "<group>";
 		};
 		A0800000000000000000040 /* UI */ = {
@@ -1003,6 +1020,9 @@
 				A00000010000000000000290 /* SquirrelCompanionCard.swift in Sources */,
 				A00000010000000000000286 /* SquirrelReminderService.swift in Sources */,
 				A00000010000000000000288 /* SquirrelCompanionService.swift in Sources */,
+				A00000010000000000000291 /* SyncedDefaults.swift in Sources */,
+				A00000010000000000000293 /* SyncedDefaultsMigration.swift in Sources */,
+				A00000010000000000000295 /* AcornSpendRecord.swift in Sources */,
 				A00000010000000000000259 /* AcornToastView.swift in Sources */,
 				A0000001000000000000038 /* Subscription.swift in Sources */,
 				A0000001000000000000039 /* Conversation.swift in Sources */,

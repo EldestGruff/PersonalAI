@@ -11,6 +11,7 @@ struct AcornExplainerStepView: View {
     @State var viewModel: OnboardingViewModel
     @State private var themeEngine = ThemeEngine.shared
     @State private var acornService = AcornService.shared
+    @State private var currentBalance: Int = 0
 
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
@@ -29,7 +30,7 @@ struct AcornExplainerStepView: View {
                     HStack(spacing: 8) {
                         Text("🌰")
                             .font(.title2)
-                        Text("\(acornService.currentBalance)")
+                        Text("\(currentBalance)")
                             .font(.title2)
                             .fontWeight(.bold)
                             .foregroundStyle(theme.textColor)
@@ -90,6 +91,9 @@ struct AcornExplainerStepView: View {
                 .padding(.horizontal, 32)
                 .padding(.bottom, 40)
             }
+        }
+        .task {
+            currentBalance = await acornService.currentBalance
         }
     }
 }

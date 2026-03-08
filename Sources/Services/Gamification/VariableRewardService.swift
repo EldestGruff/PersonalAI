@@ -142,7 +142,7 @@ final class VariableRewardService {
     ///   - Common    : 1/15   (~6.67%)   → roll 9–18
     ///   - Nothing   : ~88%              → roll 19–150
     @discardableResult
-    func roll() -> VRSTier? {
+    func roll() async -> VRSTier? {
         guard !hasRewardedThisSession else { return nil }
 
         let n = Int.random(in: 1...150)
@@ -163,7 +163,7 @@ final class VariableRewardService {
         UserDefaults.standard.set(lifetimeCount, forKey: Keys.lifetimeCount)
 
         // Award acorns via the existing economy layer
-        _ = AcornService.shared.processVariableReward(acorns: tier.acorns)
+        _ = await AcornService.shared.processVariableReward(acorns: tier.acorns)
 
         return tier
     }
