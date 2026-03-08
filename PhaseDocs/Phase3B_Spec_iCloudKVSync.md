@@ -414,10 +414,15 @@ struct SyncedDefaultsMigration {
         let synced = SyncedDefaults.shared
 
         // Migrate each key — only if local value is higher/non-nil and synced is empty
-        // NOTE: acorn.currentBalance is NOT migrated — balance is now derived
-        // from lifetimeEarned minus CloudKit AcornSpendRecord sum.
-        // Existing spend history is not migrated (one-time balance loss accepted
-        // as the price of integrity going forward).
+        // Acorn balance migration: create a synthetic opening-balance spend record
+        // so that derived balance (lifetimeEarned - spendRecords) equals the user's
+        // actual current balance at migration time. This preserves earned acorns.
+        //
+        // e.g. lifetimeEarned=341, currentBalance=241 → synthetic spend record of 100
+        //
+        // After migration, all future spends append real AcornSpendRecords.
+        // The synthetic record is a one-time bridge — never created again.
+        migrateAcornBalance(context: context)
         migrateInt(Keys.acornLifetime, from: local, to: synced)
         migrateInt(Keys.streakCurrent, from: local, to: synced)
         migrateInt(Keys.streakLongest, from: local, to: synced)
@@ -464,6 +469,33 @@ struct SyncedDefaultsMigration {
         synced.set(val, forKey: key)
     }
 
+    /// Creates a synthetic opening-balance AcornSpendRecord so the derived balance
+    /// (lifetimeEarned - sum(spendRecords)) equals the user's actual balance at migration.
+    ///
+    /// Only runs once — guarded by the migration key. If currentBalance == lifetimeEarned
+    /// (user has never spent anything), no record is created.
+    ///
+    /// - Parameter context: The app's main NSManagedObjectContext
+    private static func migrateAcornBalance(context: NSManagedObjectContext) {
+        let local = UserDefaults.standard
+        let lifetimeEarned = local.integer(forKey: Keys.acornLifetime)
+        let currentBalance = local.integer(forKey: "acorn.currentBalance")
+        let totalSpent = lifetimeEarned - currentBalance
+
+        // Nothing to migrate if user has never spent, or data is missing
+        guard lifetimeEarned > 0, totalSpent > 0 else { return }
+
+        // Create a single synthetic record representing all historical spend
+        context.perform {
+            let record = AcornSpendRecord(context: context)
+            record.id = UUID()
+            record.amount = Int32(totalSpent)
+            record.reason = "migration.opening_balance"
+            record.createdAt = Date()
+            try? context.save()
+        }
+    }
+
     // All keys to migrate — must match actual UserDefaults keys in each service
     private enum Keys {
         static let acornLifetime             = "acorn.lifetimeEarned"
@@ -488,9 +520,9 @@ struct SyncedDefaultsMigration {
 }
 ```
 
-Call in `STASHApp.swift` before the view hierarchy initializes:
+Call in `STASHApp.swift` before the view hierarchy initializes, passing the CoreData context:
 ```swift
-SyncedDefaultsMigration.migrateIfNeeded()
+SyncedDefaultsMigration.migrateIfNeeded(context: PersistenceController.shared.container.viewContext)
 ```
 
 ---
@@ -501,7 +533,8 @@ SyncedDefaultsMigration.migrateIfNeeded()
 - [ ] Earn a badge on iPhone → appears in Achievements on iPad
 - [ ] Change theme on iPhone → iPad updates theme
 - [ ] Change default persona on iPhone → iPad reflects it
-- [ ] Existing local acorn/badge data is preserved after update (migration test)
+- [ ] Existing acorn balance preserved after update (migration test: lifetimeEarned=341, currentBalance=241 → synthetic spend record of 100 created, derived balance = 241 ✓)
+- [ ] User who has never spent acorns: no synthetic record created, balance = lifetimeEarned
 - [ ] No double-award of first-capture-of-day bonus when devices sync
 - [ ] App functions normally when iCloud is unavailable (graceful degradation — reads from local KV cache)
 
