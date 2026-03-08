@@ -17,23 +17,28 @@ class ThemeEngine {
     private let themeKey = "selected_theme"
     private let defaults = SyncedDefaults.shared
 
+    /// Backing store — written directly by the external change handler to avoid ping-pong.
+    /// @Observable's didSet doesn't expose oldValue/newValue in macro-generated accessors.
+    private var _currentTheme: ThemeType
+
+    /// The active theme. Setting via this API persists to KV Store.
+    /// External changes write to _currentTheme directly (no write-back loop).
     var currentTheme: ThemeType {
-        didSet {
-            // Guard against no-op writes to prevent KV Store ping-pong between devices.
-            // Without this, handleExternalChange sets currentTheme → didSet fires → writes
-            // the same value back → triggers another external change on the other device.
-            guard oldValue != newValue else { return }
+        get { _currentTheme }
+        set {
+            guard _currentTheme != newValue else { return }
+            _currentTheme = newValue
             saveTheme()
         }
     }
 
     private init() {
-        // Load saved theme or use default
+        // Initialize backing var directly — computed setter isn't usable before init completes
         if let savedTheme = SyncedDefaults.shared.string(forKey: "selected_theme"),
            let theme = ThemeType(rawValue: savedTheme) {
-            self.currentTheme = theme
+            self._currentTheme = theme
         } else {
-            self.currentTheme = .minimalist
+            self._currentTheme = .minimalist
         }
 
         NotificationCenter.default.addObserver(
@@ -68,7 +73,9 @@ class ThemeEngine {
         if changedKeys.contains(themeKey) {
             if let rawValue = defaults.string(forKey: themeKey),
                let theme = ThemeType(rawValue: rawValue) {
-                currentTheme = theme
+                // Write to backing var directly — avoids triggering the computed setter's
+                // saveTheme() call, which would write back to KV Store and ping-pong.
+                _currentTheme = theme
             }
         }
     }
