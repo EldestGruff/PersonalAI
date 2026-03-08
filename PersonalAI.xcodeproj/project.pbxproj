@@ -125,7 +125,6 @@
 		A1F85F6C2F57BA55003C400D /* STASH Watch App Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = A1F85F4C2F57BA54003C400D /* STASH Watch App Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A1F85F822F57C0ED003C400D /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1F85F812F57C0ED003C400D /* WatchConnectivity.framework */; };
 		A1F862232F5926F3003C400D /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1F85F812F57C0ED003C400D /* WatchConnectivity.framework */; };
-		A1F862262F59272D003C400D /* STASH.app in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001 /* STASH.app */; };
 		ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */; };
 /* End PBXBuildFile section */
 
@@ -873,7 +872,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1F862262F59272D003C400D /* STASH.app in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
