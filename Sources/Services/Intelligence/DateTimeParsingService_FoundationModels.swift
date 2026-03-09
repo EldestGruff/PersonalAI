@@ -178,22 +178,35 @@ actor FoundationModelsDateTimeParser {
     }
 
     private func convertToInternal(extracted: ExtractedDateTime, referenceDate: Date) -> ParsedDateTimeInternal {
-        // Parse ISO date if present — model should always return YYYY-MM-DD,
-        // but fall back to NSDataDetector if it returns a relative string anyway
+        // Parse ISO date if present — model should return YYYY-MM-DD.
+        // Always parse in local timezone: extracting just the YYYY-MM-DD portion
+        // prevents ISO8601DateFormatter from treating midnight UTC as the previous
+        // day in negative-offset timezones (e.g. "2026-03-11T00:00:00Z" → Mar 10 ET).
         var date: Date?
         if let dateString = extracted.date {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-            if let parsed = dateFormatter.date(from: dateString) {
+            let localDateFormatter = DateFormatter()
+            localDateFormatter.dateFormat = "yyyy-MM-dd"
+            localDateFormatter.locale = Locale(identifier: "en_US_POSIX")
+            // localDateFormatter uses the device timezone by default — no explicit set needed
+
+            // Extract the YYYY-MM-DD prefix if the model returned a full ISO datetime
+            let datePart: String
+            if dateString.count >= 10,
+               dateString.prefix(4).allSatisfy({ $0.isNumber }),
+               dateString.dropFirst(4).first == "-" {
+                datePart = String(dateString.prefix(10))
+            } else {
+                datePart = dateString
+            }
+
+            if let parsed = localDateFormatter.date(from: datePart) {
                 date = parsed
-            } else if let parsed = ISO8601DateFormatter().date(from: dateString) {
-                date = parsed
+                NSLog("📅 FM date parsed: '\(dateString)' → '\(datePart)' → \(parsed)")
             } else if let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.date.rawValue),
                       let match = detector.firstMatch(in: dateString, range: NSRange(dateString.startIndex..., in: dateString)),
                       let fallback = match.date {
-                // Model returned something like "next Wednesday" — let NSDataDetector resolve it
-                NSLog("⚠️ FM returned non-ISO date '\(dateString)', resolved via NSDataDetector to \(fallback)")
+                // Model returned a relative string like "next Wednesday" — NSDataDetector resolves it
+                NSLog("⚠️ FM returned non-ISO date '\(dateString)', NSDataDetector resolved to \(fallback)")
                 date = fallback
             }
         }
