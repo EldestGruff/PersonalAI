@@ -460,11 +460,22 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
             }
         }
 
+        // Cross-reference against existing tag library — prefer canonical stored forms
+        let canonical = await canonicalizeTags(Array(tags))
+
         // Sort by length (shorter tags first) and limit to 5
-        return Array(tags)
+        return canonical
             .sorted { $0.count < $1.count }
             .prefix(5)
             .map { $0 }
+    }
+
+    /// Maps generated tags to canonical forms from the user's existing tag library.
+    /// If a generated tag is similar to a stored tag, the stored form wins.
+    private func canonicalizeTags(_ tags: [String]) async -> [String] {
+        let existingTags = (try? await ThoughtRepository.shared.fetchAllUniqueTags()) ?? []
+        guard !existingTags.isEmpty else { return tags }
+        return tags.map { TagNormalizationService.canonicalize($0, from: existingTags) }
     }
 
     private func extractKeywords(from candidates: [String]) -> [String] {

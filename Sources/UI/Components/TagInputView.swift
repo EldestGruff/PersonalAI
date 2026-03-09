@@ -30,8 +30,15 @@ struct TagInputView: View {
     /// Maximum number of tags allowed
     var maxTags: Int
 
+    /// Existing tags from the user's full library, used for fuzzy suggestions.
+    /// Leave empty to disable suggestions — no behavior change when empty.
+    var existingTags: [String] = []
+
     /// State for the new tag input
     @State private var newTagText: String = ""
+
+    /// Fuzzy-matched suggestions for the current input text
+    @State private var suggestions: [String] = []
 
     /// Whether the input field is focused
     @SwiftUI.FocusState private var isInputFocused: Bool
@@ -42,12 +49,14 @@ struct TagInputView: View {
         tags: Binding<[String]>,
         onAdd: @escaping (String) -> Void,
         onRemove: @escaping (String) -> Void,
-        maxTags: Int = 5
+        maxTags: Int = 5,
+        existingTags: [String] = []
     ) {
         self._tags = tags
         self.onAdd = onAdd
         self.onRemove = onRemove
         self.maxTags = maxTags
+        self.existingTags = existingTags
     }
 
     var body: some View {
@@ -63,6 +72,25 @@ struct TagInputView: View {
                             isRemovable: true,
                             onRemove: { onRemove(tag) }
                         )
+                    }
+                }
+            }
+
+            // Fuzzy suggestions — shown when typing and existingTags is populated
+            if !suggestions.isEmpty {
+                FlowLayout(spacing: 8) {
+                    ForEach(suggestions, id: \.self) { suggestion in
+                        Button(action: { acceptSuggestion(suggestion) }) {
+                            Text("#\(suggestion)")
+                                .font(.subheadline)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
+                                .background(theme.primaryColor.opacity(0.15))
+                                .foregroundColor(theme.primaryColor)
+                                .cornerRadius(16)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Use tag \(suggestion)")
                     }
                 }
             }
@@ -84,6 +112,9 @@ struct TagInputView: View {
                         .accessibilityIdentifier("addTagTextField")
                         .onSubmit {
                             addTag()
+                        }
+                        .onChange(of: newTagText) { _, newValue in
+                            updateSuggestions(for: newValue)
                         }
 
                     if !newTagText.isEmpty {
@@ -107,6 +138,24 @@ struct TagInputView: View {
         }
     }
 
+    private func updateSuggestions(for query: String) {
+        guard !query.isEmpty, !existingTags.isEmpty else {
+            suggestions = []
+            return
+        }
+        suggestions = TagNormalizationService
+            .fuzzyMatch(query: query, candidates: existingTags)
+            .filter { !tags.contains($0) }
+            .prefix(5)
+            .map { $0 }
+    }
+
+    private func acceptSuggestion(_ suggestion: String) {
+        onAdd(suggestion)
+        newTagText = ""
+        suggestions = []
+    }
+
     private func addTag() {
         let trimmed = newTagText
             .trimmingCharacters(in: .whitespacesAndNewlines)
@@ -116,6 +165,7 @@ struct TagInputView: View {
 
         onAdd(trimmed)
         newTagText = ""
+        suggestions = []
     }
 }
 
