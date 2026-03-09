@@ -132,43 +132,70 @@ actor FoundationModelsDateTimeParser {
     }
 
     private func createPrompt(text: String, referenceDate: Date) -> String {
-        let formatter = ISO8601DateFormatter()
-        let today = formatter.string(from: referenceDate)
+        let cal = Calendar.current
+        let isoFormatter = ISO8601DateFormatter()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
 
-        // Determine current time of day for better context
-        let hour = Calendar.current.component(.hour, from: referenceDate)
+        let today = dateFormatter.string(from: referenceDate)
+        let tomorrow = dateFormatter.string(from: cal.date(byAdding: .day, value: 1, to: referenceDate)!)
+
+        // Pre-compute the next occurrence of each weekday so the model
+        // has concrete examples — never show relative strings like "next Thursday"
+        func nextWeekday(_ weekday: Int) -> String {
+            var components = DateComponents()
+            components.weekday = weekday
+            let next = cal.nextDate(after: referenceDate, matching: components, matchingPolicy: .nextTimePreservingSmallerComponents) ?? referenceDate
+            return dateFormatter.string(from: next)
+        }
+        let nextThursday = nextWeekday(5)
+        let nextWednesday = nextWeekday(4)
+
+        let hour = cal.component(.hour, from: referenceDate)
         let timeContext = hour >= 12 ? "afternoon/evening" : "morning"
 
         return """
         Parse this text: "\(text)"
 
-        Today's date is \(today).
-        Current time context: \(timeContext) (use this to infer AM/PM for ambiguous times)
+        IMPORTANT: Today is \(today). All dates MUST be returned as YYYY-MM-DD (e.g. "\(today)"). \
+        Never return relative strings like "next Wednesday" — compute the actual date.
+
+        Current time context: \(timeContext) — use this to resolve AM/PM for ambiguous times.
 
         Examples:
-        - "today at three" → date: "\(today)", time: "15:00" (afternoon context)
-        - "tomorrow at 2pm" → date: "\(Calendar.current.date(byAdding: .day, value: 1, to: referenceDate)!)", time: "14:00"
-        - "Thursday at 4" → date: "next Thursday", time: "16:00" (afternoon default for single-digit hours)
-        - "meeting at 9" → time: "09:00" if morning context, "21:00" if evening
+        - "today at three" → date: "\(today)", time: "15:00"
+        - "tomorrow at 2pm" → date: "\(tomorrow)", time: "14:00"
+        - "Thursday at 4" → date: "\(nextThursday)", time: "16:00"
+        - "Wednesday at 6:30 PM" → date: "\(nextWednesday)", time: "18:30"
+        - "meeting at 9" → date: "\(today)", time: "09:00" if morning context, "21:00" if evening
 
-        Extract:
-        - date: The date in format YYYY-MM-DD. If text says "today", return "\(today)".
-        - time: The time in 24-hour format HH:MM
-          * For times 1-7 without AM/PM: assume PM (13:00-19:00) unless morning context suggests otherwise
-          * For times 8-12 without AM/PM: assume based on context (8-11 could be AM or PM)
-        - matchedText: The exact date/time phrase from the original text.
-        - confidence: 1.0 if you found date/time, 0.0 if not.
+        Rules:
+        - date MUST be YYYY-MM-DD. Compute it from today (\(today)).
+        - time in 24-hour HH:MM. Times 1–7 without AM/PM → assume PM.
+        - matchedText: the exact phrase from the original text that contains the date/time.
+        - confidence: 1.0 if found, 0.0 if not.
         """
     }
 
     private func convertToInternal(extracted: ExtractedDateTime, referenceDate: Date) -> ParsedDateTimeInternal {
-        // Parse ISO date if present
+        // Parse ISO date if present — model should always return YYYY-MM-DD,
+        // but fall back to NSDataDetector if it returns a relative string anyway
         var date: Date?
         if let dateString = extracted.date {
-            let formatter = ISO8601DateFormatter()
-            date = formatter.date(from: dateString)
-        } else {
-            date = nil
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+            if let parsed = dateFormatter.date(from: dateString) {
+                date = parsed
+            } else if let parsed = ISO8601DateFormatter().date(from: dateString) {
+                date = parsed
+            } else if let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.date.rawValue),
+                      let match = detector.firstMatch(in: dateString, range: NSRange(dateString.startIndex..., in: dateString)),
+                      let fallback = match.date {
+                // Model returned something like "next Wednesday" — let NSDataDetector resolve it
+                NSLog("⚠️ FM returned non-ISO date '\(dateString)', resolved via NSDataDetector to \(fallback)")
+                date = fallback
+            }
         }
 
         // Parse time if present (HH:MM format)
