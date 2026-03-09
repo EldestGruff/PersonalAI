@@ -4,10 +4,11 @@
 //
 //  Issue #58: Apple Watch complications
 //
-//  Three WidgetKit complication families:
+//  Four WidgetKit complication families:
 //    - .accessoryCircular  — circular slot (most watch faces)
 //    - .accessoryRectangular — wide banner slot (Modular, Infograph Modular)
 //    - .accessoryInline    — one-line slot above the time
+//    - .accessoryCorner    — curved corner slot (Infograph)
 //
 //  Tapping any complication opens the Watch app directly.
 //  StaticConfiguration used — no per-user widget configuration.
@@ -72,6 +73,13 @@ struct STASHInlineView: View {
     }
 }
 
+struct STASHCornerView: View {
+    var body: some View {
+        Image(systemName: "brain.head.profile")
+            .widgetLabel("STASH")
+    }
+}
+
 // MARK: - Widget
 
 struct STASHComplicationWidget: Widget {
@@ -85,7 +93,7 @@ struct STASHComplicationWidget: Widget {
         }
         .configurationDisplayName("STASH")
         .description("Tap to capture a thought.")
-        .supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryInline])
+        .supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryInline, .accessoryCorner])
     }
 }
 
@@ -102,6 +110,8 @@ struct STASHComplicationEntryView: View {
             STASHRectangularView()
         case .accessoryInline:
             STASHInlineView()
+        case .accessoryCorner:
+            STASHCornerView()
         default:
             STASHCircularView()
         }
