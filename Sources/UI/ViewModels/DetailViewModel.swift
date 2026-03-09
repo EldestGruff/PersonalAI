@@ -390,6 +390,12 @@ final class DetailViewModel {
                     parsedDateTime: classification.parsedDateTime
                 )
 
+                // Derive due date from explicit override, then parsed date/time, then nil
+                let dueDate: Date? = startDateOverride ?? {
+                    let (date, _) = calculateEventTimes(from: classification.parsedDateTime)
+                    return classification.parsedDateTime?.date != nil ? date : nil
+                }()
+
                 let task = Task(
                     id: UUID(),
                     userId: thought.userId,
@@ -398,7 +404,7 @@ final class DetailViewModel {
                     description: thought.content,
                     priority: .medium,
                     status: .pending,
-                    dueDate: nil,
+                    dueDate: dueDate,
                     estimatedEffortMinutes: 30,
                     createdAt: Date(),
                     updatedAt: Date(),
