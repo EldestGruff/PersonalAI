@@ -365,6 +365,14 @@ actor ThoughtRepository {
             .map { $0 }
     }
 
+    /// Returns all unique tags across all thoughts, sorted alphabetically.
+    /// Deduplication is case-insensitive; the canonical form is lowercase.
+    func fetchAllUniqueTags() async throws -> [String] {
+        let thoughts = try await list(filter: nil)
+        let allTags = thoughts.flatMap { $0.tags }.map { $0.lowercased() }
+        return Array(Set(allTags)).sorted()
+    }
+
     /// Get thought count by hour of day (for heatmap)
     /// Returns array of 24 elements (hour 0-23)
     func aggregateByHourOfDay(
