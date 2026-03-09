@@ -338,7 +338,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     /// Returns a type when a high-confidence keyword pattern matches, bypassing the bias store.
     /// Only the strongest unambiguous signals qualify — user corrections cannot override these.
     private func highSignalType(_ text: String) -> ClassificationType? {
-        let highSignalReminders = ["remind me", "don't forget", "remember to"]
+        let highSignalReminders = ["remind me", "set a reminder", "a reminder", "don't forget", "remember to"]
         if highSignalReminders.contains(where: { text.contains($0) }) { return .reminder }
 
         let highSignalEvents = ["meeting", "appointment"]
