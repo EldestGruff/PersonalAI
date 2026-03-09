@@ -2,8 +2,7 @@
 
 ## Goal
 <!-- What is the ONE thing we're accomplishing this session? Be specific. -->
-Start Phase 3B: medication module + AI intelligence UI.
-Read `PhaseDocs/` spec before writing any code.
+Both Phase 3A and 3B are complete. Decide with Andy what comes next.
 
 
 ## Relevant Files
@@ -32,10 +31,7 @@ Read `PhaseDocs/` spec before writing any code.
 
 ## Context Notes
 <!-- Clear each session — stale context is worse than no context. -->
-Session 2026-03-09:
-- Watch app polish complete (haptics, notification delegate, WidgetKit complications)
-- Complications required a dedicated Widget Extension target — inline WidgetBundle without @main is not auto-discovered by watchOS
-- Widget Extension needs SUPPORTED_PLATFORMS = "watchos watchsimulator" in pbxproj (doesn't inherit correctly from Watch app target)
-- watchOS 26 device installation broken (known Apple bug) — use TestFlight or simulator
-- Acorn balance bug fixed (was self-assigning instead of fetching from AcornLedger)
-- dev-methodology session ritual now active (this file + Stop hook)
+Session 2026-03-09 (session 2):
+- Discovered Phase 3B (iCloud KV sync) is already fully implemented and merged to main
+- CLAUDE.md and TASK.md updated to reflect actual state
+- Next development direction: ask Andy

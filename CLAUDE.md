@@ -12,9 +12,9 @@ If TASK.md is empty or stale, ask Andy what we're working on before proceeding.
 
 ## Active Phase
 <!-- UPDATE THIS EACH SESSION -->
-Phase: 3A complete | Next: 3B medication module + AI intelligence UI
+Phase: 3A + 3B complete | Next: TBD (ask Andy)
 Branch: (update when active)
-Last decision: (update when active)
+Last decision: 2026-03-07 — Acorn balance via CloudKit ledger + iCloud KV sync complete
 Full phase docs: `PhaseDocs/` | Architecture: `docs/development/`
 
 ## Workflow Rules
