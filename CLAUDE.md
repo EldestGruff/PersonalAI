@@ -5,6 +5,11 @@ iOS thought-capture app. Offline-first SwiftUI. Squirrelsona companion system.
 Backend API: https://ai.gruff.icu (deployed, not active dev — treat as infrastructure).
 Xcode project: `PersonalAI.xcodeproj` | Swift 6.0+ | iOS 18+ target
 
+## Session Start — Read This First
+At the start of every session, read `TASK.md` in the project root.
+It contains the session goal, relevant files, constraints, and done-when criteria.
+If TASK.md is empty or stale, ask Andy what we're working on before proceeding.
+
 ## Active Phase
 <!-- UPDATE THIS EACH SESSION -->
 Phase: 3A complete | Next: 3B medication module + AI intelligence UI
