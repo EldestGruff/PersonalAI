@@ -177,6 +177,9 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
             model = "nlp-heuristic-v1"
         }
 
+        // Post-process: cap reminder/event sentiment at Neutral unless genuinely emotional (#65)
+        sentiment = postProcessSentiment(type: type, sentiment: sentiment, content: content)
+
         // Run language detection and date/time parsing in parallel (still needed)
         async let languageResult = nlpService.detectLanguage(content)
         async let dateTimeResult = dateTimeParser.parseDateTime(content, referenceDate: Date())
@@ -218,6 +221,12 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
 
     private func classifyType(_ content: String) async -> ClassificationType {
         let lowercased = content.lowercased()
+
+        // High-signal short-circuit: top-tier keyword matches bypass the bias store (#66)
+        if let highSignal = highSignalType(lowercased) {
+            return highSignal
+        }
+
         let pattern = ClassificationBiasStore.extractPattern(from: lowercased)
         let bias = ClassificationBiasStore.shared
 
@@ -316,6 +325,21 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
         return questionStarters.contains(String(firstWord))
     }
 
+    /// Returns a type when a high-confidence keyword pattern matches, bypassing the bias store.
+    /// Only the strongest unambiguous signals qualify — user corrections cannot override these.
+    private func highSignalType(_ text: String) -> ClassificationType? {
+        let highSignalReminders = ["remind me", "don't forget", "remember to"]
+        if highSignalReminders.contains(where: { text.contains($0) }) { return .reminder }
+
+        let highSignalEvents = ["meeting", "appointment"]
+        if highSignalEvents.contains(where: { text.contains($0) }) { return .event }
+
+        let highSignalIdeas = ["what if", "idea:"]
+        if highSignalIdeas.contains(where: { text.contains($0) }) { return .idea }
+
+        return nil
+    }
+
     private func containsIdeaIndicators(_ text: String) -> Bool {
         let ideaPatterns = [
             "what if",
@@ -332,6 +356,28 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
         ]
 
         return ideaPatterns.contains { text.contains($0) }
+    }
+
+    /// Corrects spurious negative sentiment on reminder and event thoughts.
+    ///
+    /// NLP reads transactional words ("pay", "rent", "dentist") as negative. Only
+    /// genuine emotional language (e.g. "stressed", "dreading") should keep the
+    /// negative classification on logistical thought types. (#65)
+    private func postProcessSentiment(
+        type: ClassificationType,
+        sentiment: Sentiment,
+        content: String
+    ) -> Sentiment {
+        guard type == .reminder || type == .event else { return sentiment }
+        guard sentiment == .negative || sentiment == .very_negative else { return sentiment }
+
+        let lowercased = content.lowercased()
+        let emotionalMarkers = [
+            "stressed", "anxious", "worried", "scared",
+            "hate", "dread", "dreading", "overwhelmed",
+            "terrible", "awful"
+        ]
+        return emotionalMarkers.contains(where: { lowercased.contains($0) }) ? sentiment : .neutral
     }
 
     // MARK: - Confidence Calculation
