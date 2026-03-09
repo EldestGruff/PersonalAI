@@ -126,11 +126,6 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     private func performClassification(_ content: String) async -> Classification {
         let startTime = Date()
 
-        // High-signal short-circuit: guaranteed type overrides both Foundation Models and
-        // the keyword fallback. Checked first so bias-store penalties and model variance
-        // cannot affect unambiguous user intent (#66).
-        let forcedType = highSignalType(content.lowercased())
-
         // PRIMARY (iOS 26): Use Foundation Models for intelligent classification
         // This replaces hardcoded keyword patterns with AI that understands intent
         if foundationModelsClassifier == nil {
@@ -180,11 +175,6 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
             tags = await generateTags(content: content, entities: entities)
             confidence = calculateConfidence(type: type, content: content)
             model = "nlp-heuristic-v1"
-        }
-
-        // Apply forced type from high-signal keywords — overrides FM and heuristic paths (#66)
-        if let forced = forcedType {
-            type = forced
         }
 
         // Post-process: cap reminder/event sentiment at Neutral unless genuinely emotional (#65)
@@ -338,7 +328,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     /// Returns a type when a high-confidence keyword pattern matches, bypassing the bias store.
     /// Only the strongest unambiguous signals qualify — user corrections cannot override these.
     private func highSignalType(_ text: String) -> ClassificationType? {
-        let highSignalReminders = ["remind me", "set a reminder", "a reminder", "don't forget", "remember to"]
+        let highSignalReminders = ["remind me", "don't forget", "remember to"]
         if highSignalReminders.contains(where: { text.contains($0) }) { return .reminder }
 
         let highSignalEvents = ["meeting", "appointment"]

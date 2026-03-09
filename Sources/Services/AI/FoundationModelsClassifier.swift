@@ -63,51 +63,50 @@ actor FoundationModelsClassifier {
 
         session = LanguageModelSession(
             instructions: """
-            You are an expert at analyzing personal thoughts and categorizing them accurately.
+            You are an expert at understanding the intent behind personal thoughts and capturing them accurately.
 
-            Thought Types:
-            - note: Reference information, observations, facts, things to remember
-            - idea: Creative thoughts, possibilities, innovations, brainstorming
-            - task: Action items, to-dos, things to accomplish, responsibilities
-            - event: Time-based activities, meetings, appointments, scheduled items
-            - question: Things to research, answer, or investigate
+            ## Thought Types
 
-            Sentiment Analysis (CRITICAL):
-            Range: -1.0 (very negative) to +1.0 (very positive)
+            **task** — The user wants to DO something or be REMINDED to do something.
+            The user is the agent. Time references are incidental.
+            Examples:
+            - "remind me to call mom" → task
+            - "set a reminder for 9am tomorrow" → task (explicit reminder request, time is just when)
+            - "I'd like to set a reminder and see what tomorrow looks like at 9" → task
+            - "need to pick up groceries" → task
+            - "don't forget to pay rent" → task
 
-            NEUTRAL (0.0 to ±0.2) - Most thoughts:
-            - Tasks and reminders: "Need to finish the report"
-            - Factual observations: "Meeting ran 30 minutes over"
-            - Sarcasm: "Great, another meeting"
-            - Dry humor: "Of course the build failed"
-            - Plans: "Should probably update the docs"
+            **event** — Something is HAPPENING, typically involving others or a location.
+            The user is a participant, not the initiator of a personal action.
+            Examples:
+            - "meeting with Sarah at 3pm" → event
+            - "dentist appointment Thursday" → event
+            - "team standup tomorrow morning" → event
 
-            NEGATIVE (-0.3 to -1.0) - Genuine distress only:
-            - "Feeling overwhelmed and stressed" → -0.6
-            - "I'm frustrated with how this is going" → -0.5
-            - "This is making me anxious" → -0.6
-            - "Disappointed with the outcome" → -0.4
-            - "Terrible day, everything went wrong" → -0.8
+            **Key distinction:** If the user says "reminder", "remind me", "don't forget", or "set a reminder" — it is always a task, even if a time is mentioned. Time references on tasks indicate *when* the reminder should fire, not that it's a calendar event.
 
-            POSITIVE (+0.3 to +1.0) - Genuine joy only:
-            - "Love the direction this is heading" → 0.5
-            - "So excited about the new feature!" → 0.7
-            - "Proud of what we accomplished" → 0.6
-            - "Feeling grateful today" → 0.5
-            - "This is amazing!" → 0.8
+            **note** — Observations, facts, reference information, things to remember passively.
+            **idea** — Creative possibilities, brainstorms, "what if" thinking.
+            **question** — Genuine inquiry or wondering.
 
-            Key: Words like "stressed", "overwhelmed", "frustrated", "anxious" = NEGATIVE
-            Words like "love", "excited", "proud", "grateful", "amazing" = POSITIVE
-            Everything else = NEUTRAL
+            Default to "note" if the intent is unclear.
 
-            Guidelines:
-            1. Classify based on primary intent (a task might mention an event, but classify by main purpose)
-            2. Provide 3-5 relevant, specific tags that capture key themes
-            3. Be conservative with sentiment - when in doubt, lean toward neutral
-            4. Be accurate with confidence scores (0.0 to 1.0)
-            5. Consider context when provided (location, energy, focus state)
+            ## Sentiment
 
-            Be concise, accurate, and helpful.
+            Range: -1.0 (very negative) to +1.0 (very positive). Most thoughts are neutral.
+
+            NEUTRAL (±0.2): Tasks, reminders, plans, factual observations, sarcasm, dry humor.
+            NEGATIVE (-0.3 to -1.0): Only genuine emotional distress — "overwhelmed", "frustrated", "anxious", "terrible day".
+            POSITIVE (+0.3 to +1.0): Only genuine joy — "excited", "proud", "love this", "amazing".
+
+            Transactional words ("pay", "rent", "dentist") are NOT negative — they are neutral logistics.
+
+            ## Guidelines
+
+            1. Intent over keywords — classify what the user MEANS, not what words appear
+            2. If in doubt between task and event: ask "is the user initiating an action?" → task; "is something happening to/around them?" → event
+            3. Be conservative with sentiment — default to neutral
+            4. Provide 3-5 specific, relevant tags (lowercase, hyphenated)
             """
         )
     }
