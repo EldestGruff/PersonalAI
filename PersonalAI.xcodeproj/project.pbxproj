@@ -107,6 +107,9 @@
 		A1803DF12F2FF8750071D950 /* SemanticSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803DEE2F2FF8750071D950 /* SemanticSearchService.swift */; };
 		A1803DF32F3047FF0071D950 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A1803DF22F3047FF0071D950 /* PrivacyInfo.xcprivacy */; };
 		A1803E282F327EC60071D950 /* AIInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1803E272F327EC60071D950 /* AIInsightsView.swift */; };
+		A18F63162F5F0E9F005A6F59 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18F63152F5F0E9F005A6F59 /* WidgetKit.framework */; };
+		A18F63182F5F0E9F005A6F59 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18F63172F5F0E9F005A6F59 /* SwiftUI.framework */; };
+		A18F63272F5F0EA0005A6F59 /* STASH Watch ComplicationsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A18F63142F5F0E9F005A6F59 /* STASH Watch ComplicationsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A1A6326A2F33A8B900DA552B /* ConversationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632692F33A8B900DA552B /* ConversationScreen.swift */; };
 		A1A6326B2F33A8B900DA552B /* AppleIntelligenceRequiredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A632682F33A8B900DA552B /* AppleIntelligenceRequiredView.swift */; };
 		A1A6326D2F33A8CF00DA552B /* ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A6326C2F33A8CF00DA552B /* ConversationViewModel.swift */; };
@@ -133,6 +136,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		A18F63252F5F0EA0005A6F59 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A0800000000000000000000 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A18F63132F5F0E9F005A6F59;
+			remoteInfo = "STASH Watch ComplicationsExtension";
+		};
 		A1F85F592F57BA55003C400D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A0800000000000000000000 /* Project object */;
@@ -157,6 +167,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		A18F63282F5F0EA0005A6F59 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A18F63272F5F0EA0005A6F59 /* STASH Watch ComplicationsExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A1F85F6D2F57BA55003C400D /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -272,6 +293,9 @@
 		A1803DEF2F2FF8750071D950 /* SmartInsightsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartInsightsService.swift; sourceTree = "<group>"; };
 		A1803DF22F3047FF0071D950 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A1803E272F327EC60071D950 /* AIInsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInsightsView.swift; sourceTree = "<group>"; };
+		A18F63142F5F0E9F005A6F59 /* STASH Watch ComplicationsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "STASH Watch ComplicationsExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A18F63152F5F0E9F005A6F59 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		A18F63172F5F0E9F005A6F59 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		A1A632682F33A8B900DA552B /* AppleIntelligenceRequiredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntelligenceRequiredView.swift; sourceTree = "<group>"; };
 		A1A632692F33A8B900DA552B /* ConversationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationScreen.swift; sourceTree = "<group>"; };
 		A1A6326C2F33A8CF00DA552B /* ConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewModel.swift; sourceTree = "<group>"; };
@@ -298,6 +322,16 @@
 		A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsAnalyzer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A18F632B2F5F0EA0005A6F59 /* Exceptions for "STASH Watch Complications" folder in "STASH Watch ComplicationsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A18F63132F5F0E9F005A6F59 /* STASH Watch ComplicationsExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A1803D4E2F270E6C0071D950 /* Assets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -322,6 +356,14 @@
 		A1803E1F2F31459D0071D950 /* Charts */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Charts;
+			sourceTree = "<group>";
+		};
+		A18F63192F5F0E9F005A6F59 /* STASH Watch Complications */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A18F632B2F5F0EA0005A6F59 /* Exceptions for "STASH Watch Complications" folder in "STASH Watch ComplicationsExtension" target */,
+			);
+			path = "STASH Watch Complications";
 			sourceTree = "<group>";
 		};
 		A1B3B3A82F47D935005B3C62 /* Onboarding */ = {
@@ -372,6 +414,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A18F63112F5F0E9F005A6F59 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A18F63182F5F0E9F005A6F59 /* SwiftUI.framework in Frameworks */,
+				A18F63162F5F0E9F005A6F59 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A1F85F492F57BA54003C400D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -407,6 +458,7 @@
 				A1F85F4D2F57BA54003C400D /* STASH Watch App Watch App */,
 				A1F85F5B2F57BA55003C400D /* STASH Watch App Watch AppTests */,
 				A1F85F652F57BA55003C400D /* STASH Watch App Watch AppUITests */,
+				A18F63192F5F0E9F005A6F59 /* STASH Watch Complications */,
 				A0800000000000000000003 /* Products */,
 				A1803D4E2F270E6C0071D950 /* Assets */,
 				A1803DF22F3047FF0071D950 /* PrivacyInfo.xcprivacy */,
@@ -435,6 +487,7 @@
 				A1F85F4C2F57BA54003C400D /* STASH Watch App Watch App.app */,
 				A1F85F582F57BA55003C400D /* STASH Watch App Watch AppTests.xctest */,
 				A1F85F622F57BA55003C400D /* STASH Watch App Watch AppUITests.xctest */,
+				A18F63142F5F0E9F005A6F59 /* STASH Watch ComplicationsExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -719,6 +772,8 @@
 			isa = PBXGroup;
 			children = (
 				A1F85F812F57C0ED003C400D /* WatchConnectivity.framework */,
+				A18F63152F5F0E9F005A6F59 /* WidgetKit.framework */,
+				A18F63172F5F0E9F005A6F59 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -760,6 +815,28 @@
 			productReference = A1000000000000000000001 /* STASH.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A18F63132F5F0E9F005A6F59 /* STASH Watch ComplicationsExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A18F632C2F5F0EA0005A6F59 /* Build configuration list for PBXNativeTarget "STASH Watch ComplicationsExtension" */;
+			buildPhases = (
+				A18F63102F5F0E9F005A6F59 /* Sources */,
+				A18F63112F5F0E9F005A6F59 /* Frameworks */,
+				A18F63122F5F0E9F005A6F59 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A18F63192F5F0E9F005A6F59 /* STASH Watch Complications */,
+			);
+			name = "STASH Watch ComplicationsExtension";
+			packageProductDependencies = (
+			);
+			productName = "STASH Watch ComplicationsExtension";
+			productReference = A18F63142F5F0E9F005A6F59 /* STASH Watch ComplicationsExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		A1F85F4B2F57BA54003C400D /* STASH Watch App Watch App */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1F85F742F57BA55003C400D /* Build configuration list for PBXNativeTarget "STASH Watch App Watch App" */;
@@ -767,10 +844,12 @@
 				A1F85F482F57BA54003C400D /* Sources */,
 				A1F85F492F57BA54003C400D /* Frameworks */,
 				A1F85F4A2F57BA54003C400D /* Resources */,
+				A18F63282F5F0EA0005A6F59 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A18F63262F5F0EA0005A6F59 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A1F85F4D2F57BA54003C400D /* STASH Watch App Watch App */,
@@ -841,6 +920,9 @@
 					A0700000000000000000001 = {
 						CreatedOnToolsVersion = 16.0;
 					};
+					A18F63132F5F0E9F005A6F59 = {
+						CreatedOnToolsVersion = 26.3;
+					};
 					A1F85F4B2F57BA54003C400D = {
 						CreatedOnToolsVersion = 26.3;
 					};
@@ -875,6 +957,7 @@
 				A1F85F4B2F57BA54003C400D /* STASH Watch App Watch App */,
 				A1F85F572F57BA55003C400D /* STASH Watch App Watch AppTests */,
 				A1F85F612F57BA55003C400D /* STASH Watch App Watch AppUITests */,
+				A18F63132F5F0E9F005A6F59 /* STASH Watch ComplicationsExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -886,6 +969,13 @@
 			files = (
 				A1803DF32F3047FF0071D950 /* PrivacyInfo.xcprivacy in Resources */,
 				A0000001000000000000003 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A18F63122F5F0E9F005A6F59 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1036,6 +1126,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A18F63102F5F0E9F005A6F59 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A1F85F482F57BA54003C400D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1060,6 +1157,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		A18F63262F5F0EA0005A6F59 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A18F63132F5F0E9F005A6F59 /* STASH Watch ComplicationsExtension */;
+			targetProxy = A18F63252F5F0EA0005A6F59 /* PBXContainerItemProxy */;
+		};
 		A1F85F5A2F57BA55003C400D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A1F85F4B2F57BA54003C400D /* STASH Watch App Watch App */;
@@ -1309,6 +1411,78 @@
 			};
 			name = Release;
 		};
+		A18F63292F5F0EA0005A6F59 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3RJ4WFRA6W;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "STASH Watch Complications/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "STASH Watch Complications";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.withershins.stash.watchkitapp.STASH-Watch-Complications";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		A18F632A2F5F0EA0005A6F59 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3RJ4WFRA6W;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "STASH Watch Complications/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "STASH Watch Complications";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.withershins.stash.watchkitapp.STASH-Watch-Complications";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
 		A1F85F6E2F57BA55003C400D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1498,6 +1672,15 @@
 			buildConfigurations = (
 				A0700000000000000000003 /* Debug */,
 				A0700000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A18F632C2F5F0EA0005A6F59 /* Build configuration list for PBXNativeTarget "STASH Watch ComplicationsExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A18F63292F5F0EA0005A6F59 /* Debug */,
+				A18F632A2F5F0EA0005A6F59 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

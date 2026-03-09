@@ -1,6 +1,6 @@
 //
 //  STASHComplications.swift
-//  STASH Watch App
+//  STASH Watch Complications
 //
 //  Issue #58: Apple Watch complications
 //
@@ -11,9 +11,6 @@
 //
 //  Tapping any complication opens the Watch app directly.
 //  StaticConfiguration used — no per-user widget configuration.
-//
-//  watchOS discovers this WidgetBundle automatically alongside the @main App
-//  when the file is in the same fileSystemSynchronizedGroups target.
 //
 
 import WidgetKit
@@ -108,13 +105,5 @@ struct STASHComplicationEntryView: View {
         default:
             STASHCircularView()
         }
-    }
-}
-
-// MARK: - Widget Bundle (auto-discovered by watchOS runtime)
-
-struct STASHComplicationBundle: WidgetBundle {
-    var body: some Widget {
-        STASHComplicationWidget()
     }
 }
