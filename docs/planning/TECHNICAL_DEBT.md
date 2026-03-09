@@ -1,6 +1,6 @@
 # Technical Debt & Implementation Notes
 
-**Last Updated:** 2026-01-20
+**Last Updated:** 2026-03-09
 
 ## Purpose
 
@@ -258,6 +258,19 @@ Track technical debt, known issues, workarounds, and areas needing refactoring. 
 - **Learning:** The user's own tag history is the best normalization signal available. Fuzzy matching against existing tags should be the first step before creating anything new.
 - **Applied:** GitHub Issue filed — implement `TagNormalizationService` with fuzzy matching (prefix, contains, Levenshtein, hyphen/space normalization). Surface suggestions in `TagInputView` as user types. Cross-reference in `ClassificationService` before returning suggested tags.
 - **Location:** `Sources/UI/Components/TagInputView.swift`, `Sources/Services/Intelligence/ClassificationService.swift`, new `TagNormalizationService.swift`
+
+### LL-007: watchOS 26 Device Installation Bug
+- **Issue:** Apple Watch does not appear in Xcode Devices & Simulators or `devicectl list devices` when paired iPhone is connected via USB on iOS 26.3 / watchOS 26.3. Installing from the Watch app on iPhone fails with "unable to identify the integrity of the application." Affects all Watch models without USB-C (Series 8 and earlier) — no direct cable workaround available for these models.
+- **Learning:** This is a known Apple platform bug documented in the iOS 26 release notes. TestFlight works as a distribution path. Simulator covers all UI/logic verification. The `SUPPORTED_PLATFORMS` build setting on the Widget Extension target must be explicitly set to `"watchos watchsimulator"` — without it, the project-level iOS setting is inherited, causing the extension to build for the wrong platform.
+- **Applied:** `SUPPORTED_PLATFORMS = "watchos watchsimulator"` added to both Debug and Release configs for `STASH Watch ComplicationsExtension` in `project.pbxproj`. Complications moved to a dedicated Widget Extension target (required for watchOS runtime discovery — inline `WidgetBundle` without `@main` in the Watch app target is not auto-discovered).
+- **Location:** `PersonalAI.xcodeproj/project.pbxproj`, `STASH Watch Complications/`
+- **Review:** Retry direct device installation after next Xcode update. If Apple fixes the CoreDevice pairing regression, the Watch should appear automatically without any project changes.
+
+### LL-008: watchOS Waveform Sensitivity
+- **Issue:** Waveform bars in `WatchCaptureView` showed minimal movement during recording — visually flat even with clear speech.
+- **Learning:** `AVAudioRecorder.isMeteringEnabled` defaults to `false`. Without it, `updateMeters()` and `averagePower(forChannel:)` always return silence regardless of actual audio input.
+- **Applied:** `recorder?.isMeteringEnabled = true` added in `WatchSpeechService.startRecording()` before `record()` is called.
+- **Location:** `STASH Watch App Watch App/WatchSpeechService.swift`
 
 ### LL-003: Core Data Attribute Naming
 - **Issue:** Mismatch between Core Data entity attribute names and Swift property names
