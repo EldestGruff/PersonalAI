@@ -50,6 +50,7 @@ actor WatchSpeechService {
         ]
 
         recorder = try AVAudioRecorder(url: url, settings: settings)
+        recorder?.isMeteringEnabled = true
         recorder?.record()
         recordingURL = url
     }
