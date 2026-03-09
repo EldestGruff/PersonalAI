@@ -72,6 +72,7 @@
 		A0000001000000000000146 /* PhoneConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000145 /* PhoneConnectivityManager.swift */; };
 		A0000001000000000000151 /* NLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000152 /* NLPService.swift */; };
 		A0000001000000000000153 /* ClassificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000154 /* ClassificationService.swift */; };
+		A0000001000000000000200 /* TagNormalizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000201 /* TagNormalizationService.swift */; };
 		A0000001000000000000155 /* ClassificationBiasStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000156 /* ClassificationBiasStore.swift */; };
 		A0000001000000000000161 /* ThoughtService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000162 /* ThoughtService.swift */; };
 		A0000001000000000000163 /* TaskService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000164 /* TaskService.swift */; };
@@ -257,6 +258,7 @@
 		A0000001000000000000145 /* PhoneConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneConnectivityManager.swift; sourceTree = "<group>"; };
 		A0000001000000000000152 /* NLPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NLPService.swift; sourceTree = "<group>"; };
 		A0000001000000000000154 /* ClassificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationService.swift; sourceTree = "<group>"; };
+		A0000001000000000000201 /* TagNormalizationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagNormalizationService.swift; sourceTree = "<group>"; };
 		A0000001000000000000156 /* ClassificationBiasStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationBiasStore.swift; sourceTree = "<group>"; };
 		A0000001000000000000162 /* ThoughtService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtService.swift; sourceTree = "<group>"; };
 		A0000001000000000000164 /* TaskService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskService.swift; sourceTree = "<group>"; };
@@ -616,6 +618,7 @@
 			children = (
 				A0000001000000000000152 /* NLPService.swift */,
 				A0000001000000000000154 /* ClassificationService.swift */,
+				A0000001000000000000201 /* TagNormalizationService.swift */,
 				A0000001000000000000156 /* ClassificationBiasStore.swift */,
 				A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */,
 				A1B77D0E2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift */,
@@ -1059,6 +1062,7 @@
 				A0000001000000000000146 /* PhoneConnectivityManager.swift in Sources */,
 				A0000001000000000000151 /* NLPService.swift in Sources */,
 				A0000001000000000000153 /* ClassificationService.swift in Sources */,
+				A0000001000000000000200 /* TagNormalizationService.swift in Sources */,
 				A0000001000000000000155 /* ClassificationBiasStore.swift in Sources */,
 				A1A6326A2F33A8B900DA552B /* ConversationScreen.swift in Sources */,
 				A1A6326B2F33A8B900DA552B /* AppleIntelligenceRequiredView.swift in Sources */,
