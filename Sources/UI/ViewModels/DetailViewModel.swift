@@ -265,19 +265,10 @@ final class DetailViewModel {
                 }
 
                 // Create updated thought (Thought is immutable, so create new instance)
-                let updated = Thought(
-                    id: thought.id,
-                    userId: thought.userId,
+                let updated = thought.copying(
                     content: trimmedContent,
-                    attributedContent: nil,
                     tags: editedTags,
-                    status: thought.status,
-                    context: thought.context,
-                    createdAt: thought.createdAt,
-                    updatedAt: Date(),
-                    classification: updatedClassification,
-                    relatedThoughtIds: thought.relatedThoughtIds,
-                    taskId: thought.taskId
+                    classification: updatedClassification
                 )
 
                 // Save

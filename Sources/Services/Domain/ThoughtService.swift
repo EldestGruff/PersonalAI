@@ -151,21 +151,9 @@ actor ThoughtService: ThoughtServiceProtocol {
         do {
             let classification = try await classificationService.classify(thought.content)
 
-            // Create updated thought with classification
-            let updated = Thought(
-                id: thought.id,
-                userId: thought.userId,
-                content: thought.content,
-                    attributedContent: nil,
-                tags: thought.tags.isEmpty ? classification.suggestedTags : thought.tags,
-                status: thought.status,
-                context: thought.context,
-                createdAt: thought.createdAt,
-                updatedAt: Date(),
-                classification: classification,
-                relatedThoughtIds: thought.relatedThoughtIds,
-                taskId: thought.taskId
-            )
+            // Build updated thought: preserve user tags if present, otherwise use AI suggestions
+            let tags = thought.tags.isEmpty ? classification.suggestedTags : thought.tags
+            let updated = thought.copying(tags: tags, classification: classification)
 
             try await repository.update(updated)
 
@@ -236,22 +224,8 @@ actor ThoughtService: ThoughtServiceProtocol {
                 .trimmingCharacters(in: .whitespaces)
         }
 
-        // Create normalized thought for validation
-        let normalizedThought = Thought(
-            id: thought.id,
-            userId: thought.userId,
-            content: thought.content,
-                    attributedContent: nil,
-            tags: normalizedTags,
-            status: thought.status,
-            context: thought.context,
-            createdAt: thought.createdAt,
-            updatedAt: thought.updatedAt,
-            classification: thought.classification,
-            relatedThoughtIds: thought.relatedThoughtIds,
-            taskId: thought.taskId,
-            isShiny: thought.isShiny  // Issue #40: Preserve shiny status during updates
-        )
+        // Normalize tags and bump updatedAt in a single copy
+        let normalizedThought = thought.copying(tags: normalizedTags)
 
         // Validate
         try validateThought(normalizedThought)
@@ -261,25 +235,8 @@ actor ThoughtService: ThoughtServiceProtocol {
             throw ServiceError.notFound(entity: "Thought", id: normalizedThought.id)
         }
 
-        // Update with new timestamp
-        let updated = Thought(
-            id: normalizedThought.id,
-            userId: normalizedThought.userId,
-            content: normalizedThought.content,
-                    attributedContent: nil,
-            tags: normalizedTags,
-            status: normalizedThought.status,
-            context: normalizedThought.context,
-            createdAt: normalizedThought.createdAt,
-            updatedAt: Date(),
-            classification: normalizedThought.classification,
-            relatedThoughtIds: normalizedThought.relatedThoughtIds,
-            taskId: normalizedThought.taskId,
-            isShiny: normalizedThought.isShiny  // Issue #40: Preserve shiny status
-        )
-
         do {
-            try await repository.update(updated)
+            try await repository.update(normalizedThought)
         } catch {
             throw ServiceError.persistence(operation: "update thought", underlying: error)
         }
@@ -287,11 +244,11 @@ actor ThoughtService: ThoughtServiceProtocol {
         // Queue for sync
         if configuration.features.enableSync, let syncService {
             _Concurrency.Task {
-                try? await syncService.enqueue(.thought, updated.id, action: .update, payload: nil)
+                try? await syncService.enqueue(.thought, normalizedThought.id, action: .update, payload: nil)
             }
         }
 
-        return updated
+        return normalizedThought
     }
 
     // MARK: - Delete
@@ -377,21 +334,7 @@ actor ThoughtService: ThoughtServiceProtocol {
     func archive(_ ids: [UUID]) async throws {
         for id in ids {
             if let thought = try await fetch(id) {
-                let archived = Thought(
-                    id: thought.id,
-                    userId: thought.userId,
-                    content: thought.content,
-                    attributedContent: nil,
-                    tags: thought.tags,
-                    status: .archived,
-                    context: thought.context,
-                    createdAt: thought.createdAt,
-                    updatedAt: Date(),
-                    classification: thought.classification,
-                    relatedThoughtIds: thought.relatedThoughtIds,
-                    taskId: thought.taskId
-                )
-                _ = try await update(archived)
+                _ = try await update(thought.copying(status: .archived))
 
                 // Track for fine-tuning
                 if configuration.features.enableFineTuningTracking, let fineTuningService {
@@ -407,21 +350,7 @@ actor ThoughtService: ThoughtServiceProtocol {
     func unarchive(_ ids: [UUID]) async throws {
         for id in ids {
             if let thought = try await fetch(id) {
-                let unarchived = Thought(
-                    id: thought.id,
-                    userId: thought.userId,
-                    content: thought.content,
-                    attributedContent: nil,
-                    tags: thought.tags,
-                    status: .active,
-                    context: thought.context,
-                    createdAt: thought.createdAt,
-                    updatedAt: Date(),
-                    classification: thought.classification,
-                    relatedThoughtIds: thought.relatedThoughtIds,
-                    taskId: thought.taskId
-                )
-                _ = try await update(unarchived)
+                _ = try await update(thought.copying(status: .active))
             }
         }
     }
@@ -541,20 +470,7 @@ actor MockThoughtService: ThoughtServiceProtocol {
     func archive(_ ids: [UUID]) async throws {
         for id in ids {
             if let thought = thoughts[id] {
-                thoughts[id] = Thought(
-                    id: thought.id,
-                    userId: thought.userId,
-                    content: thought.content,
-                    attributedContent: nil,
-                    tags: thought.tags,
-                    status: .archived,
-                    context: thought.context,
-                    createdAt: thought.createdAt,
-                    updatedAt: Date(),
-                    classification: thought.classification,
-                    relatedThoughtIds: thought.relatedThoughtIds,
-                    taskId: thought.taskId
-                )
+                thoughts[id] = thought.copying(status: .archived)
             }
         }
     }
@@ -562,20 +478,7 @@ actor MockThoughtService: ThoughtServiceProtocol {
     func unarchive(_ ids: [UUID]) async throws {
         for id in ids {
             if let thought = thoughts[id] {
-                thoughts[id] = Thought(
-                    id: thought.id,
-                    userId: thought.userId,
-                    content: thought.content,
-                    attributedContent: nil,
-                    tags: thought.tags,
-                    status: .active,
-                    context: thought.context,
-                    createdAt: thought.createdAt,
-                    updatedAt: Date(),
-                    classification: thought.classification,
-                    relatedThoughtIds: thought.relatedThoughtIds,
-                    taskId: thought.taskId
-                )
+                thoughts[id] = thought.copying(status: .active)
             }
         }
     }
