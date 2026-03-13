@@ -121,7 +121,7 @@ final class AchievementsViewModel {
 
     private func buildAchievements() -> [Achievement] {
         let awardedMilestones = (UserDefaults.standard.array(
-            forKey: "streak.milestonesAwarded"
+            forKey: AppStorageKeys.Gamification.streakMilestonesAwarded
         ) as? [Int]) ?? []
 
         var list: [Achievement] = []

@@ -356,7 +356,7 @@ actor TaskService: TaskServiceProtocol {
         }
 
         // Get selected reminder list from settings
-        let selectedListId = UserDefaults.standard.string(forKey: "selectedReminderListId")
+        let selectedListId = UserDefaults.standard.string(forKey: AppStorageKeys.Settings.selectedReminderListId)
 
         let reminderId = try await eventKitService.createReminder(
             title: task.title,
@@ -411,7 +411,7 @@ actor TaskService: TaskServiceProtocol {
         }
 
         // Get selected calendar from settings
-        let selectedCalendarId = UserDefaults.standard.string(forKey: "selectedCalendarId")
+        let selectedCalendarId = UserDefaults.standard.string(forKey: AppStorageKeys.Settings.selectedCalendarId)
 
         let eventId = try await eventKitService.createEvent(
             title: task.title,

@@ -206,9 +206,9 @@ struct MainTabView: View {
     /// Checks for pending voice capture flag from OpenVoiceCaptureIntent
     private func checkForPendingVoiceCapture() {
         let defaults = UserDefaults(suiteName: "group.com.withershins.stash")
-        if defaults?.bool(forKey: "pendingVoiceCapture") == true {
+        if defaults?.bool(forKey: AppStorageKeys.AppIntent.pendingVoiceCapture) == true {
             // Clear flag immediately
-            defaults?.set(false, forKey: "pendingVoiceCapture")
+            defaults?.set(false, forKey: AppStorageKeys.AppIntent.pendingVoiceCapture)
             defaults?.synchronize()
 
             // Present voice capture screen

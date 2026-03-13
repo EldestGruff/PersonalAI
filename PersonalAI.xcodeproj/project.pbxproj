@@ -61,6 +61,7 @@
 		A0000001000000000000113 /* ServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000114 /* ServiceError.swift */; };
 		A0000001000000000000115 /* ServiceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000116 /* ServiceConfiguration.swift */; };
 		A0000001000000000000117 /* ServiceContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000118 /* ServiceContainer.swift */; };
+		A0000001000000000000255 /* AppStorageKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000256 /* AppStorageKeys.swift */; };
 		A0000001000000000000119 /* PermissionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000120 /* PermissionCoordinator.swift */; };
 		A0000001000000000000123 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000122 /* SubscriptionManager.swift */; };
 		A0000001000000000000131 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000132 /* LocationService.swift */; };
@@ -247,6 +248,7 @@
 		A0000001000000000000114 /* ServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceError.swift; sourceTree = "<group>"; };
 		A0000001000000000000116 /* ServiceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceConfiguration.swift; sourceTree = "<group>"; };
 		A0000001000000000000118 /* ServiceContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceContainer.swift; sourceTree = "<group>"; };
+		A0000001000000000000256 /* AppStorageKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStorageKeys.swift; sourceTree = "<group>"; };
 		A0000001000000000000120 /* PermissionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionCoordinator.swift; sourceTree = "<group>"; };
 		A0000001000000000000122 /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		A0000001000000000000132 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
@@ -592,6 +594,7 @@
 				A0000001000000000000114 /* ServiceError.swift */,
 				A0000001000000000000116 /* ServiceConfiguration.swift */,
 				A0000001000000000000118 /* ServiceContainer.swift */,
+				A0000001000000000000256 /* AppStorageKeys.swift */,
 				A0000001000000000000120 /* PermissionCoordinator.swift */,
 			);
 			path = Core;
@@ -1044,6 +1047,7 @@
 				A0000001000000000000115 /* ServiceConfiguration.swift in Sources */,
 				A1A632752F33BFD500DA552B /* ThoughtConversationViewModel.swift in Sources */,
 				A0000001000000000000117 /* ServiceContainer.swift in Sources */,
+				A0000001000000000000255 /* AppStorageKeys.swift in Sources */,
 				A1B77D082F3E3CD600F8D6B4 /* VoiceCaptureViewModel.swift in Sources */,
 				A12BCEDE2F5D2A540051F0EA /* AcornSpendRecord+CoreDataProperties.swift in Sources */,
 				A12BCEDF2F5D2A540051F0EA /* AcornSpendRecord+CoreDataClass.swift in Sources */,

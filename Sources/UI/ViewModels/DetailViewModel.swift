@@ -160,7 +160,7 @@ final class DetailViewModel {
         self.contextDisplay = ContextDisplay(from: thought.context)
 
         // Load dismissed state (#33)
-        self.actionPromptDismissed = UserDefaults.standard.bool(forKey: "dismissedActionPrompt_\(thought.id.uuidString)")
+        self.actionPromptDismissed = UserDefaults.standard.bool(forKey: AppStorageKeys.UI.dismissedActionPromptPrefix + thought.id.uuidString)
     }
 
     // MARK: - Feedback Actions
@@ -331,7 +331,7 @@ final class DetailViewModel {
 
     /// Permanently dismisses the action prompt for this thought (#33)
     func dismissActionPrompt() {
-        UserDefaults.standard.set(true, forKey: "dismissedActionPrompt_\(thought.id.uuidString)")
+        UserDefaults.standard.set(true, forKey: AppStorageKeys.UI.dismissedActionPromptPrefix + thought.id.uuidString)
         actionPromptDismissed = true
     }
 
@@ -340,7 +340,7 @@ final class DetailViewModel {
         guard let classification = thought.classification else { return }
         guard !isCreatingTask else { return }
 
-        let autoCreate = UserDefaults.standard.bool(forKey: "autoCreateReminders")
+        let autoCreate = UserDefaults.standard.bool(forKey: AppStorageKeys.Settings.autoCreateReminders)
 
         if autoCreate {
             createReminderOrEvent()

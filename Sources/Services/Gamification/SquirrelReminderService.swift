@@ -300,9 +300,9 @@ final class SquirrelReminderService {
     // MARK: - Settings
 
     var notificationsEnabled: Bool {
-        get { UserDefaults.standard.object(forKey: "reminder.enabled") as? Bool ?? false }
+        get { UserDefaults.standard.object(forKey: AppStorageKeys.Gamification.reminderEnabled) as? Bool ?? false }
         set {
-            UserDefaults.standard.set(newValue, forKey: "reminder.enabled")
+            UserDefaults.standard.set(newValue, forKey: AppStorageKeys.Gamification.reminderEnabled)
             if newValue {
                 rescheduleAll()
             } else {
@@ -335,7 +335,7 @@ final class SquirrelReminderService {
             let granted = try await center.requestAuthorization(options: [.alert, .badge, .sound])
             await refreshAuthorizationStatus()
             if granted {
-                UserDefaults.standard.set(true, forKey: "reminder.enabled")
+                UserDefaults.standard.set(true, forKey: AppStorageKeys.Gamification.reminderEnabled)
                 rescheduleAll()
             }
             return granted
@@ -505,7 +505,7 @@ final class SquirrelReminderService {
     /// Analyses the last 14 days of capture timestamps to find the most common capture hour.
     /// Falls back to 10am if insufficient data.
     private func peakCaptureHour() -> Int {
-        guard let rawData = UserDefaults.standard.array(forKey: "capture.timestamps") as? [Double],
+        guard let rawData = UserDefaults.standard.array(forKey: AppStorageKeys.Capture.timestamps) as? [Double],
               !rawData.isEmpty else {
             return 10
         }

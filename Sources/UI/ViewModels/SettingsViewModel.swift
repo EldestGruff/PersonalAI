@@ -52,7 +52,7 @@ final class SettingsViewModel {
         get { _autoCreateRemindersCache }
         set {
             _autoCreateRemindersCache = newValue
-            UserDefaults.standard.set(newValue, forKey: "autoCreateReminders")
+            UserDefaults.standard.set(newValue, forKey: AppStorageKeys.Settings.autoCreateReminders)
         }
     }
 
@@ -73,7 +73,7 @@ final class SettingsViewModel {
         }
         set {
             _selectedCalendarIdCache = newValue
-            UserDefaults.standard.set(newValue, forKey: "selectedCalendarId")
+            UserDefaults.standard.set(newValue, forKey: AppStorageKeys.Settings.selectedCalendarId)
         }
     }
 
@@ -86,7 +86,7 @@ final class SettingsViewModel {
         }
         set {
             _selectedReminderListIdCache = newValue
-            UserDefaults.standard.set(newValue, forKey: "selectedReminderListId")
+            UserDefaults.standard.set(newValue, forKey: AppStorageKeys.Settings.selectedReminderListId)
         }
     }
 
@@ -149,9 +149,9 @@ final class SettingsViewModel {
     /// Loads initial data
     func onAppear() {
         // Load cached settings from UserDefaults
-        _selectedCalendarIdCache = UserDefaults.standard.string(forKey: "selectedCalendarId")
-        _selectedReminderListIdCache = UserDefaults.standard.string(forKey: "selectedReminderListId")
-        _autoCreateRemindersCache = UserDefaults.standard.bool(forKey: "autoCreateReminders")
+        _selectedCalendarIdCache = UserDefaults.standard.string(forKey: AppStorageKeys.Settings.selectedCalendarId)
+        _selectedReminderListIdCache = UserDefaults.standard.string(forKey: AppStorageKeys.Settings.selectedReminderListId)
+        _autoCreateRemindersCache = UserDefaults.standard.bool(forKey: AppStorageKeys.Settings.autoCreateReminders)
 
         _Concurrency.Task {
             await updatePermissionStatus()

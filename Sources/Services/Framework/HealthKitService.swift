@@ -339,7 +339,7 @@ actor HealthKitService: HealthKitServiceProtocol {
         self.healthStore = HKHealthStore()
 
         // Check if we've previously requested HealthKit permission
-        if UserDefaults.standard.bool(forKey: "healthKitPermissionRequested") {
+        if UserDefaults.standard.bool(forKey: AppStorageKeys.HealthKit.permissionRequested) {
             _permissionStatus = .authorized
         }
     }
@@ -360,7 +360,7 @@ actor HealthKitService: HealthKitServiceProtocol {
             _permissionStatus = .authorized
 
             // Persist that we've requested permission
-            UserDefaults.standard.set(true, forKey: "healthKitPermissionRequested")
+            UserDefaults.standard.set(true, forKey: AppStorageKeys.HealthKit.permissionRequested)
 
             return .authorized
         } catch {

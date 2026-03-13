@@ -88,7 +88,7 @@ struct CaptureThoughtIntent: AppIntent {
         guard let content = content, !content.isEmpty else {
             // Set flag to open voice capture (same as OpenVoiceCaptureIntent)
             if let defaults = UserDefaults(suiteName: "group.com.withershins.stash") {
-                defaults.set(true, forKey: "pendingVoiceCapture")
+                defaults.set(true, forKey: AppStorageKeys.AppIntent.pendingVoiceCapture)
                 defaults.synchronize()
                 print("✅ Voice capture flag set (via CaptureThoughtIntent)")
             }
