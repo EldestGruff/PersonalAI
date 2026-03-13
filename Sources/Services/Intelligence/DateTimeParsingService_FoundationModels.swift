@@ -134,8 +134,7 @@ actor FoundationModelsDateTimeParser {
     private func createPrompt(text: String, referenceDate: Date) -> String {
         let cal = Calendar.current
         let isoFormatter = ISO8601DateFormatter()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let dateFormatter = DateFormatter.isoDate
 
         let today = dateFormatter.string(from: referenceDate)
         let tomorrow = dateFormatter.string(from: cal.date(byAdding: .day, value: 1, to: referenceDate)!)
@@ -184,9 +183,7 @@ actor FoundationModelsDateTimeParser {
         // day in negative-offset timezones (e.g. "2026-03-11T00:00:00Z" → Mar 10 ET).
         var date: Date?
         if let dateString = extracted.date {
-            let localDateFormatter = DateFormatter()
-            localDateFormatter.dateFormat = "yyyy-MM-dd"
-            localDateFormatter.locale = Locale(identifier: "en_US_POSIX")
+            let localDateFormatter = DateFormatter.isoDate
             // localDateFormatter uses the device timezone by default — no explicit set needed
 
             // Extract the YYYY-MM-DD prefix if the model returned a full ISO datetime

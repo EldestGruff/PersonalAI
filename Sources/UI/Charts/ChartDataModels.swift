@@ -185,9 +185,7 @@ struct DayDataPoint: Identifiable {
     let averageSentiment: Double?
 
     var dayName: String {
-        let formatter = DateFormatter()
-        formatter.weekdaySymbols = Calendar.current.shortWeekdaySymbols
-        return formatter.weekdaySymbols[dayOfWeek - 1]
+        return Calendar.current.shortWeekdaySymbols[dayOfWeek - 1]
     }
 }
 

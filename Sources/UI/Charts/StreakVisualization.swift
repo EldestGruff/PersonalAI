@@ -225,8 +225,7 @@ struct StreakVisualization: View {
     }
 
     private func accessibilityLabel(for day: ContributionDay) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
+        let formatter = DateFormatter.mediumDate
 
         if day.hasThought {
             return "Captured thoughts on \(formatter.string(from: day.date))"

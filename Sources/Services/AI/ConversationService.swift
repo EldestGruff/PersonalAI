@@ -271,9 +271,7 @@ actor ConversationService {
     // MARK: - Formatting Helpers
 
     private func formatDateRange(from start: Date, to end: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
+        let formatter = DateFormatter.mediumDate
 
         let calendar = Calendar.current
         let daysDiff = calendar.dateComponents([.day], from: start, to: end).day ?? 0
@@ -290,10 +288,7 @@ actor ConversationService {
     }
 
     private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
+        return DateFormatter.mediumDateTime.string(from: date)
     }
 }
 

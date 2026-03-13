@@ -492,8 +492,7 @@ actor InsightsGenerationService {
     }
 
     private func formatHour(_ hour: Int) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h a"
+        let formatter = DateFormatter.hourAmPm
 
         var components = DateComponents()
         components.hour = hour

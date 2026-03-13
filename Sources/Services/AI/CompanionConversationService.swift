@@ -254,9 +254,6 @@ actor CompanionConversationService {
     // MARK: - Helpers
 
     private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
+        return DateFormatter.mediumDateTime.string(from: date)
     }
 }
