@@ -45,6 +45,9 @@ struct ClassificationCorrection: Codable {
 /// ## Maintenance
 /// - Capped at 200 entries; oldest are evicted when over limit.
 /// - Entries older than 90 days are pruned on every write.
+// @unchecked Sendable: all state stored in UserDefaults (thread-safe).
+// Mutation is infrequent (user correction events) and serialized through
+// UserDefaults' internal locking. No in-memory mutable state.
 final class ClassificationBiasStore: @unchecked Sendable {
     static let shared = ClassificationBiasStore()
 

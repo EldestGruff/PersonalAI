@@ -16,6 +16,9 @@
 
 import Foundation
 
+// @unchecked Sendable: requires NSObject for @objc notification selector.
+// Thread safety guaranteed by NSUbiquitousKeyValueStore (thread-safe per Apple docs).
+// All mutations go through the store's internal locking.
 final class SyncedDefaults: @unchecked Sendable {
     static let shared = SyncedDefaults()
 

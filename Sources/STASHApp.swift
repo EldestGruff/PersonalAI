@@ -224,6 +224,9 @@ extension PermissionCoordinator {
 
 // MARK: - Notification Delegate
 
+// @unchecked Sendable: NSObject subclass required for UNUserNotificationCenterDelegate.
+// `openCapture` mutations are dispatched to @MainActor via _Concurrency.Task.
+
 /// Handles notification tap responses and routes deep links to the capture screen.
 final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, ObservableObject, @unchecked Sendable {
     static let shared = NotificationDelegate()

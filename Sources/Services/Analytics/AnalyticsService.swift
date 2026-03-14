@@ -9,6 +9,9 @@
 import Foundation
 import TelemetryDeck
 
+// @unchecked Sendable: thread safety guaranteed by UserDefaults (internally locked)
+// and TelemetryDeck SDK (handles its own thread safety). No mutable state beyond
+// UserDefaults reads/writes.
 final class AnalyticsService: @unchecked Sendable {
     static let shared = AnalyticsService()
 

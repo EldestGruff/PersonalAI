@@ -262,6 +262,10 @@ actor LocationService: LocationServiceProtocol {
 
 // MARK: - Location Delegates
 
+// @unchecked Sendable: NSObject subclass required for CLLocationManagerDelegate.
+// CLLocationManager calls its delegate on the main thread; `hasCompleted` is
+// only mutated from that same thread, providing implicit serialization.
+
 /// Delegate for handling permission authorization changes.
 private final class PermissionDelegate: NSObject, CLLocationManagerDelegate, @unchecked Sendable {
     private let completion: (CLAuthorizationStatus) -> Void
@@ -280,6 +284,9 @@ private final class PermissionDelegate: NSObject, CLLocationManagerDelegate, @un
         }
     }
 }
+
+// @unchecked Sendable: NSObject subclass required for CLLocationManagerDelegate.
+// Same thread-safety guarantee as PermissionDelegate above.
 
 /// Delegate for handling location updates.
 private final class LocationUpdateDelegate: NSObject, CLLocationManagerDelegate, @unchecked Sendable {

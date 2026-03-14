@@ -17,6 +17,9 @@ import Speech
 
 // MARK: - Phone Connectivity Manager
 
+// @unchecked Sendable: NSObject subclass required for WCSessionDelegate protocol.
+// WCSession callbacks are dispatched on WatchConnectivity's internal queue;
+// all mutable state access is confined to the delegate methods' execution context.
 final class PhoneConnectivityManager: NSObject, @unchecked Sendable {
     static let shared = PhoneConnectivityManager()
 
