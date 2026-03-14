@@ -188,16 +188,12 @@ final class VoiceCaptureViewModel {
                 await ContextEnrichmentService.shared.enrichContext(for: thought.id)
             }
 
-            // Gamification hooks (mirrors CaptureViewModel)
-            let streakUpdate = StreakTracker.shared.recordCapture()
-            if let milestone = streakUpdate.milestone {
-                _ = await AcornService.shared.processStreakMilestone(days: milestone.rawValue)
-            }
-            _ = await AcornService.shared.processCapture(hadContext: false)
-            _ = await BadgeService.shared.checkAll(newThought: saved, thoughtService: thoughtService)
-            _ = await VariableRewardService.shared.roll()
-            SquirrelReminderService.shared.onCaptureCompleted()
-            SquirrelCompanionService.shared.recordCapture()
+            // Gamification hooks
+            _ = await GamificationCoordinator.processCapture(
+                thought: saved,
+                hadContext: false,
+                thoughtService: thoughtService
+            )
             AnalyticsService.shared.track(.thoughtCaptured(method: .voice))
 
             captureState = .saved

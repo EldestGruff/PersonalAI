@@ -33,6 +33,7 @@
 		A00000010000000000000283 /* VariableRewardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000284 /* VariableRewardView.swift */; };
 		A00000010000000000000286 /* SquirrelReminderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000285 /* SquirrelReminderService.swift */; };
 		A00000010000000000000288 /* SquirrelCompanionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000287 /* SquirrelCompanionService.swift */; };
+		A00000010000000000000305 /* GamificationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000306 /* GamificationCoordinator.swift */; };
 		A0000001000000000000029 /* FineTuningData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000030 /* FineTuningData.swift */; };
 		A00000010000000000000290 /* SquirrelCompanionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000289 /* SquirrelCompanionCard.swift */; };
 		A00000010000000000000291 /* SyncedDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000292 /* SyncedDefaults.swift */; };
@@ -224,6 +225,7 @@
 		A00000010000000000000284 /* VariableRewardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableRewardView.swift; sourceTree = "<group>"; };
 		A00000010000000000000285 /* SquirrelReminderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquirrelReminderService.swift; sourceTree = "<group>"; };
 		A00000010000000000000287 /* SquirrelCompanionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquirrelCompanionService.swift; sourceTree = "<group>"; };
+		A00000010000000000000306 /* GamificationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamificationCoordinator.swift; sourceTree = "<group>"; };
 		A00000010000000000000289 /* SquirrelCompanionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquirrelCompanionCard.swift; sourceTree = "<group>"; };
 		A00000010000000000000292 /* SyncedDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncedDefaults.swift; sourceTree = "<group>"; };
 		A00000010000000000000294 /* SyncedDefaultsMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncedDefaultsMigration.swift; sourceTree = "<group>"; };
@@ -701,6 +703,7 @@
 				A00000010000000000000282 /* VariableRewardService.swift */,
 				A00000010000000000000285 /* SquirrelReminderService.swift */,
 				A00000010000000000000287 /* SquirrelCompanionService.swift */,
+				A00000010000000000000306 /* GamificationCoordinator.swift */,
 			);
 			path = Gamification;
 			sourceTree = "<group>";
@@ -1151,6 +1154,7 @@
 				A00000010000000000000290 /* SquirrelCompanionCard.swift in Sources */,
 				A00000010000000000000286 /* SquirrelReminderService.swift in Sources */,
 				A00000010000000000000288 /* SquirrelCompanionService.swift in Sources */,
+				A00000010000000000000305 /* GamificationCoordinator.swift in Sources */,
 				A00000010000000000000291 /* SyncedDefaults.swift in Sources */,
 				A00000010000000000000293 /* SyncedDefaultsMigration.swift in Sources */,
 				A00000010000000000000295 /* AppConstants.swift in Sources */,

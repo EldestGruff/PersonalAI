@@ -117,13 +117,6 @@ final class CaptureViewModel {
     private let settingsViewModel: SettingsViewModel?
     private let subscriptionManager: SubscriptionManager
     private let smartInsights = SmartInsightsService.shared
-    private let acornService = AcornService.shared
-    private let streakTracker = StreakTracker.shared
-    private let stateEngine = SquirrelStateEngine.shared
-    private let badgeService = BadgeService.shared
-    private let variableRewardService = VariableRewardService.shared
-    private let reminderService = SquirrelReminderService.shared
-    private let companionService = SquirrelCompanionService.shared
 
     // MARK: - Debounce
 
@@ -382,124 +375,28 @@ final class CaptureViewModel {
 
         _Concurrency.Task {
             do {
-                // Check subscription entitlements
-                let thoughts = try await thoughtService.list(filter: nil)
-                let usage = SubscriptionUsage.calculate(from: thoughts)
+                guard try await checkSubscriptionEntitlement() else { return }
 
-                if !subscriptionManager.canCaptureThought(usage: usage) {
-                    let limit = subscriptionManager.entitlements.thoughtLimit ?? 0
-                    self.error = .validationFailed(
-                        "You've reached your limit of \(limit) thoughts this month. Upgrade to Pro for unlimited thoughts."
-                    )
-                    self.isCapturing = false
-                    return
-                }
+                if context == nil { context = await contextService.gatherContext() }
+                if classification == nil { classification = try? await classificationService.classify(thoughtContent) }
 
-                // Ensure we have context (gather if not already)
-                if context == nil {
-                    context = await contextService.gatherContext()
-                }
-
-                // Ensure we have classification (classify if not already)
-                if classification == nil {
-                    classification = try? await classificationService.classify(thoughtContent)
-                }
-
-                // Apply manual type override if set (#49)
-                var finalClassification = classification
-                if let manualType = manualClassificationType, let baseClassification = classification {
-                    // Sanitize suggested tags (fix underscores, uppercase, etc.)
-                    let sanitizedTags = baseClassification.suggestedTags.map { tag in
-                        tag.lowercased()
-                            .replacingOccurrences(of: "_", with: "-")
-                            .replacingOccurrences(of: " ", with: "-")
-                            .trimmingCharacters(in: .whitespacesAndNewlines)
-                    }
-
-                    finalClassification = Classification(
-                        id: baseClassification.id,
-                        type: manualType,
-                        confidence: 1.0,  // User selection has 100% confidence
-                        entities: baseClassification.entities,
-                        suggestedTags: sanitizedTags,  // Use sanitized tags
-                        sentiment: baseClassification.sentiment,
-                        language: baseClassification.language,
-                        processingTime: 1.0,  // Minimal processing time for validation
-                        model: "user-override",
-                        createdAt: Date(),
-                        parsedDateTime: baseClassification.parsedDateTime
-                    )
-                } else if let manualType = manualClassificationType {
-                    // Create classification from scratch if AI classification failed but user selected a type
-                    finalClassification = Classification(
-                        id: UUID(),
-                        type: manualType,
-                        confidence: 1.0,
-                        entities: [],
-                        suggestedTags: [],
-                        sentiment: .neutral,
-                        language: "en",
-                        processingTime: 1.0,  // Minimal processing time for validation
-                        model: "user-override",
-                        createdAt: Date(),
-                        parsedDateTime: nil
-                    )
-                }
-
-                // Create thought model
-                let thought = Thought(
-                    id: UUID(),
-                    userId: UUID(), // Phase 3A: hardcoded, Phase 4+ from settings
-                    content: thoughtContent.trimmingCharacters(in: .whitespacesAndNewlines),
-                    attributedContent: isRichTextEnabled ? attributedThoughtContent : nil,
-                    tags: selectedTags,
-                    status: .active,
-                    context: context ?? Context.empty(),
-                    createdAt: Date(),
-                    updatedAt: Date(),
-                    classification: finalClassification,
-                    relatedThoughtIds: [],
-                    taskId: nil
-                )
-
-                // Save thought
+                let finalClassification = buildFinalClassification()
+                let thought = buildThought(classification: finalClassification)
                 let saved = try await thoughtService.create(thought)
 
-                // Track for fine-tuning (fire and forget)
-                if let classification = classification {
+                if let cls = classification {
                     _Concurrency.Task {
-                        try? await fineTuningService.trackThoughtCreated(saved, classification: classification)
+                        try? await fineTuningService.trackThoughtCreated(saved, classification: cls)
                     }
                 }
 
-                // Auto-create reminder/event if enabled
-                if let settings = settingsViewModel,
-                   settings.autoCreateReminders,
-                   let classification = classification {
-                    await self.autoCreateTask(for: saved, classification: classification)
+                if let settings = settingsViewModel, settings.autoCreateReminders,
+                   let cls = finalClassification {
+                    await autoCreateTask(for: saved, classification: cls)
                 }
 
-                // Award acorns
-                let hadContext = context != nil && context?.location != nil
-                self.lastAcornReward = await acornService.processCapture(hadContext: hadContext)
+                await processGamification(saved: saved)
 
-                // Update streak (fire milestone acorn bonus + celebrating state if applicable)
-                let streakUpdate = streakTracker.recordCapture()
-                if let milestone = streakUpdate.milestone {
-                    _ = await acornService.processStreakMilestone(days: milestone.rawValue)
-                    stateEngine.triggerCelebrating()
-                }
-
-                // Check for newly earned badges
-                self.lastEarnedBadges = await badgeService.checkAll(
-                    newThought: saved,
-                    thoughtService: self.thoughtService
-                )
-
-                // Roll for variable reward
-                self.lastVariableReward = await variableRewardService.roll()
-
-                // Record capture timestamp for reminder peak-hour analysis (background — avoids main thread serialisation)
                 _Concurrency.Task.detached {
                     let key = AppConstants.PendingActions.captureTimestampsKey
                     var timestamps = (UserDefaults.standard.array(forKey: key) as? [Double]) ?? []
@@ -509,26 +406,102 @@ final class CaptureViewModel {
                     UserDefaults.standard.set(timestamps, forKey: key)
                 }
 
-                // Reset gentle-return notification timer
-                self.reminderService.onCaptureCompleted()
-
-                // Advance companion life stage
-                self.companionService.recordCapture()
-
-                // Success - reset form
-                self.resetForm()
-                self.captureDidSucceed = true
-                self.error = nil
-
-                // Analytics: default to .text (no voice/text mode flag in this VM)
+                resetForm()
+                captureDidSucceed = true
+                error = nil
                 AnalyticsService.shared.track(.thoughtCaptured(method: .text))
 
             } catch {
                 self.error = AppError.from(error)
             }
 
-            self.isCapturing = false
+            isCapturing = false
         }
+    }
+
+    /// Returns false and sets error/isCapturing if subscription limit reached.
+    private func checkSubscriptionEntitlement() async throws -> Bool {
+        let thoughts = try await thoughtService.list(filter: nil)
+        let usage = SubscriptionUsage.calculate(from: thoughts)
+        guard subscriptionManager.canCaptureThought(usage: usage) else {
+            let limit = subscriptionManager.entitlements.thoughtLimit ?? 0
+            self.error = .validationFailed(
+                "You've reached your limit of \(limit) thoughts this month. Upgrade to Pro for unlimited thoughts."
+            )
+            self.isCapturing = false
+            return false
+        }
+        return true
+    }
+
+    /// Applies manual type override to the AI classification result.
+    private func buildFinalClassification() -> Classification? {
+        guard let manualType = manualClassificationType else { return classification }
+        guard let base = classification else {
+            return Classification(
+                id: UUID(),
+                type: manualType,
+                confidence: 1.0,
+                entities: [],
+                suggestedTags: [],
+                sentiment: .neutral,
+                language: "en",
+                processingTime: 1.0,
+                model: "user-override",
+                createdAt: Date(),
+                parsedDateTime: nil
+            )
+        }
+        let sanitizedTags = base.suggestedTags.map { tag in
+            tag.lowercased()
+                .replacingOccurrences(of: "_", with: "-")
+                .replacingOccurrences(of: " ", with: "-")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        return Classification(
+            id: base.id,
+            type: manualType,
+            confidence: 1.0,
+            entities: base.entities,
+            suggestedTags: sanitizedTags,
+            sentiment: base.sentiment,
+            language: base.language,
+            processingTime: 1.0,
+            model: "user-override",
+            createdAt: Date(),
+            parsedDateTime: base.parsedDateTime
+        )
+    }
+
+    /// Constructs the Thought value to save.
+    private func buildThought(classification: Classification?) -> Thought {
+        Thought(
+            id: UUID(),
+            userId: UUID(), // Phase 3A: hardcoded, Phase 4+ from settings
+            content: thoughtContent.trimmingCharacters(in: .whitespacesAndNewlines),
+            attributedContent: isRichTextEnabled ? attributedThoughtContent : nil,
+            tags: selectedTags,
+            status: .active,
+            context: context ?? Context.empty(),
+            createdAt: Date(),
+            updatedAt: Date(),
+            classification: classification,
+            relatedThoughtIds: [],
+            taskId: nil
+        )
+    }
+
+    /// Runs all gamification side-effects and surfaces reward values for the UI.
+    private func processGamification(saved: Thought) async {
+        let hadContext = context?.location != nil
+        let result = await GamificationCoordinator.processCapture(
+            thought: saved,
+            hadContext: hadContext,
+            thoughtService: thoughtService
+        )
+        lastAcornReward = result.acornReward
+        lastEarnedBadges = result.earnedBadges
+        lastVariableReward = result.variableReward
     }
 
     /// Resets the form to initial state
