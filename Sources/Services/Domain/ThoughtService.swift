@@ -195,13 +195,19 @@ actor ThoughtService: ThoughtServiceProtocol {
         }
     }
 
-    /// Lists recent thoughts.
+    /// Lists recent thoughts, newest first.
+    ///
+    /// Passes `limit` directly to Core Data's `fetchLimit` via `ThoughtRepository`,
+    /// so the database never loads more rows than needed.
     ///
     /// - Parameter limit: Maximum number to return
-    /// - Returns: Array of recent thoughts, newest first
+    /// - Returns: Array of active thoughts, newest first, capped at `limit`
     func listRecent(limit: Int) async throws -> [Thought] {
-        let thoughts = try await list(filter: .active)
-        return Array(thoughts.prefix(limit))
+        do {
+            return try await repository.list(filter: .active, limit: limit)
+        } catch {
+            throw ServiceError.persistence(operation: "list recent thoughts", underlying: error)
+        }
     }
 
     /// Lists archived thoughts.

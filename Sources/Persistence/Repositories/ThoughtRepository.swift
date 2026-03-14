@@ -59,8 +59,13 @@ actor ThoughtRepository {
         }
     }
 
-    /// Lists all thoughts with optional filtering
-    func list(filter: ThoughtFilter? = nil) async throws -> [Thought] {
+    /// Lists thoughts with optional filtering and result-set limit.
+    ///
+    /// - Parameters:
+    ///   - filter: Optional predicate to narrow results (status, tag, userId, etc.)
+    ///   - limit: When provided, sets `fetchRequest.fetchLimit` so Core Data never
+    ///     loads more rows than needed. Prefer this over fetching all then calling `prefix`.
+    func list(filter: ThoughtFilter? = nil, limit: Int? = nil) async throws -> [Thought] {
         let context = container.newBackgroundContext()
 
         return try await context.perform {
@@ -68,6 +73,10 @@ actor ThoughtRepository {
 
             if let filter = filter {
                 fetchRequest.predicate = filter.predicate
+            }
+
+            if let limit = limit {
+                fetchRequest.fetchLimit = limit
             }
 
             fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
