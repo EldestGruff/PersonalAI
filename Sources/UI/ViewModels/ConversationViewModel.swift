@@ -10,7 +10,7 @@ import Foundation
 @available(iOS 26.0, *)
 @Observable
 @MainActor
-class ConversationViewModel {
+final class ConversationViewModel {
 
     // MARK: - Properties
 

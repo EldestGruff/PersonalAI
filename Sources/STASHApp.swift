@@ -146,9 +146,6 @@ struct MainTabView: View {
                 checkForPendingVoiceCapture()
             }
         }
-        .onReceive(Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()) { _ in
-            if scenePhase == .active { checkForPendingVoiceCapture() }
-        }
     }
 
     // MARK: - Deep Navigation

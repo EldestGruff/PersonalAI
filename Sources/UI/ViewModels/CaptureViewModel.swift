@@ -499,13 +499,15 @@ final class CaptureViewModel {
                 // Roll for variable reward
                 self.lastVariableReward = await variableRewardService.roll()
 
-                // Record capture timestamp for reminder peak-hour analysis
-                var timestamps = (UserDefaults.standard.array(forKey: "capture.timestamps") as? [Double]) ?? []
-                timestamps.append(Date().timeIntervalSince1970)
-                // Keep only last 60 days of data (no unbounded growth)
-                let cutoff = Date().addingTimeInterval(-60 * 24 * 3600).timeIntervalSince1970
-                timestamps = timestamps.filter { $0 > cutoff }
-                UserDefaults.standard.set(timestamps, forKey: "capture.timestamps")
+                // Record capture timestamp for reminder peak-hour analysis (background — avoids main thread serialisation)
+                _Concurrency.Task.detached {
+                    let key = AppConstants.PendingActions.captureTimestampsKey
+                    var timestamps = (UserDefaults.standard.array(forKey: key) as? [Double]) ?? []
+                    timestamps.append(Date().timeIntervalSince1970)
+                    let cutoff = Date().addingTimeInterval(-60 * 24 * 3600).timeIntervalSince1970
+                    timestamps = timestamps.filter { $0 > cutoff }
+                    UserDefaults.standard.set(timestamps, forKey: key)
+                }
 
                 // Reset gentle-return notification timer
                 self.reminderService.onCaptureCompleted()
