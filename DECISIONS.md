@@ -3,6 +3,27 @@ Append-only. One entry per significant decision. Most recent first.
 
 ---
 
+## 2026-03-14: Error handling policy (Phase 4 refactor baseline)
+
+Three tiers of error handling, applied consistently:
+
+**Tier 1 — Throw:** Services with user-observable side effects (`ThoughtService`, `TaskService`,
+`ClassificationService`) always throw typed `ServiceError`. Callers must handle explicitly.
+
+**Tier 2 — `try?` (best-effort):** Fire-and-forget background operations that must never block the
+primary action. Applies to: sync queue enqueue, fine-tuning tracking, analytics, sleep/timeout
+utilities. Failure is silent by design — these are enrichment/observability paths, not data-integrity
+paths. Each call site is co-located with the primary operation so the intent is visible.
+
+**Tier 3 — ViewModel catch:** ViewModels catch thrown errors and surface them via an `error:
+AppError?` observable property. Views observe this property to show alerts. Services never interact
+with UI — they only throw. This boundary is strict.
+
+**Not acceptable:** Empty `catch {}` blocks, bare `_ = try?` discarding results that callers need,
+or silently returning defaults from functions that are supposed to fail loudly.
+
+---
+
 ## 2026-03-07: Acorn balance uses CloudKit ledger, not KV Store
 Acorn `currentBalance` is never stored directly. Architecture:
 - `lifetimeEarned` → NSUbiquitousKeyValueStore (monotonically increasing, take max)
