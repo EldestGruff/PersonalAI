@@ -166,7 +166,7 @@ final class VoiceCaptureViewModel {
         let now = Date()
         let thought = Thought(
             id: UUID(),
-            userId: UUID(), // TODO: Get from user session
+            userId: DeviceUser.id,
             content: content,
             attributedContent: nil,
             tags: [],

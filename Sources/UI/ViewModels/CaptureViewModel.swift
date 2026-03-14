@@ -344,7 +344,7 @@ final class CaptureViewModel {
             // Create a temporary thought for comparison
             let tempThought = Thought(
                 id: UUID(),
-                userId: UUID(),
+                userId: DeviceUser.id,
                 content: thoughtContent,
                     attributedContent: nil,
                 tags: selectedTags,
@@ -449,7 +449,7 @@ final class CaptureViewModel {
                 // Create thought model
                 let thought = Thought(
                     id: UUID(),
-                    userId: UUID(), // Phase 3A: hardcoded, Phase 4+ from settings
+                    userId: DeviceUser.id,
                     content: thoughtContent.trimmingCharacters(in: .whitespacesAndNewlines),
                     attributedContent: richTextEnabled ? attributedThoughtContent : nil,
                     tags: selectedTags,

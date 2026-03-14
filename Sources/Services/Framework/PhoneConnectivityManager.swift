@@ -117,7 +117,7 @@ extension PhoneConnectivityManager: WCSessionDelegate {
                 )
                 let thought = Thought(
                     id: UUID(),
-                    userId: UUID(),
+                    userId: DeviceUser.id,
                     content: text,
                     attributedContent: nil,
                     tags: [],
