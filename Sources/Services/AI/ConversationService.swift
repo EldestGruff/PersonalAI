@@ -51,14 +51,14 @@ actor ConversationService {
             instructions: buildSystemPrompt(context: context)
         )
 
-        print("✅ Conversation session started with \(context.totalCount) thoughts")
+        AppLogger.info("Conversation session started with \(context.totalCount) thoughts", category: .conversation)
     }
 
     /// End the current conversation session
     func endConversation() {
         session = nil
         thoughtContext = nil
-        print("🔚 Conversation session ended")
+        AppLogger.info("Conversation session ended", category: .conversation)
     }
 
     // MARK: - Message Handling
@@ -166,7 +166,7 @@ actor ConversationService {
             throw ConversationError.noThoughtsFound
         }
 
-        let recentThoughts = Array(allThoughts.prefix(50))
+        let recentThoughts = Array(allThoughts.prefix(AppConstants.Classification.recentThoughtsLimit))
 
         // Calculate date range
         let oldestDate = recentThoughts.last?.createdAt ?? Date()
@@ -265,16 +265,12 @@ actor ConversationService {
             "Show me thoughts related to \(context.topTags.keys.first ?? "work")"
         ]
 
-        return Array(suggestions.prefix(3))
+        return Array(suggestions.prefix(AppConstants.Classification.maxSuggestionCount))
     }
 
     // MARK: - Formatting Helpers
 
     private func formatDateRange(from start: Date, to end: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
-
         let calendar = Calendar.current
         let daysDiff = calendar.dateComponents([.day], from: start, to: end).day ?? 0
 
@@ -285,15 +281,12 @@ actor ConversationService {
         } else if daysDiff < 30 {
             return "Last \(daysDiff / 7) weeks"
         } else {
-            return "\(formatter.string(from: start)) - \(formatter.string(from: end))"
+            return "\(DateFormatters.mediumDate.string(from: start)) - \(DateFormatters.mediumDate.string(from: end))"
         }
     }
 
     private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
+        DateFormatters.mediumDateTime.string(from: date)
     }
 }
 

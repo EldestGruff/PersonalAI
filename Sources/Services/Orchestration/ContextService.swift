@@ -153,7 +153,7 @@ actor ContextService: ContextServiceProtocol {
             // Location
             group.addTask {
                 let opStart = Date()
-                let result = await self.withTimeout(timeout) {
+                let result = await ConcurrencyUtilities.withTimeout(timeout) {
                     await self.locationService.getCurrentLocation()
                 }
                 let duration = Int(Date().timeIntervalSince(opStart) * 1000)
@@ -175,7 +175,7 @@ actor ContextService: ContextServiceProtocol {
                     sleepHours: nil,
                     stepCount: nil
                 )
-                let result = await self.withTimeout(timeout, default: defaultBreakdown) {
+                let result = await ConcurrencyUtilities.withTimeout(timeout, default: defaultBreakdown) {
                     await self.healthKitService.getEnergyBreakdown()
                 }
                 let duration = Int(Date().timeIntervalSince(opStart) * 1000)
@@ -187,7 +187,7 @@ actor ContextService: ContextServiceProtocol {
             group.addTask {
                 let opStart = Date()
                 let defaultActivity = ActivityContext(stepCount: 0, caloriesBurned: 0, activeMinutes: 0)
-                let result = await self.withTimeout(timeout, default: defaultActivity) {
+                let result = await ConcurrencyUtilities.withTimeout(timeout, default: defaultActivity) {
                     await self.healthKitService.getActivityContext()
                 }
                 let duration = Int(Date().timeIntervalSince(opStart) * 1000)
@@ -199,7 +199,7 @@ actor ContextService: ContextServiceProtocol {
             group.addTask {
                 let opStart = Date()
                 let defaultCalendar = CalendarContext(nextEventMinutes: nil, isFreetime: true, eventCount: 0)
-                let result = await self.withTimeout(timeout, default: defaultCalendar) {
+                let result = await ConcurrencyUtilities.withTimeout(timeout, default: defaultCalendar) {
                     await self.eventKitService.getAvailability()
                 }
                 let duration = Int(Date().timeIntervalSince(opStart) * 1000)
@@ -211,7 +211,7 @@ actor ContextService: ContextServiceProtocol {
             if #available(iOS 18.0, *) {
                 group.addTask {
                     let opStart = Date()
-                    let result = await self.withTimeout(timeout, default: nil) {
+                    let result = await ConcurrencyUtilities.withTimeout(timeout, default: nil) {
                         await self.healthKitService.getStateOfMind()
                     }
                     let duration = Int(Date().timeIntervalSince(opStart) * 1000)
@@ -280,53 +280,6 @@ actor ContextService: ContextServiceProtocol {
         return (context, metrics)
     }
 
-    // MARK: - Timeout Helpers
-
-    /// Runs an operation with a timeout, returning nil on timeout.
-    private func withTimeout<T: Sendable>(_ timeout: TimeInterval, operation: @Sendable @escaping () async -> T?) async -> T? {
-        await withTaskGroup(of: T?.self) { group in
-            group.addTask {
-                await operation()
-            }
-
-            group.addTask {
-                try? await _Concurrency.Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
-                return nil
-            }
-
-            // Return first non-nil result, or nil if timeout wins
-            for await result in group {
-                if result != nil {
-                    group.cancelAll()
-                    return result
-                }
-            }
-
-            return nil
-        }
-    }
-
-    /// Runs an operation with a timeout, returning a default value on timeout.
-    private func withTimeout<T: Sendable>(_ timeout: TimeInterval, default defaultValue: T, operation: @Sendable @escaping () async -> T) async -> T {
-        await withTaskGroup(of: T.self) { group in
-            group.addTask {
-                await operation()
-            }
-
-            group.addTask {
-                try? await _Concurrency.Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
-                return defaultValue
-            }
-
-            // First result wins
-            for await result in group {
-                group.cancelAll()
-                return result
-            }
-
-            return defaultValue
-        }
-    }
 }
 
 // MARK: - Mock Context Service

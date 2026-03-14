@@ -134,6 +134,11 @@
 		A1F85F822F57C0ED003C400D /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1F85F812F57C0ED003C400D /* WatchConnectivity.framework */; };
 		A1F862232F5926F3003C400D /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1F85F812F57C0ED003C400D /* WatchConnectivity.framework */; };
 		ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */; };
+		A00000010000000000000295 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000296 /* AppConstants.swift */; };
+		A00000010000000000000297 /* ConcurrencyUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000298 /* ConcurrencyUtilities.swift */; };
+		A00000010000000000000299 /* DateFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000300 /* DateFormatters.swift */; };
+		A00000010000000000000301 /* ClassificationPatterns.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000302 /* ClassificationPatterns.swift */; };
+		A00000010000000000000303 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000010000000000000304 /* AppLogger.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -222,6 +227,11 @@
 		A00000010000000000000289 /* SquirrelCompanionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquirrelCompanionCard.swift; sourceTree = "<group>"; };
 		A00000010000000000000292 /* SyncedDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncedDefaults.swift; sourceTree = "<group>"; };
 		A00000010000000000000294 /* SyncedDefaultsMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncedDefaultsMigration.swift; sourceTree = "<group>"; };
+		A00000010000000000000296 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
+		A00000010000000000000298 /* ConcurrencyUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrencyUtilities.swift; sourceTree = "<group>"; };
+		A00000010000000000000300 /* DateFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatters.swift; sourceTree = "<group>"; };
+		A00000010000000000000302 /* ClassificationPatterns.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationPatterns.swift; sourceTree = "<group>"; };
+		A00000010000000000000304 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
 		A0000001000000000000030 /* FineTuningData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningData.swift; sourceTree = "<group>"; };
 		A0000001000000000000032 /* SyncQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncQueue.swift; sourceTree = "<group>"; };
 		A0000001000000000000034 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
@@ -478,8 +488,28 @@
 				A0800000000000000000040 /* UI */,
 				A0800000000000000000050 /* Resources */,
 				A1803D832F27C6A00071D950 /* AppIntents */,
+				A0800000000000000000060 /* Configuration */,
+				A0800000000000000000061 /* Utilities */,
 			);
 			path = Sources;
+			sourceTree = "<group>";
+		};
+		A0800000000000000000060 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				A00000010000000000000296 /* AppConstants.swift */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		A0800000000000000000061 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				A00000010000000000000298 /* ConcurrencyUtilities.swift */,
+				A00000010000000000000300 /* DateFormatters.swift */,
+				A00000010000000000000304 /* AppLogger.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 		A0800000000000000000003 /* Products */ = {
@@ -618,6 +648,7 @@
 			children = (
 				A0000001000000000000152 /* NLPService.swift */,
 				A0000001000000000000154 /* ClassificationService.swift */,
+				A00000010000000000000302 /* ClassificationPatterns.swift */,
 				A0000001000000000000254 /* TagNormalizationService.swift */,
 				A0000001000000000000156 /* ClassificationBiasStore.swift */,
 				A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */,
@@ -1122,6 +1153,11 @@
 				A00000010000000000000288 /* SquirrelCompanionService.swift in Sources */,
 				A00000010000000000000291 /* SyncedDefaults.swift in Sources */,
 				A00000010000000000000293 /* SyncedDefaultsMigration.swift in Sources */,
+				A00000010000000000000295 /* AppConstants.swift in Sources */,
+				A00000010000000000000297 /* ConcurrencyUtilities.swift in Sources */,
+				A00000010000000000000299 /* DateFormatters.swift in Sources */,
+				A00000010000000000000301 /* ClassificationPatterns.swift in Sources */,
+				A00000010000000000000303 /* AppLogger.swift in Sources */,
 				A00000010000000000000259 /* AcornToastView.swift in Sources */,
 				A0000001000000000000038 /* Subscription.swift in Sources */,
 				A0000001000000000000039 /* Conversation.swift in Sources */,

@@ -62,7 +62,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     // MARK: - Cache
 
     private var cache: [String: Classification] = [:]
-    private let maxCacheSize = 100
+    private let maxCacheSize = AppConstants.Classification.maxCacheSize
 
     // MARK: - Initialization
 
@@ -104,7 +104,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
         let timeout = configuration.timeouts.classification
 
         // Run classification with timeout
-        let result = await withTimeoutOrThrow(timeout) {
+        let result = await ConcurrencyUtilities.withTimeout(timeout) {
             await self.performClassification(content)
         }
 
@@ -147,11 +147,10 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
                 confidence = result.confidence
                 model = "foundation-models-v1"
 
-                NSLog("✅ Foundation Models classification: type=\(type), sentiment=\(sentiment), confidence=\(confidence)")
+                AppLogger.info("Foundation Models classification: type=\(type), sentiment=\(sentiment), confidence=\(confidence)", category: .classification)
             } catch {
                 // Fallback to keyword-based classification (Issue #8: improved logging)
-                NSLog("⚠️  Foundation Models unavailable, using keyword-based fallback")
-                NSLog("   Reason: \(error.localizedDescription)")
+                AppLogger.warning("Foundation Models unavailable, using keyword-based fallback. Reason: \(error.localizedDescription)", category: .classification)
                 async let typeResult = classifyType(content)
                 async let sentimentResult = nlpService.analyzeSentiment(content)
                 async let entitiesResult = nlpService.extractEntities(content)
@@ -194,7 +193,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
         // Convert from internal detailed version to model version
         // Issue #8: Lowered threshold from 0.7 to 0.6 to catch more valid dates
         let finalParsedDateTime: ParsedDateTime?
-        if parsedDateTime.confidence >= 0.6 {
+        if parsedDateTime.confidence >= AppConstants.Classification.parsedDateTimeMinConfidence {
             finalParsedDateTime = parsedDateTime.toModel()
         } else {
             finalParsedDateTime = nil
@@ -207,7 +206,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
             type: type,
             confidence: confidence,
             entities: entities,
-            suggestedTags: Array(tags.prefix(5)),
+            suggestedTags: Array(tags.prefix(AppConstants.Classification.maxSuggestedTags)),
             sentiment: sentiment,
             language: language,
             processingTime: processingTime,
@@ -248,7 +247,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
                 // Type is penalized — return explicit preferred type if known
                 if let preferredRaw = bias.preferredType(for: pattern, penalizedType: type.rawValue),
                    let preferred = ClassificationType(rawValue: preferredRaw) {
-                    NSLog("🎯 Bias correction: \(type.rawValue) → \(preferred.rawValue) for '\(pattern)'")
+                    AppLogger.info("Bias correction: \(type.rawValue) → \(preferred.rawValue) for '\(pattern)'", category: .classification)
                     return preferred
                 }
                 // No preferred type recorded yet — skip to next candidate
@@ -262,100 +261,33 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     }
 
     private func containsReminderIndicators(_ text: String) -> Bool {
-        let reminderPatterns = [
-            "remind me",
-            "don't forget",
-            "remember to",
-            "need to",
-            "have to",
-            "should",
-            "must",
-            "todo",
-            "to-do",
-            "to do",
-            "pick up",
-            "buy",
-            "call",
-            "email",
-            "text",
-            "send",
-            "follow up"
-        ]
-
-        return reminderPatterns.contains { text.contains($0) }
+        (ClassificationPatterns.Reminder.highSignal + ClassificationPatterns.Reminder.general)
+            .contains { text.contains($0) }
     }
 
     private func containsEventIndicators(_ text: String) -> Bool {
-        let eventPatterns = [
-            "meeting",
-            "appointment",
-            "schedule",
-            "calendar",
-            "at ",
-            "on monday",
-            "on tuesday",
-            "on wednesday",
-            "on thursday",
-            "on friday",
-            "on saturday",
-            "on sunday",
-            "next week",
-            "tomorrow",
-            "tonight",
-            "this evening",
-            "this afternoon",
-            "o'clock",
-            "am",
-            "pm"
-        ]
-
-        return eventPatterns.contains { text.contains($0) }
+        (ClassificationPatterns.Event.highSignal + ClassificationPatterns.Event.general)
+            .contains { text.contains($0) }
     }
 
     private func isQuestion(_ text: String) -> Bool {
-        // Ends with question mark
-        if text.trimmingCharacters(in: .whitespaces).hasSuffix("?") {
-            return true
-        }
-
-        // Starts with question words
-        let questionStarters = ["what", "who", "where", "when", "why", "how", "is", "are", "can", "could", "would", "should", "do", "does"]
-
+        if text.trimmingCharacters(in: .whitespaces).hasSuffix("?") { return true }
         let firstWord = text.split(separator: " ").first?.lowercased() ?? ""
-        return questionStarters.contains(String(firstWord))
+        return ClassificationPatterns.questionStarters.contains(String(firstWord))
     }
 
     /// Returns a type when a high-confidence keyword pattern matches, bypassing the bias store.
     /// Only the strongest unambiguous signals qualify — user corrections cannot override these.
     private func highSignalType(_ text: String) -> ClassificationType? {
-        let highSignalReminders = ["remind me", "don't forget", "remember to"]
-        if highSignalReminders.contains(where: { text.contains($0) }) { return .reminder }
-
-        let highSignalEvents = ["meeting", "appointment"]
-        if highSignalEvents.contains(where: { text.contains($0) }) { return .event }
-
-        let highSignalIdeas = ["what if", "idea:"]
-        if highSignalIdeas.contains(where: { text.contains($0) }) { return .idea }
-
+        if ClassificationPatterns.Reminder.highSignal.contains(where: { text.contains($0) }) { return .reminder }
+        if ClassificationPatterns.Event.highSignal.contains(where: { text.contains($0) }) { return .event }
+        if ClassificationPatterns.Idea.highSignal.contains(where: { text.contains($0) }) { return .idea }
         return nil
     }
 
     private func containsIdeaIndicators(_ text: String) -> Bool {
-        let ideaPatterns = [
-            "what if",
-            "idea:",
-            "i think",
-            "maybe we could",
-            "we should consider",
-            "it would be cool",
-            "imagine",
-            "concept:",
-            "brainstorm",
-            "could we",
-            "how about"
-        ]
-
-        return ideaPatterns.contains { text.contains($0) }
+        (ClassificationPatterns.Idea.highSignal + ClassificationPatterns.Idea.general)
+            .contains { text.contains($0) }
     }
 
     /// Corrects spurious negative sentiment on reminder and event thoughts.
@@ -370,14 +302,9 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     ) -> Sentiment {
         guard type == .reminder || type == .event else { return sentiment }
         guard sentiment == .negative || sentiment == .very_negative else { return sentiment }
-
         let lowercased = content.lowercased()
-        let emotionalMarkers = [
-            "stressed", "anxious", "worried", "scared",
-            "hate", "dread", "dreading", "overwhelmed",
-            "terrible", "awful"
-        ]
-        return emotionalMarkers.contains(where: { lowercased.contains($0) }) ? sentiment : .neutral
+        return ClassificationPatterns.Sentiment.negativeMarkers
+            .contains(where: { lowercased.contains($0) }) ? sentiment : .neutral
     }
 
     // MARK: - Confidence Calculation
@@ -544,30 +471,6 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     func prewarm() async {
         if let classifier = foundationModelsClassifier {
             await classifier.prewarm()
-        }
-    }
-
-    // MARK: - Timeout Helper
-
-    private func withTimeoutOrThrow<T: Sendable>(_ timeout: TimeInterval, operation: @Sendable @escaping () async -> T) async -> T? {
-        await withTaskGroup(of: T?.self) { group in
-            group.addTask {
-                await operation()
-            }
-
-            group.addTask {
-                try? await _Concurrency.Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
-                return nil
-            }
-
-            for await result in group {
-                if result != nil {
-                    group.cancelAll()
-                    return result
-                }
-            }
-
-            return nil
         }
     }
 

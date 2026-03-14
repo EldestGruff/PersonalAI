@@ -101,7 +101,7 @@ struct PersistenceController: Sendable {
 
         // CloudKit container — must match the identifier in Xcode Signing & Capabilities
         description.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(
-            containerIdentifier: "iCloud.com.withershins.stash"
+            containerIdentifier: AppConstants.CloudKit.containerIdentifier
         )
 
         // Required for CloudKit: persistent history lets the container track changes

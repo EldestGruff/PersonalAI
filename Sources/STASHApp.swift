@@ -36,9 +36,9 @@ struct STASHApp: App {
 
     init() {
         // Register App Shortcuts for Siri integration
-        print("🎯 Registering \(ThoughtAppShortcuts.appShortcuts.count) App Shortcuts...")
+        AppLogger.info("Registering \(ThoughtAppShortcuts.appShortcuts.count) App Shortcuts")
         ThoughtAppShortcuts.updateAppShortcutParameters()
-        print("✅ App Shortcuts registration complete")
+        AppLogger.info("App Shortcuts registration complete")
 
         // Register notification delegate for deep link handling
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
@@ -205,13 +205,10 @@ struct MainTabView: View {
 
     /// Checks for pending voice capture flag from OpenVoiceCaptureIntent
     private func checkForPendingVoiceCapture() {
-        let defaults = UserDefaults(suiteName: "group.com.withershins.stash")
-        if defaults?.bool(forKey: "pendingVoiceCapture") == true {
-            // Clear flag immediately
-            defaults?.set(false, forKey: "pendingVoiceCapture")
+        let defaults = AppConstants.AppGroup.defaults
+        if defaults?.bool(forKey: AppConstants.PendingActions.pendingVoiceCaptureKey) == true {
+            defaults?.set(false, forKey: AppConstants.PendingActions.pendingVoiceCaptureKey)
             defaults?.synchronize()
-
-            // Present voice capture screen
             showVoiceCapture = true
         }
     }
@@ -256,7 +253,7 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, Ob
     ) {
         let userInfo = response.notification.request.content.userInfo
         if let deeplink = userInfo["deeplink"] as? String, deeplink == "stash://capture" {
-            DispatchQueue.main.async { self.openCapture = true }
+            _Concurrency.Task { @MainActor in self.openCapture = true }
         }
         completionHandler()
     }

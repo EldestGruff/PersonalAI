@@ -55,7 +55,7 @@ actor CompanionConversationService {
         // Create new session
         self.session = LanguageModelSession(instructions: systemPrompt)
 
-        print("✅ Started companion conversation: \(persona.emoji) \(persona.name) | Private: \(isPrivate)")
+        AppLogger.info("Started companion conversation: \(persona.name) | Private: \(isPrivate)", category: .conversation)
     }
 
     /// End the current conversation session
@@ -63,7 +63,7 @@ actor CompanionConversationService {
         session = nil
         currentThought = nil
         currentPersona = nil
-        print("🔚 Ended companion conversation")
+        AppLogger.info("Ended companion conversation", category: .conversation)
     }
 
     // MARK: - Message Handling
@@ -254,9 +254,6 @@ actor CompanionConversationService {
     // MARK: - Helpers
 
     private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
+        DateFormatters.mediumDateTime.string(from: date)
     }
 }
