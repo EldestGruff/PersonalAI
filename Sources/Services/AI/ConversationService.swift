@@ -18,6 +18,9 @@ actor ConversationService {
     private let thoughtService: ThoughtServiceProtocol
     private let semanticSearchService: SemanticSearchService
     private var thoughtContext: ThoughtContext?
+    /// All thoughts loaded at session start; reused by findRelevantThoughts so we
+    /// never issue a second full Core Data fetch during message handling.
+    private var cachedThoughts: [Thought] = []
 
     // MARK: - Initialization
 
@@ -42,9 +45,10 @@ actor ConversationService {
             throw ConversationError.serviceUnavailable
         }
 
-        // Load thought context
-        let context = try await buildThoughtContext()
+        // Load thought context and cache thoughts for the session lifetime
+        let (context, thoughts) = try await buildThoughtContext()
         self.thoughtContext = context
+        self.cachedThoughts = thoughts
 
         // Create new session with system instructions
         self.session = LanguageModelSession(
@@ -58,6 +62,7 @@ actor ConversationService {
     func endConversation() {
         session = nil
         thoughtContext = nil
+        cachedThoughts = []
         print("🔚 Conversation session ended")
     }
 
@@ -73,8 +78,8 @@ actor ConversationService {
             throw ConversationError.sessionNotInitialized
         }
 
-        // Search for relevant thoughts based on the query
-        let relevantThoughts = try await findRelevantThoughts(query: userMessage)
+        // Search for relevant thoughts using the cached thought list (no DB fetch)
+        let relevantThoughts = await findRelevantThoughts(query: userMessage)
 
         // Build prompt with relevant thoughts
         let enrichedPrompt = buildUserPrompt(
@@ -143,23 +148,21 @@ actor ConversationService {
 
     // MARK: - Thought Search
 
-    private func findRelevantThoughts(query: String) async throws -> [Thought] {
-        // Get all thoughts for semantic search
-        let allThoughts = try await thoughtService.list(filter: nil)
-
-        // Use semantic search to find relevant thoughts
-        let results = await semanticSearchService.search(
-            query: query,
-            in: allThoughts
-        )
-
+    private func findRelevantThoughts(query: String) async -> [Thought] {
+        // Use thoughts cached at session start — no additional Core Data fetch needed
+        let results = await semanticSearchService.search(query: query, in: cachedThoughts)
         return Array(results.prefix(10).map { $0.thought })
     }
 
     // MARK: - Context Building
 
-    private func buildThoughtContext() async throws -> ThoughtContext {
-        // Get recent thoughts (last 50)
+    /// Loads all thoughts and builds a context summary.
+    ///
+    /// Returns both the `ThoughtContext` and the raw `[Thought]` array so the
+    /// caller can cache the thoughts for the lifetime of the session, avoiding
+    /// a second full Core Data fetch on each `sendMessage` call.
+    private func buildThoughtContext() async throws -> (ThoughtContext, [Thought]) {
+        // Single Core Data fetch for the entire session
         let allThoughts = try await thoughtService.list(filter: nil)
 
         guard !allThoughts.isEmpty else {
@@ -192,13 +195,14 @@ actor ConversationService {
         Top tags: \(topTags.keys.joined(separator: ", "))
         """
 
-        return ThoughtContext(
+        let context = ThoughtContext(
             recentThoughts: recentThoughts.map { ThoughtSummary(from: $0) },
             dateRange: dateRange,
             topTags: topTags,
             summaryStats: summaryStats,
             totalCount: allThoughts.count
         )
+        return (context, allThoughts)
     }
 
     // MARK: - Prompt Engineering
