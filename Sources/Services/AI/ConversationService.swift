@@ -303,12 +303,12 @@ actor ConversationService {
         } else if daysDiff < 30 {
             return "Last \(daysDiff / 7) weeks"
         } else {
-            return "\(DateFormatters.mediumDate.string(from: start)) - \(DateFormatters.mediumDate.string(from: end))"
+            return "\(DateFormatters.mediumDate(from: start)) - \(DateFormatters.mediumDate(from: end))"
         }
     }
 
     private func formatDate(_ date: Date) -> String {
-        DateFormatters.mediumDateTime.string(from: date)
+        DateFormatters.mediumDateTime(from: date)
     }
 }
 
