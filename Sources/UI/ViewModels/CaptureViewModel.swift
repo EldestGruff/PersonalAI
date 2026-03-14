@@ -689,13 +689,13 @@ final class CaptureViewModel {
             return content
         }
 
-        // Remove the matched date/time text
-        var cleanedContent = content
-
-        // Try case-insensitive replacement
-        if let range = cleanedContent.range(of: matchedText, options: [.caseInsensitive]) {
-            cleanedContent.removeSubrange(range)
-        }
+        // Remove all occurrences of the matched date/time text (case-insensitive).
+        // Previously used range(of:) + removeSubrange which only removed the first match.
+        var cleanedContent = content.replacingOccurrences(
+            of: matchedText,
+            with: "",
+            options: [.caseInsensitive]
+        )
 
         // Clean up extra whitespace and punctuation
         cleanedContent = cleanedContent
