@@ -63,9 +63,13 @@ actor SpeechRecognitionService: SpeechRecognitionServiceProtocol {
             return .authorized
         } else if speechStatus == .denied || micStatus == .denied {
             return .denied
-        } else if speechStatus == .restricted || micStatus == .undetermined {
+        } else if speechStatus == .restricted {
+            // .restricted means parental controls / MDM policy blocks access.
+            // AVAudioApplication has no .restricted case — only .granted/.denied/.undetermined.
             return .restricted
         } else {
+            // Covers: speechStatus == .notDetermined, micStatus == .undetermined, or any mix.
+            // Previously this branch incorrectly returned .restricted for micStatus == .undetermined.
             return .notDetermined
         }
     }
