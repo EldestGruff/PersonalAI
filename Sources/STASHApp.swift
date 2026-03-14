@@ -193,11 +193,10 @@ struct MainTabView: View {
                 checkForPendingVoiceCapture()
             }
         }
-        .onReceive(Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()) { _ in
-            // Check for voice capture flag periodically (works when app is in foreground)
-            if scenePhase == .active {
-                checkForPendingVoiceCapture()
-            }
+        .onReceive(NotificationCenter.default.publisher(for: .voiceCaptureRequested)) { _ in
+            // CaptureThoughtIntent posts this notification for immediate in-process response.
+            // The scenePhase onChange above handles the out-of-process (lock screen) case.
+            checkForPendingVoiceCapture()
         }
     }
 
@@ -266,6 +265,8 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, Ob
 
 extension Notification.Name {
     static let replayOnboarding = Notification.Name("replayOnboarding")
+    /// Posted by CaptureThoughtIntent when voice capture should be opened (in-process).
+    static let voiceCaptureRequested = Notification.Name("com.withershins.stash.voiceCaptureRequested")
 }
 
 // MARK: - Previews
