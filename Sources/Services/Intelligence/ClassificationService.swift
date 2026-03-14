@@ -137,6 +137,8 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
         var tags: [String]
         var confidence: Double
         var model: String
+        // Holds entities extracted on fallback paths so we don't re-extract below.
+        var fallbackEntities: [String]? = nil
 
         if let classifier = foundationModelsClassifier {
             do {
@@ -159,6 +161,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
                 type = await typeResult
                 sentiment = await sentimentResult
                 let entities = await entitiesResult
+                fallbackEntities = entities
                 tags = await generateTags(content: content, entities: entities)
                 confidence = calculateConfidence(type: type, content: content)
                 model = "nlp-heuristic-v1"
@@ -172,6 +175,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
             type = await typeResult
             sentiment = await sentimentResult
             let entities = await entitiesResult
+            fallbackEntities = entities
             tags = await generateTags(content: content, entities: entities)
             confidence = calculateConfidence(type: type, content: content)
             model = "nlp-heuristic-v1"
@@ -187,8 +191,9 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
         let language = await languageResult
         let parsedDateTime = await dateTimeResult
 
-        // Extract entities if not already done (for metadata)
-        let entities = await nlpService.extractEntities(content)
+        // Reuse entities from fallback path if already extracted; otherwise extract now
+        // (FM success path doesn't extract entities during classification).
+        let entities = fallbackEntities ?? (await nlpService.extractEntities(content))
 
         // Only include parsed date/time if it has reasonable confidence
         // Convert from internal detailed version to model version
