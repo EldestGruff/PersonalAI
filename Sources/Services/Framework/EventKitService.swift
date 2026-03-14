@@ -245,7 +245,7 @@ actor EventKitService: EventKitServiceProtocol {
         let rawInitialStatus = EKEventStore.authorizationStatus(for: .event)
         let initialStatus = mapAuthorizationStatus(rawInitialStatus)
 
-        AppLogger.calendar.debug("EventKit createEvent - Initial status: \(rawInitialStatus.rawValue) -> \(initialStatus)")
+        AppLogger.calendar.debug("EventKit createEvent - Initial status: \(rawInitialStatus.rawValue) -> \(initialStatus.rawValue)")
 
         if !initialStatus.allowsAccess {
             // Request FULL ACCESS to events (not write-only)
@@ -265,7 +265,7 @@ actor EventKitService: EventKitServiceProtocol {
         // Verify we have permission after request
         let rawFinalStatus = EKEventStore.authorizationStatus(for: .event)
         let finalStatus = mapAuthorizationStatus(rawFinalStatus)
-        AppLogger.calendar.debug("EventKit createEvent - Final status: \(rawFinalStatus.rawValue) -> \(finalStatus)")
+        AppLogger.calendar.debug("EventKit createEvent - Final status: \(rawFinalStatus.rawValue) -> \(finalStatus.rawValue)")
 
         guard finalStatus.allowsAccess else {
             throw ServiceError.permissionDenied(

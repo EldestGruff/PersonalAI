@@ -61,7 +61,8 @@ class SubscriptionManager {
         do {
             let productIds = SubscriptionProduct.allCases.map { $0.rawValue }
             products = try await Product.products(for: productIds)
-            AppLogger.store.info("Loaded \(products.count) subscription products")
+            let productCount = products.count
+            AppLogger.store.info("Loaded \(productCount) subscription products")
         } catch {
             AppLogger.store.warning("Failed to load products: \(error)")
             purchaseError = error
@@ -157,7 +158,7 @@ class SubscriptionManager {
         }
 
         status = currentStatus
-        AppLogger.store.debug("Subscription status: \(status.tier.displayName)")
+        AppLogger.store.debug("Subscription status: \(currentStatus.tier.displayName)")
     }
 
     // MARK: - Transaction Listening

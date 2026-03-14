@@ -228,7 +228,7 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
 
     /// Requests permission for a specific framework
     func requestPermission(for framework: FrameworkType) async -> PermissionLevel {
-        AppLogger.services.debug("[PermissionCoordinator] requestPermission(for: \(framework)) - ENTER")
+        AppLogger.services.debug("[PermissionCoordinator] requestPermission(for: \(framework.rawValue)) - ENTER")
 
         let service: any FrameworkServiceProtocol
 
@@ -253,13 +253,13 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
 
         AppLogger.services.debug("[PermissionCoordinator] requestPermission() - About to call service.requestPermission()")
         let result = await service.requestPermission()
-        AppLogger.services.debug("[PermissionCoordinator] requestPermission() - Got result: \(result)")
+        AppLogger.services.debug("[PermissionCoordinator] requestPermission() - Got result: \(result.rawValue)")
 
         // Refresh the full summary after any change
         AppLogger.services.debug("[PermissionCoordinator] requestPermission() - Refreshing status")
         _ = await refreshStatus()
 
-        AppLogger.services.debug("[PermissionCoordinator] requestPermission() - EXIT with result: \(result)")
+        AppLogger.services.debug("[PermissionCoordinator] requestPermission() - EXIT with result: \(result.rawValue)")
         return result
     }
 

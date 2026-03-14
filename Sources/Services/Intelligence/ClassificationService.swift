@@ -153,7 +153,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
                 confidence = result.confidence
                 model = "foundation-models-v1"
 
-                AppLogger.services.info("Foundation Models classification: type=\(type), sentiment=\(sentiment), confidence=\(confidence)")
+                AppLogger.services.info("Foundation Models classification: type=\(type.rawValue), sentiment=\(sentiment.rawValue), confidence=\(confidence)")
             } catch {
                 // Fallback to keyword-based classification (Issue #8: improved logging)
                 AppLogger.services.warning("Foundation Models unavailable, using keyword-based fallback")
@@ -195,9 +195,15 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
         let language = await languageResult
         let parsedDateTime = await dateTimeResult
 
-        // Reuse entities from fallback path if already extracted; otherwise extract now
-        // (FM success path doesn't extract entities during classification).
-        let entities = fallbackEntities ?? (await nlpService.extractEntities(content))
+        // Reuse entities from fallback path if already extracted; otherwise extract now.
+        // (FM success path doesn't extract entities during classification.)
+        // Note: ?? operator uses @autoclosure which doesn't support async; use explicit if-let.
+        let entities: [String]
+        if let fallback = fallbackEntities {
+            entities = fallback
+        } else {
+            entities = await nlpService.extractEntities(content)
+        }
 
         // Only include parsed date/time if it has reasonable confidence
         // Convert from internal detailed version to model version

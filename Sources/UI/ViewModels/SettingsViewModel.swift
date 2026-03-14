@@ -277,19 +277,22 @@ final class SettingsViewModel {
 
     /// Loads available calendars and reminder lists
     func loadCalendars() async {
-        AppLogger.ui.debug("SettingsViewModel - loadCalendars called, eventKitAuthorized: \(eventKitAuthorized)")
-        guard eventKitAuthorized else {
+        let isAuthorized = eventKitAuthorized
+        AppLogger.ui.debug("SettingsViewModel - loadCalendars called, eventKitAuthorized: \(isAuthorized)")
+        guard isAuthorized else {
             AppLogger.ui.debug("SettingsViewModel - EventKit not authorized, skipping calendar load")
             return
         }
 
         // Load calendars for events
         availableCalendars = await eventKitService.getAvailableCalendars()
-        AppLogger.ui.debug("SettingsViewModel - Loaded \(availableCalendars.count) calendars")
+        let calendarCount = availableCalendars.count
+        AppLogger.ui.debug("SettingsViewModel - Loaded \(calendarCount) calendars")
 
         // Load reminder lists
         availableReminderLists = await eventKitService.getAvailableReminderLists()
-        AppLogger.ui.debug("SettingsViewModel - Loaded \(availableReminderLists.count) reminder lists")
+        let reminderCount = availableReminderLists.count
+        AppLogger.ui.debug("SettingsViewModel - Loaded \(reminderCount) reminder lists")
 
         // Validate selected calendar - clear if it's not in the available list
         if let selectedId = selectedCalendarId,

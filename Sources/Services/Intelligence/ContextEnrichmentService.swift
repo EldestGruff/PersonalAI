@@ -207,7 +207,7 @@ final class ContextEnrichmentService {
 
         do {
             let result = try await classificationService.classify(thought.content)
-            AppLogger.services.info("Classified thought: type=\(result.type), tags=\(result.suggestedTags)")
+            AppLogger.services.info("Classified thought: type=\(result.type.rawValue), tags=\(result.suggestedTags)")
             return result
         } catch {
             AppLogger.services.warning("Classification failed: \(error.localizedDescription)")
