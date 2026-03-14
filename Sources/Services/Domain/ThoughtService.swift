@@ -432,6 +432,7 @@ actor ThoughtService: ThoughtServiceProtocol {
 
 // MARK: - Mock Thought Service
 
+#if DEBUG
 /// Mock thought service for testing and previews.
 actor MockThoughtService: ThoughtServiceProtocol {
     nonisolated var isAvailable: Bool { true }
@@ -504,3 +505,4 @@ actor MockThoughtService: ThoughtServiceProtocol {
         thoughts.values.filter { $0.status == .archived }
     }
 }
+#endif

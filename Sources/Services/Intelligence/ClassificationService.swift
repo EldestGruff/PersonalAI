@@ -594,6 +594,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
 // MARK: - Mock Classification Service
 
 /// Mock classification service for testing and previews.
+#if DEBUG
 actor MockClassificationService: ClassificationServiceProtocol {
     nonisolated var isAvailable: Bool { true }
 
@@ -636,3 +637,4 @@ actor MockClassificationService: ClassificationServiceProtocol {
         // No-op for mock
     }
 }
+#endif

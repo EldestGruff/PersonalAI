@@ -299,6 +299,7 @@ actor ConversationService {
 
 // MARK: - Mock Service
 
+#if DEBUG
 /// Mock conversation service for testing and previews
 @available(iOS 26.0, *)
 actor MockConversationService {
@@ -356,3 +357,4 @@ actor MockConversationService {
         }
     }
 }
+#endif
