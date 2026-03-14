@@ -21,6 +21,9 @@ protocol ClassificationServiceProtocol: ServiceProtocol {
 
     /// Suggests tags for content
     func suggestTags(_ content: String) async -> [String]
+
+    /// Pre-warms the underlying model to reduce first-classification latency
+    func prewarm() async
 }
 
 // MARK: - Classification Service
@@ -627,5 +630,9 @@ actor MockClassificationService: ClassificationServiceProtocol {
 
     func suggestTags(_ content: String) async -> [String] {
         mockTags
+    }
+
+    func prewarm() async {
+        // No-op for mock
     }
 }

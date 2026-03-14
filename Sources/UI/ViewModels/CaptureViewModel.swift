@@ -109,11 +109,11 @@ final class CaptureViewModel {
 
     // MARK: - Services
 
-    private let thoughtService: ThoughtService
-    private let contextService: ContextService
-    private let classificationService: ClassificationService
-    private let fineTuningService: FineTuningService
-    private let taskService: TaskService
+    private let thoughtService: any ThoughtServiceProtocol
+    private let contextService: any ContextServiceProtocol
+    private let classificationService: any ClassificationServiceProtocol
+    private let fineTuningService: any FineTuningServiceProtocol
+    private let taskService: any TaskServiceProtocol
     private let settingsViewModel: SettingsViewModel?
     private let subscriptionManager: SubscriptionManager
     private let smartInsights = SmartInsightsService.shared
@@ -143,11 +143,11 @@ final class CaptureViewModel {
     // MARK: - Initialization
 
     init(
-        thoughtService: ThoughtService,
-        contextService: ContextService,
-        classificationService: ClassificationService,
-        fineTuningService: FineTuningService,
-        taskService: TaskService,
+        thoughtService: any ThoughtServiceProtocol,
+        contextService: any ContextServiceProtocol,
+        classificationService: any ClassificationServiceProtocol,
+        fineTuningService: any FineTuningServiceProtocol,
+        taskService: any TaskServiceProtocol,
         settingsViewModel: SettingsViewModel? = nil,
         subscriptionManager: SubscriptionManager = .shared
     ) {
