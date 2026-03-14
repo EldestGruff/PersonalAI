@@ -213,9 +213,9 @@ actor ThoughtConversationService {
             // Group by thoughtId
             conversations = Dictionary(grouping: allConversations) { $0.thoughtId }
 
-            print("✅ Loaded \(allConversations.count) thought conversations")
+            AppLogger.services.info("Loaded \(allConversations.count) thought conversations")
         } catch {
-            print("❌ Failed to load thought conversations: \(error)")
+            AppLogger.services.error("Failed to load thought conversations: \(error)")
         }
     }
 
@@ -226,7 +226,7 @@ actor ThoughtConversationService {
             let data = try JSONEncoder().encode(allConversations)
             UserDefaults.standard.set(data, forKey: persistenceKey)
         } catch {
-            print("❌ Failed to save thought conversations: \(error)")
+            AppLogger.services.error("Failed to save thought conversations: \(error)")
         }
     }
 }

@@ -8,6 +8,7 @@
 
 import Foundation
 import FoundationModels
+import OSLog
 
 /// Result from Foundation Models classification
 struct FoundationModelsResult {
@@ -53,7 +54,7 @@ actor FoundationModelsClassifier {
 
     private func setupSession() {
         guard SystemLanguageModel().availability == .available else {
-            print("⚠️ Apple Intelligence not available")
+            AppLogger.ai.warning("Apple Intelligence not available")
             if !FoundationModelsClassifier.hasTrackedUnavailable {
                 AnalyticsService.shared.track(.aiUnavailable)
                 FoundationModelsClassifier.hasTrackedUnavailable = true
@@ -156,7 +157,7 @@ actor FoundationModelsClassifier {
             )
 
         } catch {
-            NSLog("❌ Foundation Models classification failed: \(error)")
+            AppLogger.ai.error("Foundation Models classification failed: \(error)")
             throw ClassificationError.processingFailed(underlying: error)
         }
     }
@@ -171,7 +172,7 @@ actor FoundationModelsClassifier {
         _Concurrency.Task {
             session.prewarm()
             isPrewarmed = true
-            print("✅ Foundation Models pre-warmed")
+            AppLogger.ai.info("Foundation Models pre-warmed")
         }
     }
 

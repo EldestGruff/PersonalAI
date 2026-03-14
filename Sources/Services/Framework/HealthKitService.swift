@@ -8,6 +8,7 @@
 
 import Foundation
 import HealthKit
+import OSLog
 
 // MARK: - Historical Health Data Structures
 
@@ -745,7 +746,7 @@ actor HealthKitService: HealthKitServiceProtocol {
             )
 
         } catch {
-            NSLog("⚠️ Failed to fetch state of mind: \(error)")
+            AppLogger.health.warning("Failed to fetch state of mind: \(error)")
             return nil
         }
     }
@@ -966,7 +967,7 @@ actor HealthKitService: HealthKitServiceProtocol {
             .sorted { $0.date < $1.date }
 
         } catch {
-            NSLog("Warning: Failed to fetch historical sleep data: \(error)")
+            AppLogger.health.warning("Failed to fetch historical sleep data: \(error)")
             return []
         }
     }
@@ -1022,7 +1023,7 @@ actor HealthKitService: HealthKitServiceProtocol {
             .sorted { $0.date < $1.date }
 
         } catch {
-            NSLog("Warning: Failed to fetch historical HRV data: \(error)")
+            AppLogger.health.warning("Failed to fetch historical HRV data: \(error)")
             return []
         }
     }
@@ -1089,7 +1090,7 @@ actor HealthKitService: HealthKitServiceProtocol {
             .sorted { $0.date < $1.date }
 
         } catch {
-            NSLog("Warning: Failed to fetch historical workout data: \(error)")
+            AppLogger.health.warning("Failed to fetch historical workout data: \(error)")
             return []
         }
     }
@@ -1153,7 +1154,7 @@ actor HealthKitService: HealthKitServiceProtocol {
             .sorted { $0.date < $1.date }
 
         } catch {
-            NSLog("Warning: Failed to fetch historical resting HR data: \(error)")
+            AppLogger.health.warning("Failed to fetch historical resting HR data: \(error)")
             return []
         }
     }

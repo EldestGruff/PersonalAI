@@ -7,6 +7,7 @@
 
 import Foundation
 import FoundationModels
+import OSLog
 
 /// Actor-based service for conversational thought exploration
 @available(iOS 26.0, *)
@@ -55,7 +56,7 @@ actor ConversationService {
             instructions: buildSystemPrompt(context: context)
         )
 
-        print("✅ Conversation session started with \(context.totalCount) thoughts")
+        AppLogger.ai.info("Conversation session started with \(context.totalCount) thoughts")
     }
 
     /// End the current conversation session
@@ -63,7 +64,7 @@ actor ConversationService {
         session = nil
         thoughtContext = nil
         cachedThoughts = []
-        print("🔚 Conversation session ended")
+        AppLogger.ai.debug("Conversation session ended")
     }
 
     // MARK: - Message Handling

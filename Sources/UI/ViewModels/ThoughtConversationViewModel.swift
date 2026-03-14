@@ -84,7 +84,7 @@ class ThoughtConversationViewModel {
             )
         } catch {
             self.error = error
-            print("❌ Failed to start conversation: \(error)")
+            AppLogger.ui.error("Failed to start conversation: \(error)")
         }
     }
 
@@ -110,7 +110,7 @@ class ThoughtConversationViewModel {
             )
         } catch {
             self.error = error
-            print("❌ Failed to start conversation: \(error)")
+            AppLogger.ui.error("Failed to start conversation: \(error)")
         }
 
         // Reload conversations list
@@ -174,7 +174,7 @@ class ThoughtConversationViewModel {
         } catch {
             self.error = error
             isLoading = false
-            print("❌ Failed to send message: \(error)")
+            AppLogger.ui.error("Failed to send message: \(error)")
         }
     }
 
@@ -237,7 +237,7 @@ class ThoughtConversationViewModel {
             )
         } catch {
             self.error = error
-            print("❌ Failed to restart conversation: \(error)")
+            AppLogger.ui.error("Failed to restart conversation: \(error)")
         }
     }
 

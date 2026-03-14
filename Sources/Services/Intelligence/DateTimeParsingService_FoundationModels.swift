@@ -8,6 +8,7 @@
 
 import Foundation
 import FoundationModels
+import OSLog
 
 // MARK: - Structured Output Model
 
@@ -198,12 +199,12 @@ actor FoundationModelsDateTimeParser {
 
             if let parsed = localDateFormatter.date(from: datePart) {
                 date = parsed
-                NSLog("📅 FM date parsed: '\(dateString)' → '\(datePart)' → \(parsed)")
+                AppLogger.ai.debug("FM date parsed: '\(dateString)' → '\(datePart)' → \(parsed)")
             } else if let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.date.rawValue),
                       let match = detector.firstMatch(in: dateString, range: NSRange(dateString.startIndex..., in: dateString)),
                       let fallback = match.date {
                 // Model returned a relative string like "next Wednesday" — NSDataDetector resolves it
-                NSLog("⚠️ FM returned non-ISO date '\(dateString)', NSDataDetector resolved to \(fallback)")
+                AppLogger.ai.warning("FM returned non-ISO date '\(dateString)', NSDataDetector resolved to \(fallback)")
                 date = fallback
             }
         }
@@ -235,7 +236,7 @@ actor FoundationModelsDateTimeParser {
             components.second = 0
             date = calendar.date(from: components)
 
-            NSLog("🔧 Smart fix: Foundation Models found time but no date, using today: \(date?.description ?? "nil")")
+            AppLogger.ai.debug("Smart fix: Foundation Models found time but no date, using today: \(date?.description ?? "nil")")
         }
 
         return ParsedDateTimeInternal(

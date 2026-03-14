@@ -36,9 +36,9 @@ struct STASHApp: App {
 
     init() {
         // Register App Shortcuts for Siri integration
-        print("🎯 Registering \(ThoughtAppShortcuts.appShortcuts.count) App Shortcuts...")
+        AppLogger.ui.debug("Registering \(ThoughtAppShortcuts.appShortcuts.count) App Shortcuts...")
         ThoughtAppShortcuts.updateAppShortcutParameters()
-        print("✅ App Shortcuts registration complete")
+        AppLogger.ui.info("App Shortcuts registration complete")
 
         // Register notification delegate for deep link handling
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared

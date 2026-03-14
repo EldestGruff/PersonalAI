@@ -8,6 +8,7 @@
 
 import Foundation
 import FoundationModels
+import OSLog
 
 // MARK: - Insights Context
 
@@ -201,7 +202,7 @@ actor InsightsGenerationService {
         guard session == nil else { return }
 
         guard SystemLanguageModel().availability == .available else {
-            print("Warning: Apple Intelligence not available for insights generation")
+            AppLogger.ai.warning("Apple Intelligence not available for insights generation")
             return
         }
 
@@ -278,7 +279,7 @@ actor InsightsGenerationService {
             return insights
 
         } catch {
-            NSLog("Failed to generate AI insights: \(error)")
+            AppLogger.ai.error("Failed to generate AI insights: \(error)")
             throw InsightsGenerationError.generationFailed(underlying: error)
         }
     }

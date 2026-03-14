@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import OSLog
 import StoreKit
 
 // MARK: - Subscription Manager
@@ -60,9 +61,9 @@ class SubscriptionManager {
         do {
             let productIds = SubscriptionProduct.allCases.map { $0.rawValue }
             products = try await Product.products(for: productIds)
-            NSLog("✅ Loaded \(products.count) subscription products")
+            AppLogger.store.info("Loaded \(products.count) subscription products")
         } catch {
-            NSLog("⚠️ Failed to load products: \(error)")
+            AppLogger.store.warning("Failed to load products: \(error)")
             purchaseError = error
         }
 
@@ -90,19 +91,19 @@ class SubscriptionManager {
                 // Finish the transaction
                 await transaction.finish()
 
-                NSLog("✅ Purchase successful: \(product.id)")
+                AppLogger.store.info("Purchase successful: \(product.id)")
 
             case .userCancelled:
-                NSLog("ℹ️ User cancelled purchase")
+                AppLogger.store.debug("User cancelled purchase")
 
             case .pending:
-                NSLog("⏳ Purchase pending approval")
+                AppLogger.store.debug("Purchase pending approval")
 
             @unknown default:
-                NSLog("⚠️ Unknown purchase result")
+                AppLogger.store.warning("Unknown purchase result")
             }
         } catch {
-            NSLog("⚠️ Purchase failed: \(error)")
+            AppLogger.store.warning("Purchase failed: \(error)")
             purchaseError = error
             throw error
         }
@@ -117,9 +118,9 @@ class SubscriptionManager {
         do {
             try await AppStore.sync()
             await updateSubscriptionStatus()
-            NSLog("✅ Purchases restored")
+            AppLogger.store.info("Purchases restored")
         } catch {
-            NSLog("⚠️ Failed to restore purchases: \(error)")
+            AppLogger.store.warning("Failed to restore purchases: \(error)")
             purchaseError = error
         }
 
@@ -151,12 +152,12 @@ class SubscriptionManager {
                     break
                 }
             } catch {
-                NSLog("⚠️ Failed to verify transaction: \(error)")
+                AppLogger.store.warning("Failed to verify transaction: \(error)")
             }
         }
 
         status = currentStatus
-        NSLog("ℹ️ Subscription status: \(status.tier.displayName)")
+        AppLogger.store.debug("Subscription status: \(status.tier.displayName)")
     }
 
     // MARK: - Transaction Listening
@@ -176,7 +177,7 @@ class SubscriptionManager {
                     // Finish the transaction
                     await transaction.finish()
                 } catch {
-                    NSLog("⚠️ Transaction verification failed: \(error)")
+                    AppLogger.store.warning("Transaction verification failed: \(error)")
                 }
             }
         }

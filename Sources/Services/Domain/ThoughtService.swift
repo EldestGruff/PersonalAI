@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import OSLog
 
 // MARK: - Thought Service Protocol
 
@@ -163,7 +164,7 @@ actor ThoughtService: ThoughtServiceProtocol {
             }
         } catch {
             // Classification failure is not fatal - log and continue
-            print("Classification failed for thought \(thought.id): \(error)")
+            AppLogger.services.error("Classification failed for thought \(thought.id): \(error)")
         }
     }
 

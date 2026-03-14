@@ -8,6 +8,7 @@
 
 import Foundation
 import FoundationModels
+import OSLog
 
 // MARK: - Classification Service Protocol
 
@@ -149,11 +150,11 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
                 confidence = result.confidence
                 model = "foundation-models-v1"
 
-                NSLog("✅ Foundation Models classification: type=\(type), sentiment=\(sentiment), confidence=\(confidence)")
+                AppLogger.services.info("Foundation Models classification: type=\(type), sentiment=\(sentiment), confidence=\(confidence)")
             } catch {
                 // Fallback to keyword-based classification (Issue #8: improved logging)
-                NSLog("⚠️  Foundation Models unavailable, using keyword-based fallback")
-                NSLog("   Reason: \(error.localizedDescription)")
+                AppLogger.services.warning("Foundation Models unavailable, using keyword-based fallback")
+                AppLogger.services.warning("Reason: \(error.localizedDescription)")
                 async let typeResult = classifyType(content)
                 async let sentimentResult = nlpService.analyzeSentiment(content)
                 async let entitiesResult = nlpService.extractEntities(content)
@@ -253,7 +254,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
                 // Type is penalized — return explicit preferred type if known
                 if let preferredRaw = bias.preferredType(for: pattern, penalizedType: type.rawValue),
                    let preferred = ClassificationType(rawValue: preferredRaw) {
-                    NSLog("🎯 Bias correction: \(type.rawValue) → \(preferred.rawValue) for '\(pattern)'")
+                    AppLogger.services.debug("Bias correction: \(type.rawValue) → \(preferred.rawValue) for '\(pattern)'")
                     return preferred
                 }
                 // No preferred type recorded yet — skip to next candidate

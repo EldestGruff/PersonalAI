@@ -129,7 +129,7 @@ struct Chart3DPreviewScreen: View {
                 }
                 isLoading = false
             } catch {
-                print("Error loading 3D data: \(error)")
+                AppLogger.ui.error("Error loading 3D data: \(error)")
                 isLoading = false
             }
         }

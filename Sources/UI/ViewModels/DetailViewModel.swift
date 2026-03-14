@@ -299,10 +299,10 @@ final class DetailViewModel {
 
             } catch {
                 // Enhanced error logging for debugging (#49)
-                NSLog("❌ DetailViewModel - Save failed: %@", error.localizedDescription)
-                NSLog("❌ Error type: %@", String(describing: type(of: error)))
+                AppLogger.ui.error("DetailViewModel - Save failed: \(error.localizedDescription)")
+                AppLogger.ui.error("Error type: \(String(describing: type(of: error)))")
                 if let validationError = error as? ValidationError {
-                    NSLog("❌ Validation error details: %@", String(describing: validationError))
+                    AppLogger.ui.error("Validation error details: \(String(describing: validationError))")
                 }
                 self.error = AppError.from(error)
             }
@@ -434,10 +434,10 @@ final class DetailViewModel {
                 taskCreated = true
 
             } catch {
-                NSLog("❌ DetailViewModel - Error creating reminder/event: %@", error.localizedDescription)
-                NSLog("❌ Error type: %@", String(describing: type(of: error)))
+                AppLogger.ui.error("DetailViewModel - Error creating reminder/event: \(error.localizedDescription)")
+                AppLogger.ui.error("Error type: \(String(describing: type(of: error)))")
                 self.error = AppError.from(error)
-                NSLog("❌ Converted to AppError: %@", self.error?.localizedDescription ?? "nil")
+                AppLogger.ui.error("Converted to AppError: \(self.error?.localizedDescription ?? "nil")")
             }
 
             isCreatingTask = false
