@@ -123,83 +123,31 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
         return classification
     }
 
+    // MARK: - Classification Paths
+
+    /// Coordinator: attempts Foundation Models path, falls back to NLP heuristics.
     private func performClassification(_ content: String) async -> Classification {
         let startTime = Date()
 
-        // PRIMARY (iOS 26): Use Foundation Models for intelligent classification
-        // This replaces hardcoded keyword patterns with AI that understands intent
         if foundationModelsClassifier == nil {
             foundationModelsClassifier = FoundationModelsClassifier()
         }
 
-        var type: ClassificationType
-        var sentiment: Sentiment
-        var tags: [String]
-        var confidence: Double
-        var model: String
+        var (type, sentiment, tags, confidence, model) = await classifyViaFoundationModels(content)
+            ?? (await classifyViaNLPHeuristics(content))
 
-        if let classifier = foundationModelsClassifier {
-            do {
-                let result = try await classifier.classify(content)
-                type = result.type
-                sentiment = result.sentiment
-                tags = result.tags
-                confidence = result.confidence
-                model = "foundation-models-v1"
-
-                AppLogger.info("Foundation Models classification: type=\(type), sentiment=\(sentiment), confidence=\(confidence)", category: .classification)
-            } catch {
-                // Fallback to keyword-based classification (Issue #8: improved logging)
-                AppLogger.warning("Foundation Models unavailable, using keyword-based fallback. Reason: \(error.localizedDescription)", category: .classification)
-                async let typeResult = classifyType(content)
-                async let sentimentResult = nlpService.analyzeSentiment(content)
-                async let entitiesResult = nlpService.extractEntities(content)
-
-                type = await typeResult
-                sentiment = await sentimentResult
-                let entities = await entitiesResult
-                tags = await generateTags(content: content, entities: entities)
-                confidence = calculateConfidence(type: type, content: content)
-                model = "nlp-heuristic-v1"
-            }
-        } else {
-            // No Foundation Models available, use keyword-based fallback
-            async let typeResult = classifyType(content)
-            async let sentimentResult = nlpService.analyzeSentiment(content)
-            async let entitiesResult = nlpService.extractEntities(content)
-
-            type = await typeResult
-            sentiment = await sentimentResult
-            let entities = await entitiesResult
-            tags = await generateTags(content: content, entities: entities)
-            confidence = calculateConfidence(type: type, content: content)
-            model = "nlp-heuristic-v1"
-        }
-
-        // Post-process: cap reminder/event sentiment at Neutral unless genuinely emotional (#65)
         sentiment = postProcessSentiment(type: type, sentiment: sentiment, content: content)
 
-        // Run language detection and date/time parsing in parallel (still needed)
         async let languageResult = nlpService.detectLanguage(content)
         async let dateTimeResult = dateTimeParser.parseDateTime(content, referenceDate: Date())
-
+        let entities = await nlpService.extractEntities(content)
         let language = await languageResult
         let parsedDateTime = await dateTimeResult
 
-        // Extract entities if not already done (for metadata)
-        let entities = await nlpService.extractEntities(content)
-
-        // Only include parsed date/time if it has reasonable confidence
-        // Convert from internal detailed version to model version
-        // Issue #8: Lowered threshold from 0.7 to 0.6 to catch more valid dates
-        let finalParsedDateTime: ParsedDateTime?
-        if parsedDateTime.confidence >= AppConstants.Classification.parsedDateTimeMinConfidence {
-            finalParsedDateTime = parsedDateTime.toModel()
-        } else {
-            finalParsedDateTime = nil
-        }
-
-        let processingTime = Date().timeIntervalSince(startTime)
+        // Issue #8: threshold lowered from 0.7 → 0.6 to catch more valid dates
+        let finalParsedDateTime = parsedDateTime.confidence >= AppConstants.Classification.parsedDateTimeMinConfidence
+            ? parsedDateTime.toModel()
+            : nil
 
         return Classification(
             id: UUID(),
@@ -209,11 +157,48 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
             suggestedTags: Array(tags.prefix(AppConstants.Classification.maxSuggestedTags)),
             sentiment: sentiment,
             language: language,
-            processingTime: processingTime,
+            processingTime: Date().timeIntervalSince(startTime),
             model: model,
             createdAt: Date(),
             parsedDateTime: finalParsedDateTime
         )
+    }
+
+    /// Attempts classification using Foundation Models. Returns nil if unavailable or failed.
+    private func classifyViaFoundationModels(_ content: String) async
+        -> (ClassificationType, Sentiment, [String], Double, String)?
+    {
+        guard let classifier = foundationModelsClassifier else { return nil }
+        do {
+            let result = try await classifier.classify(content)
+            AppLogger.info(
+                "Foundation Models classification: type=\(result.type), confidence=\(result.confidence)",
+                category: .classification
+            )
+            return (result.type, result.sentiment, result.tags, result.confidence, "foundation-models-v1")
+        } catch {
+            AppLogger.warning(
+                "Foundation Models unavailable, using keyword-based fallback. Reason: \(error.localizedDescription)",
+                category: .classification
+            )
+            return nil
+        }
+    }
+
+    /// NLP heuristic classification path. Always succeeds — never returns nil.
+    private func classifyViaNLPHeuristics(_ content: String) async
+        -> (ClassificationType, Sentiment, [String], Double, String)
+    {
+        async let typeResult = classifyType(content)
+        async let sentimentResult = nlpService.analyzeSentiment(content)
+        async let entitiesResult = nlpService.extractEntities(content)
+
+        let type = await typeResult
+        let sentiment = await sentimentResult
+        let entities = await entitiesResult
+        let tags = await generateTags(content: content, entities: entities)
+        let confidence = calculateConfidence(type: type, content: content)
+        return (type, sentiment, tags, confidence, "nlp-heuristic-v1")
     }
 
     // MARK: - Type Classification

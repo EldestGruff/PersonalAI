@@ -89,7 +89,7 @@ actor ContextService: ContextServiceProtocol {
     private let healthKitService: HealthKitServiceProtocol
     private let motionService: MotionServiceProtocol
     private let eventKitService: EventKitServiceProtocol
-    let configuration: ServiceConfiguration
+    private let configuration: ServiceConfiguration
 
     // MARK: - Initialization
 
@@ -131,155 +131,151 @@ actor ContextService: ContextServiceProtocol {
     func gatherContextWithDiagnostics() async -> (Context, ContextGatheringMetrics) {
         let startTime = Date()
         let timeout = configuration.timeouts.frameworkOperation
+        var results = GatheringResults()
 
-        // Track timing for each operation
-        var locationDuration: Int?
-        var healthKitDuration: Int?
-        var motionDuration: Int?
-        var eventKitDuration: Int?
-        var timeouts = 0
-        let failures = 0
-
-        // Default values
-        var location: Location? = nil
-        var energy: EnergyLevel = .medium
-        var energyBreakdown: EnergyBreakdown? = nil
-        var activity: ActivityContext = ActivityContext(stepCount: 0, caloriesBurned: 0, activeMinutes: 0)
-        var calendar: CalendarContext = CalendarContext(nextEventMinutes: nil, isFreetime: true, eventCount: 0)
-        var stateOfMind: StateOfMindSnapshot? = nil
-
-        // Run all operations in parallel using TaskGroup
         await withTaskGroup(of: (ContextComponent, Int, Bool).self) { group in
-            // Location
-            group.addTask {
-                let opStart = Date()
-                let result = await ConcurrencyUtilities.withTimeout(timeout) {
-                    await self.locationService.getCurrentLocation()
-                }
-                let duration = Int(Date().timeIntervalSince(opStart) * 1000)
-                let timedOut = result == nil && duration >= Int(timeout * 1000)
-                return (.location(result), duration, timedOut)
-            }
-
-            // Energy breakdown (includes energy level) - replaces separate energy level query
-            group.addTask {
-                let opStart = Date()
-                let defaultBreakdown = EnergyBreakdown(
-                    sleepScore: 0.5,
-                    activityScore: 0.5,
-                    hrvScore: 0.5,
-                    timeBonus: 0.5,
-                    totalScore: 0.5,
-                    level: .medium,
-                    hrvValueMs: nil,
-                    sleepHours: nil,
-                    stepCount: nil
-                )
-                let result = await ConcurrencyUtilities.withTimeout(timeout, default: defaultBreakdown) {
-                    await self.healthKitService.getEnergyBreakdown()
-                }
-                let duration = Int(Date().timeIntervalSince(opStart) * 1000)
-                let timedOut = duration >= Int(timeout * 1000)
-                return (.energyBreakdown(result), duration, timedOut)
-            }
-
-            // Activity context
-            group.addTask {
-                let opStart = Date()
-                let defaultActivity = ActivityContext(stepCount: 0, caloriesBurned: 0, activeMinutes: 0)
-                let result = await ConcurrencyUtilities.withTimeout(timeout, default: defaultActivity) {
-                    await self.healthKitService.getActivityContext()
-                }
-                let duration = Int(Date().timeIntervalSince(opStart) * 1000)
-                let timedOut = duration >= Int(timeout * 1000)
-                return (.activity(result), duration, timedOut)
-            }
-
-            // Calendar context
-            group.addTask {
-                let opStart = Date()
-                let defaultCalendar = CalendarContext(nextEventMinutes: nil, isFreetime: true, eventCount: 0)
-                let result = await ConcurrencyUtilities.withTimeout(timeout, default: defaultCalendar) {
-                    await self.eventKitService.getAvailability()
-                }
-                let duration = Int(Date().timeIntervalSince(opStart) * 1000)
-                let timedOut = duration >= Int(timeout * 1000)
-                return (.calendar(result), duration, timedOut)
-            }
-
-            // State of Mind (iOS 18+)
+            group.addTask { await self.gatherLocation(timeout: timeout) }
+            group.addTask { await self.gatherEnergyBreakdown(timeout: timeout) }
+            group.addTask { await self.gatherActivity(timeout: timeout) }
+            group.addTask { await self.gatherCalendar(timeout: timeout) }
             if #available(iOS 18.0, *) {
-                group.addTask {
-                    let opStart = Date()
-                    let result = await ConcurrencyUtilities.withTimeout(timeout, default: nil) {
-                        await self.healthKitService.getStateOfMind()
-                    }
-                    let duration = Int(Date().timeIntervalSince(opStart) * 1000)
-                    let timedOut = duration >= Int(timeout * 1000)
-                    return (.stateOfMind(result), duration, timedOut)
-                }
+                group.addTask { await self.gatherStateOfMind(timeout: timeout) }
             }
-
-            // Collect results
             for await (component, duration, timedOut) in group {
-                if timedOut {
-                    timeouts += 1
-                }
-
-                switch component {
-                case .location(let loc):
-                    location = loc
-                    locationDuration = duration
-                case .energy(let e):
-                    energy = e
-                    // Legacy case - not used when energyBreakdown is captured
-                case .energyBreakdown(let eb):
-                    energyBreakdown = eb
-                    energy = eb.level
-                    healthKitDuration = duration
-                case .activity(let a):
-                    activity = a
-                    motionDuration = duration
-                case .calendar(let c):
-                    calendar = c
-                    eventKitDuration = duration
-                case .stateOfMind(let som):
-                    stateOfMind = som
-                    // Duration already tracked in healthKitDuration
-                }
+                results.apply(component: component, duration: duration, timedOut: timedOut)
             }
         }
 
-        let now = Date()
-        let totalDuration = Int(now.timeIntervalSince(startTime) * 1000)
+        return results.assembled(startedAt: startTime)
+    }
 
+    // MARK: - Per-Source Gathering
+
+    private func gatherLocation(timeout: TimeInterval) async -> (ContextComponent, Int, Bool) {
+        let opStart = Date()
+        let result = await ConcurrencyUtilities.withTimeout(timeout) {
+            await self.locationService.getCurrentLocation()
+        }
+        let duration = Int(Date().timeIntervalSince(opStart) * 1000)
+        let timedOut = result == nil && duration >= Int(timeout * 1000)
+        return (.location(result), duration, timedOut)
+    }
+
+    private func gatherEnergyBreakdown(timeout: TimeInterval) async -> (ContextComponent, Int, Bool) {
+        let opStart = Date()
+        let defaultBreakdown = EnergyBreakdown(
+            sleepScore: 0.5, activityScore: 0.5, hrvScore: 0.5,
+            timeBonus: 0.5, totalScore: 0.5, level: .medium,
+            hrvValueMs: nil, sleepHours: nil, stepCount: nil
+        )
+        let result = await ConcurrencyUtilities.withTimeout(timeout, default: defaultBreakdown) {
+            await self.healthKitService.getEnergyBreakdown()
+        }
+        let duration = Int(Date().timeIntervalSince(opStart) * 1000)
+        let timedOut = duration >= Int(timeout * 1000)
+        return (.energyBreakdown(result), duration, timedOut)
+    }
+
+    private func gatherActivity(timeout: TimeInterval) async -> (ContextComponent, Int, Bool) {
+        let opStart = Date()
+        let defaultActivity = ActivityContext(stepCount: 0, caloriesBurned: 0, activeMinutes: 0)
+        let result = await ConcurrencyUtilities.withTimeout(timeout, default: defaultActivity) {
+            await self.healthKitService.getActivityContext()
+        }
+        let duration = Int(Date().timeIntervalSince(opStart) * 1000)
+        let timedOut = duration >= Int(timeout * 1000)
+        return (.activity(result), duration, timedOut)
+    }
+
+    private func gatherCalendar(timeout: TimeInterval) async -> (ContextComponent, Int, Bool) {
+        let opStart = Date()
+        let defaultCalendar = CalendarContext(nextEventMinutes: nil, isFreetime: true, eventCount: 0)
+        let result = await ConcurrencyUtilities.withTimeout(timeout, default: defaultCalendar) {
+            await self.eventKitService.getAvailability()
+        }
+        let duration = Int(Date().timeIntervalSince(opStart) * 1000)
+        let timedOut = duration >= Int(timeout * 1000)
+        return (.calendar(result), duration, timedOut)
+    }
+
+    @available(iOS 18.0, *)
+    private func gatherStateOfMind(timeout: TimeInterval) async -> (ContextComponent, Int, Bool) {
+        let opStart = Date()
+        let result = await ConcurrencyUtilities.withTimeout(timeout, default: nil) {
+            await self.healthKitService.getStateOfMind()
+        }
+        let duration = Int(Date().timeIntervalSince(opStart) * 1000)
+        let timedOut = duration >= Int(timeout * 1000)
+        return (.stateOfMind(result), duration, timedOut)
+    }
+}
+
+// MARK: - Gathering Results
+
+/// Mutable accumulator for parallel context gathering results.
+private struct GatheringResults {
+    var location: Location? = nil
+    var energy: EnergyLevel = .medium
+    var energyBreakdown: EnergyBreakdown? = nil
+    var activity: ActivityContext = ActivityContext(stepCount: 0, caloriesBurned: 0, activeMinutes: 0)
+    var calendar: CalendarContext = CalendarContext(nextEventMinutes: nil, isFreetime: true, eventCount: 0)
+    var stateOfMind: StateOfMindSnapshot? = nil
+    var locationDuration: Int? = nil
+    var healthKitDuration: Int? = nil
+    var motionDuration: Int? = nil
+    var eventKitDuration: Int? = nil
+    var timeoutCount: Int = 0
+
+    mutating func apply(component: ContextComponent, duration: Int, timedOut: Bool) {
+        if timedOut { timeoutCount += 1 }
+        switch component {
+        case .location(let loc):
+            location = loc
+            locationDuration = duration
+        case .energy(let e):
+            energy = e // Legacy path — energyBreakdown replaces this in practice
+        case .energyBreakdown(let eb):
+            energyBreakdown = eb
+            energy = eb.level
+            healthKitDuration = duration
+        case .activity(let a):
+            activity = a
+            motionDuration = duration
+        case .calendar(let c):
+            calendar = c
+            eventKitDuration = duration
+        case .stateOfMind(let som):
+            stateOfMind = som
+            // Duration tracked under healthKitDuration
+        }
+    }
+
+    func assembled(startedAt startTime: Date) -> (Context, ContextGatheringMetrics) {
+        let now = Date()
         let context = Context(
             timestamp: now,
             location: location,
             timeOfDay: TimeOfDay.from(date: now),
             energy: energy,
-            focusState: .scattered, // Default; will be inferred from usage patterns later
+            focusState: .scattered, // Will be inferred from usage patterns in a future phase
             calendar: calendar,
             activity: activity,
-            weather: nil, // Weather API integration not in Phase 3A
+            weather: nil, // Weather API not yet integrated
             stateOfMind: stateOfMind,
             energyBreakdown: energyBreakdown
         )
-
         let metrics = ContextGatheringMetrics(
-            totalDurationMs: totalDuration,
+            totalDurationMs: Int(now.timeIntervalSince(startTime) * 1000),
             locationDurationMs: locationDuration,
             healthKitDurationMs: healthKitDuration,
             motionDurationMs: motionDuration,
             eventKitDurationMs: eventKitDuration,
-            timeoutCount: timeouts,
-            failureCount: failures,
+            timeoutCount: timeoutCount,
+            failureCount: 0,
             timestamp: now
         )
-
         return (context, metrics)
     }
-
 }
 
 // MARK: - Mock Context Service

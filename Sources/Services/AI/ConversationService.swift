@@ -8,7 +8,20 @@
 import Foundation
 import FoundationModels
 
-/// Actor-based service for conversational thought exploration
+// MARK: - Thought Statistics
+
+/// Aggregate statistics computed from a set of recent thoughts.
+@available(iOS 26.0, *)
+private struct ThoughtStatistics {
+    let dateRange: String
+    let topTags: [String: Int]
+    let recentCount: Int
+    let totalCount: Int
+}
+
+// MARK: - Conversation Service
+
+/// Actor-based service for conversational thought exploration.
 @available(iOS 26.0, *)
 actor ConversationService {
 
@@ -158,47 +171,56 @@ actor ConversationService {
 
     // MARK: - Context Building
 
+    /// Builds a ThoughtContext from the user's stored thoughts.
     private func buildThoughtContext() async throws -> ThoughtContext {
-        // Get recent thoughts (last 50)
         let allThoughts = try await thoughtService.list(filter: nil)
+        guard !allThoughts.isEmpty else { throw ConversationError.noThoughtsFound }
 
-        guard !allThoughts.isEmpty else {
-            throw ConversationError.noThoughtsFound
-        }
+        let recentThoughts = fetchRecentThoughts(from: allThoughts)
+        let statistics = computeThoughtStatistics(recentThoughts, totalCount: allThoughts.count)
+        let summaryStats = formatThoughtContextSummary(statistics)
 
-        let recentThoughts = Array(allThoughts.prefix(AppConstants.Classification.recentThoughtsLimit))
+        return ThoughtContext(
+            recentThoughts: recentThoughts.map { ThoughtSummary(from: $0) },
+            dateRange: statistics.dateRange,
+            topTags: statistics.topTags,
+            summaryStats: summaryStats,
+            totalCount: allThoughts.count
+        )
+    }
 
-        // Calculate date range
-        let oldestDate = recentThoughts.last?.createdAt ?? Date()
-        let newestDate = recentThoughts.first?.createdAt ?? Date()
-        let dateRange = formatDateRange(from: oldestDate, to: newestDate)
+    /// Returns the most recent thoughts up to the configured limit.
+    private func fetchRecentThoughts(from allThoughts: [Thought]) -> [Thought] {
+        Array(allThoughts.prefix(AppConstants.Classification.recentThoughtsLimit))
+    }
 
-        // Get top tags
+    /// Computes aggregate statistics over a set of thoughts.
+    private func computeThoughtStatistics(
+        _ thoughts: [Thought],
+        totalCount: Int
+    ) -> ThoughtStatistics {
+        let dateRange = formatDateRange(
+            from: thoughts.last?.createdAt ?? Date(),
+            to: thoughts.first?.createdAt ?? Date()
+        )
         var tagCounts: [String: Int] = [:]
-        for thought in recentThoughts {
-            for tag in thought.tags {
-                tagCounts[tag, default: 0] += 1
-            }
+        for thought in thoughts {
+            for tag in thought.tags { tagCounts[tag, default: 0] += 1 }
         }
         let topTags = Dictionary(
             uniqueKeysWithValues: tagCounts.sorted { $0.value > $1.value }.prefix(10).map { ($0.key, $0.value) }
         )
+        return ThoughtStatistics(dateRange: dateRange, topTags: topTags, recentCount: thoughts.count, totalCount: totalCount)
+    }
 
-        // Build summary stats
-        let summaryStats = """
-        Total thoughts: \(allThoughts.count)
-        Recent thoughts: \(recentThoughts.count)
-        Time range: \(dateRange)
-        Top tags: \(topTags.keys.joined(separator: ", "))
+    /// Formats a ThoughtStatistics value into a prompt-ready summary string.
+    private func formatThoughtContextSummary(_ statistics: ThoughtStatistics) -> String {
         """
-
-        return ThoughtContext(
-            recentThoughts: recentThoughts.map { ThoughtSummary(from: $0) },
-            dateRange: dateRange,
-            topTags: topTags,
-            summaryStats: summaryStats,
-            totalCount: allThoughts.count
-        )
+        Total thoughts: \(statistics.totalCount)
+        Recent thoughts: \(statistics.recentCount)
+        Time range: \(statistics.dateRange)
+        Top tags: \(statistics.topTags.keys.joined(separator: ", "))
+        """
     }
 
     // MARK: - Prompt Engineering

@@ -115,60 +115,13 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            // Browse tab
-            BrowseScreen(
-                viewModel: BrowseViewModel(
-                    thoughtService: ThoughtService.shared,
-                    fineTuningService: FineTuningService.shared
-                )
-            )
-            .tabItem {
-                Label("Thoughts", systemImage: "brain.head.profile")
-            }
-            .tag(Tab.browse)
-
-            // Search tab
-            SearchScreen(
-                viewModel: SearchViewModel(
-                    thoughtService: ThoughtService.shared
-                )
-            )
-            .tabItem {
-                Label("Search", systemImage: "magnifyingglass")
-            }
-            .tag(Tab.search)
-
-            // Insights tab
-            InsightsScreen(
-                viewModel: InsightsViewModel(
-                    thoughtService: ThoughtService.shared
-                )
-            )
-            .tabItem {
-                Label("Insights", systemImage: "chart.xyaxis.line")
-            }
-            .tag(Tab.insights)
-
-            // Settings tab
-            SettingsScreen(
-                viewModel: SettingsViewModel(
-                    healthKitService: HealthKitService(),
-                    locationService: LocationService(),
-                    eventKitService: EventKitService(),
-                    contactsService: ContactsService(),
-                    thoughtService: ThoughtService.shared,
-                    permissionCoordinator: PermissionCoordinator.shared
-                )
-            )
-            .tabItem {
-                Label("Settings", systemImage: "gear")
-            }
-            .tag(Tab.settings)
+            BrowseTab().tag(Tab.browse)
+            SearchTab().tag(Tab.search)
+            InsightsTab().tag(Tab.insights)
+            SettingsTab().tag(Tab.settings)
         }
         .fullScreenCover(isPresented: $showVoiceCapture) {
-            VoiceCaptureScreen(
-                viewModel: VoiceCaptureViewModel()
-            )
+            VoiceCaptureScreen(viewModel: VoiceCaptureViewModel())
         }
         .sheet(isPresented: $showCaptureFromNotification) {
             CaptureScreen(
@@ -194,16 +147,13 @@ struct MainTabView: View {
             }
         }
         .onReceive(Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()) { _ in
-            // Check for voice capture flag periodically (works when app is in foreground)
-            if scenePhase == .active {
-                checkForPendingVoiceCapture()
-            }
+            if scenePhase == .active { checkForPendingVoiceCapture() }
         }
     }
 
     // MARK: - Deep Navigation
 
-    /// Checks for pending voice capture flag from OpenVoiceCaptureIntent
+    /// Checks for pending voice capture flag from OpenVoiceCaptureIntent.
     private func checkForPendingVoiceCapture() {
         let defaults = AppConstants.AppGroup.defaults
         if defaults?.bool(forKey: AppConstants.PendingActions.pendingVoiceCaptureKey) == true {
@@ -211,6 +161,50 @@ struct MainTabView: View {
             defaults?.synchronize()
             showVoiceCapture = true
         }
+    }
+}
+
+// MARK: - Tab Views
+
+private struct BrowseTab: View {
+    var body: some View {
+        BrowseScreen(
+            viewModel: BrowseViewModel(
+                thoughtService: ThoughtService.shared,
+                fineTuningService: FineTuningService.shared
+            )
+        )
+        .tabItem { Label("Thoughts", systemImage: "brain.head.profile") }
+    }
+}
+
+private struct SearchTab: View {
+    var body: some View {
+        SearchScreen(viewModel: SearchViewModel(thoughtService: ThoughtService.shared))
+            .tabItem { Label("Search", systemImage: "magnifyingglass") }
+    }
+}
+
+private struct InsightsTab: View {
+    var body: some View {
+        InsightsScreen(viewModel: InsightsViewModel(thoughtService: ThoughtService.shared))
+            .tabItem { Label("Insights", systemImage: "chart.xyaxis.line") }
+    }
+}
+
+private struct SettingsTab: View {
+    var body: some View {
+        SettingsScreen(
+            viewModel: SettingsViewModel(
+                healthKitService: HealthKitService(),
+                locationService: LocationService(),
+                eventKitService: EventKitService(),
+                contactsService: ContactsService(),
+                thoughtService: ThoughtService.shared,
+                permissionCoordinator: PermissionCoordinator.shared
+            )
+        )
+        .tabItem { Label("Settings", systemImage: "gear") }
     }
 }
 

@@ -68,67 +68,74 @@ actor CompanionConversationService {
 
     // MARK: - Message Handling
 
-    /// Send a message and get AI response
+    /// Dispatches to the correct conversation mode and returns a response.
     func sendMessage(_ userMessage: String) async throws -> ConversationResponse {
-        guard let session = session else {
+        guard let session, let thought = currentThought else {
             throw ConversationError.sessionNotInitialized
         }
+        return isPrivateMode
+            ? try await sendPrivateMessage(userMessage, thought: thought, session: session)
+            : try await sendConnectedMessage(userMessage, thought: thought, session: session)
+    }
 
-        guard let thought = currentThought else {
-            throw ConversationError.sessionNotInitialized
-        }
+    // MARK: - Private Mode
 
-        // Build context-aware prompt
-        let enrichedPrompt: String
-        if isPrivateMode {
-            // Private mode: Only current thought + conversation history
-            enrichedPrompt = buildPrivatePrompt(userMessage: userMessage, thought: thought)
-        } else {
-            // Connected mode: Include relevant thoughts from database
-            let relevantThoughts = try await findRelevantThoughts(query: userMessage, excluding: thought.id)
-            enrichedPrompt = buildConnectedPrompt(
-                userMessage: userMessage,
-                thought: thought,
-                relevantThoughts: relevantThoughts
-            )
-        }
-
+    private func sendPrivateMessage(
+        _ userMessage: String,
+        thought: Thought,
+        session: LanguageModelSession
+    ) async throws -> ConversationResponse {
+        let prompt = buildPrivatePrompt(userMessage: userMessage, thought: thought)
         do {
-            // Get response from Foundation Models
-            let response = try await session.respond(to: enrichedPrompt)
-            let responseText = response.content
-
-            // Create citations (only in connected mode)
-            let citations: [ThoughtCitation]
-            if isPrivateMode {
-                citations = []
-            } else {
-                let relevantThoughts = try await findRelevantThoughts(query: userMessage, excluding: thought.id)
-                citations = relevantThoughts.prefix(3).map { relatedThought in
-                    ThoughtCitation(
-                        thoughtId: relatedThought.id,
-                        excerpt: String(relatedThought.content.prefix(150)),
-                        relevanceScore: 0.85,
-                        date: relatedThought.createdAt,
-                        tags: relatedThought.tags
-                    )
-                }
-            }
-
-            // Generate suggested questions based on persona
-            let suggestions = generateSuggestedQuestions(
-                persona: currentPersona ?? .default,
-                conversationContext: userMessage
-            )
-
+            let response = try await session.respond(to: prompt)
             return ConversationResponse(
-                message: responseText,
-                citations: citations,
-                suggestedQuestions: suggestions
+                message: response.content,
+                citations: [],
+                suggestedQuestions: generateSuggestedQuestions(
+                    persona: currentPersona ?? .default,
+                    conversationContext: userMessage
+                )
             )
-
         } catch {
             throw ConversationError.generationFailed(underlying: error)
+        }
+    }
+
+    // MARK: - Connected Mode
+
+    private func sendConnectedMessage(
+        _ userMessage: String,
+        thought: Thought,
+        session: LanguageModelSession
+    ) async throws -> ConversationResponse {
+        // Fetch once; use for both prompt enrichment and citations
+        let relevantThoughts = try await findRelevantThoughts(query: userMessage, excluding: thought.id)
+        let prompt = buildConnectedPrompt(userMessage: userMessage, thought: thought, relevantThoughts: relevantThoughts)
+        do {
+            let response = try await session.respond(to: prompt)
+            return ConversationResponse(
+                message: response.content,
+                citations: buildCitations(from: relevantThoughts),
+                suggestedQuestions: generateSuggestedQuestions(
+                    persona: currentPersona ?? .default,
+                    conversationContext: userMessage
+                )
+            )
+        } catch {
+            throw ConversationError.generationFailed(underlying: error)
+        }
+    }
+
+    /// Maps relevant thoughts to citation objects. Pure function.
+    private func buildCitations(from thoughts: [Thought]) -> [ThoughtCitation] {
+        thoughts.prefix(3).map { thought in
+            ThoughtCitation(
+                thoughtId: thought.id,
+                excerpt: String(thought.content.prefix(150)),
+                relevanceScore: 0.85,
+                date: thought.createdAt,
+                tags: thought.tags
+            )
         }
     }
 
