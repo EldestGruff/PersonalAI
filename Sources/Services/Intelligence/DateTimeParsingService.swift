@@ -160,7 +160,7 @@ actor DateTimeParsingService: DateTimeParsingServiceProtocol, DomainServiceProto
                 }
             } catch {
                 // Foundation Models failed - fall back to NSDataDetector
-                AppLogger.error("Foundation Models failed, falling back to NSDataDetector: \(error.localizedDescription)", category: .context)
+                AppLogger.error("Foundation Models failed, falling back to NSDataDetector", category: .context)
             }
         }
 
