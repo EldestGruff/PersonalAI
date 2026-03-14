@@ -42,11 +42,28 @@ Full phase docs: `PhaseDocs/` | Architecture: `docs/development/`
 
 ## Critical Gotchas (do not rediscover these)
 
+**Swift Task disambiguation:** Always use `_Concurrency.Task {}`.
+`struct Task: Codable` in the codebase shadows Swift's Task type — plain `Task { }` instantiates the wrong type silently.
+
+**`SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` is set project-wide** (iOS and Watch targets).
+
 **Xcode pbxproj — new Swift files require 3 manual additions:**
 1. `PBXFileReference` section
 2. Group `children` array (correct folder group)
 3. `PBXSourcesBuildPhase` sources list
 CLI builds fail without this even if Xcode UI auto-resolves.
+
+**fileSystemSynchronizedGroups targets (no pbxproj edits needed):**
+- Watch app: `STASH Watch App Watch App/`
+- Widget Extension: `STASH Watch Complications/`
+Main iOS app target still requires all 3 manual pbxproj entries.
+
+**pbxproj IDs follow `A0000001000000000000NNN` pattern.**
+ALWAYS grep for the ceiling before choosing new IDs — collisions corrupt the project and Xcode refuses to open it:
+```
+grep -o "A0000001000000000000[0-9]*" project.pbxproj | sort -u | tail -5
+```
+Use ceiling+1 and ceiling+2 for new entries.
 
 **NLTagger returns a tuple, not an optional:**
 ```swift
