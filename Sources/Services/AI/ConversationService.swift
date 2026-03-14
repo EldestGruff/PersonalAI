@@ -7,6 +7,7 @@
 
 import Foundation
 import FoundationModels
+import OSLog
 
 /// Actor-based service for conversational thought exploration
 @available(iOS 26.0, *)
@@ -18,6 +19,9 @@ actor ConversationService {
     private let thoughtService: ThoughtServiceProtocol
     private let semanticSearchService: SemanticSearchService
     private var thoughtContext: ThoughtContext?
+    /// All thoughts loaded at session start; reused by findRelevantThoughts so we
+    /// never issue a second full Core Data fetch during message handling.
+    private var cachedThoughts: [Thought] = []
 
     // MARK: - Initialization
 
@@ -42,23 +46,25 @@ actor ConversationService {
             throw ConversationError.serviceUnavailable
         }
 
-        // Load thought context
-        let context = try await buildThoughtContext()
+        // Load thought context and cache thoughts for the session lifetime
+        let (context, thoughts) = try await buildThoughtContext()
         self.thoughtContext = context
+        self.cachedThoughts = thoughts
 
         // Create new session with system instructions
         self.session = LanguageModelSession(
             instructions: buildSystemPrompt(context: context)
         )
 
-        print("✅ Conversation session started with \(context.totalCount) thoughts")
+        AppLogger.ai.info("Conversation session started with \(context.totalCount) thoughts")
     }
 
     /// End the current conversation session
     func endConversation() {
         session = nil
         thoughtContext = nil
-        print("🔚 Conversation session ended")
+        cachedThoughts = []
+        AppLogger.ai.debug("Conversation session ended")
     }
 
     // MARK: - Message Handling
@@ -73,8 +79,9 @@ actor ConversationService {
             throw ConversationError.sessionNotInitialized
         }
 
-        // Search for relevant thoughts based on the query
-        let relevantThoughts = try await findRelevantThoughts(query: userMessage)
+        // Search for relevant thoughts using the cached thought list (no DB fetch)
+        let relevantResults = await findRelevantThoughts(query: userMessage)
+        let relevantThoughts = relevantResults.map { $0.thought }
 
         // Build prompt with relevant thoughts
         let enrichedPrompt = buildUserPrompt(
@@ -87,14 +94,14 @@ actor ConversationService {
             let response = try await session.respond(to: enrichedPrompt)
             let responseText = response.content
 
-            // Create citations from relevant thoughts
-            let citations = relevantThoughts.prefix(5).map { thought in
+            // Create citations using the actual cosine-similarity score from semantic search
+            let citations = relevantResults.prefix(5).map { result in
                 ThoughtCitation(
-                    thoughtId: thought.id,
-                    excerpt: String(thought.content.prefix(150)),
-                    relevanceScore: 0.85, // TODO: Get actual score from semantic search
-                    date: thought.createdAt,
-                    tags: thought.tags
+                    thoughtId: result.thought.id,
+                    excerpt: String(result.thought.content.prefix(150)),
+                    relevanceScore: result.score,
+                    date: result.thought.createdAt,
+                    tags: result.thought.tags
                 )
             }
 
@@ -143,23 +150,21 @@ actor ConversationService {
 
     // MARK: - Thought Search
 
-    private func findRelevantThoughts(query: String) async throws -> [Thought] {
-        // Get all thoughts for semantic search
-        let allThoughts = try await thoughtService.list(filter: nil)
-
-        // Use semantic search to find relevant thoughts
-        let results = await semanticSearchService.search(
-            query: query,
-            in: allThoughts
-        )
-
-        return Array(results.prefix(10).map { $0.thought })
+    private func findRelevantThoughts(query: String) async -> [SearchResult] {
+        // Use thoughts cached at session start — no additional Core Data fetch needed
+        let results = await semanticSearchService.search(query: query, in: cachedThoughts)
+        return Array(results.prefix(10))
     }
 
     // MARK: - Context Building
 
-    private func buildThoughtContext() async throws -> ThoughtContext {
-        // Get recent thoughts (last 50)
+    /// Loads all thoughts and builds a context summary.
+    ///
+    /// Returns both the `ThoughtContext` and the raw `[Thought]` array so the
+    /// caller can cache the thoughts for the lifetime of the session, avoiding
+    /// a second full Core Data fetch on each `sendMessage` call.
+    private func buildThoughtContext() async throws -> (ThoughtContext, [Thought]) {
+        // Single Core Data fetch for the entire session
         let allThoughts = try await thoughtService.list(filter: nil)
 
         guard !allThoughts.isEmpty else {
@@ -192,13 +197,14 @@ actor ConversationService {
         Top tags: \(topTags.keys.joined(separator: ", "))
         """
 
-        return ThoughtContext(
+        let context = ThoughtContext(
             recentThoughts: recentThoughts.map { ThoughtSummary(from: $0) },
             dateRange: dateRange,
             topTags: topTags,
             summaryStats: summaryStats,
             totalCount: allThoughts.count
         )
+        return (context, allThoughts)
     }
 
     // MARK: - Prompt Engineering
@@ -257,23 +263,75 @@ actor ConversationService {
         userMessage: String,
         context: ThoughtContext
     ) -> [String] {
-        // Generate contextual follow-up questions
-        let suggestions: [String] = [
-            "What patterns do you see in my thoughts?",
-            "How has my mood been trending?",
-            "What am I most focused on lately?",
-            "Show me thoughts related to \(context.topTags.keys.first ?? "work")"
+        let message = userMessage.lowercased()
+
+        // Build a pool of contextual follow-ups based on what the user just asked
+        var pool: [String] = []
+
+        // Topic: mood / feelings / emotions
+        if message.contains("mood") || message.contains("feel") || message.contains("emotion")
+            || message.contains("happy") || message.contains("stress") || message.contains("anxious") {
+            pool += [
+                "How has my mood changed over the past month?",
+                "When do I tend to feel most energised?",
+                "Are there patterns connecting my mood to specific activities?"
+            ]
+        }
+
+        // Topic: work / projects / productivity
+        if message.contains("work") || message.contains("project") || message.contains("task")
+            || message.contains("produc") || message.contains("focus") {
+            pool += [
+                "What work topics recur most in my thoughts?",
+                "Which projects am I spending the most mental energy on?",
+                "Am I making progress on the goals I captured?"
+            ]
+        }
+
+        // Topic: sleep / health / energy
+        if message.contains("sleep") || message.contains("health") || message.contains("energy")
+            || message.contains("exercise") || message.contains("tired") {
+            pool += [
+                "How does my energy level affect the kinds of thoughts I capture?",
+                "Are there patterns between sleep and my most productive thinking?",
+                "What health-related insights appear across my thoughts?"
+            ]
+        }
+
+        // Topic: patterns / trends / insights
+        if message.contains("pattern") || message.contains("trend") || message.contains("insight")
+            || message.contains("often") || message.contains("always") || message.contains("never") {
+            pool += [
+                "What themes keep surfacing across different time periods?",
+                "Which topics have I stopped thinking about recently?",
+                "What are the most surprising patterns in my thoughts?"
+            ]
+        }
+
+        // Always-available fallbacks using the user's actual top tags
+        let topTag = context.topTags.keys.first ?? "recent"
+        let secondTag = context.topTags.keys.dropFirst().first
+        pool += [
+            "Show me more thoughts related to \(topTag)",
+            secondTag.map { "What connects my \(topTag) and \($0) thoughts?" }
+                ?? "How have my priorities shifted over time?",
+            "What's the most important thing I've captured this \(context.dateRange.lowercased().contains("today") ? "week" : "month")?"
         ]
 
-        return Array(suggestions.prefix(3))
+        // Return 3 unique suggestions; prefer topic-specific ones over fallbacks
+        var seen = Set<String>()
+        var result: [String] = []
+        for suggestion in pool {
+            if result.count == 3 { break }
+            if seen.insert(suggestion).inserted { result.append(suggestion) }
+        }
+        return result
     }
 
     // MARK: - Formatting Helpers
 
     private func formatDateRange(from start: Date, to end: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
+        let formatter = DateFormatter.mediumDate
 
         let calendar = Calendar.current
         let daysDiff = calendar.dateComponents([.day], from: start, to: end).day ?? 0
@@ -290,15 +348,13 @@ actor ConversationService {
     }
 
     private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
+        return DateFormatter.mediumDateTime.string(from: date)
     }
 }
 
 // MARK: - Mock Service
 
+#if DEBUG
 /// Mock conversation service for testing and previews
 @available(iOS 26.0, *)
 actor MockConversationService {
@@ -356,3 +412,4 @@ actor MockConversationService {
         }
     }
 }
+#endif

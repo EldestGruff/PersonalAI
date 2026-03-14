@@ -73,7 +73,7 @@ final class BadgeService {
     /// - Returns: Any badges newly earned during this call
     func checkAll(
         newThought thought: Thought,
-        thoughtService: ThoughtService
+        thoughtService: any ThoughtServiceProtocol
     ) async -> [BadgeDefinition] {
         var newlyEarned: [BadgeDefinition] = []
 

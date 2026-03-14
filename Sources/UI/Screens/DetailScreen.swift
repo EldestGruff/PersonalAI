@@ -185,8 +185,8 @@ struct DetailScreen: View {
 
                 Section {
                     Toggle(isOn: Binding(
-                        get: { UserDefaults.standard.bool(forKey: "autoCreateReminders") },
-                        set: { UserDefaults.standard.set($0, forKey: "autoCreateReminders") }
+                        get: { UserDefaults.standard.bool(forKey: AppStorageKeys.Settings.autoCreateReminders) },
+                        set: { UserDefaults.standard.set($0, forKey: AppStorageKeys.Settings.autoCreateReminders) }
                     )) {
                         Text("Auto-create without asking")
                             .foregroundColor(theme.textColor)

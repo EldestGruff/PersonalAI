@@ -8,6 +8,7 @@
 
 import Foundation
 import FoundationModels
+import OSLog
 
 // MARK: - Parsed Date/Time Result (Internal)
 
@@ -149,23 +150,23 @@ actor DateTimeParsingService: DateTimeParsingServiceProtocol, DomainServiceProto
         if let parser = foundationModelsParser {
             do {
                 let result = try await parser.parseDateTime(text, referenceDate: referenceDate)
-                NSLog("📊 Foundation Models parse result: date=\(result.date?.description ?? "nil"), timeOfDay=\(result.timeOfDay?.description ?? "nil"), confidence=\(result.confidence), matched='\(result.matchedText ?? "")'")
+                AppLogger.services.debug("Foundation Models parse result: date=\(result.date?.description ?? "nil"), timeOfDay=\(result.timeOfDay?.description ?? "nil"), confidence=\(result.confidence), matched='\(result.matchedText ?? "")'")
                 // Only use if confidence is reasonable
                 if result.confidence >= 0.5 {
-                    NSLog("✅ Using Foundation Models result (confidence: \(result.confidence))")
+                    AppLogger.services.info("Using Foundation Models result (confidence: \(result.confidence))")
                     return result
                 } else {
-                    NSLog("⚠️ Foundation Models confidence too low (\(result.confidence)), trying fallback")
+                    AppLogger.services.warning("Foundation Models confidence too low (\(result.confidence)), trying fallback")
                 }
             } catch {
                 // Foundation Models failed - fall back to NSDataDetector
-                NSLog("❌ Foundation Models failed, falling back to NSDataDetector: \(error)")
+                AppLogger.services.error("Foundation Models failed, falling back to NSDataDetector: \(error)")
             }
         }
 
         // FALLBACK: NSDataDetector (with preprocessing hacks for word numbers)
         if let result = parseWithDataDetector(text, referenceDate: referenceDate) {
-            NSLog("📝 Using NSDataDetector fallback: date=\(result.date?.description ?? "nil"), timeOfDay=\(result.timeOfDay?.description ?? "nil")")
+            AppLogger.services.debug("Using NSDataDetector fallback: date=\(result.date?.description ?? "nil"), timeOfDay=\(result.timeOfDay?.description ?? "nil")")
             return result
         }
 
@@ -216,14 +217,14 @@ actor DateTimeParsingService: DateTimeParsingServiceProtocol, DomainServiceProto
         // Preprocess: Convert word numbers to digits so NSDataDetector can understand them
         // e.g., "tomorrow at three" → "tomorrow at 3"
         let preprocessedText = convertWordNumbersToDigits(text)
-        NSLog("🔄 Preprocessed text: '\(text)' → '\(preprocessedText)'")
+        AppLogger.services.debug("Preprocessed text: '\(text)' → '\(preprocessedText)'")
 
         let range = NSRange(preprocessedText.startIndex..<preprocessedText.endIndex, in: preprocessedText)
         let matches = detector.matches(in: preprocessedText, options: [], range: range)
 
         guard let firstMatch = matches.first,
               let date = firstMatch.date else {
-            NSLog("⚠️ NSDataDetector found no matches in: '\(preprocessedText)'")
+            AppLogger.services.warning("NSDataDetector found no matches in: '\(preprocessedText)'")
             return nil
         }
 
@@ -236,7 +237,7 @@ actor DateTimeParsingService: DateTimeParsingServiceProtocol, DomainServiceProto
         let components = calendar.dateComponents([.hour, .minute], from: date)
         let hour = components.hour ?? 0
         let minute = components.minute ?? 0
-        NSLog("🕐 NSDataDetector parsed date: \(date), hour: \(hour), minute: \(minute), matched: '\(matchedText)'")
+        AppLogger.services.debug("NSDataDetector parsed date: \(date), hour: \(hour), minute: \(minute), matched: '\(matchedText)'")
 
         // Check if time component exists
         // NSDataDetector may not always set timeZone, so we check multiple indicators

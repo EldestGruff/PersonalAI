@@ -224,6 +224,50 @@ extension Thought: Codable {
     }
 }
 
+// MARK: - Mutation Helpers
+
+extension Thought {
+    /// Returns a copy with updated fields. `updatedAt` is always set to `Date()`.
+    ///
+    /// Pass only the fields you want to change; omitted fields preserve their current value.
+    /// For optional fields (classification, attributedContent): pass the new value to change it,
+    /// or omit the argument to preserve the current value.
+    ///
+    /// ## Example
+    /// ```swift
+    /// // Archive a thought
+    /// let archived = thought.copying(status: .archived)
+    ///
+    /// // Update tags and classification
+    /// let updated = thought.copying(tags: ["work", "urgent"], classification: newClassification)
+    /// ```
+    func copying(
+        content: String? = nil,
+        attributedContent: AttributedString? = nil,
+        tags: [String]? = nil,
+        status: ThoughtStatus? = nil,
+        context: Context? = nil,
+        classification: Classification? = nil,
+        isShiny: Bool? = nil
+    ) -> Thought {
+        Thought(
+            id: id,
+            userId: userId,
+            content: content ?? self.content,
+            attributedContent: attributedContent ?? self.attributedContent,
+            tags: tags ?? self.tags,
+            status: status ?? self.status,
+            context: context ?? self.context,
+            createdAt: createdAt,
+            updatedAt: Date(),
+            classification: classification ?? self.classification,
+            relatedThoughtIds: relatedThoughtIds,
+            taskId: taskId,
+            isShiny: isShiny ?? self.isShiny
+        )
+    }
+}
+
 // MARK: - Validation
 
 extension Thought {

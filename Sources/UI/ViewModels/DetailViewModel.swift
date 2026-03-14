@@ -160,7 +160,7 @@ final class DetailViewModel {
         self.contextDisplay = ContextDisplay(from: thought.context)
 
         // Load dismissed state (#33)
-        self.actionPromptDismissed = UserDefaults.standard.bool(forKey: "dismissedActionPrompt_\(thought.id.uuidString)")
+        self.actionPromptDismissed = UserDefaults.standard.bool(forKey: AppStorageKeys.UI.dismissedActionPromptPrefix + thought.id.uuidString)
     }
 
     // MARK: - Feedback Actions
@@ -265,19 +265,10 @@ final class DetailViewModel {
                 }
 
                 // Create updated thought (Thought is immutable, so create new instance)
-                let updated = Thought(
-                    id: thought.id,
-                    userId: thought.userId,
+                let updated = thought.copying(
                     content: trimmedContent,
-                    attributedContent: nil,
                     tags: editedTags,
-                    status: thought.status,
-                    context: thought.context,
-                    createdAt: thought.createdAt,
-                    updatedAt: Date(),
-                    classification: updatedClassification,
-                    relatedThoughtIds: thought.relatedThoughtIds,
-                    taskId: thought.taskId
+                    classification: updatedClassification
                 )
 
                 // Save
@@ -308,10 +299,10 @@ final class DetailViewModel {
 
             } catch {
                 // Enhanced error logging for debugging (#49)
-                NSLog("❌ DetailViewModel - Save failed: %@", error.localizedDescription)
-                NSLog("❌ Error type: %@", String(describing: type(of: error)))
+                AppLogger.ui.error("DetailViewModel - Save failed: \(error.localizedDescription)")
+                AppLogger.ui.error("Error type: \(String(describing: type(of: error)))")
                 if let validationError = error as? ValidationError {
-                    NSLog("❌ Validation error details: %@", String(describing: validationError))
+                    AppLogger.ui.error("Validation error details: \(String(describing: validationError))")
                 }
                 self.error = AppError.from(error)
             }
@@ -340,7 +331,7 @@ final class DetailViewModel {
 
     /// Permanently dismisses the action prompt for this thought (#33)
     func dismissActionPrompt() {
-        UserDefaults.standard.set(true, forKey: "dismissedActionPrompt_\(thought.id.uuidString)")
+        UserDefaults.standard.set(true, forKey: AppStorageKeys.UI.dismissedActionPromptPrefix + thought.id.uuidString)
         actionPromptDismissed = true
     }
 
@@ -349,7 +340,7 @@ final class DetailViewModel {
         guard let classification = thought.classification else { return }
         guard !isCreatingTask else { return }
 
-        let autoCreate = UserDefaults.standard.bool(forKey: "autoCreateReminders")
+        let autoCreate = UserDefaults.standard.bool(forKey: AppStorageKeys.Settings.autoCreateReminders)
 
         if autoCreate {
             createReminderOrEvent()
@@ -443,10 +434,10 @@ final class DetailViewModel {
                 taskCreated = true
 
             } catch {
-                NSLog("❌ DetailViewModel - Error creating reminder/event: %@", error.localizedDescription)
-                NSLog("❌ Error type: %@", String(describing: type(of: error)))
+                AppLogger.ui.error("DetailViewModel - Error creating reminder/event: \(error.localizedDescription)")
+                AppLogger.ui.error("Error type: \(String(describing: type(of: error)))")
                 self.error = AppError.from(error)
-                NSLog("❌ Converted to AppError: %@", self.error?.localizedDescription ?? "nil")
+                AppLogger.ui.error("Converted to AppError: \(self.error?.localizedDescription ?? "nil")")
             }
 
             isCreatingTask = false

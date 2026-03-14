@@ -95,7 +95,7 @@ final class SyncedDefaults: @unchecked Sendable {
 
         // Handle quota exceeded — log and continue (data is read-only in this case)
         if reason == NSUbiquitousKeyValueStoreQuotaViolationChange {
-            print("⚠️ SyncedDefaults: iCloud KV quota exceeded")
+            AppLogger.sync.warning("SyncedDefaults: iCloud KV quota exceeded")
             return
         }
 

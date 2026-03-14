@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreMotion
+import OSLog
 
 // MARK: - Motion Service Protocol
 
@@ -123,7 +124,7 @@ actor MotionService: MotionServiceProtocol {
             pedometer.queryPedometerData(from: startOfDay, to: Date()) { data, error in
                 if let error = error {
                     // Log but don't throw - fail soft
-                    print("Motion: Step count query failed: \(error.localizedDescription)")
+                    AppLogger.services.error("Motion: Step count query failed: \(error.localizedDescription)")
                     continuation.resume(returning: 0)
                 } else if let data = data {
                     continuation.resume(returning: data.numberOfSteps.intValue)

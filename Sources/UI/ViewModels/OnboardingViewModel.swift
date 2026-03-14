@@ -206,7 +206,7 @@ final class OnboardingViewModel {
     /// Complete onboarding and set persistence flag
     func completeOnboarding() {
         // Set completion flag
-        UserDefaults.standard.set(true, forKey: "onboarding.completed")
+        UserDefaults.standard.set(true, forKey: AppStorageKeys.Onboarding.completed)
         AnalyticsService.shared.track(.onboardingCompleted(stepsCompleted: currentStep.rawValue))
 
         // Call completion handler (dismisses onboarding)
@@ -217,11 +217,11 @@ final class OnboardingViewModel {
 
     /// Check if onboarding has been completed
     static func hasCompletedOnboarding() -> Bool {
-        return UserDefaults.standard.bool(forKey: "onboarding.completed")
+        return UserDefaults.standard.bool(forKey: AppStorageKeys.Onboarding.completed)
     }
 
     /// Reset onboarding completion (for replay from Settings)
     static func resetOnboarding() {
-        UserDefaults.standard.set(false, forKey: "onboarding.completed")
+        UserDefaults.standard.set(false, forKey: AppStorageKeys.Onboarding.completed)
     }
 }

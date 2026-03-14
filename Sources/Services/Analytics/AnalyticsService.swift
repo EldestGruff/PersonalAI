@@ -12,7 +12,7 @@ import TelemetryDeck
 final class AnalyticsService: @unchecked Sendable {
     static let shared = AnalyticsService()
 
-    private let optOutKey = "analytics.optOut"
+    private let optOutKey = AppStorageKeys.Analytics.optOut
     private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {

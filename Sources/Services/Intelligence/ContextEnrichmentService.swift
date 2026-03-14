@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreLocation
+import OSLog
 
 /// Service that enriches thought context in the background.
 ///
@@ -78,11 +79,11 @@ final class ContextEnrichmentService {
     ///
     /// - Parameter thoughtId: ID of the thought to enrich
     func enrichContext(for thoughtId: UUID) async {
-        print("🔄 Enriching context for thought \(thoughtId)...")
+        AppLogger.services.debug("Enriching context for thought \(thoughtId)...")
 
         // Fetch the thought
         guard let thought = try? await thoughtService.fetch(thoughtId) else {
-            print("❌ Failed to fetch thought \(thoughtId)")
+            AppLogger.services.error("Failed to fetch thought \(thoughtId)")
             return
         }
 
@@ -129,9 +130,9 @@ final class ContextEnrichmentService {
 
         do {
             _ = try await thoughtService.update(updatedThought)
-            print("✅ Context enriched for thought \(thoughtId)")
+            AppLogger.services.info("Context enriched for thought \(thoughtId)")
         } catch {
-            print("❌ Failed to update thought context: \(error)")
+            AppLogger.services.error("Failed to update thought context: \(error)")
         }
     }
 
@@ -206,10 +207,10 @@ final class ContextEnrichmentService {
 
         do {
             let result = try await classificationService.classify(thought.content)
-            print("🏷️ Classified thought: type=\(result.type), tags=\(result.suggestedTags)")
+            AppLogger.services.info("Classified thought: type=\(result.type.rawValue), tags=\(result.suggestedTags)")
             return result
         } catch {
-            print("⚠️ Classification failed: \(error.localizedDescription)")
+            AppLogger.services.warning("Classification failed: \(error.localizedDescription)")
             return nil
         }
     }

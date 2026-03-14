@@ -536,20 +536,7 @@ final class BrowseViewModel {
                             }
                         }
 
-                        let updatedThought = Thought(
-                            id: thought.id,
-                            userId: thought.userId,
-                            content: thought.content,
-                    attributedContent: nil,
-                            tags: updatedTags,
-                            status: thought.status,
-                            context: thought.context,
-                            createdAt: thought.createdAt,
-                            updatedAt: Date(),
-                            classification: thought.classification,
-                            relatedThoughtIds: thought.relatedThoughtIds,
-                            taskId: thought.taskId
-                        )
+                        let updatedThought = thought.copying(tags: updatedTags)
                         _ = try await thoughtService.update(updatedThought)
                     }
                 }

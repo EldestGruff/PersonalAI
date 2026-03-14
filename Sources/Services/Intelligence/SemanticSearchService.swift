@@ -26,114 +26,143 @@ struct SearchResult: Identifiable {
     }
 }
 
-/// Semantic search service using NLEmbedding for contextual search
+/// Semantic search service using NLEmbedding for contextual search.
 ///
 /// Enables "search by meaning" rather than keyword matching:
 /// - Query "productivity" finds thoughts about "focus", "efficiency", "work"
 /// - Query "feeling anxious" finds thoughts about "worried", "stressed", "nervous"
-/// - Understands context and relationships between concepts
-@MainActor
-final class SemanticSearchService {
+///
+/// ## Performance
+///
+/// NLEmbedding vector generation is CPU-intensive. Running as an `actor` (rather
+/// than `@MainActor`) ensures embedding work executes off the main thread.
+/// A `vectorCache` keyed by thought ID avoids re-computing embeddings for the
+/// same thought content across consecutive searches.
+actor SemanticSearchService {
     static let shared = SemanticSearchService()
 
     /// NLEmbedding for generating contextual embeddings
     private let embedding: NLEmbedding?
 
-    /// Minimum similarity threshold for results (0.0-1.0)
+    /// Whether semantic embedding is available on this device.
+    ///
+    /// Stored as `nonisolated let` so callers can read it synchronously
+    /// without hopping onto the actor (e.g. from a `@MainActor` ViewModel).
+    nonisolated let isAvailable: Bool
+
+    /// Minimum similarity threshold for results (0.0–1.0)
     private let relevanceThreshold: Double = 0.2
 
     /// Maximum number of results to return
     private let maxResults: Int = 20
 
+    /// Cached embedding vectors keyed by thought ID.
+    ///
+    /// Invalidated selectively when a thought is updated or deleted
+    /// (see `invalidateCache(for:)`). Cleared entirely on memory pressure.
+    private var vectorCache: [UUID: [Double]] = [:]
+
     init() {
-        // Initialize sentence embedding for English
-        // NLEmbedding.sentenceEmbedding is the correct iOS 26 API
-        embedding = NLEmbedding.sentenceEmbedding(for: .english)
+        let emb = NLEmbedding.sentenceEmbedding(for: .english)
+        embedding = emb
+        isAvailable = emb != nil
     }
 
-    /// Perform semantic search on thoughts
+    /// Perform semantic search on a collection of thoughts.
     ///
     /// - Parameters:
     ///   - query: The search query
     ///   - thoughts: Array of thoughts to search
-    /// - Returns: Array of search results sorted by relevance
-    func search(query: String, in thoughts: [Thought]) async -> [SearchResult] {
+    /// - Returns: Array of search results sorted by relevance, descending
+    func search(query: String, in thoughts: [Thought]) -> [SearchResult] {
         guard !query.isEmpty else { return [] }
 
-        // Check if embedding is available
-        guard let embedding = embedding else {
-            // Fallback to keyword search if embedding unavailable
+        guard let embedding else {
             return keywordSearch(query: query, in: thoughts)
         }
 
-        // Generate query vector
         guard let queryVector = embedding.vector(for: query) else {
             return keywordSearch(query: query, in: thoughts)
         }
 
-        // Calculate similarity for each thought
         var results: [(thought: Thought, similarity: Double)] = []
 
         for thought in thoughts {
             guard !thought.content.isEmpty else { continue }
 
-            // Include tags in the searchable text for better semantic coverage
-            let tagText = thought.tags.isEmpty ? "" : " \(thought.tags.joined(separator: " "))"
-            let searchableText = thought.content + tagText
+            let thoughtVector = cachedVector(for: thought, embedding: embedding)
 
-            // Generate thought vector
-            if let thoughtVector = embedding.vector(for: searchableText) {
-                let similarity = cosineSimilarity(queryVector, thoughtVector)
+            guard let thoughtVector else { continue }
 
-                // Include if above threshold
-                if similarity > relevanceThreshold {
-                    results.append((thought, similarity))
-                }
+            let similarity = cosineSimilarity(queryVector, thoughtVector)
+            if similarity > relevanceThreshold {
+                results.append((thought, similarity))
             }
         }
 
-        // Sort by similarity (highest first) and limit results
         return results
             .sorted { $0.similarity > $1.similarity }
             .prefix(maxResults)
             .map { SearchResult(thought: $0.thought, score: $0.similarity) }
     }
 
-    /// Calculate cosine similarity between two vectors
+    /// Removes the cached vector for a specific thought.
     ///
-    /// Cosine similarity measures the angle between vectors:
-    /// - 1.0 = identical direction (very similar)
-    /// - 0.0 = perpendicular (unrelated)
-    /// - -1.0 = opposite direction (contradictory)
+    /// Call this after a thought's content or tags are updated so the stale
+    /// vector is recomputed on the next search.
+    func invalidateCache(for thoughtId: UUID) {
+        vectorCache.removeValue(forKey: thoughtId)
+    }
+
+    /// Clears the entire vector cache (e.g. on memory pressure).
+    func clearCache() {
+        vectorCache.removeAll()
+    }
+
+    /// Get description of search mode for UI display.
+    func searchModeName() -> String {
+        embedding != nil ? "Semantic Search" : "Keyword Search"
+    }
+
+    // MARK: - Private Helpers
+
+    /// Returns a cached embedding vector for the thought, computing and caching it if needed.
+    private func cachedVector(for thought: Thought, embedding: NLEmbedding) -> [Double]? {
+        if let cached = vectorCache[thought.id] {
+            return cached
+        }
+
+        let tagText = thought.tags.isEmpty ? "" : " \(thought.tags.joined(separator: " "))"
+        let searchableText = thought.content + tagText
+
+        guard let vector = embedding.vector(for: searchableText) else { return nil }
+
+        vectorCache[thought.id] = vector
+        return vector
+    }
+
+    /// Calculates cosine similarity between two equal-length vectors.
     ///
-    /// - Parameters:
-    ///   - a: First vector
-    ///   - b: Second vector
-    /// - Returns: Similarity score between -1.0 and 1.0
+    /// - Returns: Value in [-1, 1]. 1 = identical direction, 0 = orthogonal.
     private func cosineSimilarity(_ a: [Double], _ b: [Double]) -> Double {
         guard a.count == b.count else { return 0.0 }
 
-        // Calculate dot product: sum of element-wise products
         let dotProduct = zip(a, b).map(*).reduce(0, +)
-
-        // Calculate magnitudes (L2 norm)
         let magnitudeA = sqrt(a.map { $0 * $0 }.reduce(0, +))
         let magnitudeB = sqrt(b.map { $0 * $0 }.reduce(0, +))
 
-        // Avoid division by zero
         guard magnitudeA > 0, magnitudeB > 0 else { return 0.0 }
 
-        // Cosine similarity = dot product / (magnitude A * magnitude B)
         return dotProduct / (magnitudeA * magnitudeB)
     }
 
-    /// Fallback keyword search when semantic search unavailable.
+    /// Fallback keyword search when semantic search is unavailable.
     ///
-    /// Splits the query into words and scores thoughts by how many words match
-    /// (in content or tags). Returns results sorted by match count.
+    /// Scores thoughts by fraction of query tokens that appear in content or tags.
     private func keywordSearch(query: String, in thoughts: [Thought]) -> [SearchResult] {
-        // Split into non-trivial tokens
-        let stopWords: Set<String> = ["a", "an", "the", "is", "in", "on", "at", "to", "for", "of", "and", "or", "my", "i"]
+        let stopWords: Set<String> = [
+            "a", "an", "the", "is", "in", "on", "at", "to", "for", "of", "and", "or", "my", "i"
+        ]
         let tokens = query.lowercased()
             .components(separatedBy: .whitespacesAndNewlines)
             .map { $0.trimmingCharacters(in: .punctuationCharacters) }
@@ -141,31 +170,13 @@ final class SemanticSearchService {
 
         guard !tokens.isEmpty else { return [] }
 
-        var results: [SearchResult] = []
-
-        for thought in thoughts {
+        return thoughts.compactMap { thought in
             let searchableText = (thought.content + " " + thought.tags.joined(separator: " ")).lowercased()
-
-            // Count how many query tokens appear in this thought
             let matchCount = tokens.filter { searchableText.contains($0) }.count
-
-            if matchCount > 0 {
-                // Score = fraction of query tokens matched
-                let score = Double(matchCount) / Double(tokens.count)
-                results.append(SearchResult(thought: thought, score: score))
-            }
+            guard matchCount > 0 else { return nil }
+            let score = Double(matchCount) / Double(tokens.count)
+            return SearchResult(thought: thought, score: score)
         }
-
-        return results.sorted { $0.score > $1.score }
-    }
-
-    /// Check if semantic search is available
-    var isAvailable: Bool {
-        embedding != nil
-    }
-
-    /// Get description of search mode for UI display
-    var searchMode: String {
-        isAvailable ? "Semantic Search" : "Keyword Search"
+        .sorted { $0.score > $1.score }
     }
 }

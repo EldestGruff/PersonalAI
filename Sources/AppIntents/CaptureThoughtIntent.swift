@@ -86,12 +86,13 @@ struct CaptureThoughtIntent: AppIntent {
         AnalyticsService.shared.track(.siriShortcutUsed(intent: "capture"))
         // If no content provided, open voice capture screen instead
         guard let content = content, !content.isEmpty else {
-            // Set flag to open voice capture (same as OpenVoiceCaptureIntent)
+            // Set flag in shared UserDefaults (read by checkForPendingVoiceCapture on scenePhase change)
             if let defaults = UserDefaults(suiteName: "group.com.withershins.stash") {
-                defaults.set(true, forKey: "pendingVoiceCapture")
+                defaults.set(true, forKey: AppStorageKeys.AppIntent.pendingVoiceCapture)
                 defaults.synchronize()
-                print("✅ Voice capture flag set (via CaptureThoughtIntent)")
             }
+            // Post in-process notification so MainTabView reacts immediately without polling
+            NotificationCenter.default.post(name: .voiceCaptureRequested, object: nil)
 
             return .result(
                 dialog: IntentDialog(stringLiteral: "Opening voice capture...")

@@ -7,6 +7,7 @@
 
 import Foundation
 import FoundationModels
+import OSLog
 
 /// Actor-based service for thought-specific conversational AI
 @available(iOS 26.0, *)
@@ -55,7 +56,7 @@ actor CompanionConversationService {
         // Create new session
         self.session = LanguageModelSession(instructions: systemPrompt)
 
-        print("✅ Started companion conversation: \(persona.emoji) \(persona.name) | Private: \(isPrivate)")
+        AppLogger.ai.info("Started companion conversation: \(persona.emoji) \(persona.name) | Private: \(isPrivate)")
     }
 
     /// End the current conversation session
@@ -63,7 +64,7 @@ actor CompanionConversationService {
         session = nil
         currentThought = nil
         currentPersona = nil
-        print("🔚 Ended companion conversation")
+        AppLogger.ai.debug("Ended companion conversation")
     }
 
     // MARK: - Message Handling
@@ -254,9 +255,6 @@ actor CompanionConversationService {
     // MARK: - Helpers
 
     private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
+        return DateFormatter.mediumDateTime.string(from: date)
     }
 }

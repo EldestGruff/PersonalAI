@@ -48,7 +48,7 @@ struct ClassificationCorrection: Codable {
 final class ClassificationBiasStore: @unchecked Sendable {
     static let shared = ClassificationBiasStore()
 
-    private let userDefaultsKey = "classificationBiasCorrections"
+    private let userDefaultsKey = AppStorageKeys.Classification.biasCorrections
     private let maxEntries = 200
     private let decayDays: Double = 90
 

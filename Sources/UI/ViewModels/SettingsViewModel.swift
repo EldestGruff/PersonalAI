@@ -52,7 +52,7 @@ final class SettingsViewModel {
         get { _autoCreateRemindersCache }
         set {
             _autoCreateRemindersCache = newValue
-            UserDefaults.standard.set(newValue, forKey: "autoCreateReminders")
+            UserDefaults.standard.set(newValue, forKey: AppStorageKeys.Settings.autoCreateReminders)
         }
     }
 
@@ -73,7 +73,7 @@ final class SettingsViewModel {
         }
         set {
             _selectedCalendarIdCache = newValue
-            UserDefaults.standard.set(newValue, forKey: "selectedCalendarId")
+            UserDefaults.standard.set(newValue, forKey: AppStorageKeys.Settings.selectedCalendarId)
         }
     }
 
@@ -86,7 +86,7 @@ final class SettingsViewModel {
         }
         set {
             _selectedReminderListIdCache = newValue
-            UserDefaults.standard.set(newValue, forKey: "selectedReminderListId")
+            UserDefaults.standard.set(newValue, forKey: AppStorageKeys.Settings.selectedReminderListId)
         }
     }
 
@@ -149,9 +149,9 @@ final class SettingsViewModel {
     /// Loads initial data
     func onAppear() {
         // Load cached settings from UserDefaults
-        _selectedCalendarIdCache = UserDefaults.standard.string(forKey: "selectedCalendarId")
-        _selectedReminderListIdCache = UserDefaults.standard.string(forKey: "selectedReminderListId")
-        _autoCreateRemindersCache = UserDefaults.standard.bool(forKey: "autoCreateReminders")
+        _selectedCalendarIdCache = UserDefaults.standard.string(forKey: AppStorageKeys.Settings.selectedCalendarId)
+        _selectedReminderListIdCache = UserDefaults.standard.string(forKey: AppStorageKeys.Settings.selectedReminderListId)
+        _autoCreateRemindersCache = UserDefaults.standard.bool(forKey: AppStorageKeys.Settings.autoCreateReminders)
 
         _Concurrency.Task {
             await updatePermissionStatus()
@@ -277,31 +277,34 @@ final class SettingsViewModel {
 
     /// Loads available calendars and reminder lists
     func loadCalendars() async {
-        NSLog("📅 SettingsViewModel - loadCalendars called, eventKitAuthorized: \(eventKitAuthorized)")
-        guard eventKitAuthorized else {
-            NSLog("📅 SettingsViewModel - EventKit not authorized, skipping calendar load")
+        let isAuthorized = eventKitAuthorized
+        AppLogger.ui.debug("SettingsViewModel - loadCalendars called, eventKitAuthorized: \(isAuthorized)")
+        guard isAuthorized else {
+            AppLogger.ui.debug("SettingsViewModel - EventKit not authorized, skipping calendar load")
             return
         }
 
         // Load calendars for events
         availableCalendars = await eventKitService.getAvailableCalendars()
-        NSLog("📅 SettingsViewModel - Loaded \(availableCalendars.count) calendars")
+        let calendarCount = availableCalendars.count
+        AppLogger.ui.debug("SettingsViewModel - Loaded \(calendarCount) calendars")
 
         // Load reminder lists
         availableReminderLists = await eventKitService.getAvailableReminderLists()
-        NSLog("📅 SettingsViewModel - Loaded \(availableReminderLists.count) reminder lists")
+        let reminderCount = availableReminderLists.count
+        AppLogger.ui.debug("SettingsViewModel - Loaded \(reminderCount) reminder lists")
 
         // Validate selected calendar - clear if it's not in the available list
         if let selectedId = selectedCalendarId,
            !availableCalendars.contains(where: { $0.id == selectedId }) {
-            NSLog("📅 SettingsViewModel - Selected calendar '\(selectedId)' not found, clearing selection")
+            AppLogger.ui.debug("SettingsViewModel - Selected calendar '\(selectedId)' not found, clearing selection")
             selectedCalendarId = nil
         }
 
         // Validate selected reminder list - clear if it's not in the available list
         if let selectedId = selectedReminderListId,
            !availableReminderLists.contains(where: { $0.id == selectedId }) {
-            NSLog("📅 SettingsViewModel - Selected reminder list '\(selectedId)' not found, clearing selection")
+            AppLogger.ui.debug("SettingsViewModel - Selected reminder list '\(selectedId)' not found, clearing selection")
             selectedReminderListId = nil
         }
     }

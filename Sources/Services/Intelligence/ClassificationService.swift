@@ -8,6 +8,7 @@
 
 import Foundation
 import FoundationModels
+import OSLog
 
 // MARK: - Classification Service Protocol
 
@@ -20,6 +21,9 @@ protocol ClassificationServiceProtocol: ServiceProtocol {
 
     /// Suggests tags for content
     func suggestTags(_ content: String) async -> [String]
+
+    /// Pre-warms the underlying model to reduce first-classification latency
+    func prewarm() async
 }
 
 // MARK: - Classification Service
@@ -137,6 +141,8 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
         var tags: [String]
         var confidence: Double
         var model: String
+        // Holds entities extracted on fallback paths so we don't re-extract below.
+        var fallbackEntities: [String]? = nil
 
         if let classifier = foundationModelsClassifier {
             do {
@@ -147,11 +153,11 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
                 confidence = result.confidence
                 model = "foundation-models-v1"
 
-                NSLog("✅ Foundation Models classification: type=\(type), sentiment=\(sentiment), confidence=\(confidence)")
+                AppLogger.services.info("Foundation Models classification: type=\(type.rawValue), sentiment=\(sentiment.rawValue), confidence=\(confidence)")
             } catch {
                 // Fallback to keyword-based classification (Issue #8: improved logging)
-                NSLog("⚠️  Foundation Models unavailable, using keyword-based fallback")
-                NSLog("   Reason: \(error.localizedDescription)")
+                AppLogger.services.warning("Foundation Models unavailable, using keyword-based fallback")
+                AppLogger.services.warning("Reason: \(error.localizedDescription)")
                 async let typeResult = classifyType(content)
                 async let sentimentResult = nlpService.analyzeSentiment(content)
                 async let entitiesResult = nlpService.extractEntities(content)
@@ -159,6 +165,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
                 type = await typeResult
                 sentiment = await sentimentResult
                 let entities = await entitiesResult
+                fallbackEntities = entities
                 tags = await generateTags(content: content, entities: entities)
                 confidence = calculateConfidence(type: type, content: content)
                 model = "nlp-heuristic-v1"
@@ -172,6 +179,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
             type = await typeResult
             sentiment = await sentimentResult
             let entities = await entitiesResult
+            fallbackEntities = entities
             tags = await generateTags(content: content, entities: entities)
             confidence = calculateConfidence(type: type, content: content)
             model = "nlp-heuristic-v1"
@@ -187,8 +195,15 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
         let language = await languageResult
         let parsedDateTime = await dateTimeResult
 
-        // Extract entities if not already done (for metadata)
-        let entities = await nlpService.extractEntities(content)
+        // Reuse entities from fallback path if already extracted; otherwise extract now.
+        // (FM success path doesn't extract entities during classification.)
+        // Note: ?? operator uses @autoclosure which doesn't support async; use explicit if-let.
+        let entities: [String]
+        if let fallback = fallbackEntities {
+            entities = fallback
+        } else {
+            entities = await nlpService.extractEntities(content)
+        }
 
         // Only include parsed date/time if it has reasonable confidence
         // Convert from internal detailed version to model version
@@ -248,7 +263,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
                 // Type is penalized — return explicit preferred type if known
                 if let preferredRaw = bias.preferredType(for: pattern, penalizedType: type.rawValue),
                    let preferred = ClassificationType(rawValue: preferredRaw) {
-                    NSLog("🎯 Bias correction: \(type.rawValue) → \(preferred.rawValue) for '\(pattern)'")
+                    AppLogger.services.debug("Bias correction: \(type.rawValue) → \(preferred.rawValue) for '\(pattern)'")
                     return preferred
                 }
                 // No preferred type recorded yet — skip to next candidate
@@ -585,6 +600,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
 // MARK: - Mock Classification Service
 
 /// Mock classification service for testing and previews.
+#if DEBUG
 actor MockClassificationService: ClassificationServiceProtocol {
     nonisolated var isAvailable: Bool { true }
 
@@ -622,4 +638,9 @@ actor MockClassificationService: ClassificationServiceProtocol {
     func suggestTags(_ content: String) async -> [String] {
         mockTags
     }
+
+    func prewarm() async {
+        // No-op for mock
+    }
 }
+#endif

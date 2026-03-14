@@ -14,7 +14,7 @@ import Observation
 class ThemeEngine {
     static let shared = ThemeEngine()
 
-    private let themeKey = "selected_theme"
+    private let themeKey = AppStorageKeys.UI.selectedTheme
     private let defaults = SyncedDefaults.shared
 
     /// Backing store — written directly by the external change handler to avoid ping-pong.
@@ -34,7 +34,7 @@ class ThemeEngine {
 
     private init() {
         // Initialize backing var directly — computed setter isn't usable before init completes
-        if let savedTheme = SyncedDefaults.shared.string(forKey: "selected_theme"),
+        if let savedTheme = SyncedDefaults.shared.string(forKey: AppStorageKeys.UI.selectedTheme),
            let theme = ThemeType(rawValue: savedTheme) {
             self._currentTheme = theme
         } else {

@@ -326,9 +326,7 @@ private struct HealthDetailPopover: View {
     }
 
     private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        return formatter.string(from: date)
+        return DateFormatter.mediumDate.string(from: date)
     }
 }
 

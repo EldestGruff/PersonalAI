@@ -205,17 +205,20 @@ actor SyncService: SyncServiceProtocol {
 
     /// Mock backend sync for Phase 3A.
     ///
-    /// In Phase 4+, this will be replaced with real API calls.
+    /// In Phase 4+, this will be replaced with real API calls to the backend.
     private func mockBackendSync(_ item: SyncQueueItem) async throws -> String {
         // Simulate network latency
         try await _Concurrency.Task.sleep(for: .milliseconds(50))
 
-        // Simulate occasional failures (10% failure rate for testing)
+        #if DEBUG
+        // Simulate occasional failures in debug builds only — never in production.
+        // Helps verify retry logic during development without impacting real users.
         if Int.random(in: 0..<10) == 0 {
             throw NSError(domain: "MockSync", code: 500, userInfo: [
-                NSLocalizedDescriptionKey: "Simulated server error"
+                NSLocalizedDescriptionKey: "Simulated server error (DEBUG only)"
             ])
         }
+        #endif
 
         // Return mock response ID
         return "mock-response-\(UUID().uuidString.prefix(8))"

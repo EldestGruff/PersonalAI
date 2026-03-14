@@ -48,7 +48,7 @@ class ConversationViewModel {
             let thoughts = try await thoughtService.list(filter: nil)
             thoughtCount = thoughts.count
         } catch {
-            print("❌ Failed to load thought count: \(error)")
+            AppLogger.ui.error("Failed to load thought count: \(error)")
         }
 
         // Start conversation session
@@ -67,7 +67,7 @@ class ConversationViewModel {
         } catch {
             session.error = error
             session.isLoading = false
-            print("❌ Failed to start conversation: \(error)")
+            AppLogger.ui.error("Failed to start conversation: \(error)")
         }
     }
 
@@ -102,7 +102,7 @@ class ConversationViewModel {
         } catch {
             session.error = error
             session.isLoading = false
-            print("❌ Failed to send message: \(error)")
+            AppLogger.ui.error("Failed to send message: \(error)")
         }
     }
 

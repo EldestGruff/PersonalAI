@@ -204,9 +204,7 @@ struct TrendSurface3D: View {
     }
 
     private func formatAxisDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "M/d"
-        return formatter.string(from: date)
+        return DateFormatter.monthDay.string(from: date)
     }
 
     private func findPoint(at location: CGPoint, in chart: ChartProxy) -> TrendSurface3DPoint? {
@@ -349,9 +347,7 @@ private struct VolumeDetailPopover: View {
     }
 
     private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        return formatter.string(from: date)
+        return DateFormatter.mediumDate.string(from: date)
     }
 
     private func volumeDescription(_ count: Int, maxCount: Int) -> String {

@@ -36,9 +36,9 @@ struct STASHApp: App {
 
     init() {
         // Register App Shortcuts for Siri integration
-        print("🎯 Registering \(ThoughtAppShortcuts.appShortcuts.count) App Shortcuts...")
+        AppLogger.ui.debug("Registering \(ThoughtAppShortcuts.appShortcuts.count) App Shortcuts...")
         ThoughtAppShortcuts.updateAppShortcutParameters()
-        print("✅ App Shortcuts registration complete")
+        AppLogger.ui.info("App Shortcuts registration complete")
 
         // Register notification delegate for deep link handling
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
@@ -193,11 +193,10 @@ struct MainTabView: View {
                 checkForPendingVoiceCapture()
             }
         }
-        .onReceive(Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()) { _ in
-            // Check for voice capture flag periodically (works when app is in foreground)
-            if scenePhase == .active {
-                checkForPendingVoiceCapture()
-            }
+        .onReceive(NotificationCenter.default.publisher(for: .voiceCaptureRequested)) { _ in
+            // CaptureThoughtIntent posts this notification for immediate in-process response.
+            // The scenePhase onChange above handles the out-of-process (lock screen) case.
+            checkForPendingVoiceCapture()
         }
     }
 
@@ -206,9 +205,9 @@ struct MainTabView: View {
     /// Checks for pending voice capture flag from OpenVoiceCaptureIntent
     private func checkForPendingVoiceCapture() {
         let defaults = UserDefaults(suiteName: "group.com.withershins.stash")
-        if defaults?.bool(forKey: "pendingVoiceCapture") == true {
+        if defaults?.bool(forKey: AppStorageKeys.AppIntent.pendingVoiceCapture) == true {
             // Clear flag immediately
-            defaults?.set(false, forKey: "pendingVoiceCapture")
+            defaults?.set(false, forKey: AppStorageKeys.AppIntent.pendingVoiceCapture)
             defaults?.synchronize()
 
             // Present voice capture screen
@@ -266,6 +265,8 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, Ob
 
 extension Notification.Name {
     static let replayOnboarding = Notification.Name("replayOnboarding")
+    /// Posted by CaptureThoughtIntent when voice capture should be opened (in-process).
+    static let voiceCaptureRequested = Notification.Name("com.withershins.stash.voiceCaptureRequested")
 }
 
 // MARK: - Previews

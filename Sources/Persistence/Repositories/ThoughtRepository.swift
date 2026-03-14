@@ -59,8 +59,13 @@ actor ThoughtRepository {
         }
     }
 
-    /// Lists all thoughts with optional filtering
-    func list(filter: ThoughtFilter? = nil) async throws -> [Thought] {
+    /// Lists thoughts with optional filtering and result-set limit.
+    ///
+    /// - Parameters:
+    ///   - filter: Optional predicate to narrow results (status, tag, userId, etc.)
+    ///   - limit: When provided, sets `fetchRequest.fetchLimit` so Core Data never
+    ///     loads more rows than needed. Prefer this over fetching all then calling `prefix`.
+    func list(filter: ThoughtFilter? = nil, limit: Int? = nil) async throws -> [Thought] {
         let context = container.newBackgroundContext()
 
         return try await context.perform {
@@ -68,6 +73,10 @@ actor ThoughtRepository {
 
             if let filter = filter {
                 fetchRequest.predicate = filter.predicate
+            }
+
+            if let limit = limit {
+                fetchRequest.fetchLimit = limit
             }
 
             fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
@@ -439,7 +448,12 @@ enum ThoughtFilter: Sendable {
         case .byStatus(let status):
             return NSPredicate(format: "status == %@", status.rawValue)
         case .byTag(let tag):
-            return NSPredicate(format: "tagsJSON CONTAINS %@", tag)
+            // Wrap tag in JSON quotes so "work" matches ["work"] but NOT ["network"].
+            // Tags are stored as a JSON array of strings, e.g. ["work","network"].
+            // A bare CONTAINS would find "work" inside "network"; quoting gives an
+            // exact value boundary because tag values never contain quote characters.
+            let quotedTag = "\"\(tag)\""
+            return NSPredicate(format: "tagsJSON CONTAINS %@", quotedTag)
         }
     }
 }

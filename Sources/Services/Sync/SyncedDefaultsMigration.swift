@@ -16,7 +16,7 @@ import Foundation
 import CoreData
 
 struct SyncedDefaultsMigration {
-    static let migrationKey = "syncedDefaults.v1.migrated"
+    static let migrationKey = AppStorageKeys.Sync.migrationCompleted
 
     /// Call once at app startup, before services initialize.
     /// - Parameter context: The app's main NSManagedObjectContext (for creating AcornSpendRecord)
