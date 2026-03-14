@@ -57,11 +57,12 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     private let nlpService: NLPServiceProtocol
     private let dateTimeParser: DateTimeParsingServiceProtocol
     private let configuration: ServiceConfiguration
-    private var foundationModelsClassifier: FoundationModelsClassifier?
+    private let foundationModelsClassifier: FoundationModelsClassifier
 
     // MARK: - Cache
 
     private var cache: [String: Classification] = [:]
+    private var cacheInsertionOrder: [String] = []
     private let maxCacheSize = AppConstants.Classification.maxCacheSize
 
     // MARK: - Initialization
@@ -74,6 +75,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
         self.nlpService = nlpService
         self.dateTimeParser = dateTimeParser
         self.configuration = configuration
+        self.foundationModelsClassifier = FoundationModelsClassifier()
     }
 
     /// Convenience initializer that creates its own services
@@ -81,6 +83,7 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
         self.nlpService = NLPService(configuration: configuration)
         self.dateTimeParser = DateTimeParsingService(configuration: configuration)
         self.configuration = configuration
+        self.foundationModelsClassifier = FoundationModelsClassifier()
     }
 
     // MARK: - Classification
@@ -129,10 +132,6 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     private func performClassification(_ content: String) async -> Classification {
         let startTime = Date()
 
-        if foundationModelsClassifier == nil {
-            foundationModelsClassifier = FoundationModelsClassifier()
-        }
-
         var (type, sentiment, tags, confidence, model) = await classifyViaFoundationModels(content)
             ?? (await classifyViaNLPHeuristics(content))
 
@@ -168,9 +167,8 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     private func classifyViaFoundationModels(_ content: String) async
         -> (ClassificationType, Sentiment, [String], Double, String)?
     {
-        guard let classifier = foundationModelsClassifier else { return nil }
         do {
-            let result = try await classifier.classify(content)
+            let result = try await foundationModelsClassifier.classify(content)
             AppLogger.info(
                 "Foundation Models classification: type=\(result.type), confidence=\(result.confidence)",
                 category: .classification
@@ -228,11 +226,12 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
         for (type, matches) in candidates {
             guard matches else { continue }
 
-            if bias.penaltyWeight(for: pattern, type: type.rawValue) >= bias.applyThreshold {
+            if let entry = bias.correction(for: pattern, type: type.rawValue),
+               entry.weight >= bias.applyThreshold {
                 // Type is penalized — return explicit preferred type if known
-                if let preferredRaw = bias.preferredType(for: pattern, penalizedType: type.rawValue),
+                if let preferredRaw = entry.preferredType,
                    let preferred = ClassificationType(rawValue: preferredRaw) {
-                    AppLogger.info("Bias correction: \(type.rawValue) → \(preferred.rawValue) for '\(pattern)'", category: .classification)
+                    AppLogger.infoPublic("Bias correction: \(type.rawValue) → \(preferred.rawValue)", category: .classification)
                     return preferred
                 }
                 // No preferred type recorded yet — skip to next candidate
@@ -436,12 +435,15 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     // MARK: - Cache Management
 
     private func updateCache(key: String, value: Classification) {
-        // Simple LRU-ish eviction: clear half the cache when full
+        if cache[key] == nil {
+            cacheInsertionOrder.append(key)
+        }
         if cache.count >= maxCacheSize {
-            let keysToRemove = Array(cache.keys.prefix(maxCacheSize / 2))
-            for k in keysToRemove {
-                cache.removeValue(forKey: k)
-            }
+            // Evict oldest half by insertion order
+            let evictCount = maxCacheSize / 2
+            let toEvict = Array(cacheInsertionOrder.prefix(evictCount))
+            toEvict.forEach { cache.removeValue(forKey: $0) }
+            cacheInsertionOrder.removeFirst(min(evictCount, cacheInsertionOrder.count))
         }
         cache[key] = value
     }
@@ -449,14 +451,13 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     /// Clears the classification cache
     func clearCache() {
         cache.removeAll()
+        cacheInsertionOrder.removeAll()
     }
 
     /// Pre-warm Foundation Models for faster first classification
     /// Call this when user opens capture screen for optimal performance
     func prewarm() async {
-        if let classifier = foundationModelsClassifier {
-            await classifier.prewarm()
-        }
+        await foundationModelsClassifier.prewarm()
     }
 
     // MARK: - Service Protocol

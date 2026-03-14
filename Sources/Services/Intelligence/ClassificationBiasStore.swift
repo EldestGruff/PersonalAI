@@ -83,6 +83,12 @@ final class ClassificationBiasStore: @unchecked Sendable {
         load().first { $0.pattern == pattern && $0.penalizedType == penalizedType }?.preferredType
     }
 
+    /// Returns the correction entry for a given pattern + type pair in a single UserDefaults read.
+    /// Prefer this over calling penaltyWeight and preferredType separately.
+    func correction(for pattern: String, type penalizedType: String) -> ClassificationCorrection? {
+        load().first { $0.pattern == pattern && $0.penalizedType == penalizedType }
+    }
+
     // MARK: - Recording Signals
 
     /// Records a negative feedback signal for the given pattern + type.
