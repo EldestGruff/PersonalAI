@@ -104,7 +104,7 @@ struct CaptureScreen: View {
                 isTextFieldFocused = true
                 AnalyticsService.shared.track(.screenViewed(.capture))
             }
-            .onChange(of: viewModel.captureSucceeded) { _, succeeded in
+            .onChange(of: viewModel.captureDidSucceed) { _, succeeded in
                 if succeeded {
                     let hasBadge = !viewModel.lastEarnedBadges.isEmpty
                     let hasAcorn = viewModel.lastAcornReward != nil
@@ -182,17 +182,17 @@ struct CaptureScreen: View {
                 Button {
                     viewModel.toggleRichText()
                 } label: {
-                    Image(systemName: viewModel.richTextEnabled ? "textformat" : "textformat.alt")
+                    Image(systemName: viewModel.isRichTextEnabled ? "textformat" : "textformat.alt")
                         .foregroundColor(theme.primaryColor)
                 }
                 .buttonStyle(.bordered)
                 .tint(theme.primaryColor)
                 .disabled(viewModel.isCapturing)
-                .accessibilityLabel(viewModel.richTextEnabled ? "Disable rich text" : "Enable rich text")
+                .accessibilityLabel(viewModel.isRichTextEnabled ? "Disable rich text" : "Enable rich text")
                 .accessibilityHint("Double tap to toggle formatting")
             }
 
-            if viewModel.richTextEnabled {
+            if viewModel.isRichTextEnabled {
                 // Rich text input (iOS 15+)
                 VStack(spacing: 8) {
                     TextEditor(text: Binding(

@@ -33,7 +33,7 @@ final class CaptureViewModel {
     var attributedThoughtContent: AttributedString?
 
     /// Whether rich text formatting is enabled
-    var richTextEnabled: Bool = false
+    var isRichTextEnabled: Bool = false
 
     /// Tags selected for this thought
     var selectedTags: [String] = []
@@ -76,7 +76,7 @@ final class CaptureViewModel {
     var isClassificationLoading: Bool = false
 
     /// Whether the capture was successful (for dismissal)
-    var captureSucceeded: Bool = false
+    var captureDidSucceed: Bool = false
 
     // MARK: - Error Handling
 
@@ -192,9 +192,9 @@ final class CaptureViewModel {
 
     /// Toggles rich text formatting mode
     func toggleRichText() {
-        richTextEnabled.toggle()
+        isRichTextEnabled.toggle()
 
-        if richTextEnabled {
+        if isRichTextEnabled {
             // Convert plain text to AttributedString
             attributedThoughtContent = AttributedString(thoughtContent)
         } else {
@@ -208,7 +208,7 @@ final class CaptureViewModel {
 
     /// Syncs plain text with attributed content
     func syncAttributedContent() {
-        if richTextEnabled {
+        if isRichTextEnabled {
             if let attributed = attributedThoughtContent {
                 thoughtContent = String(attributed.characters)
             }
@@ -451,7 +451,7 @@ final class CaptureViewModel {
                     id: UUID(),
                     userId: UUID(), // Phase 3A: hardcoded, Phase 4+ from settings
                     content: thoughtContent.trimmingCharacters(in: .whitespacesAndNewlines),
-                    attributedContent: richTextEnabled ? attributedThoughtContent : nil,
+                    attributedContent: isRichTextEnabled ? attributedThoughtContent : nil,
                     tags: selectedTags,
                     status: .active,
                     context: context ?? Context.empty(),
@@ -515,7 +515,7 @@ final class CaptureViewModel {
 
                 // Success - reset form
                 self.resetForm()
-                self.captureSucceeded = true
+                self.captureDidSucceed = true
                 self.error = nil
 
                 // Analytics: default to .text (no voice/text mode flag in this VM)
@@ -537,7 +537,7 @@ final class CaptureViewModel {
         classification = nil
         contextError = nil
         classificationError = nil
-        captureSucceeded = false
+        captureDidSucceed = false
         manualClassificationType = nil
         showingTypePicker = false
     }

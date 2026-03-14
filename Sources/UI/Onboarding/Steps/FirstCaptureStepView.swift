@@ -38,7 +38,7 @@ struct FirstCaptureStepView: View {
 
             // Embedded CaptureScreen
             CaptureScreenContent(viewModel: viewModel.captureViewModel)
-                .onChange(of: viewModel.captureViewModel.captureSucceeded) { _, succeeded in
+                .onChange(of: viewModel.captureViewModel.captureDidSucceed) { _, succeeded in
                     if succeeded {
                         // Capture completed successfully
                         viewModel.completeCapture()

@@ -74,7 +74,7 @@ struct VoiceCaptureScreen: View {
             .task {
                 await viewModel.startListening()
             }
-            .onChange(of: viewModel.captureSucceeded) { _, succeeded in
+            .onChange(of: viewModel.captureDidSucceed) { _, succeeded in
                 if succeeded {
                     dismiss()
                 }

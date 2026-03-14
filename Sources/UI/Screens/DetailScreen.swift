@@ -380,8 +380,8 @@ struct DetailScreen: View {
 
                 // Action prompt for reminder or event types
                 if (classification.type == .reminder || classification.type == .event),
-                   !viewModel.actionPromptDismissed,
-                   !viewModel.taskCreated {
+                   !viewModel.actionPromptDidDismiss,
+                   !viewModel.taskDidCreate {
                     VStack(spacing: 8) {
                         HStack(spacing: 12) {
                             Button {
@@ -420,7 +420,7 @@ struct DetailScreen: View {
                     }
                 }
 
-                if viewModel.taskCreated {
+                if viewModel.taskDidCreate {
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(theme.successColor)

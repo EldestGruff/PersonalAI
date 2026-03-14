@@ -43,7 +43,7 @@ final class VoiceCaptureViewModel {
     var transcribedText: String = ""
 
     /// Whether capture succeeded (triggers dismissal)
-    var captureSucceeded: Bool = false
+    var captureDidSucceed: Bool = false
 
     /// Current error to display
     var error: AppError?
@@ -201,7 +201,7 @@ final class VoiceCaptureViewModel {
             AnalyticsService.shared.track(.thoughtCaptured(method: .voice))
 
             captureState = .saved
-            captureSucceeded = true
+            captureDidSucceed = true
         } catch {
             captureState = .error("Failed to save thought: \(error.localizedDescription)")
         }
@@ -216,7 +216,7 @@ final class VoiceCaptureViewModel {
         await speechService.cancelListening()
         transcribedText = ""
         savedTranscript = ""
-        captureSucceeded = true // Dismiss screen
+        captureDidSucceed = true // Dismiss screen
     }
 
     // MARK: - Private Methods

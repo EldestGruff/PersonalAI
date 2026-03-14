@@ -35,7 +35,7 @@ struct SyncStatus: Sendable {
 /// Enables mocking in tests.
 protocol SyncServiceProtocol: OrchestrationServiceProtocol {
     /// Enqueues an entity for synchronization
-    func enqueue(_ entity: SyncEntity, _ entityId: UUID, action: SyncAction, payload: Data?) async throws
+    func enqueue(entity: SyncEntity, entityId: UUID, action: SyncAction, payload: Data?) async throws
 
     /// Processes pending sync items
     func processQueue() async throws
@@ -80,7 +80,7 @@ actor SyncService: SyncServiceProtocol {
 
     private let repository: SyncRepository
     private let networkMonitor: NetworkMonitorProtocol
-    let configuration: ServiceConfiguration
+    private let configuration: ServiceConfiguration
 
     // MARK: - State
 
@@ -121,7 +121,7 @@ actor SyncService: SyncServiceProtocol {
     ///   - entityId: ID of the entity
     ///   - action: Action to perform (create, update, delete)
     ///   - payload: Optional JSON payload (for create/update)
-    func enqueue(_ entity: SyncEntity, _ entityId: UUID, action: SyncAction, payload: Data? = nil) async throws {
+    func enqueue(entity: SyncEntity, entityId: UUID, action: SyncAction, payload: Data? = nil) async throws {
         guard configuration.features.enableSync else { return }
 
         let item = SyncQueueItem(
@@ -265,7 +265,7 @@ actor MockSyncService: SyncServiceProtocol {
         self.configuration = configuration
     }
 
-    func enqueue(_ entity: SyncEntity, _ entityId: UUID, action: SyncAction, payload: Data?) async throws {
+    func enqueue(entity: SyncEntity, entityId: UUID, action: SyncAction, payload: Data?) async throws {
         enqueuedItems.append((entity, entityId, action))
     }
 

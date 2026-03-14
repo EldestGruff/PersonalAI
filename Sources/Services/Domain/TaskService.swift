@@ -120,7 +120,7 @@ actor TaskService: TaskServiceProtocol {
         // Queue for sync
         if configuration.features.enableSync, let syncService {
             _Concurrency.Task {
-                try? await syncService.enqueue(.task, created.id, action: .create, payload: nil)
+                try? await syncService.enqueue(entity: .task, entityId: created.id, action: .create, payload: nil)
             }
         }
 
@@ -201,7 +201,7 @@ actor TaskService: TaskServiceProtocol {
         // Queue for sync
         if configuration.features.enableSync, let syncService {
             _Concurrency.Task {
-                try? await syncService.enqueue(.task, updated.id, action: .update, payload: nil)
+                try? await syncService.enqueue(entity: .task, entityId: updated.id, action: .update, payload: nil)
             }
         }
 
@@ -225,7 +225,7 @@ actor TaskService: TaskServiceProtocol {
         // Queue for sync
         if configuration.features.enableSync, let syncService {
             _Concurrency.Task {
-                try? await syncService.enqueue(.task, id, action: .delete, payload: nil)
+                try? await syncService.enqueue(entity: .task, entityId: id, action: .delete, payload: nil)
             }
         }
     }

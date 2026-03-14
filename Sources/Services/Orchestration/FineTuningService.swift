@@ -153,7 +153,7 @@ actor FineTuningService: FineTuningServiceProtocol {
 
         // Queue for sync
         if configuration.features.enableSync, let syncService {
-            try? await syncService.enqueue(.fineTuningData, data.id, action: .create, payload: nil)
+            try? await syncService.enqueue(entity: .fineTuningData, entityId: data.id, action: .create, payload: nil)
         }
     }
 
@@ -190,7 +190,7 @@ actor FineTuningService: FineTuningServiceProtocol {
         try await repository.update(updated)
 
         if configuration.features.enableSync, let syncService {
-            try? await syncService.enqueue(.fineTuningData, data.id, action: .update, payload: nil)
+            try? await syncService.enqueue(entity: .fineTuningData, entityId: data.id, action: .update, payload: nil)
         }
     }
 
@@ -227,7 +227,7 @@ actor FineTuningService: FineTuningServiceProtocol {
         try await repository.update(updated)
 
         if configuration.features.enableSync, let syncService {
-            try? await syncService.enqueue(.fineTuningData, data.id, action: .update, payload: nil)
+            try? await syncService.enqueue(entity: .fineTuningData, entityId: data.id, action: .update, payload: nil)
         }
     }
 
@@ -471,7 +471,7 @@ actor FineTuningService: FineTuningServiceProtocol {
         try await repository.update(updated)
 
         if configuration.features.enableSync, let syncService {
-            try? await syncService.enqueue(.fineTuningData, data.id, action: .update, payload: nil)
+            try? await syncService.enqueue(entity: .fineTuningData, entityId: data.id, action: .update, payload: nil)
         }
     }
 

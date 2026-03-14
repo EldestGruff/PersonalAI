@@ -334,7 +334,7 @@ struct SettingsScreen: View {
                 icon: "heart.fill",
                 label: "Health Data",
                 description: "Energy and activity context",
-                authorized: viewModel.healthKitAuthorized,
+                authorized: viewModel.isHealthKitAuthorized,
                 action: viewModel.requestHealthKitPermission
             )
 
@@ -342,7 +342,7 @@ struct SettingsScreen: View {
                 icon: "location.fill",
                 label: "Location",
                 description: "Location context for thoughts",
-                authorized: viewModel.locationAuthorized,
+                authorized: viewModel.isLocationAuthorized,
                 action: viewModel.requestLocationPermission
             )
 
@@ -350,7 +350,7 @@ struct SettingsScreen: View {
                 icon: "calendar",
                 label: "Calendar & Reminders",
                 description: "Both event and reminder access needed",
-                authorized: viewModel.eventKitAuthorized,
+                authorized: viewModel.isEventKitAuthorized,
                 action: viewModel.requestEventKitPermission
             )
 
@@ -358,7 +358,7 @@ struct SettingsScreen: View {
                 icon: "person.crop.circle.fill",
                 label: "Contacts",
                 description: "Entity linking and mentions",
-                authorized: viewModel.contactsAuthorized,
+                authorized: viewModel.isContactsAuthorized,
                 action: viewModel.requestContactsPermission
             )
 
@@ -399,7 +399,7 @@ struct SettingsScreen: View {
     private var featuresSection: some View {
         let theme = themeEngine.getCurrentTheme()
         return Section {
-            Toggle(isOn: $viewModel.enableClassification) {
+            Toggle(isOn: $viewModel.isClassificationEnabled) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Auto-Classification")
                         .foregroundStyle(theme.textColor)
@@ -411,7 +411,7 @@ struct SettingsScreen: View {
             .themedToggle(theme)
             .accessibilityIdentifier("autoClassificationToggle")
 
-            Toggle(isOn: $viewModel.enableContextEnrichment) {
+            Toggle(isOn: $viewModel.isContextEnrichmentEnabled) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Context Enrichment")
                         .foregroundStyle(theme.textColor)
@@ -423,7 +423,7 @@ struct SettingsScreen: View {
             .themedToggle(theme)
             .accessibilityIdentifier("contextEnrichmentToggle")
 
-            Toggle(isOn: $viewModel.enableAutoTags) {
+            Toggle(isOn: $viewModel.isAutoTagsEnabled) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Auto-Tagging")
                         .foregroundStyle(theme.textColor)
@@ -458,7 +458,7 @@ struct SettingsScreen: View {
     private var calendarSettingsSection: some View {
         let theme = themeEngine.getCurrentTheme()
         return Section {
-            if !viewModel.eventKitAuthorized {
+            if !viewModel.isEventKitAuthorized {
                 Text("Enable Calendar & Reminders permission to select calendars")
                     .font(.caption)
                     .foregroundColor(theme.secondaryTextColor)
@@ -532,7 +532,7 @@ struct SettingsScreen: View {
     private var syncSection: some View {
         let theme = themeEngine.getCurrentTheme()
         return Section {
-            Toggle(isOn: $viewModel.autoSyncEnabled) {
+            Toggle(isOn: $viewModel.isAutoSyncEnabled) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Auto-Sync")
                         .foregroundStyle(theme.textColor)
@@ -544,7 +544,7 @@ struct SettingsScreen: View {
             .themedToggle(theme)
             .accessibilityIdentifier("autoSyncToggle")
 
-            if viewModel.autoSyncEnabled {
+            if viewModel.isAutoSyncEnabled {
                 HStack {
                     Text("Sync Interval")
                         .foregroundStyle(theme.textColor)

@@ -23,27 +23,27 @@ final class SettingsViewModel {
     // MARK: - Permission State
 
     /// Whether HealthKit is authorized
-    var healthKitAuthorized: Bool = false
+    var isHealthKitAuthorized: Bool = false
 
     /// Whether Location is authorized
-    var locationAuthorized: Bool = false
+    var isLocationAuthorized: Bool = false
 
     /// Whether EventKit (Calendar/Reminders) is authorized
-    var eventKitAuthorized: Bool = false
+    var isEventKitAuthorized: Bool = false
 
     /// Whether Contacts is authorized
-    var contactsAuthorized: Bool = false
+    var isContactsAuthorized: Bool = false
 
     // MARK: - Feature Settings
 
     /// Whether auto-classification is enabled
-    var enableClassification: Bool = true
+    var isClassificationEnabled: Bool = true
 
     /// Whether context enrichment is enabled
-    var enableContextEnrichment: Bool = true
+    var isContextEnrichmentEnabled: Bool = true
 
     /// Whether auto-tagging from classification is enabled
-    var enableAutoTags: Bool = true
+    var isAutoTagsEnabled: Bool = true
 
     /// Whether to automatically create reminders/events from classified thoughts
     ///
@@ -59,7 +59,7 @@ final class SettingsViewModel {
     private var _autoCreateRemindersCache: Bool = false
 
     /// Whether auto-sync is enabled
-    var autoSyncEnabled: Bool = true
+    var isAutoSyncEnabled: Bool = true
 
     /// Sync interval in seconds (default 15 minutes)
     var syncInterval: TimeInterval = 900
@@ -166,10 +166,10 @@ final class SettingsViewModel {
     func updatePermissionStatus() async {
         let summary = await permissionCoordinator.refreshStatus()
 
-        healthKitAuthorized = summary.healthKit.allowsAccess
-        locationAuthorized = summary.location.allowsAccess
-        eventKitAuthorized = summary.eventKit.allowsAccess
-        contactsAuthorized = summary.contacts.allowsAccess
+        isHealthKitAuthorized = summary.healthKit.allowsAccess
+        isLocationAuthorized = summary.location.allowsAccess
+        isEventKitAuthorized = summary.eventKit.allowsAccess
+        isContactsAuthorized = summary.contacts.allowsAccess
     }
 
     // MARK: - Permission Requests
@@ -252,15 +252,15 @@ final class SettingsViewModel {
 
     /// Whether all permissions are granted
     var allPermissionsGranted: Bool {
-        healthKitAuthorized &&
-        locationAuthorized &&
-        eventKitAuthorized &&
-        contactsAuthorized
+        isHealthKitAuthorized &&
+        isLocationAuthorized &&
+        isEventKitAuthorized &&
+        isContactsAuthorized
     }
 
     /// Number of permissions granted
     var grantedPermissionCount: Int {
-        [healthKitAuthorized, locationAuthorized, eventKitAuthorized, contactsAuthorized]
+        [isHealthKitAuthorized, isLocationAuthorized, isEventKitAuthorized, isContactsAuthorized]
             .filter { $0 }.count
     }
 
@@ -277,8 +277,8 @@ final class SettingsViewModel {
 
     /// Loads available calendars and reminder lists
     func loadCalendars() async {
-        NSLog("📅 SettingsViewModel - loadCalendars called, eventKitAuthorized: \(eventKitAuthorized)")
-        guard eventKitAuthorized else {
+        NSLog("📅 SettingsViewModel - loadCalendars called, isEventKitAuthorized: \(isEventKitAuthorized)")
+        guard isEventKitAuthorized else {
             NSLog("📅 SettingsViewModel - EventKit not authorized, skipping calendar load")
             return
         }

@@ -99,12 +99,12 @@ final class DetailViewModel {
     var isCreatingTask: Bool = false
 
     /// Whether a task was created successfully
-    var taskCreated: Bool = false
+    var taskDidCreate: Bool = false
 
     // MARK: - Action Prompt State (#33 & #34)
 
     /// Whether the action prompt has been permanently dismissed for this thought
-    var actionPromptDismissed: Bool = false
+    var actionPromptDidDismiss: Bool = false
 
     /// Whether the confirmation sheet is showing before creating
     var showingConfirmationSheet: Bool = false
@@ -160,7 +160,7 @@ final class DetailViewModel {
         self.contextDisplay = ContextDisplay(from: thought.context)
 
         // Load dismissed state (#33)
-        self.actionPromptDismissed = UserDefaults.standard.bool(forKey: "dismissedActionPrompt_\(thought.id.uuidString)")
+        self.actionPromptDidDismiss = UserDefaults.standard.bool(forKey: "dismissedActionPrompt_\(thought.id.uuidString)")
     }
 
     // MARK: - Feedback Actions
@@ -341,7 +341,7 @@ final class DetailViewModel {
     /// Permanently dismisses the action prompt for this thought (#33)
     func dismissActionPrompt() {
         UserDefaults.standard.set(true, forKey: "dismissedActionPrompt_\(thought.id.uuidString)")
-        actionPromptDismissed = true
+        actionPromptDidDismiss = true
     }
 
     /// Entry point for the action button. Shows confirmation sheet unless auto-create is on (#34)
@@ -379,7 +379,7 @@ final class DetailViewModel {
         guard !isCreatingTask else { return }
 
         isCreatingTask = true
-        taskCreated = false
+        taskDidCreate = false
         error = nil
 
         _Concurrency.Task {
@@ -440,7 +440,7 @@ final class DetailViewModel {
                     try await fineTuningService.trackEventCreated(thought.id)
                 }
 
-                taskCreated = true
+                taskDidCreate = true
 
             } catch {
                 NSLog("❌ DetailViewModel - Error creating reminder/event: %@", error.localizedDescription)

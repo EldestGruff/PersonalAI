@@ -140,7 +140,7 @@ actor ThoughtService: ThoughtServiceProtocol {
 
         if configuration.features.enableSync, let syncService {
             _Concurrency.Task {
-                try? await syncService.enqueue(.thought, created.id, action: .create, payload: nil)
+                try? await syncService.enqueue(entity: .thought, entityId: created.id, action: .create, payload: nil)
             }
         }
 
@@ -287,7 +287,7 @@ actor ThoughtService: ThoughtServiceProtocol {
         // Queue for sync
         if configuration.features.enableSync, let syncService {
             _Concurrency.Task {
-                try? await syncService.enqueue(.thought, updated.id, action: .update, payload: nil)
+                try? await syncService.enqueue(entity: .thought, entityId: updated.id, action: .update, payload: nil)
             }
         }
 
@@ -315,7 +315,7 @@ actor ThoughtService: ThoughtServiceProtocol {
         // Queue for sync
         if configuration.features.enableSync, let syncService {
             _Concurrency.Task {
-                try? await syncService.enqueue(.thought, id, action: .delete, payload: nil)
+                try? await syncService.enqueue(entity: .thought, entityId: id, action: .delete, payload: nil)
             }
         }
 

@@ -54,15 +54,15 @@ final class OnboardingViewModel {
     var selectedPersona: SquirrelPersona = .default
 
     /// Whether capture was completed successfully
-    var captureCompleted: Bool = false
+    var captureDidComplete: Bool = false
 
     /// Permission toggle states (for notifications step)
     var notificationTypesEnabled: [SquirrelNotificationType: Bool] = [:]
 
     /// Context permission states (for permissions step)
-    var locationRequested: Bool = false
-    var calendarRequested: Bool = false
-    var contactsRequested: Bool = false
+    var didRequestLocation: Bool = false
+    var didRequestCalendar: Bool = false
+    var didRequestContacts: Bool = false
 
     // MARK: - Services
 
@@ -161,7 +161,7 @@ final class OnboardingViewModel {
 
     /// Handle capture completion (Step 3)
     func completeCapture() {
-        captureCompleted = true
+        captureDidComplete = true
 
         // Auto-advance after acorn toast shows (1.5s delay)
         _Concurrency.Task {
@@ -173,19 +173,19 @@ final class OnboardingViewModel {
     /// Request context permissions (Step 6)
     func requestContextPermissions() async {
         // Request all context permissions in sequence
-        if !locationRequested {
+        if !didRequestLocation {
             _ = await permissionCoordinator.requestPermission(for: .coreLocation)
-            locationRequested = true
+            didRequestLocation = true
         }
 
-        if !calendarRequested {
+        if !didRequestCalendar {
             _ = await permissionCoordinator.requestPermission(for: .eventKit)
-            calendarRequested = true
+            didRequestCalendar = true
         }
 
-        if !contactsRequested {
+        if !didRequestContacts {
             _ = await permissionCoordinator.requestPermission(for: .contacts)
-            contactsRequested = true
+            didRequestContacts = true
         }
     }
 
