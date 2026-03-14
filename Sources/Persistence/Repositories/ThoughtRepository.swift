@@ -439,7 +439,12 @@ enum ThoughtFilter: Sendable {
         case .byStatus(let status):
             return NSPredicate(format: "status == %@", status.rawValue)
         case .byTag(let tag):
-            return NSPredicate(format: "tagsJSON CONTAINS %@", tag)
+            // Wrap tag in JSON quotes so "work" matches ["work"] but NOT ["network"].
+            // Tags are stored as a JSON array of strings, e.g. ["work","network"].
+            // A bare CONTAINS would find "work" inside "network"; quoting gives an
+            // exact value boundary because tag values never contain quote characters.
+            let quotedTag = "\"\(tag)\""
+            return NSPredicate(format: "tagsJSON CONTAINS %@", quotedTag)
         }
     }
 }
