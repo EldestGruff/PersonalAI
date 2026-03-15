@@ -61,6 +61,12 @@ actor ThoughtRepository {
 
     /// Lists all thoughts with optional filtering
     func list(filter: ThoughtFilter? = nil, limit: Int? = nil) async throws -> [Thought] {
+        // byTag uses in-memory exact match to avoid substring false positives
+        // (e.g. "work" matching "workout", "network", "framework" via CONTAINS)
+        if case .byTag(let tag) = filter {
+            return try await listByTagExact(tag: tag, limit: limit)
+        }
+
         let context = container.newBackgroundContext()
 
         return try await context.perform {
@@ -80,6 +86,24 @@ actor ThoughtRepository {
 
             return try results.map { try Thought.from($0) }
         }
+    }
+
+    /// Fetches active thoughts and filters by exact tag match in-memory.
+    /// Avoids the substring false-positive problem of NSPredicate CONTAINS on tagsJSON.
+    private func listByTagExact(tag: String, limit: Int?) async throws -> [Thought] {
+        let context = container.newBackgroundContext()
+        let allActive = try await context.perform {
+            let fetchRequest = NSFetchRequest<ThoughtEntity>(entityName: "ThoughtEntity")
+            fetchRequest.predicate = ThoughtFilter.active.predicate
+            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
+            return try context.fetch(fetchRequest).map { try Thought.from($0) }
+        }
+        let normalizedTag = tag.lowercased()
+        let filtered = allActive.filter { $0.tags.contains(normalizedTag) }
+        if let limit = limit {
+            return Array(filtered.prefix(limit))
+        }
+        return filtered
     }
 
     /// Searches thoughts by content
