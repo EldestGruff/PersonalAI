@@ -137,9 +137,9 @@ actor ConversationService {
 
         // Use the non-streaming sendMessage and simulate streaming
         return AsyncThrowingStream { continuation in
-            _Concurrency.Task {
+            _Concurrency.Task.detached { [service = self] in
                 do {
-                    let response = try await self.sendMessage(userMessage)
+                    let response = try await service.sendMessage(userMessage)
                     // Simulate streaming by yielding word by word
                     let words = response.message.split(separator: " ")
                     for word in words {

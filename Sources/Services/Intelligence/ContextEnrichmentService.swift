@@ -36,8 +36,7 @@ import CoreLocation
 /// - **Activity:** Current activity type from MotionService
 /// - **Weather:** Current weather (if available)
 /// - **Focus State:** Current iOS Focus mode (iOS 26+)
-@MainActor
-final class ContextEnrichmentService {
+actor ContextEnrichmentService {
     // MARK: - Singleton
 
     static let shared = ContextEnrichmentService()
@@ -78,11 +77,11 @@ final class ContextEnrichmentService {
     ///
     /// - Parameter thoughtId: ID of the thought to enrich
     func enrichContext(for thoughtId: UUID) async {
-        print("🔄 Enriching context for thought \(thoughtId)...")
+        AppLogger.debug("Enriching context for thought", category: .context)
 
         // Fetch the thought
         guard let thought = try? await thoughtService.fetch(thoughtId) else {
-            print("❌ Failed to fetch thought \(thoughtId)")
+            AppLogger.error("Failed to fetch thought for context enrichment", category: .context)
             return
         }
 
@@ -129,9 +128,9 @@ final class ContextEnrichmentService {
 
         do {
             _ = try await thoughtService.update(updatedThought)
-            print("✅ Context enriched for thought \(thoughtId)")
+            AppLogger.info("Context enriched successfully", category: .context)
         } catch {
-            print("❌ Failed to update thought context: \(error)")
+            AppLogger.error("Failed to update thought with enriched context", category: .context)
         }
     }
 
@@ -206,10 +205,10 @@ final class ContextEnrichmentService {
 
         do {
             let result = try await classificationService.classify(thought.content)
-            print("🏷️ Classified thought: type=\(result.type), tags=\(result.suggestedTags)")
+            AppLogger.debug("Background classification complete", category: .context)
             return result
         } catch {
-            print("⚠️ Classification failed: \(error.localizedDescription)")
+            AppLogger.warning("Background classification failed", category: .context)
             return nil
         }
     }
