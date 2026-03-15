@@ -313,25 +313,47 @@ actor ThoughtRepository {
         }
     }
 
-    /// Aggregate sentiment by date range
-    /// Returns daily averages without loading all thoughts into memory
-    func aggregateSentimentByDate(
+    // MARK: - Batch Aggregation
+
+    /// All five aggregations computed from a single thought-list load.
+    struct AllAggregates {
+        let sentimentByDate: [(date: Date, avgSentiment: Double, count: Int)]
+        let byType: [(type: ClassificationType, count: Int)]
+        let tagFrequency: [(tag: String, count: Int)]
+        let byHourOfDay: [Int]
+        let byDayOfWeek: [Int]
+    }
+
+    /// Loads all thoughts once and runs all five aggregations.
+    /// Prefer this over calling individual aggregate methods in sequence.
+    func aggregateAll(
+        startDate: Date?,
+        endDate: Date,
+        tagLimit: Int = 20
+    ) async throws -> AllAggregates {
+        let thoughts = try await list(filter: nil)
+        return AllAggregates(
+            sentimentByDate: computeSentimentByDate(thoughts, startDate: startDate, endDate: endDate),
+            byType: computeByType(thoughts, startDate: startDate, endDate: endDate),
+            tagFrequency: computeTagFrequency(thoughts, startDate: startDate, endDate: endDate, limit: tagLimit),
+            byHourOfDay: computeByHourOfDay(thoughts, startDate: startDate, endDate: endDate),
+            byDayOfWeek: computeByDayOfWeek(thoughts, startDate: startDate, endDate: endDate)
+        )
+    }
+
+    // MARK: - Compute Helpers (accept pre-loaded thoughts)
+
+    private func computeSentimentByDate(
+        _ thoughts: [Thought],
         startDate: Date?,
         endDate: Date
-    ) async throws -> [(date: Date, avgSentiment: Double, count: Int)] {
-        // Note: Core Data doesn't support aggregating on nested JSON (classification.sentiment)
-        // We'll need to load thoughts for this query
-        // Future optimization: Add sentimentValue as a direct property on ThoughtEntity
-
-        let thoughts = try await list(filter: nil)
+    ) -> [(date: Date, avgSentiment: Double, count: Int)] {
         let filtered = thoughts.filter { thought in
             guard let start = startDate else { return thought.createdAt <= endDate }
             return thought.createdAt >= start && thought.createdAt <= endDate
         }
 
         let calendar = Calendar.current
-
-        // Group by day
         let grouped = Dictionary(grouping: filtered) { thought in
             calendar.startOfDay(for: thought.createdAt)
         }
@@ -356,17 +378,11 @@ actor ThoughtRepository {
         .sorted { $0.date < $1.date }
     }
 
-    /// Aggregate thought count by type
-    /// Optimized query using Core Data grouping
-    func aggregateByType(
+    private func computeByType(
+        _ thoughts: [Thought],
         startDate: Date?,
         endDate: Date
-    ) async throws -> [(type: ClassificationType, count: Int)] {
-        // Note: Core Data doesn't support grouping on nested JSON (classification.type)
-        // We'll need to load thoughts for this query
-        // Future optimization: Add classificationTypeValue as a direct property
-
-        let thoughts = try await list(filter: nil)
+    ) -> [(type: ClassificationType, count: Int)] {
         let filtered = thoughts.filter { thought in
             guard let start = startDate else { return thought.createdAt <= endDate }
             return thought.createdAt >= start && thought.createdAt <= endDate
@@ -382,20 +398,17 @@ actor ThoughtRepository {
         .sorted { $0.count > $1.count }
     }
 
-    /// Aggregate tag frequency
-    /// Returns top N tags with their counts
-    func aggregateTagFrequency(
+    private func computeTagFrequency(
+        _ thoughts: [Thought],
         startDate: Date?,
         endDate: Date,
         limit: Int
-    ) async throws -> [(tag: String, count: Int)] {
-        let thoughts = try await list(filter: nil)
+    ) -> [(tag: String, count: Int)] {
         let filtered = thoughts.filter { thought in
             guard let start = startDate else { return thought.createdAt <= endDate }
             return thought.createdAt >= start && thought.createdAt <= endDate
         }
 
-        // Flatten all tags and count occurrences
         let allTags = filtered.flatMap { $0.tags }
         let tagCounts = Dictionary(grouping: allTags) { $0 }.mapValues { $0.count }
 
@@ -404,6 +417,87 @@ actor ThoughtRepository {
             .sorted { $0.count > $1.count }
             .prefix(limit)
             .map { $0 }
+    }
+
+    private func computeByHourOfDay(
+        _ thoughts: [Thought],
+        startDate: Date?,
+        endDate: Date
+    ) -> [Int] {
+        let filtered = thoughts.filter { thought in
+            guard let start = startDate else { return thought.createdAt <= endDate }
+            return thought.createdAt >= start && thought.createdAt <= endDate
+        }
+
+        let calendar = Calendar.current
+        var hourCounts = Array(repeating: 0, count: 24)
+
+        for thought in filtered {
+            let hour = calendar.component(.hour, from: thought.createdAt)
+            hourCounts[hour] += 1
+        }
+
+        return hourCounts
+    }
+
+    private func computeByDayOfWeek(
+        _ thoughts: [Thought],
+        startDate: Date?,
+        endDate: Date
+    ) -> [Int] {
+        let filtered = thoughts.filter { thought in
+            guard let start = startDate else { return thought.createdAt <= endDate }
+            return thought.createdAt >= start && thought.createdAt <= endDate
+        }
+
+        let calendar = Calendar.current
+        var dayCounts = Array(repeating: 0, count: 7)
+
+        for thought in filtered {
+            let weekday = calendar.component(.weekday, from: thought.createdAt)
+            dayCounts[weekday - 1] += 1  // Convert to 0-indexed
+        }
+
+        return dayCounts
+    }
+
+    // MARK: - Individual Aggregate Methods (delegate to compute helpers)
+
+    /// Aggregate sentiment by date range
+    /// Returns daily averages without loading all thoughts into memory
+    func aggregateSentimentByDate(
+        startDate: Date?,
+        endDate: Date
+    ) async throws -> [(date: Date, avgSentiment: Double, count: Int)] {
+        // Note: Core Data doesn't support aggregating on nested JSON (classification.sentiment)
+        // We'll need to load thoughts for this query
+        // Future optimization: Add sentimentValue as a direct property on ThoughtEntity
+        let thoughts = try await list(filter: nil)
+        return computeSentimentByDate(thoughts, startDate: startDate, endDate: endDate)
+    }
+
+    /// Aggregate thought count by type
+    /// Optimized query using Core Data grouping
+    func aggregateByType(
+        startDate: Date?,
+        endDate: Date
+    ) async throws -> [(type: ClassificationType, count: Int)] {
+        // Note: Core Data doesn't support grouping on nested JSON (classification.type)
+        // We'll need to load thoughts for this query
+        // Future optimization: Add classificationTypeValue as a direct property
+        let thoughts = try await list(filter: nil)
+        return computeByType(thoughts, startDate: startDate, endDate: endDate)
+    }
+
+    /// Aggregate tag frequency
+    /// Returns top N tags with their counts
+    func aggregateTagFrequency(
+        startDate: Date?,
+        endDate: Date,
+        limit: Int
+    ) async throws -> [(tag: String, count: Int)] {
+        let thoughts = try await list(filter: nil)
+        return computeTagFrequency(thoughts, startDate: startDate, endDate: endDate, limit: limit)
     }
 
     /// Returns all unique tags across all thoughts, sorted alphabetically.
@@ -421,20 +515,7 @@ actor ThoughtRepository {
         endDate: Date
     ) async throws -> [Int] {
         let thoughts = try await list(filter: nil)
-        let filtered = thoughts.filter { thought in
-            guard let start = startDate else { return thought.createdAt <= endDate }
-            return thought.createdAt >= start && thought.createdAt <= endDate
-        }
-
-        let calendar = Calendar.current
-        var hourCounts = Array(repeating: 0, count: 24)
-
-        for thought in filtered {
-            let hour = calendar.component(.hour, from: thought.createdAt)
-            hourCounts[hour] += 1
-        }
-
-        return hourCounts
+        return computeByHourOfDay(thoughts, startDate: startDate, endDate: endDate)
     }
 
     /// Get thought count by day of week (for heatmap)
@@ -444,20 +525,7 @@ actor ThoughtRepository {
         endDate: Date
     ) async throws -> [Int] {
         let thoughts = try await list(filter: nil)
-        let filtered = thoughts.filter { thought in
-            guard let start = startDate else { return thought.createdAt <= endDate }
-            return thought.createdAt >= start && thought.createdAt <= endDate
-        }
-
-        let calendar = Calendar.current
-        var dayCounts = Array(repeating: 0, count: 7)
-
-        for thought in filtered {
-            let weekday = calendar.component(.weekday, from: thought.createdAt)
-            dayCounts[weekday - 1] += 1  // Convert to 0-indexed
-        }
-
-        return dayCounts
+        return computeByDayOfWeek(thoughts, startDate: startDate, endDate: endDate)
     }
 }
 
