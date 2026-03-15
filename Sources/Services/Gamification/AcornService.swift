@@ -118,17 +118,33 @@ final class AcornLedger {
 
     /// Deducts acorns by writing an append-only AcornSpendRecord to CoreData.
     /// Returns false if the balance is insufficient.
+    ///
+    /// Uses optimistic locking to guard against TOCTOU races across devices:
+    /// the spend record is written first, then the derived balance is re-read.
+    /// If the re-read balance is negative (concurrent spend on another device
+    /// also succeeded), the record is deleted and false is returned.
     @discardableResult
     func spend(_ amount: Int) async -> Bool {
-        let balance = await currentBalance
-        guard balance >= amount else { return false }
+        // Pre-check: bail early if obviously insufficient
+        let balanceBefore = await currentBalance
+        guard balanceBefore >= amount else { return false }
 
+        // Write the spend record optimistically
         let record = AcornSpendRecord(context: context)
         record.id = UUID()
         record.amount = Int32(amount)
         record.reason = "manual"
         record.createdAt = Date()
         try? context.save()
+
+        // Post-check: re-read derived balance to detect concurrent spend race
+        let balanceAfter = await currentBalance
+        if balanceAfter < 0 {
+            // Rollback: concurrent spend caused negative balance
+            context.delete(record)
+            try? context.save()
+            return false
+        }
 
         AnalyticsService.shared.track(.acornSpent(amount: amount))
         return true
