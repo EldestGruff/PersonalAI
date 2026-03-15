@@ -190,7 +190,7 @@ final class BrowseViewModel {
             )
             // Reload if we promoted new shinies so isShiny flags are fresh
             if !promoted.isEmpty {
-                let refreshed = try await thoughtService.list(filter: .active)
+                let refreshed = try await thoughtService.list(filter: filter)
                 self.thoughts = applyFilters(to: sortThoughts(refreshed))
             }
 

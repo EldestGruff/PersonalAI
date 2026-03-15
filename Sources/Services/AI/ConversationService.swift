@@ -31,6 +31,7 @@ actor ConversationService {
     private let thoughtService: ThoughtServiceProtocol
     private let semanticSearchService: SemanticSearchService
     private var thoughtContext: ThoughtContext?
+    private var cachedThoughts: [Thought]?
 
     // MARK: - Initialization
 
@@ -55,8 +56,10 @@ actor ConversationService {
             throw ConversationError.serviceUnavailable
         }
 
-        // Load thought context
-        let context = try await buildThoughtContext()
+        // Load thought context (thoughts cached for reuse during this session)
+        let allThoughts = try await thoughtService.list(filter: nil)
+        self.cachedThoughts = allThoughts
+        let context = try await buildThoughtContext(from: allThoughts)
         self.thoughtContext = context
 
         // Create new session with system instructions
@@ -71,6 +74,7 @@ actor ConversationService {
     func endConversation() {
         session = nil
         thoughtContext = nil
+        cachedThoughts = nil
         AppLogger.info("Conversation session ended", category: .conversation)
     }
 
@@ -157,8 +161,13 @@ actor ConversationService {
     // MARK: - Thought Search
 
     private func findRelevantThoughts(query: String) async throws -> [Thought] {
-        // Get all thoughts for semantic search
-        let allThoughts = try await thoughtService.list(filter: nil)
+        // Use cached thoughts loaded at session start; fall back to fresh fetch if needed
+        let allThoughts: [Thought]
+        if let cached = cachedThoughts {
+            allThoughts = cached
+        } else {
+            allThoughts = try await thoughtService.list(filter: nil)
+        }
 
         // Use semantic search to find relevant thoughts
         let results = await semanticSearchService.search(
@@ -172,8 +181,7 @@ actor ConversationService {
     // MARK: - Context Building
 
     /// Builds a ThoughtContext from the user's stored thoughts.
-    private func buildThoughtContext() async throws -> ThoughtContext {
-        let allThoughts = try await thoughtService.list(filter: nil)
+    private func buildThoughtContext(from allThoughts: [Thought]) async throws -> ThoughtContext {
         guard !allThoughts.isEmpty else { throw ConversationError.noThoughtsFound }
 
         let recentThoughts = fetchRecentThoughts(from: allThoughts)
