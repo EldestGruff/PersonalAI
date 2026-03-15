@@ -48,6 +48,10 @@ protocol ClassificationServiceProtocol: ServiceProtocol {
 /// - Foundation Models (iOS 18+)
 /// - Fine-tuned models from user data
 actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtocol {
+    // MARK: - Singleton
+
+    static let shared = ClassificationService()
+
     // MARK: - Service Protocol
 
     nonisolated var isAvailable: Bool { true }

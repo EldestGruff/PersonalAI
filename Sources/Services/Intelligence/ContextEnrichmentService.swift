@@ -54,11 +54,11 @@ actor ContextEnrichmentService {
 
     init(
         thoughtService: ThoughtService = .shared,
-        classificationService: ClassificationService = ClassificationService(),
-        locationService: LocationService = LocationService(),
-        healthKitService: HealthKitService = HealthKitService(),
-        eventKitService: EventKitService = EventKitService(),
-        motionService: MotionService = MotionService()
+        classificationService: ClassificationService = .shared,
+        locationService: LocationService = .shared,
+        healthKitService: HealthKitService = .shared,
+        eventKitService: EventKitService = .shared,
+        motionService: MotionService = .shared
     ) {
         self.thoughtService = thoughtService
         self.classificationService = classificationService

@@ -46,6 +46,10 @@ protocol MotionServiceProtocol: FrameworkServiceProtocol {
 /// Motion queries typically return quickly, but a 100ms timeout is
 /// enforced to meet context gathering targets.
 actor MotionService: MotionServiceProtocol {
+    // MARK: - Singleton
+
+    static let shared = MotionService()
+
     // MARK: - Framework Service Protocol
 
     nonisolated var frameworkType: FrameworkType { .coreMotion }
