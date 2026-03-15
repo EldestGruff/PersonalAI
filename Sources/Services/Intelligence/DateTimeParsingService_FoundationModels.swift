@@ -201,12 +201,12 @@ actor FoundationModelsDateTimeParser {
 
             if let parsed = localDateFormatter.date(from: datePart) {
                 date = parsed
-                NSLog("📅 FM date parsed: '\(dateString)' → '\(datePart)' → \(parsed)")
+                AppLogger.debug("FM date parsed successfully", category: .context)
             } else if let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.date.rawValue),
                       let match = detector.firstMatch(in: dateString, range: NSRange(dateString.startIndex..., in: dateString)),
                       let fallback = match.date {
                 // Model returned a relative string like "next Wednesday" — NSDataDetector resolves it
-                NSLog("⚠️ FM returned non-ISO date '\(dateString)', NSDataDetector resolved to \(fallback)")
+                AppLogger.debug("FM returned non-ISO date, using NSDataDetector fallback", category: .context)
                 date = fallback
             }
         }
@@ -238,7 +238,7 @@ actor FoundationModelsDateTimeParser {
             components.second = 0
             date = calendar.date(from: components)
 
-            NSLog("🔧 Smart fix: Foundation Models found time but no date, using today: \(date?.description ?? "nil")")
+            AppLogger.debug("FM time-only result: using today as date", category: .context)
         }
 
         return ParsedDateTimeInternal(

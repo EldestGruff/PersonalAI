@@ -145,7 +145,7 @@ actor HealthKitMedicationService: MedicationServiceProtocol {
             let results = try await queryDescriptor.result(for: healthStore)
             return results.map { Medication(from: $0) }
         } catch {
-            print("❌ Failed to query medications: \(error)")
+            AppLogger.error("Failed to query medications: \(error.localizedDescription)", category: .context)
             return []
         }
     }
@@ -167,7 +167,7 @@ actor HealthKitMedicationService: MedicationServiceProtocol {
                 sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)]
             ) { _, samples, error in
                 if let error = error {
-                    print("❌ Failed to query dose events: \(error)")
+                    AppLogger.error("Failed to query dose events: \(error.localizedDescription)", category: .context)
                     continuation.resume(returning: [])
                     return
                 }

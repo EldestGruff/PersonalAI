@@ -127,26 +127,26 @@ actor EventKitService: EventKitServiceProtocol {
         // This allows us to see all calendars for selection in Settings
         do {
             eventGranted = try await eventStore.requestFullAccessToEvents()
-            NSLog("📅 EventKit - Event permission request result: \(eventGranted)")
+            AppLogger.debugPublic("EventKit event permission request result: \(eventGranted)", category: .context)
         } catch {
-            NSLog("📅 EventKit - Event permission request failed: \(error)")
+            AppLogger.error("EventKit event permission request failed: \(error.localizedDescription)", category: .context)
         }
 
         // Request full access to reminders (independent of event permission)
         do {
             reminderGranted = try await eventStore.requestFullAccessToReminders()
-            NSLog("📅 EventKit - Reminder permission request result: \(reminderGranted)")
+            AppLogger.debugPublic("EventKit reminder permission request result: \(reminderGranted)", category: .context)
         } catch {
-            NSLog("📅 EventKit - Reminder permission request failed: \(error)")
+            AppLogger.error("EventKit reminder permission request failed: \(error.localizedDescription)", category: .context)
         }
 
         // If either permission is granted, return authorized
         // The specific methods (getAvailableCalendars/ReminderLists) will check their own permissions
         if eventGranted || reminderGranted {
-            NSLog("📅 EventKit - Overall permission: authorized (event:\(eventGranted), reminder:\(reminderGranted))")
+            AppLogger.debugPublic("EventKit overall permission: authorized", category: .context)
             return .authorized
         } else {
-            NSLog("📅 EventKit - Overall permission: denied")
+            AppLogger.debug("EventKit overall permission: denied", category: .context)
             return .denied
         }
     }
@@ -164,10 +164,10 @@ actor EventKitService: EventKitServiceProtocol {
     /// - Throws: `ServiceError` if creation fails
     func createReminder(title: String, description: String?, dueDate: Date?, calendarIdentifier: String?) async throws -> String {
         // Always request permission - let iOS handle if already granted
-        NSLog("🔔 EventKit createReminder - Requesting permission...")
+        AppLogger.debug("EventKit createReminder - requesting permission", category: .context)
         do {
             let granted = try await eventStore.requestFullAccessToReminders()
-            NSLog("🔔 EventKit createReminder - Permission granted: %@", granted ? "true" : "false")
+            AppLogger.debugPublic("EventKit createReminder - permission granted: \(granted)", category: .context)
 
             if !granted {
                 throw ServiceError.permissionDenied(
@@ -178,7 +178,7 @@ actor EventKitService: EventKitServiceProtocol {
         } catch let error as ServiceError {
             throw error
         } catch {
-            NSLog("🔔 EventKit createReminder - Permission request error: %@", error.localizedDescription)
+            AppLogger.error("EventKit createReminder - permission request error: \(error.localizedDescription)", category: .context)
             throw ServiceError.permissionDenied(
                 framework: .eventKit,
                 currentLevel: .denied
@@ -244,16 +244,16 @@ actor EventKitService: EventKitServiceProtocol {
         let rawInitialStatus = EKEventStore.authorizationStatus(for: .event)
         let initialStatus = mapAuthorizationStatus(rawInitialStatus)
 
-        print("📅 EventKit createEvent - Initial status: \(rawInitialStatus.rawValue) -> \(initialStatus)")
+        AppLogger.debug("EventKit createEvent: checking event permission", category: .context)
 
         if !initialStatus.allowsAccess {
             // Request FULL ACCESS to events (not write-only)
-            print("📅 EventKit createEvent - Requesting permission...")
+            AppLogger.debug("EventKit createEvent: requesting permission", category: .context)
             do {
                 let granted = try await eventStore.requestFullAccessToEvents()
-                print("📅 EventKit createEvent - Permission request returned: \(granted)")
+                AppLogger.debug("EventKit createEvent: permission request returned", category: .context)
             } catch {
-                print("📅 EventKit createEvent - Permission request failed: \(error)")
+                AppLogger.error("EventKit createEvent: permission request failed", category: .context)
                 throw ServiceError.permissionDenied(
                     framework: .eventKit,
                     currentLevel: initialStatus
@@ -264,7 +264,7 @@ actor EventKitService: EventKitServiceProtocol {
         // Verify we have permission after request
         let rawFinalStatus = EKEventStore.authorizationStatus(for: .event)
         let finalStatus = mapAuthorizationStatus(rawFinalStatus)
-        print("📅 EventKit createEvent - Final status: \(rawFinalStatus.rawValue) -> \(finalStatus)")
+        AppLogger.debug("EventKit createEvent: final status checked", category: .context)
 
         guard finalStatus.allowsAccess else {
             throw ServiceError.permissionDenied(
@@ -319,20 +319,15 @@ actor EventKitService: EventKitServiceProtocol {
         let eventStatus = EKEventStore.authorizationStatus(for: .event)
         let eventLevel = mapAuthorizationStatus(eventStatus)
 
-        NSLog("📅 EventKit - getAvailableCalendars: event permission = \(eventStatus.rawValue)")
+        AppLogger.debug("EventKit: checking event permission", category: .context)
 
         guard eventLevel.allowsAccess else {
-            NSLog("📅 EventKit - Event permission not granted")
+            AppLogger.debug("EventKit: event permission not granted", category: .context)
             return []
         }
 
         let calendars = eventStore.calendars(for: .event)
-        NSLog("📅 EventKit - Found \(calendars.count) calendars")
-
-        // Debug: Log each calendar
-        for (index, calendar) in calendars.enumerated() {
-            NSLog("📅   Calendar \(index + 1): '\(calendar.title)' (source: \(calendar.source.title), type: \(calendar.type.rawValue), allowsContentModifications: \(calendar.allowsContentModifications))")
-        }
+        AppLogger.debugPublic("EventKit: found \(calendars.count) calendars", category: .context)
 
         return calendars.map { CalendarInfo(calendar: $0) }
     }
@@ -345,15 +340,15 @@ actor EventKitService: EventKitServiceProtocol {
         let reminderStatus = EKEventStore.authorizationStatus(for: .reminder)
         let reminderLevel = mapAuthorizationStatus(reminderStatus)
 
-        NSLog("📅 EventKit - getAvailableReminderLists: reminder permission = \(reminderStatus.rawValue)")
+        AppLogger.debug("EventKit: checking reminder permission", category: .context)
 
         guard reminderLevel.allowsAccess else {
-            NSLog("📅 EventKit - Reminder permission not granted")
+            AppLogger.debug("EventKit: reminder permission not granted", category: .context)
             return []
         }
 
         let calendars = eventStore.calendars(for: .reminder)
-        NSLog("📅 EventKit - Found \(calendars.count) reminder lists")
+        AppLogger.debugPublic("EventKit: found \(calendars.count) reminder lists", category: .context)
         return calendars.map { CalendarInfo(calendar: $0) }
     }
 

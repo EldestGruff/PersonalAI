@@ -53,7 +53,7 @@ actor FoundationModelsClassifier {
 
     private func setupSession() {
         guard SystemLanguageModel().availability == .available else {
-            print("⚠️ Apple Intelligence not available")
+            AppLogger.warning("Apple Intelligence not available", category: .classification)
             if !FoundationModelsClassifier.hasTrackedUnavailable {
                 AnalyticsService.shared.track(.aiUnavailable)
                 FoundationModelsClassifier.hasTrackedUnavailable = true
@@ -156,7 +156,7 @@ actor FoundationModelsClassifier {
             )
 
         } catch {
-            NSLog("❌ Foundation Models classification failed: \(error)")
+            AppLogger.error("Foundation Models classification failed", category: .classification)
             throw ClassificationError.processingFailed(underlying: error)
         }
     }
@@ -171,7 +171,7 @@ actor FoundationModelsClassifier {
         _Concurrency.Task {
             session.prewarm()
             isPrewarmed = true
-            print("✅ Foundation Models pre-warmed")
+            AppLogger.debug("Foundation Models pre-warmed", category: .classification)
         }
     }
 

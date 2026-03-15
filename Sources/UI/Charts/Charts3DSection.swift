@@ -226,24 +226,24 @@ struct Charts3DSection: View {
                 switch selectedChartType {
                 case .thoughtSpace:
                     thoughtSpaceData = try await service.getThoughtSpace3D(dateRange: dateRange)
-                    print("📊 Loaded \(thoughtSpaceData.count) thought space points")
+                    AppLogger.debugPublic("Loaded \(thoughtSpaceData.count) thought space points", category: .analytics)
 
                 case .healthCorrelation:
                     healthCorrelationData = try await service.getHealthCorrelation3D(dateRange: dateRange)
-                    print("📊 Loaded \(healthCorrelationData.count) health correlation points")
+                    AppLogger.debugPublic("Loaded \(healthCorrelationData.count) health correlation points", category: .analytics)
 
                 case .trendSurface:
                     trendSurfaceData = try await service.getTrendSurface3D(dateRange: dateRange)
-                    print("📊 Loaded \(trendSurfaceData?.points.count ?? 0) trend surface points")
+                    AppLogger.debugPublic("Loaded \(trendSurfaceData?.points.count ?? 0) trend surface points", category: .analytics)
 
                 case .tagSemantic:
                     tagSemanticData = try await service.getTagSemantic3D(dateRange: dateRange)
-                    print("📊 Loaded \(tagSemanticData.count) tag semantic points")
+                    AppLogger.debugPublic("Loaded \(tagSemanticData.count) tag semantic points", category: .analytics)
                 }
 
                 isLoading = false
             } catch {
-                print("❌ Chart data loading error: \(error)")
+                AppLogger.error("Chart data loading error: \(error.localizedDescription)", category: .analytics)
                 loadError = error.localizedDescription
                 isLoading = false
             }

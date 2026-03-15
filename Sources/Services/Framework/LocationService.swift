@@ -109,7 +109,7 @@ actor LocationService: LocationServiceProtocol {
     }
 
     private func fetchCurrentLocation() async -> Location? {
-        NSLog("📍 LocationService - Starting location fetch")
+        AppLogger.debug("LocationService: starting location fetch", category: .location)
         let clLocation = await withCheckedContinuation { continuation in
             let delegate = LocationUpdateDelegate { location in
                 continuation.resume(returning: location)
@@ -122,11 +122,11 @@ actor LocationService: LocationServiceProtocol {
         }
 
         guard let clLocation = clLocation else {
-            NSLog("📍 LocationService - No location returned from CLLocationManager")
+            AppLogger.debug("LocationService: no location returned", category: .location)
             return nil
         }
 
-        NSLog("📍 LocationService - Got coordinates: lat=%.4f, lon=%.4f", clLocation.coordinate.latitude, clLocation.coordinate.longitude)
+        AppLogger.debug("LocationService: got coordinates", category: .location)
 
         // Get location name via reverse geocoding
         let name = await getLocationName(
@@ -134,7 +134,7 @@ actor LocationService: LocationServiceProtocol {
             longitude: clLocation.coordinate.longitude
         )
 
-        NSLog("📍 LocationService - Location name: %@", name ?? "nil")
+        AppLogger.debug("LocationService: resolved location name", category: .location)
 
         return Location(
             latitude: clLocation.coordinate.latitude,
@@ -156,16 +156,16 @@ actor LocationService: LocationServiceProtocol {
     }
 
     private func performGeocode(latitude: Double, longitude: Double) async -> String? {
-        NSLog("📍 LocationService - Starting geocode for lat=%.4f, lon=%.4f", latitude, longitude)
+        AppLogger.debug("LocationService: starting geocode", category: .location)
 
         let location = CLLocation(latitude: latitude, longitude: longitude)
 
         // Use MapKit's reverse geocoding (iOS 26+)
         if #available(iOS 26.0, *) {
-            NSLog("📍 LocationService - Using MKReverseGeocodingRequest")
+            AppLogger.debug("LocationService: using MKReverseGeocodingRequest", category: .location)
 
             guard let request = MKReverseGeocodingRequest(location: location) else {
-                NSLog("📍 LocationService - Failed to create MKReverseGeocodingRequest")
+                AppLogger.warning("LocationService: failed to create MKReverseGeocodingRequest", category: .location)
                 return nil
             }
 
@@ -176,19 +176,19 @@ actor LocationService: LocationServiceProtocol {
                 let name = mapItem.name
                     ?? mapItem.address?.shortAddress
                     ?? mapItem.address?.fullAddress
-                NSLog("📍 LocationService - MapKit result: %@", name ?? "nil")
+                AppLogger.debug("LocationService: MapKit geocode result", category: .location)
                 return name
             }
-            NSLog("📍 LocationService - No MapKit results")
+            AppLogger.debug("LocationService: no MapKit geocode results", category: .location)
             return nil
         } else {
             // Fallback to CLGeocoder for older iOS versions
             let geocoder = CLGeocoder()
 
             do {
-                NSLog("📍 LocationService - Using CLGeocoder (iOS <26)")
+                AppLogger.debug("LocationService: using CLGeocoder", category: .location)
                 let placemarks = try await geocoder.reverseGeocodeLocation(location)
-                NSLog("📍 LocationService - Got %d placemarks", placemarks.count)
+                AppLogger.debug("LocationService: got placemarks", category: .location)
 
                 if let placemark = placemarks.first {
                     let name = placemark.name
@@ -196,13 +196,13 @@ actor LocationService: LocationServiceProtocol {
                         ?? placemark.subLocality
                         ?? placemark.thoroughfare
                         ?? placemark.administrativeArea
-                    NSLog("📍 LocationService - Geocode result: %@", name ?? "nil")
+                    AppLogger.debug("LocationService: geocode result", category: .location)
                     return name
                 }
-                NSLog("📍 LocationService - No placemarks returned")
+                AppLogger.debug("LocationService: no placemarks returned", category: .location)
                 return nil
             } catch {
-                NSLog("📍 LocationService - Geocode error: %@", error.localizedDescription)
+                AppLogger.warning("LocationService: geocode error", category: .location)
                 return nil
             }
         }

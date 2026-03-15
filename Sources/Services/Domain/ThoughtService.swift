@@ -175,7 +175,7 @@ actor ThoughtService: ThoughtServiceProtocol {
             }
         } catch {
             // Classification failure is not fatal - log and continue
-            print("Classification failed for thought \(thought.id): \(error)")
+            AppLogger.warning("Classification failed for thought", category: .classification)
         }
     }
 

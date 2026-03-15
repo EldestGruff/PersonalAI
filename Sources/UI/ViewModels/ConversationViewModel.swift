@@ -48,7 +48,7 @@ final class ConversationViewModel {
             let thoughts = try await thoughtService.list(filter: nil)
             thoughtCount = thoughts.count
         } catch {
-            print("❌ Failed to load thought count: \(error)")
+            AppLogger.error("Failed to load thought count: \(error.localizedDescription)", category: .conversation)
         }
 
         // Start conversation session
@@ -67,7 +67,7 @@ final class ConversationViewModel {
         } catch {
             session.error = error
             session.isLoading = false
-            print("❌ Failed to start conversation: \(error)")
+            AppLogger.error("Failed to start conversation: \(error.localizedDescription)", category: .conversation)
         }
     }
 
@@ -102,7 +102,7 @@ final class ConversationViewModel {
         } catch {
             session.error = error
             session.isLoading = false
-            print("❌ Failed to send message: \(error)")
+            AppLogger.error("Failed to send message: \(error.localizedDescription)", category: .conversation)
         }
     }
 

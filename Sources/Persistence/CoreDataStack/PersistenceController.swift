@@ -58,7 +58,7 @@ struct PersistenceController: Sendable {
             _ = try sampleThought.toEntity(in: viewContext)
             try viewContext.save()
         } catch {
-            print("Failed to create preview data: \(error)")
+            AppLogger.error("Failed to create preview data: \(error.localizedDescription)", category: .persistence)
         }
 
         return controller
@@ -141,7 +141,7 @@ struct PersistenceController: Sendable {
         storeDescription: NSPersistentStoreDescription,
         container: NSPersistentCloudKitContainer
     ) {
-        NSLog("⚠️ Core Data load error: \(error), \(error.userInfo)")
+        AppLogger.warning("Core Data load error: \(error.localizedDescription)", category: .persistence)
 
         let migrationCodes: Set<Int> = [
             134100, // NSPersistentStoreIncompatibleVersionHashError
@@ -155,7 +155,7 @@ struct PersistenceController: Sendable {
             fatalError("Unresolved Core Data error: \(error)")
         }
 
-        NSLog("🔄 Migration error — deleting and recreating store")
+        AppLogger.warning("Migration error — deleting and recreating store", category: .persistence)
 
         let fm = FileManager.default
         let base = storeURL.deletingLastPathComponent()
@@ -168,7 +168,7 @@ struct PersistenceController: Sendable {
             if let retryError {
                 fatalError("Failed to recreate store: \(retryError)")
             }
-            NSLog("✅ Store recreated successfully")
+            AppLogger.info("Store recreated successfully", category: .persistence)
         }
     }
 
