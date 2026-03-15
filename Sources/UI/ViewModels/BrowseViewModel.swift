@@ -540,7 +540,7 @@ final class BrowseViewModel {
                             id: thought.id,
                             userId: thought.userId,
                             content: thought.content,
-                    attributedContent: nil,
+                    attributedContent: thought.attributedContent,
                             tags: updatedTags,
                             status: thought.status,
                             context: thought.context,
