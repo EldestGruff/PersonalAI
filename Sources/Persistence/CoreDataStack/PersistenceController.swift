@@ -149,13 +149,17 @@ struct PersistenceController: Sendable {
             134140  // NSMigrationError
         ]
 
-        guard error.domain == NSCocoaErrorDomain,
-              migrationCodes.contains(error.code),
-              let storeURL = storeDescription.url else {
-            fatalError("Unresolved Core Data error: \(error)")
+        guard let storeURL = storeDescription.url else {
+            // No URL — nothing to delete, cannot recover
+            fatalError("Unresolved Core Data error with no store URL: \(error)")
         }
 
-        AppLogger.warning("Migration error — deleting and recreating store", category: .persistence)
+        let isMigrationError = error.domain == NSCocoaErrorDomain && migrationCodes.contains(error.code)
+        if isMigrationError {
+            AppLogger.warning("Migration error — deleting and recreating store", category: .persistence)
+        } else {
+            AppLogger.error("Unresolved Core Data store error — attempting recreation: \(error.localizedDescription)", category: .persistence)
+        }
 
         let fm = FileManager.default
         let base = storeURL.deletingLastPathComponent()
