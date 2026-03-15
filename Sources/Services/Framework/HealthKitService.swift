@@ -153,6 +153,10 @@ protocol HealthKitServiceProtocol: FrameworkServiceProtocol {
 /// Health queries have a 100ms timeout. If queries take longer,
 /// default values are returned.
 actor HealthKitService: HealthKitServiceProtocol {
+    // MARK: - Shared Instance
+
+    static let shared = HealthKitService()
+
     // MARK: - Framework Service Protocol
 
     nonisolated var frameworkType: FrameworkType { .healthKit }

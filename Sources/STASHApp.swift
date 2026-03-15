@@ -164,44 +164,48 @@ struct MainTabView: View {
 // MARK: - Tab Views
 
 private struct BrowseTab: View {
+    @State private var viewModel = BrowseViewModel(
+        thoughtService: ThoughtService.shared,
+        fineTuningService: FineTuningService.shared
+    )
+
     var body: some View {
-        BrowseScreen(
-            viewModel: BrowseViewModel(
-                thoughtService: ThoughtService.shared,
-                fineTuningService: FineTuningService.shared
-            )
-        )
-        .tabItem { Label("Thoughts", systemImage: "brain.head.profile") }
+        BrowseScreen(viewModel: viewModel)
+            .tabItem { Label("Thoughts", systemImage: "brain.head.profile") }
     }
 }
 
 private struct SearchTab: View {
+    @State private var viewModel = SearchViewModel(thoughtService: ThoughtService.shared)
+
     var body: some View {
-        SearchScreen(viewModel: SearchViewModel(thoughtService: ThoughtService.shared))
+        SearchScreen(viewModel: viewModel)
             .tabItem { Label("Search", systemImage: "magnifyingglass") }
     }
 }
 
 private struct InsightsTab: View {
+    @State private var viewModel = InsightsViewModel(thoughtService: ThoughtService.shared)
+
     var body: some View {
-        InsightsScreen(viewModel: InsightsViewModel(thoughtService: ThoughtService.shared))
+        InsightsScreen(viewModel: viewModel)
             .tabItem { Label("Insights", systemImage: "chart.xyaxis.line") }
     }
 }
 
 private struct SettingsTab: View {
+    @State private var viewModel = SettingsViewModel(
+        healthKitService: HealthKitService.shared,
+        locationService: LocationService.shared,
+        eventKitService: EventKitService.shared,
+        contactsService: ContactsService.shared,
+        thoughtService: ThoughtService.shared,
+        permissionCoordinator: PermissionCoordinator.shared
+    )
+
     var body: some View {
-        SettingsScreen(
-            viewModel: SettingsViewModel(
-                healthKitService: HealthKitService(),
-                locationService: LocationService(),
-                eventKitService: EventKitService(),
-                contactsService: ContactsService(),
-                thoughtService: ThoughtService.shared,
-                permissionCoordinator: PermissionCoordinator.shared
-            )
-        )
-        .tabItem { Label("Settings", systemImage: "gear") }
+        SettingsScreen(viewModel: viewModel)
+            .tabItem { Label("Settings", systemImage: "gear") }
     }
 }
 
@@ -210,11 +214,11 @@ private struct SettingsTab: View {
 extension PermissionCoordinator {
     static let shared: PermissionCoordinator = {
         PermissionCoordinator(
-            locationService: LocationService(),
-            healthKitService: HealthKitService(),
+            locationService: LocationService.shared,
+            healthKitService: HealthKitService.shared,
             motionService: MotionService(),
-            eventKitService: EventKitService(),
-            contactsService: ContactsService()
+            eventKitService: EventKitService.shared,
+            contactsService: ContactsService.shared
         )
     }()
 }

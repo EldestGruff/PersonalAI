@@ -41,6 +41,10 @@ protocol LocationServiceProtocol: FrameworkServiceProtocol {
 /// performance targets. If location cannot be determined quickly,
 /// nil is returned.
 actor LocationService: LocationServiceProtocol {
+    // MARK: - Shared Instance
+
+    static let shared = LocationService()
+
     // MARK: - Framework Service Protocol
 
     nonisolated var frameworkType: FrameworkType { .coreLocation }

@@ -78,6 +78,10 @@ protocol EventKitServiceProtocol: FrameworkServiceProtocol {
 ///
 /// This service requests write-only access by default.
 actor EventKitService: EventKitServiceProtocol {
+    // MARK: - Shared Instance
+
+    static let shared = EventKitService()
+
     // MARK: - Framework Service Protocol
 
     nonisolated var frameworkType: FrameworkType { .eventKit }
