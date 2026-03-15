@@ -251,26 +251,23 @@ actor EventKitService: EventKitServiceProtocol {
             AppLogger.debug("EventKit createEvent: requesting permission", category: .context)
             do {
                 let granted = try await eventStore.requestFullAccessToEvents()
-                AppLogger.debug("EventKit createEvent: permission request returned", category: .context)
+                guard granted else {
+                    AppLogger.debug("EventKit createEvent: permission denied by user", category: .context)
+                    throw ServiceError.permissionDenied(
+                        framework: .eventKit,
+                        currentLevel: .denied
+                    )
+                }
+                AppLogger.debug("EventKit createEvent: permission granted", category: .context)
+            } catch let error as ServiceError {
+                throw error
             } catch {
-                AppLogger.error("EventKit createEvent: permission request failed", category: .context)
+                AppLogger.error("EventKit createEvent: permission request failed: \(error.localizedDescription)", category: .context)
                 throw ServiceError.permissionDenied(
                     framework: .eventKit,
                     currentLevel: initialStatus
                 )
             }
-        }
-
-        // Verify we have permission after request
-        let rawFinalStatus = EKEventStore.authorizationStatus(for: .event)
-        let finalStatus = mapAuthorizationStatus(rawFinalStatus)
-        AppLogger.debug("EventKit createEvent: final status checked", category: .context)
-
-        guard finalStatus.allowsAccess else {
-            throw ServiceError.permissionDenied(
-                framework: .eventKit,
-                currentLevel: finalStatus
-            )
         }
 
         // Select calendar - use specified or default
