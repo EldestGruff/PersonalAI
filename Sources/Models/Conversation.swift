@@ -172,8 +172,7 @@ struct ThoughtSummary: Identifiable, Codable, Sendable {
 // MARK: - Conversation Session
 
 /// Active conversation session
-@Observable
-class ConversationSession {
+@Observable @MainActor final class ConversationSession {
     var messages: [ConversationMessage] = []
     var isLoading: Bool = false
     var error: Error?
