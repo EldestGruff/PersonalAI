@@ -420,9 +420,20 @@ final class CaptureViewModel {
     }
 
     /// Returns false and sets error/isCapturing if subscription limit reached.
+    /// Uses CoreData count query — does not load thought data into memory.
     private func checkSubscriptionEntitlement() async throws -> Bool {
-        let thoughts = try await thoughtService.list(filter: nil)
-        let usage = SubscriptionUsage.calculate(from: thoughts)
+        let thoughtsThisMonth = try await thoughtService.count(filter: .thisMonth)
+        let now = Date()
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month], from: now)
+        let periodStart = calendar.date(from: components) ?? now
+        let periodEnd = calendar.date(byAdding: DateComponents(month: 1), to: periodStart)
+            .flatMap { calendar.date(byAdding: .second, value: -1, to: $0) } ?? now
+        let usage = SubscriptionUsage(
+            thoughtsThisMonth: thoughtsThisMonth,
+            currentPeriodStart: periodStart,
+            currentPeriodEnd: periodEnd
+        )
         guard subscriptionManager.canCaptureThought(usage: usage) else {
             let limit = subscriptionManager.entitlements.thoughtLimit ?? 0
             self.error = .validationFailed(

@@ -59,6 +59,19 @@ actor ThoughtRepository {
         }
     }
 
+    /// Returns the count of thoughts matching the given filter without loading entities.
+    /// Uses CoreData countResultType — O(1) in CoreData.
+    func count(filter: ThoughtFilter? = nil) async throws -> Int {
+        let context = container.newBackgroundContext()
+        return try await context.perform {
+            let fetchRequest = NSFetchRequest<ThoughtEntity>(entityName: "ThoughtEntity")
+            if let filter = filter {
+                fetchRequest.predicate = filter.predicate
+            }
+            return try context.count(for: fetchRequest)
+        }
+    }
+
     /// Lists all thoughts with optional filtering
     func list(filter: ThoughtFilter? = nil, limit: Int? = nil) async throws -> [Thought] {
         // byTag uses in-memory exact match to avoid substring false positives
@@ -455,6 +468,8 @@ enum ThoughtFilter: Sendable {
     case byUserId(UUID)
     case byStatus(ThoughtStatus)
     case byTag(String)
+    /// All thoughts created within the current calendar month (UTC month boundaries).
+    case thisMonth
 
     nonisolated var predicate: NSPredicate {
         switch self {
@@ -468,6 +483,13 @@ enum ThoughtFilter: Sendable {
             return NSPredicate(format: "status == %@", status.rawValue)
         case .byTag(let tag):
             return NSPredicate(format: "tagsJSON CONTAINS %@", tag)
+        case .thisMonth:
+            let calendar = Calendar.current
+            let now = Date()
+            let components = calendar.dateComponents([.year, .month], from: now)
+            let periodStart = calendar.date(from: components) ?? now
+            let periodEnd = calendar.date(byAdding: DateComponents(month: 1), to: periodStart) ?? now
+            return NSPredicate(format: "createdAt >= %@ AND createdAt < %@", periodStart as CVarArg, periodEnd as CVarArg)
         }
     }
 }

@@ -33,6 +33,9 @@ protocol ThoughtServiceProtocol: DomainServiceProtocol {
     // MARK: Convenience
     func listRecent(limit: Int) async throws -> [Thought]
     func listArchived() async throws -> [Thought]
+
+    // MARK: Aggregation
+    func count(filter: ThoughtFilter?) async throws -> Int
 }
 
 // MARK: - Thought Service
@@ -218,6 +221,16 @@ actor ThoughtService: ThoughtServiceProtocol {
     /// Lists archived thoughts.
     func listArchived() async throws -> [Thought] {
         try await list(filter: .archived)
+    }
+
+    /// Returns the count of thoughts matching the given filter.
+    /// Uses CoreData countResultType — does not load thought data into memory.
+    func count(filter: ThoughtFilter?) async throws -> Int {
+        do {
+            return try await repository.count(filter: filter)
+        } catch {
+            throw ServiceError.persistence(operation: "count thoughts", underlying: error)
+        }
     }
 
     // MARK: - Update
@@ -591,5 +604,9 @@ actor MockThoughtService: ThoughtServiceProtocol {
 
     func listArchived() async throws -> [Thought] {
         thoughts.values.filter { $0.status == .archived }
+    }
+
+    func count(filter: ThoughtFilter?) async throws -> Int {
+        try await list(filter: filter).count
     }
 }
