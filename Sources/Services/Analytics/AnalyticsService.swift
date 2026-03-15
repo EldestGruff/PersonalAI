@@ -29,7 +29,7 @@ final class AnalyticsService: @unchecked Sendable {
 
     func initialize() {
         guard !isOptedOut else { return }
-        let config = TelemetryManagerConfiguration(appID: "9893DF09-028C-4E41-84A6-2191465CC1EC")
+        let config = TelemetryManagerConfiguration(appID: AppConstants.Analytics.telemetryDeckAppID)
         TelemetryDeck.initialize(config: config)
     }
 

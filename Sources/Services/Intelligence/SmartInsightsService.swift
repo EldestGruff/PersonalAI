@@ -315,8 +315,6 @@ import Foundation
 private extension Thought {
     /// Whether this thought has a related task created
     var hasRelatedTask: Bool {
-        // TODO: Check if thought has spawned a task
-        // For now, return false - will implement when task linking is available
-        false
+        taskId != nil
     }
 }

@@ -267,7 +267,7 @@ class PersonaService: ObservableObject {
         do {
             customPersonas = try JSONDecoder().decode([SquirrelPersona].self, from: data)
         } catch {
-            print("❌ Failed to load custom personas: \(error)")
+            AppLogger.error("Failed to load custom personas: \(error.localizedDescription)", category: .general)
         }
     }
 
@@ -276,7 +276,7 @@ class PersonaService: ObservableObject {
             let data = try JSONEncoder().encode(customPersonas)
             defaults.set(data, forKey: userDefaultsKey)
         } catch {
-            print("❌ Failed to save custom personas: \(error)")
+            AppLogger.error("Failed to save custom personas: \(error.localizedDescription)", category: .general)
         }
     }
 

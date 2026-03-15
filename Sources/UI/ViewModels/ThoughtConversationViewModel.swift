@@ -84,7 +84,7 @@ class ThoughtConversationViewModel {
             )
         } catch {
             self.error = error
-            print("❌ Failed to start conversation: \(error)")
+            AppLogger.error("Failed to start conversation: \(error.localizedDescription)", category: .conversation)
         }
     }
 
@@ -110,7 +110,7 @@ class ThoughtConversationViewModel {
             )
         } catch {
             self.error = error
-            print("❌ Failed to start conversation: \(error)")
+            AppLogger.error("Failed to start new conversation: \(error.localizedDescription)", category: .conversation)
         }
 
         // Reload conversations list
@@ -174,7 +174,7 @@ class ThoughtConversationViewModel {
         } catch {
             self.error = error
             isLoading = false
-            print("❌ Failed to send message: \(error)")
+            AppLogger.error("Failed to send message: \(error.localizedDescription)", category: .conversation)
         }
     }
 
@@ -237,7 +237,7 @@ class ThoughtConversationViewModel {
             )
         } catch {
             self.error = error
-            print("❌ Failed to restart conversation: \(error)")
+            AppLogger.error("Failed to restart conversation: \(error.localizedDescription)", category: .conversation)
         }
     }
 

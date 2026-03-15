@@ -53,5 +53,16 @@ enum AppConstants {
     enum PendingActions {
         /// UserDefaults key for the pending voice capture flag set by OpenVoiceCaptureIntent.
         static let pendingVoiceCaptureKey = "pendingVoiceCapture"
+
+        /// UserDefaults key storing recent capture timestamps for reminder peak-hour analysis.
+        static let captureTimestampsKey = "capture.timestamps"
+    }
+
+    // MARK: - Analytics
+
+    enum Analytics {
+        /// TelemetryDeck application ID. Not a secret (embedded in distributed apps)
+        /// but centralised here for easy rotation.
+        static let telemetryDeckAppID = "9893DF09-028C-4E41-84A6-2191465CC1EC"
     }
 }

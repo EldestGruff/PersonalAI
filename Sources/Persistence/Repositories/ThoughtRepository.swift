@@ -60,7 +60,7 @@ actor ThoughtRepository {
     }
 
     /// Lists all thoughts with optional filtering
-    func list(filter: ThoughtFilter? = nil) async throws -> [Thought] {
+    func list(filter: ThoughtFilter? = nil, limit: Int? = nil) async throws -> [Thought] {
         let context = container.newBackgroundContext()
 
         return try await context.perform {
@@ -71,6 +71,10 @@ actor ThoughtRepository {
             }
 
             fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
+
+            if let limit = limit {
+                fetchRequest.fetchLimit = limit
+            }
 
             let results = try context.fetch(fetchRequest)
 

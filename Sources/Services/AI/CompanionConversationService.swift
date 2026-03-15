@@ -261,6 +261,6 @@ actor CompanionConversationService {
     // MARK: - Helpers
 
     private func formatDate(_ date: Date) -> String {
-        DateFormatters.mediumDateTime.string(from: date)
+        DateFormatters.mediumDateTime(from: date)
     }
 }

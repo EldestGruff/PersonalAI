@@ -137,9 +137,9 @@ actor ConversationService {
 
         // Use the non-streaming sendMessage and simulate streaming
         return AsyncThrowingStream { continuation in
-            _Concurrency.Task {
+            _Concurrency.Task.detached { [service = self] in
                 do {
-                    let response = try await self.sendMessage(userMessage)
+                    let response = try await service.sendMessage(userMessage)
                     // Simulate streaming by yielding word by word
                     let words = response.message.split(separator: " ")
                     for word in words {
@@ -303,12 +303,12 @@ actor ConversationService {
         } else if daysDiff < 30 {
             return "Last \(daysDiff / 7) weeks"
         } else {
-            return "\(DateFormatters.mediumDate.string(from: start)) - \(DateFormatters.mediumDate.string(from: end))"
+            return "\(DateFormatters.mediumDate(from: start)) - \(DateFormatters.mediumDate(from: end))"
         }
     }
 
     private func formatDate(_ date: Date) -> String {
-        DateFormatters.mediumDateTime.string(from: date)
+        DateFormatters.mediumDateTime(from: date)
     }
 }
 

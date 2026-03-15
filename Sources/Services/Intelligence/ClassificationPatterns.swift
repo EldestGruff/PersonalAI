@@ -67,9 +67,7 @@ enum ClassificationPatterns {
             "tonight",
             "this evening",
             "this afternoon",
-            "o'clock",
-            "am",
-            "pm"
+            "o'clock"
         ]
     }
 

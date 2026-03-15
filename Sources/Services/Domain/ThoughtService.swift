@@ -109,7 +109,7 @@ actor ThoughtService: ThoughtServiceProtocol {
             id: thought.id,
             userId: thought.userId,
             content: thought.content,
-                    attributedContent: nil,
+            attributedContent: thought.attributedContent,
             tags: normalizedTags,
             status: thought.status,
             context: thought.context,
@@ -156,7 +156,7 @@ actor ThoughtService: ThoughtServiceProtocol {
                 id: thought.id,
                 userId: thought.userId,
                 content: thought.content,
-                    attributedContent: nil,
+                attributedContent: thought.attributedContent,
                 tags: thought.tags.isEmpty ? classification.suggestedTags : thought.tags,
                 status: thought.status,
                 context: thought.context,
@@ -175,7 +175,7 @@ actor ThoughtService: ThoughtServiceProtocol {
             }
         } catch {
             // Classification failure is not fatal - log and continue
-            print("Classification failed for thought \(thought.id): \(error)")
+            AppLogger.warning("Classification failed for thought", category: .classification)
         }
     }
 
@@ -212,8 +212,7 @@ actor ThoughtService: ThoughtServiceProtocol {
     /// - Parameter limit: Maximum number to return
     /// - Returns: Array of recent thoughts, newest first
     func listRecent(limit: Int) async throws -> [Thought] {
-        let thoughts = try await list(filter: .active)
-        return Array(thoughts.prefix(limit))
+        try await repository.list(filter: .active, limit: limit)
     }
 
     /// Lists archived thoughts.
@@ -241,7 +240,7 @@ actor ThoughtService: ThoughtServiceProtocol {
             id: thought.id,
             userId: thought.userId,
             content: thought.content,
-                    attributedContent: nil,
+            attributedContent: thought.attributedContent,
             tags: normalizedTags,
             status: thought.status,
             context: thought.context,
@@ -266,7 +265,7 @@ actor ThoughtService: ThoughtServiceProtocol {
             id: normalizedThought.id,
             userId: normalizedThought.userId,
             content: normalizedThought.content,
-                    attributedContent: nil,
+            attributedContent: normalizedThought.attributedContent,
             tags: normalizedTags,
             status: normalizedThought.status,
             context: normalizedThought.context,
@@ -381,7 +380,7 @@ actor ThoughtService: ThoughtServiceProtocol {
                     id: thought.id,
                     userId: thought.userId,
                     content: thought.content,
-                    attributedContent: nil,
+                    attributedContent: thought.attributedContent,
                     tags: thought.tags,
                     status: .archived,
                     context: thought.context,
@@ -411,7 +410,7 @@ actor ThoughtService: ThoughtServiceProtocol {
                     id: thought.id,
                     userId: thought.userId,
                     content: thought.content,
-                    attributedContent: nil,
+                    attributedContent: thought.attributedContent,
                     tags: thought.tags,
                     status: .active,
                     context: thought.context,
@@ -545,7 +544,7 @@ actor MockThoughtService: ThoughtServiceProtocol {
                     id: thought.id,
                     userId: thought.userId,
                     content: thought.content,
-                    attributedContent: nil,
+                    attributedContent: thought.attributedContent,
                     tags: thought.tags,
                     status: .archived,
                     context: thought.context,
@@ -566,7 +565,7 @@ actor MockThoughtService: ThoughtServiceProtocol {
                     id: thought.id,
                     userId: thought.userId,
                     content: thought.content,
-                    attributedContent: nil,
+                    attributedContent: thought.attributedContent,
                     tags: thought.tags,
                     status: .active,
                     context: thought.context,

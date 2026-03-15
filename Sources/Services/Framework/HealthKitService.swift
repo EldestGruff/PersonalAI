@@ -745,7 +745,7 @@ actor HealthKitService: HealthKitServiceProtocol {
             )
 
         } catch {
-            NSLog("⚠️ Failed to fetch state of mind: \(error)")
+            AppLogger.warning("Failed to fetch HealthKit state of mind", category: .context)
             return nil
         }
     }
@@ -966,7 +966,7 @@ actor HealthKitService: HealthKitServiceProtocol {
             .sorted { $0.date < $1.date }
 
         } catch {
-            NSLog("Warning: Failed to fetch historical sleep data: \(error)")
+            AppLogger.warning("Failed to fetch historical sleep data", category: .context)
             return []
         }
     }
@@ -1022,7 +1022,7 @@ actor HealthKitService: HealthKitServiceProtocol {
             .sorted { $0.date < $1.date }
 
         } catch {
-            NSLog("Warning: Failed to fetch historical HRV data: \(error)")
+            AppLogger.warning("Failed to fetch historical HRV data", category: .context)
             return []
         }
     }
@@ -1089,7 +1089,7 @@ actor HealthKitService: HealthKitServiceProtocol {
             .sorted { $0.date < $1.date }
 
         } catch {
-            NSLog("Warning: Failed to fetch historical workout data: \(error)")
+            AppLogger.warning("Failed to fetch historical workout data", category: .context)
             return []
         }
     }
@@ -1153,7 +1153,7 @@ actor HealthKitService: HealthKitServiceProtocol {
             .sorted { $0.date < $1.date }
 
         } catch {
-            NSLog("Warning: Failed to fetch historical resting HR data: \(error)")
+            AppLogger.warning("Failed to fetch historical resting HR data", category: .context)
             return []
         }
     }

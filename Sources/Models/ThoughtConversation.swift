@@ -213,9 +213,9 @@ actor ThoughtConversationService {
             // Group by thoughtId
             conversations = Dictionary(grouping: allConversations) { $0.thoughtId }
 
-            print("✅ Loaded \(allConversations.count) thought conversations")
+            AppLogger.debugPublic("Loaded \(allConversations.count) thought conversations", category: .persistence)
         } catch {
-            print("❌ Failed to load thought conversations: \(error)")
+            AppLogger.error("Failed to load thought conversations: \(error.localizedDescription)", category: .persistence)
         }
     }
 
@@ -226,7 +226,7 @@ actor ThoughtConversationService {
             let data = try JSONEncoder().encode(allConversations)
             UserDefaults.standard.set(data, forKey: persistenceKey)
         } catch {
-            print("❌ Failed to save thought conversations: \(error)")
+            AppLogger.error("Failed to save thought conversations: \(error.localizedDescription)", category: .persistence)
         }
     }
 }

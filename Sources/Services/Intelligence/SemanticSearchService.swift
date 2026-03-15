@@ -32,12 +32,11 @@ struct SearchResult: Identifiable {
 /// - Query "productivity" finds thoughts about "focus", "efficiency", "work"
 /// - Query "feeling anxious" finds thoughts about "worried", "stressed", "nervous"
 /// - Understands context and relationships between concepts
-@MainActor
-final class SemanticSearchService {
+actor SemanticSearchService {
     static let shared = SemanticSearchService()
 
-    /// NLEmbedding for generating contextual embeddings
-    private let embedding: NLEmbedding?
+    /// NLEmbedding for generating contextual embeddings (immutable, safe to read nonisolated)
+    private nonisolated let embedding: NLEmbedding?
 
     /// Minimum similarity threshold for results (0.0-1.0)
     private let relevanceThreshold: Double = 0.2
@@ -160,12 +159,12 @@ final class SemanticSearchService {
     }
 
     /// Check if semantic search is available
-    var isAvailable: Bool {
+    nonisolated var isAvailable: Bool {
         embedding != nil
     }
 
     /// Get description of search mode for UI display
-    var searchMode: String {
+    nonisolated var searchMode: String {
         isAvailable ? "Semantic Search" : "Keyword Search"
     }
 }

@@ -194,17 +194,17 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
 
     /// Refreshes and returns the current permission status
     func refreshStatus() async -> PermissionSummary {
-        NSLog("🎤 [PermissionCoordinator] refreshStatus() - ENTER")
+        AppLogger.debug("PermissionCoordinator: refreshStatus enter", category: .general)
 
-        NSLog("🎤 [PermissionCoordinator] refreshStatus() - Getting location permission")
+        AppLogger.debug("PermissionCoordinator: fetching location permission", category: .general)
         let locationPerm = await locationService.permissionStatus
-        NSLog("🎤 [PermissionCoordinator] refreshStatus() - Getting healthKit permission")
+        AppLogger.debug("PermissionCoordinator: fetching healthKit permission", category: .general)
         let healthKitPerm = await healthKitService.permissionStatus
-        NSLog("🎤 [PermissionCoordinator] refreshStatus() - Getting motion permission")
+        AppLogger.debug("PermissionCoordinator: fetching motion permission", category: .general)
         let motionPerm = await motionService.permissionStatus
-        NSLog("🎤 [PermissionCoordinator] refreshStatus() - Getting eventKit permission")
+        AppLogger.debug("PermissionCoordinator: fetching eventKit permission", category: .general)
         let eventKitPerm = await eventKitService.permissionStatus
-        NSLog("🎤 [PermissionCoordinator] refreshStatus() - Getting contacts permission")
+        AppLogger.debug("PermissionCoordinator: fetching contacts permission", category: .general)
         let contactsPerm = await contactsService.permissionStatus
 
         let summary = PermissionSummary(
@@ -219,7 +219,7 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
         cachedSummary = summary
         continuation?.yield(summary)
 
-        NSLog("🎤 [PermissionCoordinator] refreshStatus() - EXIT")
+        AppLogger.debug("PermissionCoordinator: refreshStatus exit", category: .general)
         return summary
     }
 
@@ -227,7 +227,7 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
 
     /// Requests permission for a specific framework
     func requestPermission(for framework: FrameworkType) async -> PermissionLevel {
-        NSLog("🎤 [PermissionCoordinator] requestPermission(for: \(framework)) - ENTER")
+        AppLogger.debug("PermissionCoordinator: requestPermission enter", category: .general)
 
         let service: any FrameworkServiceProtocol
 
@@ -238,27 +238,27 @@ actor PermissionCoordinator: PermissionCoordinatorProtocol {
         case .eventKit: service = eventKitService
         case .contacts: service = contactsService
         case .network:
-            NSLog("🎤 [PermissionCoordinator] requestPermission() - EXIT (network, no permission needed)")
+            AppLogger.debug("PermissionCoordinator: network needs no permission", category: .general)
             return .authorized // Network doesn't need permission
         case .foundationModels:
-            NSLog("🎤 [PermissionCoordinator] requestPermission() - EXIT (foundationModels, no permission needed)")
+            AppLogger.debug("PermissionCoordinator: foundationModels needs no permission", category: .general)
             return .authorized // Foundation Models is on-device, no permission needed
         case .speech:
-            NSLog("🎤 [PermissionCoordinator] requestPermission() - speech permission handled directly by SpeechRecognitionService")
+            AppLogger.debug("PermissionCoordinator: speech handled by SpeechRecognitionService", category: .general)
             // Speech permissions are handled by SpeechRecognitionService.shared directly,
             // not through PermissionCoordinator
             return .notDetermined
         }
 
-        NSLog("🎤 [PermissionCoordinator] requestPermission() - About to call service.requestPermission()")
+        AppLogger.debug("PermissionCoordinator: calling service.requestPermission", category: .general)
         let result = await service.requestPermission()
-        NSLog("🎤 [PermissionCoordinator] requestPermission() - Got result: \(result)")
+        AppLogger.debug("PermissionCoordinator: permission result received", category: .general)
 
         // Refresh the full summary after any change
-        NSLog("🎤 [PermissionCoordinator] requestPermission() - Refreshing status")
+        AppLogger.debug("PermissionCoordinator: refreshing status", category: .general)
         _ = await refreshStatus()
 
-        NSLog("🎤 [PermissionCoordinator] requestPermission() - EXIT with result: \(result)")
+        AppLogger.debug("PermissionCoordinator: requestPermission exit", category: .general)
         return result
     }
 

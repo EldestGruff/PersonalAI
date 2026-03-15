@@ -277,31 +277,31 @@ final class SettingsViewModel {
 
     /// Loads available calendars and reminder lists
     func loadCalendars() async {
-        NSLog("📅 SettingsViewModel - loadCalendars called, isEventKitAuthorized: \(isEventKitAuthorized)")
+        AppLogger.debug("SettingsViewModel: loadCalendars called", category: .general)
         guard isEventKitAuthorized else {
-            NSLog("📅 SettingsViewModel - EventKit not authorized, skipping calendar load")
+            AppLogger.debug("SettingsViewModel: EventKit not authorized, skipping calendar load", category: .general)
             return
         }
 
         // Load calendars for events
         availableCalendars = await eventKitService.getAvailableCalendars()
-        NSLog("📅 SettingsViewModel - Loaded \(availableCalendars.count) calendars")
+        AppLogger.debugPublic("SettingsViewModel: loaded \(availableCalendars.count) calendars", category: .general)
 
         // Load reminder lists
         availableReminderLists = await eventKitService.getAvailableReminderLists()
-        NSLog("📅 SettingsViewModel - Loaded \(availableReminderLists.count) reminder lists")
+        AppLogger.debugPublic("SettingsViewModel: loaded \(availableReminderLists.count) reminder lists", category: .general)
 
         // Validate selected calendar - clear if it's not in the available list
         if let selectedId = selectedCalendarId,
            !availableCalendars.contains(where: { $0.id == selectedId }) {
-            NSLog("📅 SettingsViewModel - Selected calendar '\(selectedId)' not found, clearing selection")
+            AppLogger.debug("SettingsViewModel: selected calendar not found, clearing", category: .general)
             selectedCalendarId = nil
         }
 
         // Validate selected reminder list - clear if it's not in the available list
         if let selectedId = selectedReminderListId,
            !availableReminderLists.contains(where: { $0.id == selectedId }) {
-            NSLog("📅 SettingsViewModel - Selected reminder list '\(selectedId)' not found, clearing selection")
+            AppLogger.debug("SettingsViewModel: selected reminder list not found, clearing", category: .general)
             selectedReminderListId = nil
         }
     }

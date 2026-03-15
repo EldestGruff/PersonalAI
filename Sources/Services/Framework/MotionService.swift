@@ -123,7 +123,7 @@ actor MotionService: MotionServiceProtocol {
             pedometer.queryPedometerData(from: startOfDay, to: Date()) { data, error in
                 if let error = error {
                     // Log but don't throw - fail soft
-                    print("Motion: Step count query failed: \(error.localizedDescription)")
+                    AppLogger.warning("Motion: step count query failed", category: .context)
                     continuation.resume(returning: 0)
                 } else if let data = data {
                     continuation.resume(returning: data.numberOfSteps.intValue)
