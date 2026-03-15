@@ -107,9 +107,9 @@ actor LocationService: LocationServiceProtocol {
 
         let timeout = configuration.timeouts.frameworkOperation
 
-        return await withTimeout(timeout) {
+        return await ConcurrencyUtilities.withTimeout(timeout) {
             await self.fetchCurrentLocation()
-        }
+        } ?? nil
     }
 
     private func fetchCurrentLocation() async -> Location? {
@@ -154,9 +154,9 @@ actor LocationService: LocationServiceProtocol {
     func getLocationName(latitude: Double, longitude: Double) async -> String? {
         let timeout = configuration.timeouts.geocoding
 
-        return await withTimeout(timeout) { [self] in
+        return await ConcurrencyUtilities.withTimeout(timeout) { [self] in
             await self.performGeocode(latitude: latitude, longitude: longitude)
-        }
+        } ?? nil
     }
 
     private func performGeocode(latitude: Double, longitude: Double) async -> String? {
@@ -226,29 +226,6 @@ actor LocationService: LocationServiceProtocol {
             return .authorized
         @unknown default:
             return .notDetermined
-        }
-    }
-
-    private func withTimeout<T: Sendable>(_ timeout: TimeInterval, operation: @Sendable @escaping () async -> T?) async -> T? {
-        await withTaskGroup(of: T?.self) { group in
-            group.addTask {
-                await operation()
-            }
-
-            group.addTask {
-                try? await _Concurrency.Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
-                return nil
-            }
-
-            // Return first non-nil result, or nil if timeout wins
-            for await result in group {
-                if result != nil {
-                    group.cancelAll()
-                    return result
-                }
-            }
-
-            return nil
         }
     }
 
