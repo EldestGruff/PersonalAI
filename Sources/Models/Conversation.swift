@@ -199,6 +199,12 @@ class ConversationSession {
         messages.filter { $0.role == .user }
     }
 
+    /// Removes the most recent user message. Used by retry() to avoid duplication.
+    func removeLastUserMessage() {
+        guard let idx = messages.lastIndex(where: { $0.role == .user }) else { return }
+        messages.remove(at: idx)
+    }
+
     /// Get conversation history as string for context
     var historyText: String {
         messages.map { message in

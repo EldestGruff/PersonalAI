@@ -108,7 +108,11 @@ final class ConversationViewModel {
 
     func retry() async {
         guard let lastUserMessage = session.userMessages.last else { return }
-        await sendMessage(lastUserMessage.content)
+        let content = lastUserMessage.content
+        // Remove the failed user message so sendMessage doesn't duplicate it
+        session.removeLastUserMessage()
+        session.error = nil
+        await sendMessage(content)
     }
 
     // MARK: - Actions
