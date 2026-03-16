@@ -55,6 +55,68 @@ struct Context: Codable, Equatable, Sendable {
     /// and step count. Used for historical health correlation analysis.
     let energyBreakdown: EnergyBreakdown?
 
+    /// Contact names mentioned in a thought (extracted from natural language).
+    ///
+    /// Populated by `ContactMentionDetector` via `ContextEnrichmentService` after
+    /// recognising person names in the thought's text. Values are display names,
+    /// not contact identifiers.
+    let mentionedContacts: [String]
+
+    // MARK: - Init
+
+    /// Memberwise init with `mentionedContacts` defaulting to `[]`.
+    ///
+    /// All existing call sites continue to compile — new parameter is last with a default.
+    init(
+        timestamp: Date,
+        location: Location?,
+        timeOfDay: TimeOfDay,
+        energy: EnergyLevel,
+        focusState: UserFocusState,
+        calendar: CalendarContext?,
+        activity: ActivityContext?,
+        weather: WeatherContext?,
+        stateOfMind: StateOfMindSnapshot?,
+        energyBreakdown: EnergyBreakdown?,
+        mentionedContacts: [String] = []
+    ) {
+        self.timestamp = timestamp
+        self.location = location
+        self.timeOfDay = timeOfDay
+        self.energy = energy
+        self.focusState = focusState
+        self.calendar = calendar
+        self.activity = activity
+        self.weather = weather
+        self.stateOfMind = stateOfMind
+        self.energyBreakdown = energyBreakdown
+        self.mentionedContacts = mentionedContacts
+    }
+
+    // MARK: - Codable
+
+    private enum CodingKeys: String, CodingKey {
+        case timestamp, location, timeOfDay, energy, focusState
+        case calendar, activity, weather, stateOfMind, energyBreakdown
+        case mentionedContacts
+    }
+
+    /// Custom decoder: `mentionedContacts` defaults to `[]` if missing from stored JSON.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        timestamp = try c.decode(Date.self, forKey: .timestamp)
+        location = try c.decodeIfPresent(Location.self, forKey: .location)
+        timeOfDay = try c.decode(TimeOfDay.self, forKey: .timeOfDay)
+        energy = try c.decode(EnergyLevel.self, forKey: .energy)
+        focusState = try c.decode(UserFocusState.self, forKey: .focusState)
+        calendar = try c.decodeIfPresent(CalendarContext.self, forKey: .calendar)
+        activity = try c.decodeIfPresent(ActivityContext.self, forKey: .activity)
+        weather = try c.decodeIfPresent(WeatherContext.self, forKey: .weather)
+        stateOfMind = try c.decodeIfPresent(StateOfMindSnapshot.self, forKey: .stateOfMind)
+        energyBreakdown = try c.decodeIfPresent(EnergyBreakdown.self, forKey: .energyBreakdown)
+        mentionedContacts = try c.decodeIfPresent([String].self, forKey: .mentionedContacts) ?? []
+    }
+
     /// Creates an empty/default context with current timestamp.
     ///
     /// Used when context gathering is unavailable or fails.

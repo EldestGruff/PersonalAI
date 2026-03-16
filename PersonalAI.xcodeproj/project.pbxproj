@@ -131,6 +131,8 @@
 		A1B77D0B2F3E3CEA00F8D6B4 /* MedicationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D092F3E3CEA00F8D6B4 /* MedicationService.swift */; };
 		A1B77D0C2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D0A2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift */; };
 		A1B77D0F2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B77D0E2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift */; };
+		A0000001000000000000255 /* ContactMentionDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000256 /* ContactMentionDetector.swift */; };
+		A0000001000000000000257 /* CalendarResurfacingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000258 /* CalendarResurfacingService.swift */; };
 		A1F85F6C2F57BA55003C400D /* STASH Watch App Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = A1F85F4C2F57BA54003C400D /* STASH Watch App Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A1F85F822F57C0ED003C400D /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1F85F812F57C0ED003C400D /* WatchConnectivity.framework */; };
 		A1F862232F5926F3003C400D /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1F85F812F57C0ED003C400D /* WatchConnectivity.framework */; };
@@ -329,6 +331,8 @@
 		A1B77D092F3E3CEA00F8D6B4 /* MedicationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationService.swift; sourceTree = "<group>"; };
 		A1B77D0A2F3E3CEA00F8D6B4 /* SpeechRecognitionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognitionService.swift; sourceTree = "<group>"; };
 		A1B77D0E2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextEnrichmentService.swift; sourceTree = "<group>"; };
+		A0000001000000000000256 /* ContactMentionDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactMentionDetector.swift; sourceTree = "<group>"; };
+		A0000001000000000000258 /* CalendarResurfacingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarResurfacingService.swift; sourceTree = "<group>"; };
 		A1F85F4C2F57BA54003C400D /* STASH Watch App Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "STASH Watch App Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F85F582F57BA55003C400D /* STASH Watch App Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "STASH Watch App Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F85F622F57BA55003C400D /* STASH Watch App Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "STASH Watch App Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -655,6 +659,8 @@
 				A0000001000000000000156 /* ClassificationBiasStore.swift */,
 				A7EFEB1FB682981ADA7E6A39 /* InsightsAnalyzer.swift */,
 				A1B77D0E2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift */,
+				A0000001000000000000256 /* ContactMentionDetector.swift */,
+				A0000001000000000000258 /* CalendarResurfacingService.swift */,
 				A1803D472F25BDFD0071D950 /* DateTimeParsingService.swift */,
 				A1803D4A2F25BDFD0071D952 /* DateTimeParsingService_FoundationModels.swift */,
 				A1803D4C2F25BDFD0071D954 /* ClassificationService_FoundationModels.swift */,
@@ -1102,6 +1108,8 @@
 				A1A6326B2F33A8B900DA552B /* AppleIntelligenceRequiredView.swift in Sources */,
 				ABAF86190408267B09159634 /* InsightsAnalyzer.swift in Sources */,
 				A1B77D0F2F3E4A1200F8D6B4 /* ContextEnrichmentService.swift in Sources */,
+				A0000001000000000000255 /* ContactMentionDetector.swift in Sources */,
+				A0000001000000000000257 /* CalendarResurfacingService.swift in Sources */,
 				A1803D4B2F25BDFD0071D953 /* ClassificationService_FoundationModels.swift in Sources */,
 				A0000001000000000000161 /* ThoughtService.swift in Sources */,
 				A0000001000000000000163 /* TaskService.swift in Sources */,

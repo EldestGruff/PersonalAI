@@ -104,6 +104,10 @@ struct MainTabView: View {
     @State private var selectedTab: Tab = .browse
     @State private var showVoiceCapture: Bool = false
     @State private var showCaptureFromNotification: Bool = false
+    @State private var browseViewModel = BrowseViewModel(
+        thoughtService: ThoughtService.shared,
+        fineTuningService: FineTuningService.shared
+    )
     @Environment(\.scenePhase) private var scenePhase
 
     enum Tab: String {
@@ -115,7 +119,7 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            BrowseTab().tag(Tab.browse)
+            BrowseTab(viewModel: browseViewModel).tag(Tab.browse)
             SearchTab().tag(Tab.search)
             InsightsTab().tag(Tab.insights)
             SettingsTab().tag(Tab.settings)
@@ -140,10 +144,19 @@ struct MainTabView: View {
                 NotificationDelegate.shared.openCapture = false
             }
         }
+        .onReceive(NotificationDelegate.shared.$openSearch) { query in
+            guard let query else { return }
+            selectedTab = .browse
+            browseViewModel.setSearchText(query)
+            NotificationDelegate.shared.openSearch = nil
+        }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 StreakTracker.shared.onAppForeground()
                 checkForPendingVoiceCapture()
+                _Concurrency.Task {
+                    await CalendarResurfacingService.shared.scheduleResurfacingNotifications()
+                }
             }
         }
     }
@@ -164,14 +177,11 @@ struct MainTabView: View {
 // MARK: - Tab Views
 
 private struct BrowseTab: View {
+    let viewModel: BrowseViewModel
+
     var body: some View {
-        BrowseScreen(
-            viewModel: BrowseViewModel(
-                thoughtService: ThoughtService.shared,
-                fineTuningService: FineTuningService.shared
-            )
-        )
-        .tabItem { Label("Thoughts", systemImage: "brain.head.profile") }
+        BrowseScreen(viewModel: viewModel)
+            .tabItem { Label("Thoughts", systemImage: "brain.head.profile") }
     }
 }
 
@@ -229,6 +239,7 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, Ob
     static let shared = NotificationDelegate()
 
     @Published var openCapture: Bool = false
+    @Published var openSearch: String? = nil
 
     // Display notifications even when app is foregrounded
     nonisolated func userNotificationCenter(
@@ -246,8 +257,12 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, Ob
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let userInfo = response.notification.request.content.userInfo
-        if let deeplink = userInfo["deeplink"] as? String, deeplink == "stash://capture" {
-            _Concurrency.Task { @MainActor in self.openCapture = true }
+        if let deeplink = userInfo["deeplink"] as? String {
+            if deeplink == "stash://capture" {
+                _Concurrency.Task { @MainActor in self.openCapture = true }
+            } else if deeplink == "stash://search", let query = userInfo["query"] as? String {
+                _Concurrency.Task { @MainActor in self.openSearch = query }
+            }
         }
         completionHandler()
     }

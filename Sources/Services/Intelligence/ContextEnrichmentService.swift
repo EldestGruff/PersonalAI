@@ -49,6 +49,7 @@ actor ContextEnrichmentService {
     private let healthKitService: HealthKitService
     private let eventKitService: EventKitService
     private let motionService: MotionService
+    private let contactsService: ContactsService
 
     // MARK: - Initialization
 
@@ -58,7 +59,8 @@ actor ContextEnrichmentService {
         locationService: LocationService = LocationService(),
         healthKitService: HealthKitService = HealthKitService(),
         eventKitService: EventKitService = EventKitService(),
-        motionService: MotionService = MotionService()
+        motionService: MotionService = MotionService(),
+        contactsService: ContactsService = .shared
     ) {
         self.thoughtService = thoughtService
         self.classificationService = classificationService
@@ -66,6 +68,7 @@ actor ContextEnrichmentService {
         self.healthKitService = healthKitService
         self.eventKitService = eventKitService
         self.motionService = motionService
+        self.contactsService = contactsService
     }
 
     // MARK: - Public Methods
@@ -93,6 +96,7 @@ actor ContextEnrichmentService {
         async let energyBreakdown = fetchEnergyBreakdown()
         async let calendar = fetchCalendar()
         async let classification = fetchClassification(for: thought)
+        async let mentionedContacts = fetchMentionedContacts(for: thought)
 
         // Wait for all data
         let enrichedContext = await Context(
@@ -105,10 +109,12 @@ actor ContextEnrichmentService {
             activity: activity,
             weather: nil,
             stateOfMind: stateOfMind,
-            energyBreakdown: energyBreakdown
+            energyBreakdown: energyBreakdown,
+            mentionedContacts: mentionedContacts
         )
 
         let resolvedClassification = await classification
+        let resolvedMentionedContacts = enrichedContext.mentionedContacts
 
         // Create updated thought (Thought is immutable)
         let updatedThought = Thought(
@@ -116,7 +122,10 @@ actor ContextEnrichmentService {
             userId: thought.userId,
             content: thought.content,
             attributedContent: thought.attributedContent,
-            tags: resolvedClassification?.suggestedTags ?? thought.tags,
+            tags: mergedTags(
+                base: resolvedClassification?.suggestedTags ?? thought.tags,
+                contacts: resolvedMentionedContacts
+            ),
             status: thought.status,
             context: enrichedContext,
             createdAt: thought.createdAt,
@@ -195,6 +204,31 @@ actor ContextEnrichmentService {
         }
 
         return await eventKitService.getAvailability()
+    }
+
+    /// Detects contact name mentions in the thought's content.
+    ///
+    /// Returns an empty array if Contacts permission is not granted.
+    private func fetchMentionedContacts(for thought: Thought) async -> [String] {
+        let names = await contactsService.getAllContactNames()
+        guard !names.isEmpty else { return [] }
+        return ContactMentionDetector.detect(in: thought.content, knownNames: names)
+    }
+
+    /// Merges contact names into tag list as kebab-case tags (max 2 contact tags).
+    private func mergedTags(base: [String], contacts: [String]) -> [String] {
+        guard !contacts.isEmpty else { return base }
+        var tags = base
+        let contactTags = contacts.prefix(2).map { name in
+            name.lowercased()
+                .components(separatedBy: CharacterSet.alphanumerics.inverted)
+                .filter { !$0.isEmpty }
+                .joined(separator: "-")
+        }
+        for tag in contactTags where !tags.contains(tag) {
+            tags.append(tag)
+        }
+        return tags
     }
 
     /// Classifies the thought if it hasn't been classified yet.

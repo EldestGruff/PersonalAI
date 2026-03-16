@@ -92,6 +92,19 @@ struct ContextDisplayView: View {
                         value: calendar.isFreetime ? "Free" : "Busy"
                     )
                 }
+
+                // Mentioned contacts
+                if !context.mentionedContacts.isEmpty {
+                    let displayNames = context.mentionedContacts.prefix(2).joined(separator: ", ")
+                    let label = context.mentionedContacts.count > 2
+                        ? "\(displayNames) +\(context.mentionedContacts.count - 2) more"
+                        : displayNames
+                    ContextItem(
+                        icon: "person.2.fill",
+                        label: "People",
+                        value: label
+                    )
+                }
             }
         }
         .padding(12)
@@ -280,6 +293,25 @@ extension UserFocusState {
             weather: nil,
             stateOfMind: nil,
             energyBreakdown: nil
+        )
+    )
+    .padding()
+}
+
+#Preview("Context Display — with contacts") {
+    ContextDisplayView(
+        context: Context(
+            timestamp: Date(),
+            location: nil,
+            timeOfDay: .afternoon,
+            energy: .high,
+            focusState: .deep_work,
+            calendar: nil,
+            activity: nil,
+            weather: nil,
+            stateOfMind: nil,
+            energyBreakdown: nil,
+            mentionedContacts: ["Sarah Johnson", "John Smith", "Bob Wilson"]
         )
     )
     .padding()

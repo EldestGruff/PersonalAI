@@ -53,6 +53,7 @@ struct WatchCaptureView: View {
     @State private var permissionDenied = false
     @State private var audioLevel: Float = 0
     @State private var levelTimer: Timer?
+    @ObservedObject private var connectivity = WatchConnectivityManager.shared
 
     var body: some View {
         ZStack {
@@ -87,6 +88,11 @@ struct WatchCaptureView: View {
                 Text("\(capturedCount) captured")
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
+            }
+            if connectivity.pendingCount > 0 {
+                Text("↑ \(connectivity.pendingCount) syncing")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.orange)
             }
 
             Spacer()
