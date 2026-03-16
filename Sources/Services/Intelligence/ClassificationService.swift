@@ -48,10 +48,6 @@ protocol ClassificationServiceProtocol: ServiceProtocol {
 /// - Foundation Models (iOS 18+)
 /// - Fine-tuned models from user data
 actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtocol {
-    // MARK: - Singleton
-
-    static let shared = ClassificationService()
-
     // MARK: - Service Protocol
 
     nonisolated var isAvailable: Bool { true }
@@ -136,8 +132,12 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     private func performClassification(_ content: String) async -> Classification {
         let startTime = Date()
 
-        var (type, sentiment, tags, confidence, model) = await classifyViaFoundationModels(content)
-            ?? (await classifyViaNLPHeuristics(content))
+        let fmResult = await classifyViaFoundationModels(content)
+        var (type, sentiment, tags, confidence, model) = if let fmResult {
+            fmResult
+        } else {
+            await classifyViaNLPHeuristics(content)
+        }
 
         sentiment = postProcessSentiment(type: type, sentiment: sentiment, content: content)
 

@@ -36,7 +36,7 @@ actor SemanticSearchService {
     static let shared = SemanticSearchService()
 
     /// NLEmbedding for generating contextual embeddings (immutable, safe to read nonisolated)
-    private nonisolated let embedding: NLEmbedding?
+    private nonisolated(unsafe) let embedding: NLEmbedding?
 
     /// Minimum similarity threshold for results (0.0-1.0)
     private let relevanceThreshold: Double = 0.2
