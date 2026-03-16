@@ -110,7 +110,7 @@ actor ContextEnrichmentService {
             weather: nil,
             stateOfMind: stateOfMind,
             energyBreakdown: energyBreakdown,
-            mentionedContacts: await mentionedContacts
+            mentionedContacts: mentionedContacts
         )
 
         let resolvedClassification = await classification
