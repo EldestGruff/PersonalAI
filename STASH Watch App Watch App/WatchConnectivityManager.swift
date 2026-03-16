@@ -15,6 +15,7 @@
 //  ObservableObject + @Published is the correct pattern for NSObject subclasses.
 //
 
+import Combine
 import Foundation
 import WatchConnectivity
 
@@ -85,7 +86,7 @@ extension WatchConnectivityManager: WCSessionDelegate {
 
     nonisolated func session(
         _ session: WCSession,
-        didFinishFileTransfer fileTransfer: WCSessionFileTransfer,
+        didFinish fileTransfer: WCSessionFileTransfer,
         error: Error?
     ) {
         if let error {
