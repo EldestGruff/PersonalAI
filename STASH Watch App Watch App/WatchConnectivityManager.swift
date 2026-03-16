@@ -42,16 +42,20 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
     /// WCSession queues the transfer if the phone isn't currently reachable.
     func sendAudio(fileURL: URL, capturedAt: Date = Date()) {
         let session = WCSession.default
-        guard session.activationState == .activated else { return }
+        guard session.activationState == .activated else {
+            print("[WatchConnectivityManager] sendAudio: session not activated — file not sent")
+            return
+        }
 
         let metadata: [String: Any] = [
             "capturedAt": capturedAt.timeIntervalSince1970
         ]
         session.transferFile(fileURL, metadata: metadata)
 
-        // Refresh count immediately after enqueuing (must be on main thread for @Published)
+        // Capture count on WCSession's queue (where it's accurate), then hop to main for @Published
+        let count = session.outstandingFileTransfers.count
         DispatchQueue.main.async { [weak self] in
-            self?.pendingCount = WCSession.default.outstandingFileTransfers.count
+            self?.pendingCount = count
         }
     }
 }
@@ -73,8 +77,9 @@ extension WatchConnectivityManager: WCSessionDelegate {
             print("[WatchConnectivityManager] Activation error: \(error.localizedDescription)")
         }
         // Restore pending count from previous app launches
+        let count = session.outstandingFileTransfers.count
         DispatchQueue.main.async {
-            WatchConnectivityManager.shared.pendingCount = session.outstandingFileTransfers.count
+            WatchConnectivityManager.shared.pendingCount = count
         }
     }
 
@@ -87,8 +92,9 @@ extension WatchConnectivityManager: WCSessionDelegate {
             print("[WatchConnectivityManager] File transfer failed: \(error.localizedDescription)")
         }
         // Update count — delivered files are removed from outstandingFileTransfers
+        let count = session.outstandingFileTransfers.count
         DispatchQueue.main.async {
-            WatchConnectivityManager.shared.pendingCount = session.outstandingFileTransfers.count
+            WatchConnectivityManager.shared.pendingCount = count
         }
     }
 }
