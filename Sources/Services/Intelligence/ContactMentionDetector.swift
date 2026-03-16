@@ -39,7 +39,8 @@ enum ContactMentionDetector {
         // Keyed by lowercased name so each unique contact gets its own entry.
         // Two people who share a first name (e.g. "Sarah Johnson" and "Sarah Connor")
         // are distinct keys and both appear in the result.
-        var matched: [String: String] = [:]
+        // Tokens are stored alongside the display name to avoid re-tokenising during dedup.
+        var matched: [String: (tokens: [String], displayName: String)] = [:]
 
         for name in knownNames {
             let nameLower = name.lowercased()
@@ -48,28 +49,23 @@ enum ContactMentionDetector {
 
             if nameTokens.count >= 2 {
                 if lowercasedText.contains(nameLower) {
-                    matched[nameLower] = name
+                    matched[nameLower] = (nameTokens, name)
                 }
             } else {
                 if firstNameHasSocialContext(nameTokens[0], in: words) {
-                    matched[nameLower] = name
+                    matched[nameLower] = (nameTokens, name)
                 }
             }
         }
 
         // Full name wins over first-name-only entry for the same person.
         // E.g. if both "Sarah" and "Sarah Johnson" matched, return only "Sarah Johnson".
-        let fullNameFirstTokens = Set(
-            matched.keys
-                .filter { tokens(from: $0).count >= 2 }
-                .map { tokens(from: $0)[0] }
-        )
-        return matched.compactMap { key, value in
-            let keyTokens = tokens(from: key)
-            if keyTokens.count == 1 && fullNameFirstTokens.contains(keyTokens[0]) {
+        let fullNameFirstTokens = Set(matched.values.filter { $0.tokens.count >= 2 }.map { $0.tokens[0] })
+        return matched.values.compactMap { entry in
+            if entry.tokens.count == 1 && fullNameFirstTokens.contains(entry.tokens[0]) {
                 return nil  // suppressed — same person has a full-name match
             }
-            return value
+            return entry.displayName
         }
     }
 
@@ -80,9 +76,15 @@ enum ContactMentionDetector {
     }
 
     private static func firstNameHasSocialContext(_ firstName: String, in words: [String]) -> Bool {
-        guard let index = words.firstIndex(of: firstName) else { return false }
-        let lower = max(0, index - 3)
-        let upper = min(words.count - 1, index + 3)
-        return words[lower...upper].contains { socialContextWords.contains($0) }
+        // Check every occurrence — "Sarah said she'd call Sarah" should match on the second.
+        var startIndex = 0
+        while startIndex < words.count {
+            guard let index = words[startIndex...].firstIndex(of: firstName) else { break }
+            let lower = max(0, index - 3)
+            let upper = min(words.count - 1, index + 3)
+            if words[lower...upper].contains(where: { socialContextWords.contains($0) }) { return true }
+            startIndex = index + 1
+        }
+        return false
     }
 }
