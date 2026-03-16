@@ -158,7 +158,7 @@ actor ContextService: ContextServiceProtocol {
         }
         let duration = Int(Date().timeIntervalSince(opStart) * 1000)
         let timedOut = result == nil && duration >= Int(timeout * 1000)
-        return (.location(result), duration, timedOut)
+        return (.location(result ?? nil), duration, timedOut)
     }
 
     private func gatherEnergyBreakdown(timeout: TimeInterval) async -> (ContextComponent, Int, Bool) {
