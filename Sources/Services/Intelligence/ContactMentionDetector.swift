@@ -36,6 +36,9 @@ enum ContactMentionDetector {
         let lowercasedText = text.lowercased()
         let words = tokens(from: lowercasedText)
 
+        // Keyed by lowercased name so each unique contact gets its own entry.
+        // Two people who share a first name (e.g. "Sarah Johnson" and "Sarah Connor")
+        // are distinct keys and both appear in the result.
         var matched: [String: String] = [:]
 
         for name in knownNames {
@@ -45,22 +48,29 @@ enum ContactMentionDetector {
 
             if nameTokens.count >= 2 {
                 if lowercasedText.contains(nameLower) {
-                    let key = nameTokens[0]
-                    matched[key] = name
+                    matched[nameLower] = name
                 }
             } else {
-                let firstName = nameTokens[0]
-                if let existing = matched[firstName],
-                   tokens(from: existing.lowercased()).count >= 2 {
-                    continue
-                }
-                if firstNameHasSocialContext(firstName, in: words) {
-                    matched[firstName] = name
+                if firstNameHasSocialContext(nameTokens[0], in: words) {
+                    matched[nameLower] = name
                 }
             }
         }
 
-        return Array(matched.values)
+        // Full name wins over first-name-only entry for the same person.
+        // E.g. if both "Sarah" and "Sarah Johnson" matched, return only "Sarah Johnson".
+        let fullNameFirstTokens = Set(
+            matched.keys
+                .filter { tokens(from: $0).count >= 2 }
+                .map { tokens(from: $0)[0] }
+        )
+        return matched.compactMap { key, value in
+            let keyTokens = tokens(from: key)
+            if keyTokens.count == 1 && fullNameFirstTokens.contains(keyTokens[0]) {
+                return nil  // suppressed — same person has a full-name match
+            }
+            return value
+        }
     }
 
     private static func tokens(from text: String) -> [String] {
