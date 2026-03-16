@@ -47,16 +47,8 @@ private extension Array {
 /// `EKEvent` is not `Sendable`, so we project only the fields we need.
 struct UpcomingEvent: Sendable, Identifiable {
     let id: String        // EKEvent.eventIdentifier
-    let eventId: String   // Same as id — used for notification identifier namespacing
     let title: String
     let startDate: Date
-
-    init(id: String, title: String, startDate: Date) {
-        self.id = id
-        self.eventId = id
-        self.title = title
-        self.startDate = startDate
-    }
 }
 
 // MARK: - EventKit Service Protocol
@@ -103,6 +95,8 @@ protocol EventKitServiceProtocol: FrameworkServiceProtocol {
 ///
 /// This service requests write-only access by default.
 actor EventKitService: EventKitServiceProtocol {
+    static let shared = EventKitService()
+
     // MARK: - Framework Service Protocol
 
     nonisolated var frameworkType: FrameworkType { .eventKit }

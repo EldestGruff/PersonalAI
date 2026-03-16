@@ -57,8 +57,9 @@ struct Context: Codable, Equatable, Sendable {
 
     /// Contact names mentioned in a thought (extracted from natural language).
     ///
-    /// Populated by `ContactResurfacingService` after recognising person names
-    /// in the thought's text. Values are display names, not contact identifiers.
+    /// Populated by `ContactMentionDetector` via `ContextEnrichmentService` after
+    /// recognising person names in the thought's text. Values are display names,
+    /// not contact identifiers.
     let mentionedContacts: [String]
 
     // MARK: - Init

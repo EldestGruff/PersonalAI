@@ -41,6 +41,8 @@ protocol ContactsServiceProtocol: FrameworkServiceProtocol {
 /// Contact queries can be slow for large address books. All operations
 /// have timeouts and the service caches contact names for faster matching.
 actor ContactsService: ContactsServiceProtocol {
+    static let shared = ContactsService()
+
     // MARK: - Framework Service Protocol
 
     nonisolated var frameworkType: FrameworkType { .contacts }

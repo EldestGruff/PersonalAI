@@ -150,7 +150,7 @@ actor CalendarResurfacingService {
 
     /// Returns the stable notification identifier for a given event.
     static func notificationIdentifier(for event: UpcomingEvent) -> String {
-        "resurfacing.\(event.eventId)"
+        "resurfacing.\(event.id)"
     }
 
     // MARK: - Private
