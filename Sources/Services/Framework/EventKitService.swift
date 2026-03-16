@@ -40,6 +40,25 @@ private extension Array {
     }
 }
 
+// MARK: - Upcoming Event
+
+/// Sendable snapshot of an upcoming calendar event.
+///
+/// `EKEvent` is not `Sendable`, so we project only the fields we need.
+struct UpcomingEvent: Sendable, Identifiable {
+    let id: String        // EKEvent.eventIdentifier
+    let eventId: String   // Same as id — used for notification identifier namespacing
+    let title: String
+    let startDate: Date
+
+    init(id: String, title: String, startDate: Date) {
+        self.id = id
+        self.eventId = id
+        self.title = title
+        self.startDate = startDate
+    }
+}
+
 // MARK: - EventKit Service Protocol
 
 /// Protocol for EventKit services.
@@ -60,6 +79,12 @@ protocol EventKitServiceProtocol: FrameworkServiceProtocol {
 
     /// Gets available reminder lists
     func getAvailableReminderLists() async -> [CalendarInfo]
+
+    /// Fetches upcoming calendar events within the given number of hours.
+    ///
+    /// Returns only non-all-day events with non-empty titles.
+    /// Sorted by start date ascending. Returns `[]` if permission not granted.
+    func getUpcomingEvents(within hours: Int) async -> [UpcomingEvent]
 }
 
 // MARK: - EventKit Service
@@ -371,6 +396,35 @@ actor EventKitService: EventKitServiceProtocol {
         }
     }
 
+    // MARK: - Get Upcoming Events
+
+    func getUpcomingEvents(within hours: Int) async -> [UpcomingEvent] {
+        guard permissionStatus.allowsAccess else { return [] }
+        let timeout = configuration.timeouts.frameworkOperation
+        return await withTimeout(timeout, default: []) {
+            await self.fetchUpcomingEvents(hours: hours)
+        }
+    }
+
+    private func fetchUpcomingEvents(hours: Int) async -> [UpcomingEvent] {
+        let now = Date()
+        guard let end = Calendar.current.date(byAdding: .hour, value: hours, to: now) else { return [] }
+
+        let predicate = eventStore.predicateForEvents(
+            withStart: now,
+            end: end,
+            calendars: eventStore.calendars(for: .event)
+        )
+
+        return eventStore.events(matching: predicate)
+            .filter { !$0.isAllDay && !($0.title?.isEmpty ?? true) }
+            .sorted { $0.startDate < $1.startDate }
+            .compactMap { event in
+                guard let id = event.eventIdentifier, let title = event.title else { return nil }
+                return UpcomingEvent(id: id, title: title, startDate: event.startDate)
+            }
+    }
+
     private func fetchAvailability() async -> CalendarContext {
         let calendar = Calendar.current
         let now = Date()
@@ -508,5 +562,11 @@ actor MockEventKitService: EventKitServiceProtocol {
 
     func getAvailability() async -> CalendarContext {
         mockAvailability
+    }
+
+    var mockUpcomingEvents: [UpcomingEvent] = []
+
+    func getUpcomingEvents(within hours: Int) async -> [UpcomingEvent] {
+        mockUpcomingEvents
     }
 }
