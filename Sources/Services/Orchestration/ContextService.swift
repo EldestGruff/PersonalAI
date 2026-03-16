@@ -89,7 +89,7 @@ actor ContextService: ContextServiceProtocol {
     private let healthKitService: HealthKitServiceProtocol
     private let motionService: MotionServiceProtocol
     private let eventKitService: EventKitServiceProtocol
-    private let configuration: ServiceConfiguration
+    let configuration: ServiceConfiguration
 
     // MARK: - Initialization
 

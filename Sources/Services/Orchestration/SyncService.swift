@@ -80,7 +80,7 @@ actor SyncService: SyncServiceProtocol {
 
     private let repository: SyncRepository
     private let networkMonitor: NetworkMonitorProtocol
-    private let configuration: ServiceConfiguration
+    let configuration: ServiceConfiguration
 
     // MARK: - State
 

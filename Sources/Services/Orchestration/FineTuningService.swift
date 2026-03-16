@@ -99,7 +99,7 @@ actor FineTuningService: FineTuningServiceProtocol {
 
     private let repository: FineTuningRepository
     private let syncService: SyncServiceProtocol?
-    private let configuration: ServiceConfiguration
+    let configuration: ServiceConfiguration
 
     // MARK: - Initialization
 
@@ -592,7 +592,7 @@ actor FineTuningService: FineTuningServiceProtocol {
 /// Mock fine-tuning service for testing and previews.
 actor MockFineTuningService: FineTuningServiceProtocol {
     nonisolated var isAvailable: Bool { true }
-    private let configuration: ServiceConfiguration
+    let configuration: ServiceConfiguration
 
     var trackedThoughts: [UUID] = []
     var trackedReminders: [UUID] = []
