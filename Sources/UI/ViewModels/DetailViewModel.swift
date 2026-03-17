@@ -166,6 +166,14 @@ final class DetailViewModel {
     // MARK: - Feedback Actions
 
     /// Loads previously stored feedback from CoreData so the UI reflects it on return.
+    /// Refreshes the thought from persistence so background enrichment and
+    /// migration changes (e.g. mentionedContacts) are reflected immediately.
+    func refreshThought() async {
+        guard let updated = try? await thoughtService.fetch(thought.id) else { return }
+        thought = updated
+        contextDisplay = ContextDisplay(from: updated.context)
+    }
+
     func loadFeedback() async {
         userFeedback = await fineTuningService.getFeedback(for: thought.id)
     }

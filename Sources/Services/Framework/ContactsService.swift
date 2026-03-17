@@ -140,13 +140,9 @@ actor ContactsService: ContactsServiceProtocol {
             return cached
         }
 
-        let timeout = configuration.timeouts.frameworkOperation * 10 // Allow more time for full fetch
-
-        let result = await withTimeout(timeout, default: [String]()) { [self] in
-            await self.fetchAllContactNames()
-        }
-
-        return result ?? []
+        // No timeout — enrichment always runs in the background so there's no
+        // UX cost to letting CNContactStore.enumerateContacts finish naturally.
+        return await fetchAllContactNames()
     }
 
     private func fetchAllContactNames() async -> [String] {

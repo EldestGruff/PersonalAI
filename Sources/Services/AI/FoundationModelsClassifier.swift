@@ -141,11 +141,16 @@ actor FoundationModelsClassifier {
             let type = mapThoughtType(rawType)
             let sentiment = mapSentiment(response.content.sentiment)
 
-            // Clean tags: replace spaces with hyphens, lowercase
-            let cleanTags = response.content.suggestedTags.map { tag in
-                tag.lowercased()
-                    .replacingOccurrences(of: " ", with: "-")
-                    .trimmingCharacters(in: .whitespaces)
+            // Clean tags: strip non-alphanumeric characters, lowercase, hyphenate
+            let cleanTags = response.content.suggestedTags.compactMap { tag -> String? in
+                let normalized = tag
+                    .lowercased()
+                    .components(separatedBy: CharacterSet.alphanumerics.inverted)
+                    .filter { !$0.isEmpty }
+                    .joined(separator: "-")
+                    .replacingOccurrences(of: "--+", with: "-", options: .regularExpression)
+                    .trimmingCharacters(in: CharacterSet(charactersIn: "-"))
+                return normalized.isEmpty ? nil : normalized
             }
 
             return FoundationModelsResult(

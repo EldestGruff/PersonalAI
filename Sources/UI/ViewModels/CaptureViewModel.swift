@@ -395,6 +395,11 @@ final class CaptureViewModel {
                     await autoCreateTask(for: saved, classification: cls)
                 }
 
+                // Enrich context in background — detects mentionedContacts, location, etc.
+                _Concurrency.Task.detached {
+                    await ContextEnrichmentService.shared.enrichContext(for: saved.id)
+                }
+
                 await processGamification(saved: saved)
 
                 _Concurrency.Task.detached {

@@ -138,6 +138,11 @@ actor ContextEnrichmentService {
         do {
             _ = try await thoughtService.update(updatedThought)
             AppLogger.info("Context enriched successfully", category: .context)
+            NotificationCenter.default.post(
+                name: .thoughtContextEnriched,
+                object: nil,
+                userInfo: ["thoughtId": thoughtId]
+            )
         } catch {
             AppLogger.error("Failed to update thought with enriched context", category: .context)
         }
@@ -216,8 +221,13 @@ actor ContextEnrichmentService {
     }
 
     /// Merges contact names into tag list as kebab-case tags (max 2 contact tags).
+    ///
+    /// Respects `maxTagsPerThought` — contact tags are silently skipped when the
+    /// thought is already at the limit, so the enrichment update never fails
+    /// validation due to tag overflow.
     private func mergedTags(base: [String], contacts: [String]) -> [String] {
         guard !contacts.isEmpty else { return base }
+        let limit = ServiceConfiguration.shared.limits.maxTagsPerThought
         var tags = base
         let contactTags = contacts.prefix(2).map { name in
             name.lowercased()
@@ -225,10 +235,67 @@ actor ContextEnrichmentService {
                 .filter { !$0.isEmpty }
                 .joined(separator: "-")
         }
-        for tag in contactTags where !tags.contains(tag) {
+        for tag in contactTags where !tags.contains(tag) && tags.count < limit {
             tags.append(tag)
         }
         return tags
+    }
+
+    // MARK: - Migration
+
+    /// One-time backfill: detects contact mentions across all existing thoughts.
+    ///
+    /// Runs exactly once per install (guarded by a `UserDefaults` flag). Skips
+    /// thoughts that already have contact data. Only `mentionedContacts` is
+    /// written — tags and all other fields are preserved unchanged.
+    func migrateContactEnrichmentIfNeeded() async {
+        let migrationKey = "contactsEnrichmentMigrationV1Done"
+        guard !UserDefaults.standard.bool(forKey: migrationKey) else { return }
+
+        let names = await contactsService.getAllContactNames()
+        guard !names.isEmpty else { return }
+
+        let thoughts = (try? await thoughtService.list(filter: nil)) ?? []
+        guard !thoughts.isEmpty else { return }
+
+        for thought in thoughts {
+            guard thought.context.mentionedContacts.isEmpty else { continue }
+            let detected = ContactMentionDetector.detect(in: thought.content, knownNames: names)
+            guard !detected.isEmpty else { continue }
+
+            let ctx = thought.context
+            let updatedContext = Context(
+                timestamp: ctx.timestamp,
+                location: ctx.location,
+                timeOfDay: ctx.timeOfDay,
+                energy: ctx.energy,
+                focusState: ctx.focusState,
+                calendar: ctx.calendar,
+                activity: ctx.activity,
+                weather: ctx.weather,
+                stateOfMind: ctx.stateOfMind,
+                energyBreakdown: ctx.energyBreakdown,
+                mentionedContacts: detected
+            )
+            let updatedThought = Thought(
+                id: thought.id,
+                userId: thought.userId,
+                content: thought.content,
+                attributedContent: thought.attributedContent,
+                tags: thought.tags,
+                status: thought.status,
+                context: updatedContext,
+                createdAt: thought.createdAt,
+                updatedAt: thought.updatedAt,
+                classification: thought.classification,
+                relatedThoughtIds: thought.relatedThoughtIds,
+                taskId: thought.taskId
+            )
+            _ = try? await thoughtService.update(updatedThought)
+        }
+
+        UserDefaults.standard.set(true, forKey: migrationKey)
+        AppLogger.info("Contact enrichment migration complete", category: .context)
     }
 
     /// Classifies the thought if it hasn't been classified yet.

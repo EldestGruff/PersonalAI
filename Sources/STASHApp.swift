@@ -157,6 +157,9 @@ struct MainTabView: View {
                 _Concurrency.Task {
                     await CalendarResurfacingService.shared.scheduleResurfacingNotifications()
                 }
+                _Concurrency.Task {
+                    await ContextEnrichmentService.shared.migrateContactEnrichmentIfNeeded()
+                }
             }
         }
     }
@@ -272,6 +275,7 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, Ob
 
 extension Notification.Name {
     static let replayOnboarding = Notification.Name("replayOnboarding")
+    static let thoughtContextEnriched = Notification.Name("thoughtContextEnriched")
 }
 
 // MARK: - Previews

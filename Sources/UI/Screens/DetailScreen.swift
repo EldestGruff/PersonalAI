@@ -151,9 +151,15 @@ struct DetailScreen: View {
             confirmationSheet
         }
         .task {
+            await viewModel.refreshThought()
             await viewModel.loadRelatedThoughts()
             await viewModel.loadFeedback()
             await loadConversationCount()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .thoughtContextEnriched)) { notification in
+            guard let id = notification.userInfo?["thoughtId"] as? UUID,
+                  id == viewModel.thought.id else { return }
+            _Concurrency.Task { await viewModel.refreshThought() }
         }
         .onAppear {
             AnalyticsService.shared.track(.screenViewed(.detail))
@@ -172,10 +178,10 @@ struct DetailScreen: View {
                     TextField("Title", text: $viewModel.confirmationTitle)
                         .foregroundColor(theme.textColor)
 
-                    if isEvent {
-                        DatePicker("Date & Time", selection: $viewModel.confirmationDate)
-                            .foregroundColor(theme.textColor)
+                    DatePicker("Date & Time", selection: $viewModel.confirmationDate)
+                        .foregroundColor(theme.textColor)
 
+                    if isEvent {
                         Stepper("Duration: \(viewModel.confirmationDurationMinutes) min",
                                 value: $viewModel.confirmationDurationMinutes,
                                 in: 15...480, step: 15)
@@ -580,17 +586,19 @@ struct DetailScreen: View {
 
     private var updatedContext: Context {
         if let refreshedLocation = refreshedLocation {
+            let ctx = viewModel.thought.context
             return Context(
-                timestamp: viewModel.thought.context.timestamp,
+                timestamp: ctx.timestamp,
                 location: refreshedLocation,
-                timeOfDay: viewModel.thought.context.timeOfDay,
-                energy: viewModel.thought.context.energy,
-                focusState: viewModel.thought.context.focusState,
-                calendar: viewModel.thought.context.calendar,
-                activity: viewModel.thought.context.activity,
-                weather: viewModel.thought.context.weather,
-                stateOfMind: viewModel.thought.context.stateOfMind,
-                energyBreakdown: viewModel.thought.context.energyBreakdown
+                timeOfDay: ctx.timeOfDay,
+                energy: ctx.energy,
+                focusState: ctx.focusState,
+                calendar: ctx.calendar,
+                activity: ctx.activity,
+                weather: ctx.weather,
+                stateOfMind: ctx.stateOfMind,
+                energyBreakdown: ctx.energyBreakdown,
+                mentionedContacts: ctx.mentionedContacts
             )
         }
         return viewModel.thought.context
