@@ -131,9 +131,7 @@ actor ContactsService: ContactsServiceProtocol {
     /// fast fuzzy matching against thought content. Cache expires
     /// after 5 minutes.
     func getAllContactNames() async -> [String] {
-        let status = permissionStatus
-        AppLogger.debug("ContactsService.getAllContactNames: permission=\(status.rawValue)", category: .context)
-        guard status.allowsAccess else { return [] }
+        guard permissionStatus.allowsAccess else { return [] }
 
         // Check cache
         if let cached = cachedNames,

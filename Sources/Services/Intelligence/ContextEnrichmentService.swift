@@ -115,7 +115,6 @@ actor ContextEnrichmentService {
 
         let resolvedClassification = await classification
         let resolvedMentionedContacts = enrichedContext.mentionedContacts
-        AppLogger.debug("enrichContext: mentionedContacts=\(resolvedMentionedContacts)", category: .context)
 
         // Create updated thought (Thought is immutable)
         let updatedThought = Thought(
@@ -217,14 +216,8 @@ actor ContextEnrichmentService {
     /// Returns an empty array if Contacts permission is not granted.
     private func fetchMentionedContacts(for thought: Thought) async -> [String] {
         let names = await contactsService.getAllContactNames()
-        AppLogger.debug("fetchMentionedContacts: \(names.count) contact names loaded", category: .context)
-        guard !names.isEmpty else {
-            AppLogger.warning("fetchMentionedContacts: contacts empty — permission denied or no contacts", category: .context)
-            return []
-        }
-        let detected = ContactMentionDetector.detect(in: thought.content, knownNames: names)
-        AppLogger.debug("fetchMentionedContacts: detected \(detected) in '\(thought.content)'", category: .context)
-        return detected
+        guard !names.isEmpty else { return [] }
+        return ContactMentionDetector.detect(in: thought.content, knownNames: names)
     }
 
     /// Merges contact names into tag list as kebab-case tags (max 2 contact tags).

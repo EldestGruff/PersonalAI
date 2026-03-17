@@ -58,12 +58,17 @@ enum ContactMentionDetector {
             }
         }
 
-        // Full name wins over first-name-only entry for the same person.
-        // E.g. if both "Sarah" and "Sarah Johnson" matched, return only "Sarah Johnson".
-        let fullNameFirstTokens = Set(matched.values.filter { $0.tokens.count >= 2 }.map { $0.tokens[0] })
+        // Full name wins over any single-token entry whose token appears anywhere in a
+        // full-name match — covers both first names ("Sarah" when "Sarah Johnson" matched)
+        // and last names ("Johnson" / "Fenner" when a full name matched).
+        let allFullNameTokens = Set(
+            matched.values
+                .filter { $0.tokens.count >= 2 }
+                .flatMap { $0.tokens }
+        )
         return matched.values.compactMap { entry in
-            if entry.tokens.count == 1 && fullNameFirstTokens.contains(entry.tokens[0]) {
-                return nil  // suppressed — same person has a full-name match
+            if entry.tokens.count == 1 && allFullNameTokens.contains(entry.tokens[0]) {
+                return nil  // suppressed — token is part of a full-name match
             }
             return entry.displayName
         }
