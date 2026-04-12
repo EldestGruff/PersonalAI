@@ -12,7 +12,7 @@ import FoundationModels
 
 /// Aggregate statistics computed from a set of recent thoughts.
 @available(iOS 26.0, *)
-private struct ThoughtStatistics {
+private struct ConversationThoughtStats {
     let dateRange: String
     let topTags: [String: Int]
     let recentCount: Int
@@ -198,7 +198,7 @@ actor ConversationService {
     private func computeThoughtStatistics(
         _ thoughts: [Thought],
         totalCount: Int
-    ) -> ThoughtStatistics {
+    ) -> ConversationThoughtStats {
         let dateRange = formatDateRange(
             from: thoughts.last?.createdAt ?? Date(),
             to: thoughts.first?.createdAt ?? Date()
@@ -210,11 +210,11 @@ actor ConversationService {
         let topTags = Dictionary(
             uniqueKeysWithValues: tagCounts.sorted { $0.value > $1.value }.prefix(10).map { ($0.key, $0.value) }
         )
-        return ThoughtStatistics(dateRange: dateRange, topTags: topTags, recentCount: thoughts.count, totalCount: totalCount)
+        return ConversationThoughtStats(dateRange: dateRange, topTags: topTags, recentCount: thoughts.count, totalCount: totalCount)
     }
 
-    /// Formats a ThoughtStatistics value into a prompt-ready summary string.
-    private func formatThoughtContextSummary(_ statistics: ThoughtStatistics) -> String {
+    /// Formats a ConversationThoughtStats value into a prompt-ready summary string.
+    private func formatThoughtContextSummary(_ statistics: ConversationThoughtStats) -> String {
         """
         Total thoughts: \(statistics.totalCount)
         Recent thoughts: \(statistics.recentCount)

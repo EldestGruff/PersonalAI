@@ -89,7 +89,7 @@ actor ContextService: ContextServiceProtocol {
     private let healthKitService: HealthKitServiceProtocol
     private let motionService: MotionServiceProtocol
     private let eventKitService: EventKitServiceProtocol
-    private let configuration: ServiceConfiguration
+    let configuration: ServiceConfiguration
 
     // MARK: - Initialization
 
@@ -153,11 +153,12 @@ actor ContextService: ContextServiceProtocol {
 
     private func gatherLocation(timeout: TimeInterval) async -> (ContextComponent, Int, Bool) {
         let opStart = Date()
-        let result = await ConcurrencyUtilities.withTimeout(timeout) {
+        let rawResult = await ConcurrencyUtilities.withTimeout(timeout) {
             await self.locationService.getCurrentLocation()
         }
+        let result: Location? = rawResult ?? nil
         let duration = Int(Date().timeIntervalSince(opStart) * 1000)
-        let timedOut = result == nil && duration >= Int(timeout * 1000)
+        let timedOut = rawResult == nil && duration >= Int(timeout * 1000)
         return (.location(result), duration, timedOut)
     }
 
