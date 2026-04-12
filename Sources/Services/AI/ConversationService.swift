@@ -177,7 +177,7 @@ actor ConversationService {
         guard !allThoughts.isEmpty else { throw ConversationError.noThoughtsFound }
 
         let recentThoughts = fetchRecentThoughts(from: allThoughts)
-        let statistics = computeThoughtStatistics(recentThoughts, totalCount: allThoughts.count)
+        let statistics = computeConversationThoughtStats(recentThoughts, totalCount: allThoughts.count)
         let summaryStats = formatThoughtContextSummary(statistics)
 
         return ThoughtContext(
@@ -195,7 +195,7 @@ actor ConversationService {
     }
 
     /// Computes aggregate statistics over a set of thoughts.
-    private func computeThoughtStatistics(
+    private func computeConversationThoughtStats(
         _ thoughts: [Thought],
         totalCount: Int
     ) -> ConversationThoughtStats {

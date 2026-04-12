@@ -132,14 +132,13 @@ actor ClassificationService: ClassificationServiceProtocol, DomainServiceProtoco
     private func performClassification(_ content: String) async -> Classification {
         let startTime = Date()
 
-        let foundationResult = await classifyViaFoundationModels(content)
-        let fallbackResult: (ClassificationType, Sentiment, [String], Double, String)
-        if let r = foundationResult {
-            fallbackResult = r
+        let classificationResult: (ClassificationType, Sentiment, [String], Double, String)
+        if let fmResult = await classifyViaFoundationModels(content) {
+            classificationResult = fmResult
         } else {
-            fallbackResult = await classifyViaNLPHeuristics(content)
+            classificationResult = await classifyViaNLPHeuristics(content)
         }
-        var (type, sentiment, tags, confidence, model) = fallbackResult
+        var (type, sentiment, tags, confidence, model) = classificationResult
 
         sentiment = postProcessSentiment(type: type, sentiment: sentiment, content: content)
 
