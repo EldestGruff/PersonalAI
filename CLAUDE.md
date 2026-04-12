@@ -1,46 +1,32 @@
 # STASH — Claude Code Reference
 
 ## Project Identity
+
 iOS thought-capture app. Offline-first SwiftUI. Squirrelsona companion system.
-Backend API: https://ai.gruff.icu (deployed, not active dev — treat as infrastructure).
 Xcode project: `PersonalAI.xcodeproj` | Swift 6.0+ | iOS 18+ target
 
-## Session Start — Read This First
-At the start of every session, read `TASK.md` in the project root.
-It contains the session goal, relevant files, constraints, and done-when criteria.
-If TASK.md is empty or stale, ask Andy what we're working on before proceeding.
+## Code Quality Gates
 
-## Active Phase
-<!-- UPDATE THIS EACH SESSION -->
-Phase: 3A + 3B complete | Next: TBD (ask Andy)
-Branch: (update when active)
-Last decision: 2026-03-07 — Acorn balance via CloudKit ledger + iCloud KV sync complete
-Full phase docs: `PhaseDocs/` | Architecture: `docs/development/`
-
-## Workflow Rules
-- **Spec-first always.** Read spec from `PhaseDocs/` before writing any code.
-- **Branch for all code changes.** Never commit code to `main`. Docs-only is the only exception.
-- **Sonnet executes specs. Opus reviews architecture only.**
-- After Sonnet generates, ask Andy before proceeding — don't chain phases.
-- Commit frequently. Atomic commits with conventional messages.
-- Use `sosumi` MCP for Apple docs before implementing any new framework feature.
-
-## Branch Naming
-`feature/`, `fix/`, `refactor/`, `experiment/` — delete after merge.
-
-## Code Quality Gates (non-negotiable)
 - Compiles without warnings
 - Theme-aware: `ThemeEngine.shared.getCurrentTheme()`
 - Accessibility: VoiceOver labels, dynamic type
 - Xcode pbxproj: new Swift files need manual entry in 3 places (see Critical Gotchas)
 
+## Branch Naming
+
+`feature/`, `fix/`, `refactor/`, `experiment/` — delete after merge.
+
 ## Key Patterns
+
 **Theme:** `let theme = themeEngine.getCurrentTheme()` — use `theme.textColor` etc., never hardcode colors.
+
 **Squirrelsona personas:** Supportive Listener · Brainstorm Partner · Socratic Questioner · Journal Guide · Devil's Advocate. Pattern: see `SquirrelReminderService.swift`.
+
 **AI:** `ClaudeService.shared` with `ResponseFormat<T>` for structured outputs. Always handle errors gracefully.
+
 **Storage:** SwiftData local. `ThoughtService.shared` · `ContextService.shared`.
 
-## Critical Gotchas (do not rediscover these)
+## Critical Gotchas
 
 **Swift Task disambiguation:** Always use `_Concurrency.Task {}`.
 `struct Task: Codable` in the codebase shadows Swift's Task type — plain `Task { }` instantiates the wrong type silently.
@@ -51,11 +37,13 @@ Full phase docs: `PhaseDocs/` | Architecture: `docs/development/`
 1. `PBXFileReference` section
 2. Group `children` array (correct folder group)
 3. `PBXSourcesBuildPhase` sources list
+
 CLI builds fail without this even if Xcode UI auto-resolves.
 
 **fileSystemSynchronizedGroups targets (no pbxproj edits needed):**
 - Watch app: `STASH Watch App Watch App/`
 - Widget Extension: `STASH Watch Complications/`
+
 Main iOS app target still requires all 3 manual pbxproj entries.
 
 **pbxproj IDs follow `A0000001000000000000NNN` pattern.**
@@ -77,7 +65,3 @@ Pattern key = first 5 words lowercased. Use `feedbackType: FeedbackType` (not `i
 **Swift Charts 3D (iOS 26+):** `symbolSize` uses viewport units (0.01–0.1), not pixels.
 Scale modifiers need BOTH `domain` (data range) AND `range` (viewport range).
 Point selection not available in iOS 26.0 beta — code preserved, feature hidden.
-
-## DECISIONS.md
-Append-only architectural decision log. Update at end of each session.
-Format: `## YYYY-MM-DD: [decision title]` → one paragraph rationale.
