@@ -21,7 +21,6 @@ import SwiftUI
 /// - Capture button
 struct CaptureScreen: View {
     @State var viewModel: CaptureViewModel
-    @State private var showPaywall = false
     @State private var showAcornToast = false
     @State private var showBadgeToast = false
     @State private var showVariableReward = false
@@ -45,7 +44,9 @@ struct CaptureScreen: View {
                     VStack(spacing: 20) {
                         // Error banner with upgrade option
                         if let error = viewModel.error {
-                            subscriptionErrorBanner(error: error, theme: theme)
+                            ErrorBanner(error: error) {
+                                viewModel.error = nil
+                            }
                         }
 
                         // Content input
@@ -160,9 +161,6 @@ struct CaptureScreen: View {
             .animation(.spring(duration: 0.35), value: showAcornToast)
             .animation(.spring(duration: 0.35), value: showBadgeToast)
             .animation(.spring(response: 0.45, dampingFraction: 0.6), value: showVariableReward)
-            .sheet(isPresented: $showPaywall) {
-                PaywallScreen()
-            }
         }
     }
 
@@ -602,62 +600,6 @@ struct CaptureScreen: View {
         .accessibilityIdentifier("captureClassificationTypeOption_\(type.rawValue)")
     }
 
-    // MARK: - Subscription Error Banner
-
-    @ViewBuilder
-    private func subscriptionErrorBanner(error: AppError, theme: any ThemeVariant) -> some View {
-        // Check if this is a subscription limit error
-        let isSubscriptionError = error.errorDescription?.contains("limit") ?? false
-
-        if isSubscriptionError {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(spacing: 12) {
-                    Image(systemName: "crown.fill")
-                        .foregroundStyle(theme.warningColor)
-                        .font(.title2)
-                        .accessibilityHidden(true)
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Free Tier Limit Reached")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundColor(theme.textColor)
-
-                        Text(error.errorDescription ?? "Upgrade to Pro for unlimited thoughts")
-                            .font(.caption)
-                            .foregroundColor(theme.secondaryTextColor)
-                    }
-
-                    Spacer()
-                }
-
-                Button {
-                    showPaywall = true
-                } label: {
-                    HStack {
-                        Image(systemName: "arrow.up.circle.fill")
-                            .accessibilityHidden(true)
-                        Text("Upgrade to Pro")
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(theme.primaryColor)
-                .controlSize(.small)
-            }
-            .padding()
-            .background(theme.warningColor.opacity(0.1))
-            .cornerRadius(theme.cornerRadius)
-            .overlay(
-                RoundedRectangle(cornerRadius: theme.cornerRadius)
-                    .stroke(theme.warningColor.opacity(0.3), lineWidth: theme.borderWidth)
-            )
-        } else {
-            ErrorBanner(error: error) {
-                viewModel.error = nil
-            }
-        }
-    }
 }
 
 // MARK: - Previews
