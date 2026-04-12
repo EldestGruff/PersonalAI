@@ -22,10 +22,6 @@ struct SettingsScreen: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var themeEngine = ThemeEngine.shared
 
-    @State private var subscriptionManager = SubscriptionManager.shared
-    @State private var showPaywall = false
-    @State private var thoughtUsage: SubscriptionUsage?
-
     var body: some View {
         let theme = themeEngine.getCurrentTheme()
         NavigationStack {
@@ -34,9 +30,6 @@ struct SettingsScreen: View {
                     .ignoresSafeArea()
 
                 Form {
-                    // Subscription section
-                    subscriptionSection
-
                     // Permissions section
                     permissionsSection
 
@@ -69,16 +62,11 @@ struct SettingsScreen: View {
             .navigationTitle("Settings")
             .toolbarBackground(theme.surfaceColor, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .sheet(isPresented: $showPaywall) {
-                PaywallScreen()
-            }
             .refreshable {
-                await loadUsageAsync()
                 await viewModel.updatePermissionStatus()
             }
             .onAppear {
                 viewModel.onAppear()
-                loadUsage()
                 AnalyticsService.shared.track(.screenViewed(.settings))
             }
             .onChange(of: scenePhase) { _, newPhase in
@@ -86,133 +74,9 @@ struct SettingsScreen: View {
                     _Concurrency.Task {
                         await viewModel.updatePermissionStatus()
                     }
-                    loadUsage()  // Reload usage when returning to app
                 }
             }
         }
-    }
-
-    // MARK: - Subscription Section
-
-    private var subscriptionSection: some View {
-        let theme = themeEngine.getCurrentTheme()
-        return Section {
-            VStack(alignment: .leading, spacing: 12) {
-                // Current tier badge
-                HStack {
-                    Image(systemName: subscriptionManager.status.tier == .pro ? "crown.fill" : "person.circle.fill")
-                        .foregroundStyle(subscriptionManager.status.tier == .pro ? theme.warningColor : theme.primaryColor)
-                        .font(.title2)
-                        .accessibilityHidden(true)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(subscriptionManager.status.tier.displayName)
-                            .font(.headline)
-                            .foregroundStyle(theme.textColor)
-
-                        if subscriptionManager.status.tier == .free {
-                            Text("\(freeMonthlyThoughtLimit) thoughts per month")
-                                .font(.caption)
-                                .foregroundStyle(theme.secondaryTextColor)
-                        } else {
-                            Text("Unlimited thoughts")
-                                .font(.caption)
-                                .foregroundStyle(theme.secondaryTextColor)
-                        }
-                    }
-
-                    Spacer()
-
-                    if subscriptionManager.status.tier == .pro {
-                        Image(systemName: "checkmark.seal.fill")
-                            .foregroundStyle(theme.successColor)
-                            .font(.title3)
-                            .accessibilityHidden(true)
-                    }
-                }
-
-                // Usage info (if free tier)
-                if subscriptionManager.status.tier == .free, let usage = thoughtUsage {
-                    let remaining = usage.remainingThoughts(for: subscriptionManager.entitlements) ?? 0
-
-                    Divider()
-                        .background(theme.dividerColor)
-
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("This Month")
-                                .font(.caption)
-                                .foregroundStyle(theme.secondaryTextColor)
-                            Text("\(usage.thoughtsThisMonth) / \(freeMonthlyThoughtLimit) thoughts")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundStyle(theme.textColor)
-                        }
-
-                        Spacer()
-
-                        VStack(alignment: .trailing, spacing: 4) {
-                            Text("Remaining")
-                                .font(.caption)
-                                .foregroundStyle(theme.secondaryTextColor)
-                            Text("\(remaining)")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundStyle(remaining < 10 ? theme.warningColor : theme.textColor)
-                        }
-                    }
-                }
-
-                // Action buttons
-                Divider()
-                    .background(theme.dividerColor)
-
-                if subscriptionManager.status.tier == .free {
-                    Button {
-                        showPaywall = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "arrow.up.circle.fill")
-                                .accessibilityHidden(true)
-                            Text("Upgrade to Pro")
-                            Spacer()
-                            Text("$4.99/mo")
-                                .font(.subheadline)
-                                .foregroundStyle(theme.secondaryTextColor)
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .themedToggle(theme)
-                } else {
-                    Button {
-                        _Concurrency.Task {
-                            await subscriptionManager.restorePurchases()
-                        }
-                    } label: {
-                        HStack {
-                            Image(systemName: "arrow.clockwise.circle.fill")
-                                .accessibilityHidden(true)
-                            Text("Restore Purchases")
-                        }
-                    }
-                    .buttonStyle(.bordered)
-                    .themedToggle(theme)
-                }
-            }
-            .padding(.vertical, 8)
-        } header: {
-            Text("Subscription")
-                .foregroundStyle(theme.secondaryTextColor)
-        } footer: {
-            if subscriptionManager.status.tier == .pro {
-                Text("You have unlimited access to all features. Thank you for supporting STASH!")
-                    .foregroundStyle(theme.secondaryTextColor)
-            } else {
-                Text("Upgrade to Pro for unlimited thoughts, advanced analytics, and export features.")
-                    .foregroundStyle(theme.secondaryTextColor)
-            }
-        }
-        .listRowBackground(theme.surfaceColor)
     }
 
     // MARK: - Notifications Section
@@ -569,21 +433,6 @@ struct SettingsScreen: View {
                 .foregroundStyle(theme.secondaryTextColor)
         }
         .listRowBackground(theme.surfaceColor)
-    }
-
-    // MARK: - Helper Functions
-
-    private func loadUsage() {
-        _Concurrency.Task {
-            await loadUsageAsync()
-        }
-    }
-
-    private func loadUsageAsync() async {
-        let thoughts = try? await ThoughtService.shared.list(filter: nil)
-        if let thoughts = thoughts {
-            thoughtUsage = SubscriptionUsage.calculate(from: thoughts)
-        }
     }
 
     // MARK: - Stats Section
