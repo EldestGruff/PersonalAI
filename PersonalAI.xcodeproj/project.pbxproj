@@ -41,7 +41,6 @@
 		A0000001000000000000031 /* SyncQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000032 /* SyncQueue.swift */; };
 		A0000001000000000000033 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000034 /* Enums.swift */; };
 		A0000001000000000000035 /* ModelError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000036 /* ModelError.swift */; };
-		A0000001000000000000038 /* Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000037 /* Subscription.swift */; };
 		A0000001000000000000039 /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000040 /* Conversation.swift */; };
 		A0000001000000000000041 /* Thought+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000042 /* Thought+CoreData.swift */; };
 		A0000001000000000000043 /* Classification+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000044 /* Classification+CoreData.swift */; };
@@ -63,7 +62,6 @@
 		A0000001000000000000115 /* ServiceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000116 /* ServiceConfiguration.swift */; };
 		A0000001000000000000117 /* ServiceContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000118 /* ServiceContainer.swift */; };
 		A0000001000000000000119 /* PermissionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000120 /* PermissionCoordinator.swift */; };
-		A0000001000000000000123 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000122 /* SubscriptionManager.swift */; };
 		A0000001000000000000131 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000132 /* LocationService.swift */; };
 		A0000001000000000000133 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000134 /* HealthKitService.swift */; };
 		A0000001000000000000135 /* MotionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000136 /* MotionService.swift */; };
@@ -85,7 +83,6 @@
 		A0000001000000000000205 /* DetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000206 /* DetailScreen.swift */; };
 		A0000001000000000000207 /* SearchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000208 /* SearchScreen.swift */; };
 		A0000001000000000000209 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000210 /* SettingsScreen.swift */; };
-		A0000001000000000000212 /* PaywallScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000211 /* PaywallScreen.swift */; };
 		A0000001000000000000221 /* ThoughtRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000222 /* ThoughtRowView.swift */; };
 		A0000001000000000000223 /* ClassificationBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000224 /* ClassificationBadge.swift */; };
 		A0000001000000000000225 /* ContextDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001000000000000226 /* ContextDisplayView.swift */; };
@@ -240,7 +237,6 @@
 		A0000001000000000000032 /* SyncQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncQueue.swift; sourceTree = "<group>"; };
 		A0000001000000000000034 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		A0000001000000000000036 /* ModelError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelError.swift; sourceTree = "<group>"; };
-		A0000001000000000000037 /* Subscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subscription.swift; sourceTree = "<group>"; };
 		A0000001000000000000040 /* Conversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
 		A0000001000000000000042 /* Thought+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Thought+CoreData.swift"; sourceTree = "<group>"; };
 		A0000001000000000000044 /* Classification+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Classification+CoreData.swift"; sourceTree = "<group>"; };
@@ -262,7 +258,6 @@
 		A0000001000000000000116 /* ServiceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceConfiguration.swift; sourceTree = "<group>"; };
 		A0000001000000000000118 /* ServiceContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceContainer.swift; sourceTree = "<group>"; };
 		A0000001000000000000120 /* PermissionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionCoordinator.swift; sourceTree = "<group>"; };
-		A0000001000000000000122 /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		A0000001000000000000132 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		A0000001000000000000134 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		A0000001000000000000136 /* MotionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionService.swift; sourceTree = "<group>"; };
@@ -284,7 +279,6 @@
 		A0000001000000000000206 /* DetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailScreen.swift; sourceTree = "<group>"; };
 		A0000001000000000000208 /* SearchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScreen.swift; sourceTree = "<group>"; };
 		A0000001000000000000210 /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
-		A0000001000000000000211 /* PaywallScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallScreen.swift; sourceTree = "<group>"; };
 		A0000001000000000000222 /* ThoughtRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThoughtRowView.swift; sourceTree = "<group>"; };
 		A0000001000000000000224 /* ClassificationBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationBadge.swift; sourceTree = "<group>"; };
 		A0000001000000000000226 /* ContextDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextDisplayView.swift; sourceTree = "<group>"; };
@@ -543,7 +537,6 @@
 				A0000001000000000000032 /* SyncQueue.swift */,
 				A0000001000000000000034 /* Enums.swift */,
 				A0000001000000000000036 /* ModelError.swift */,
-				A0000001000000000000037 /* Subscription.swift */,
 				A0000001000000000000040 /* Conversation.swift */,
 				A0800000000000000000011 /* Conversions */,
 			);
@@ -692,7 +685,6 @@
 		A0800000000000000000036 /* Monetization */ = {
 			isa = PBXGroup;
 			children = (
-				A0000001000000000000122 /* SubscriptionManager.swift */,
 			);
 			path = Monetization;
 			sourceTree = "<group>";
@@ -756,7 +748,6 @@
 				A0000001000000000000208 /* SearchScreen.swift */,
 				A0000001000000000000210 /* SettingsScreen.swift */,
 				A00000010000000000000253 /* InsightsScreen.swift */,
-				A0000001000000000000211 /* PaywallScreen.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -1171,10 +1162,7 @@
 				A00000010000000000000301 /* ClassificationPatterns.swift in Sources */,
 				A00000010000000000000303 /* AppLogger.swift in Sources */,
 				A00000010000000000000259 /* AcornToastView.swift in Sources */,
-				A0000001000000000000038 /* Subscription.swift in Sources */,
 				A0000001000000000000039 /* Conversation.swift in Sources */,
-				A0000001000000000000123 /* SubscriptionManager.swift in Sources */,
-				A0000001000000000000212 /* PaywallScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -153,9 +153,10 @@ actor ContextService: ContextServiceProtocol {
 
     private func gatherLocation(timeout: TimeInterval) async -> (ContextComponent, Int, Bool) {
         let opStart = Date()
-        let result = await ConcurrencyUtilities.withTimeout(timeout) {
+        let rawResult = await ConcurrencyUtilities.withTimeout(timeout) {
             await self.locationService.getCurrentLocation()
         }
+        let result: Location? = rawResult ?? nil
         let duration = Int(Date().timeIntervalSince(opStart) * 1000)
         let location: Location? = result ?? nil
         let timedOut = location == nil && duration >= Int(timeout * 1000)
