@@ -115,7 +115,6 @@ final class CaptureViewModel {
     private let fineTuningService: FineTuningService
     private let taskService: TaskService
     private let settingsViewModel: SettingsViewModel?
-    private let subscriptionManager: SubscriptionManager
     private let smartInsights = SmartInsightsService.shared
 
     // MARK: - Debounce
@@ -141,11 +140,9 @@ final class CaptureViewModel {
         classificationService: ClassificationService,
         fineTuningService: FineTuningService,
         taskService: TaskService,
-        settingsViewModel: SettingsViewModel? = nil,
-        subscriptionManager: SubscriptionManager = .shared
+        settingsViewModel: SettingsViewModel? = nil
     ) {
         self.thoughtService = thoughtService
-        self.subscriptionManager = subscriptionManager
         self.contextService = contextService
         self.classificationService = classificationService
         self.fineTuningService = fineTuningService
@@ -375,8 +372,6 @@ final class CaptureViewModel {
 
         _Concurrency.Task {
             do {
-                guard try await checkSubscriptionEntitlement() else { return }
-
                 if context == nil { context = await contextService.gatherContext() }
                 if classification == nil { classification = try? await classificationService.classify(thoughtContent) }
 
@@ -417,21 +412,6 @@ final class CaptureViewModel {
 
             isCapturing = false
         }
-    }
-
-    /// Returns false and sets error/isCapturing if subscription limit reached.
-    private func checkSubscriptionEntitlement() async throws -> Bool {
-        let thoughts = try await thoughtService.list(filter: nil)
-        let usage = SubscriptionUsage.calculate(from: thoughts)
-        guard subscriptionManager.canCaptureThought(usage: usage) else {
-            let limit = subscriptionManager.entitlements.thoughtLimit ?? 0
-            self.error = .validationFailed(
-                "You've reached your limit of \(limit) thoughts this month. Upgrade to Pro for unlimited thoughts."
-            )
-            self.isCapturing = false
-            return false
-        }
-        return true
     }
 
     /// Applies manual type override to the AI classification result.
